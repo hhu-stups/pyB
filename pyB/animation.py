@@ -99,7 +99,7 @@ def calc_next_states(env, bmachine):
                     env.state_space.add_state(bstate)
                 env.state_space.undo()  # pop bstate (all paths found)
             # (3.2) case two: find parameter values
-            """
+            #"""
             else:
                 # This code uses the constraint solver and the top_level predicate of this op to guess 
                 # parameter values. Of course this guess can produce false values but it will 
@@ -146,7 +146,7 @@ def calc_next_states(env, bmachine):
                     except ValueNotInDomainException: #TODO: modify enumerator not to generate that "solutions" at all
                         env.state_space.undo() #pop bstate (all paths for this solution/parameters found) 
             env.state_space.undo() # pop ref_bstate (all states for this operation found)
-            """
+            #"""
     if result==[] and PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
     # alphabetic sort of results

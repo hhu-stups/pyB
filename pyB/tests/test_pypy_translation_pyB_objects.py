@@ -57,9 +57,9 @@ def translate(main_code, other_code="", cl_argument=""):
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    #os.remove("tempA.py")
-    #os.remove("tempB.py")
-    #os.remove("tempA-c")
+    os.remove("tempA.py")
+    os.remove("tempB.py")
+    os.remove("tempA-c")
     # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -485,7 +485,7 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             from helpers import file_to_AST_str
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, exec_initialisation
+            from rpython_interp import interpret, exec_initialisation, set_up_constants
             from typing import type_check_bmch          
 
             if len(argv)<2:
@@ -509,9 +509,9 @@ class TestPyPyTranslationObjects():
             # end of inlinded parse_ast
             
             type_check_bmch(root, env, mch)
-            #bstates = set_up_constants(root, env, mch, solution_file_read=False)
-            #if len(bstates)>0:
-            #    env.state_space.add_state(bstates[0])
+            bstates = set_up_constants(root, env, mch, solution_file_read=False)
+            if len(bstates)>0:
+                env.state_space.add_state(bstates[0])
             bstates = exec_initialisation(root, env, mch, solution_file_read=False)
             if len(bstates)>0:
                 env.state_space.add_state(bstates[0]) 
@@ -919,7 +919,7 @@ def f():
         assert python_result == ['0','0', '']
         assert python_result == c_result      
         
-        
+       
     def test_pypy_command_line_args(self):  
         code =  """        
             if len(argv)>=1:
@@ -935,4 +935,19 @@ def f():
         assert python_result == ['10', '']
         assert python_result == c_result   
               
+ 
+    import pytest, config
+    @pytest.mark.xfail  
+    def test_pypy_raw_input(self):  
+        code =  """        
+            number = raw_input('number:')
+            number = int(number)
+            print 4*number
+            return 0\n"""
+        # TODO:
+        python_result, c_result = translate(code) 
+        assert python_result == ['', '']
+        assert python_result == c_result               
+              
+
         

@@ -2,7 +2,7 @@
 
 class W_Object:
     def __contains__(self, e):
-    	raise Exception("abstract W_Object instance _contains_ called")
+        raise Exception("abstract W_Object instance _contains_ called")
 
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -74,7 +74,7 @@ class W_Integer(W_Object):
         return (self.value % other.value)
 
     def __contains__(self, e):
-    	raise Exception("Nothing is member of a W_Integer")
+        raise Exception("Nothing is member of a W_Integer")
 
 
 class W_Boolean(W_Object):
@@ -111,12 +111,21 @@ class W_Boolean(W_Object):
         return str(self.value)
 
     def __contains__(self, e):
-    	raise Exception("Nothing is member of a W_Boolean")
-    	
+        raise Exception("Nothing is member of a W_Boolean")
+        
 class W_None(W_Object):
     def __contains__(self, e):
-    	raise Exception("Nothing is member of a W_None")
+        raise Exception("Nothing is member of a W_None")
 
+# elements of enumerated sets or machine parameter sets     
+class W_Set_Element(W_Object):
+    def __init__(self, string):
+        self.string
+
+
+class W_String(W_Object):
+    def __init__(self, string):
+        self.string
 
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.

@@ -10,7 +10,7 @@ from bexceptions import *
 from pretty_printer import pretty_print
 from bexceptions import EnumerationNotPossibleException
 if USE_COSTUM_FROZENSET:
-     from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_String, frozenset
 
 # WARNING: most of the functions in this module should only be used
 # if the full set is needed in an expression: The functions are very slow 
@@ -59,13 +59,57 @@ def all_values_by_type(atype, env, node):
     #print string
     raise Exception(string)
 
+# Returns list of W_Objects
+def all_values_by_type_RPYTHON(atype, env, node):
+    if PRINT_WARNINGS:
+        print "\033[1m\033[91mWARNING\033[00m:",pretty_print(node), "caused brute force enumeration. MIN_INT:%s MAX_INT:%s" % (env._min_int, env._max_int)
+    if isinstance(atype, IntegerType):
+        L = []
+        for i in range(env._min_int, env._max_int+1):
+            L.append(W_Integer(i))
+        return L
+    elif isinstance(atype, BoolType):
+        return [W_Boolean(True), W_Boolean(False)]
+    elif isinstance(atype, StringType): # FIXME:(#ISSUE 21) only some strings are returned here
+        L = []
+        for s in env.all_strings:
+           L.append(W_String(s))
+        return L
+    elif isinstance(atype, SetType):
+        type_name =  atype.name
+        #print type_name
+        #env.state_space.get_state().print_bstate()
+        value = env.get_value(type_name)
+        assert isinstance(value, frozenset)
+        return [value]
+    # TODO:
+    """
+    elif isinstance(atype, PowerSetType):
+        val_list = all_values_by_type(atype.data, env, node)
+        res = powerset(val_list)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        return lst
+    elif isinstance(atype, CartType):
+        val_pi = all_values_by_type(atype.left.data, env, node)
+        val_i = all_values_by_type(atype.right.data, env, node)
+        # TODO: test for realtions, seams incomplete
+        lst = frozenset([(x,y) for x in val_pi for y in val_i])
+        return lst
+    """
+    string = "Unknown Type / Not Implemented: %s" % atype
+    #print string
+    raise Exception(string)
 
 # generate all values that statify a predicate 'root'
 def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
     atype = env.get_type_by_node(node)
-    all_values = all_values_by_type(atype, env, node)
+    if USE_RPYTHON_CODE:
+        all_values = all_values_by_type_RPYTHON(atype, env, node)
+    else:
+        all_values = all_values_by_type(atype, env, node)
     if len(idNodes)<=1:
         for val in all_values:
             try:
@@ -91,7 +135,12 @@ def init_deffered_set(def_set, env):
     env.add_ids_to_frame([name])
     lst = []
     for i in range(DEFERRED_SET_ELEMENTS_NUM):
-        lst.append(str(i)+"_"+name)
+        e_name = str(i)+"_"+name
+        if USE_RPYTHON_CODE:
+            w_element = W_Set_Element(e_name)
+            lst.append(w_element)
+        else:
+            lst.append(e_name)
     #print name, lst
     env.set_value(name, frozenset(lst))
 
