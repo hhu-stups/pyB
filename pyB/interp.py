@@ -1922,21 +1922,21 @@ def exec_substitution(sub, env):
         # TODO: parameters passed by copy (page 162), write test: side effect free?
         # set up
         boperation = env.lookup_operation(sub.idName)
-        ret_types = boperation.return_types
-        para_types = boperation.parameter_types
+        ret_nodes = boperation.return_nodes
+        para_nodes = boperation.parameter_nodes
         values = []
         # get parameter values for call
-        for i in range(len(para_types)):
+        for i in range(len(para_nodes)):
             value = interpret(sub.children[i], env)
             values.append(value)
         op_node = boperation.ast
         # switch machine and set up parameters
         temp = env.current_mch
         env.current_mch = boperation.owner_machine
-        id_nodes = [x[0] for x in para_types]       
+        id_nodes = [x for x in para_nodes]       
         env.push_new_frame(id_nodes)
-        for i in range(len(para_types)):
-            name = para_types[i][0].idName
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         ex_generator = exec_substitution(op_node.children[-1], env)
@@ -1948,8 +1948,8 @@ def exec_substitution(sub, env):
             temp = env.current_mch
             env.current_mch = boperation.owner_machine
             env.push_new_frame(id_nodes)
-            for i in range(len(para_types)):
-                name = para_types[i][0].idName
+            for i in range(len(para_nodes)):
+                name = para_nodes[i].idName
                 env.set_value(name, values[i])
         # switch back machine
         env.pop_frame()
@@ -1958,11 +1958,11 @@ def exec_substitution(sub, env):
         # TODO: parameters passed by copy (page 162), write test: side effect free?
         # set up
         boperation = env.lookup_operation(sub.idName)
-        ret_types = boperation.return_types
-        para_types = boperation.parameter_types
+        ret_nodes = boperation.return_nodes
+        para_nodes = boperation.parameter_nodes
         values = []
         # get parameter values for call
-        for i in range(len(para_types)):
+        for i in range(len(para_nodes)):
             parameter_node = sub.children[i+sub.return_Num]
             value = interpret(parameter_node, env)
             values.append(value)
@@ -1970,17 +1970,17 @@ def exec_substitution(sub, env):
         # switch machine and set up parameters
         temp = env.current_mch
         env.current_mch = boperation.owner_machine
-        id_nodes = [x[0] for x in para_types + ret_types]
+        id_nodes = [x for x in para_nodes + ret_nodes]
         env.push_new_frame(id_nodes)
-        for i in range(len(para_types)):
-            name = para_types[i][0].idName
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         ex_generator = exec_substitution(op_node.children[-1], env)
         for possible in ex_generator:
             results = []
-            for r in ret_types:
-                name = r[0].idName
+            for r in ret_nodes:
+                name = r.idName
                 value = env.get_value(name)
                 results.append(value)
             # restore old frame after remembering return values
@@ -1997,8 +1997,8 @@ def exec_substitution(sub, env):
             temp = env.current_mch
             env.current_mch = boperation.owner_machine
             env.push_new_frame(id_nodes)
-            for i in range(len(para_types)):
-                name = para_types[i][0].idName
+            for i in range(len(para_nodes)):
+                name = para_nodes[i].idName
                 env.set_value(name, values[i])
         env.pop_frame()
         env.current_mch = temp

@@ -1263,28 +1263,32 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         # save type of return arguments
         ret_types = []
+        ret_nodes = []
         for i in range(node.return_Num):
             child = node.children[i]
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
-            ret_types.append(tuple([child, atype]))
+            ret_nodes.append(child)
+            ret_types.append(atype)
         # save type of parameters
         para_types = []
+        para_nodes = []
         for i in range(node.parameter_Num):
             child = node.children[i+node.return_Num]
             #for child in node.children[node.return_Num:(node.return_Num+node.parameter_Num)]:
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
-            para_types.append(tuple([child, atype]))
+            para_nodes.append(child)
+            para_types.append(atype)
         # Add query-operation test and add result to list.
         # TODO: strictly speaking this is no task of a type checker
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names) 
         # add all computed informations    
         boperation = env.get_operation_by_name(env.current_mch.mch_name, node.opName)
         boperation.is_query_op     = is_query_op   
-        boperation.set_types(ret_types, para_types)         
+        boperation.set_types(ret_types, para_types, ret_nodes, para_nodes)         
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
         # FIXME: assumption: Operation object typed before Op substitution call
@@ -1293,10 +1297,10 @@ def typeit(node, env, type_env):
         assert len(para_types)==node.parameter_Num
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)
-            p_type = para_types[i][1]
+            p_type = para_types[i]
             unify_equal(p_type, atype, type_env)
-        ret_type =  boperation.return_types
-        assert ret_type==[]
+        ret_types =  boperation.return_types
+        assert ret_types==[]
         return
     elif isinstance(node, AOperationCallSubstitution):
         boperation = env.lookup_operation(node.idName)
@@ -1306,12 +1310,12 @@ def typeit(node, env, type_env):
         assert len(ret_types)==node.return_Num
         for i in range(node.return_Num, (node.return_Num+node.parameter_Num)):
             atype = typeit(node.children[i], env, type_env)
-            p_type = para_types[i-node.return_Num][1]
+            p_type = para_types[i-node.return_Num]
             unify_equal(p_type, atype, type_env)
         assert not ret_types==[]
         for i in range(0, node.return_Num):
             atype = typeit(node.children[i], env, type_env)
-            r_type = ret_types[i][1]
+            r_type = ret_types[i]
             unify_equal(r_type, atype, type_env)
         return 
     elif isinstance(node, AExternalFunctionExpression):

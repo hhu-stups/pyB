@@ -615,3 +615,17 @@ class TestPyPyTranslationObjects():
         python_result, c_result = translate(code,other_code) 
         assert python_result == ['0', '']
         assert python_result == c_result       
+     
+        
+    import pytest, config
+    @pytest.mark.xfail
+    def test_pypy_not_rpython_tuple(self):
+        code =  """      
+            t = tuple([1,2])
+            print t[0]
+            print t[1]
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1','2', '']
+        assert python_result == c_result      
+        

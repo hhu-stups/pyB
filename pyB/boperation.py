@@ -8,9 +8,11 @@ class BOperation:
         self.is_query_op = False
 
     # called by typeit once inside a operation node (self.ast)  
-    def set_types(self, ret_types, para_types):
+    def set_types(self, ret_types, para_types, ret_nodes, para_nodes):
         self.return_types    = ret_types
         self.parameter_types = para_types
+        self.return_nodes    = ret_nodes
+        self.parameter_nodes = para_nodes
 
 
     # only used to change the name (prefix)
