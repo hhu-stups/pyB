@@ -1,0 +1,837 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.9" sequence="0" timestamp="1310982117000" analysisTimestamp="1310982128321" release="-textui">
+  <Project projectName="">
+    <Jar>/home/stupsi/pypy_kram/jvm/javavm/probparsers/animationscriptparser/build/classes</Jar>
+    <AuxClasspathEntry>/home/stupsi/.gradle/cache/junit/junit/jars/junit-4.8.2.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/stupsi/.gradle/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar</AuxClasspathEntry>
+    <SrcDir>/home/stupsi/pypy_kram/jvm/javavm/probparsers/animationscriptparser/build/temp</SrcDir>
+  </Project>
+  <BugInstance type="NP_ALWAYS_NULL" priority="1" abbrev="NP" category="CORRECTNESS">
+    <Class classname="de.prob.animationscript.parser.lexer.AnimationScriptLexer">
+      <SourceLine classname="de.prob.animationscript.parser.lexer.AnimationScriptLexer" start="19" end="95" sourcefile="AnimationScriptLexer.java" sourcepath="de/prob/animationscript/parser/lexer/AnimationScriptLexer.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.lexer.AnimationScriptLexer" name="filter" signature="()V" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.lexer.AnimationScriptLexer" start="35" end="41" startBytecode="0" endBytecode="131" sourcefile="AnimationScriptLexer.java" sourcepath="de/prob/animationscript/parser/lexer/AnimationScriptLexer.java"/>
+    </Method>
+    <Field classname="java.lang.System" name="out" signature="Ljava/io/PrintStream;" isStatic="true" role="FIELD_VALUE_OF">
+      <SourceLine classname="java.lang.System" sourcefile="System.java" sourcepath="java/lang/System.java"/>
+    </Field>
+    <SourceLine classname="de.prob.animationscript.parser.lexer.AnimationScriptLexer" start="38" end="38" startBytecode="74" endBytecode="74" sourcefile="AnimationScriptLexer.java" sourcepath="de/prob/animationscript/parser/lexer/AnimationScriptLexer.java" role="SOURCE_LINE_DEREF"/>
+  </BugInstance>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.lexer.Lexer">
+      <SourceLine classname="de.prob.animationscript.parser.lexer.Lexer" start="15" end="1183" sourcefile="Lexer.java" sourcepath="de/prob/animationscript/parser/lexer/Lexer.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.lexer.Lexer" name="getToken" signature="()Lde/prob/animationscript/parser/node/Token;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.lexer.Lexer" start="89" end="677" startBytecode="0" endBytecode="4522" sourcefile="Lexer.java" sourcepath="de/prob/animationscript/parser/lexer/Lexer.java"/>
+    </Method>
+    <SourceLine classname="de.prob.animationscript.parser.lexer.Lexer" start="148" end="148" startBytecode="229" endBytecode="229" sourcefile="Lexer.java" sourcepath="de/prob/animationscript/parser/lexer/Lexer.java"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new1" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="686" end="717" startBytecode="0" endBytecode="56" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode2" register="6" pc="50" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="698" end="698" startBytecode="48" endBytecode="48" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new12" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1017" end="1037" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1022" end="1022" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new13" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1044" end="1064" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1049" end="1049" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new14" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1071" end="1103" startBytecode="0" endBytecode="76" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="9" pc="64" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1082" end="1082" startBytecode="62" endBytecode="62" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new14" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1071" end="1103" startBytecode="0" endBytecode="76" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList3" register="7" pc="52" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1080" end="1080" startBytecode="50" endBytecode="50" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList3"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new14" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1071" end="1103" startBytecode="0" endBytecode="76" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList5" register="5" pc="40" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1078" end="1078" startBytecode="38" endBytecode="38" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList5"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new14" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1071" end="1103" startBytecode="0" endBytecode="76" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList7" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1076" end="1076" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList7"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new16" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1138" end="1167" startBytecode="0" endBytecode="63" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="6" pc="52" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1148" end="1148" startBytecode="50" endBytecode="50" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new16" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1138" end="1167" startBytecode="0" endBytecode="63" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1143" end="1143" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new2" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="724" end="755" startBytecode="0" endBytecode="56" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode3" register="6" pc="50" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="739" end="739" startBytecode="48" endBytecode="48" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode3"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new24" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1314" end="1335" startBytecode="0" endBytecode="43" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1318" end="1318" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new25" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1342" end="1365" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1347" end="1347" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new26" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1372" end="1397" startBytecode="0" endBytecode="55" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1378" end="1378" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new27" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1404" end="1431" startBytecode="0" endBytecode="61" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="5" pc="40" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1411" end="1411" startBytecode="38" endBytecode="38" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new28" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1438" end="1461" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1443" end="1443" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new29" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1468" end="1493" startBytecode="0" endBytecode="55" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1474" end="1474" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new30" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1500" end="1527" startBytecode="0" endBytecode="61" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="5" pc="40" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1507" end="1507" startBytecode="38" endBytecode="38" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new31" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1534" end="1563" startBytecode="0" endBytecode="67" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="6" pc="46" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1542" end="1542" startBytecode="44" endBytecode="44" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new34" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1610" end="1630" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1615" end="1615" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new35" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1637" end="1660" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1643" end="1643" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new36" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1667" end="1690" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1673" end="1673" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new37" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1697" end="1718" startBytecode="0" endBytecode="43" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1702" end="1702" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new38" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1725" end="1748" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1731" end="1731" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new39" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1755" end="1776" startBytecode="0" endBytecode="43" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1760" end="1760" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new4" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="807" end="829" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="5" pc="46" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="816" end="816" startBytecode="44" endBytecode="44" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new4" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="807" end="829" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="811" end="811" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new40" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1783" end="1806" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1789" end="1789" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new41" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1813" end="1831" startBytecode="0" endBytecode="34" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1817" end="1817" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new42" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1838" end="1858" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1843" end="1843" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new43" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1865" end="1882" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1869" end="1869" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new44" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1889" end="1911" startBytecode="0" endBytecode="46" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1894" end="1894" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new45" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1918" end="1942" startBytecode="0" endBytecode="52" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1924" end="1924" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new46" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1949" end="1973" startBytecode="0" endBytecode="52" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1955" end="1955" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new47" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1980" end="2006" startBytecode="0" endBytecode="58" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="5" pc="40" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="1987" end="1987" startBytecode="38" endBytecode="38" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new5" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="836" end="857" startBytecode="0" endBytecode="46" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="4" pc="40" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="844" end="844" startBytecode="38" endBytecode="38" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new53" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="2143" end="2171" startBytecode="0" endBytecode="60" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="5" pc="46" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="2152" end="2152" startBytecode="44" endBytecode="44" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new6" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="864" end="886" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="5" pc="46" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="873" end="873" startBytecode="44" endBytecode="44" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new6" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="864" end="886" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="868" end="868" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new8" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="921" end="950" startBytecode="0" endBytecode="63" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="listNode1" register="6" pc="52" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="931" end="931" startBytecode="50" endBytecode="50" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="listNode1"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="new8" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="921" end="950" startBytecode="0" endBytecode="63" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="926" end="926" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="goTo" signature="(I)I" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="189" end="213" startBytecode="0" endBytecode="261" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="196" end="196" startBytecode="39" endBytecode="39" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+  </BugInstance>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="parse" signature="()Lde/prob/animationscript/parser/node/Start;" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="244" end="647" startBytecode="0" endBytecode="3330" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="279" end="279" startBytecode="197" endBytecode="197" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+  </BugInstance>
+  <BugInstance type="NP_ALWAYS_NULL" priority="1" abbrev="NP" category="CORRECTNESS">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="findBeginPos" signature="(Ljava/util/ArrayList;Lde/hhu/stups/sablecc/patch/PositionedNode;)I" isStatic="false">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="102" end="127" startBytecode="0" endBytecode="300" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <Field classname="java.lang.System" name="err" signature="Ljava/io/PrintStream;" isStatic="true" role="FIELD_VALUE_OF">
+      <SourceLine classname="java.lang.System" sourcefile="System.java" sourcepath="java/lang/System.java"/>
+    </Field>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="125" end="125" startBytecode="142" endBytecode="142" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java" role="SOURCE_LINE_DEREF"/>
+  </BugInstance>
+  <BugInstance type="REC_CATCH_EXCEPTION" priority="2" abbrev="REC" category="STYLE">
+    <Class classname="de.prob.animationscript.parser.parser.Parser">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="19" end="2370" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.prob.animationscript.parser.parser.Parser" name="&lt;clinit&gt;" signature="()V" isStatic="true">
+      <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="2305" end="2370" startBytecode="0" endBytecode="671" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.prob.animationscript.parser.parser.Parser" start="2366" end="2366" startBytecode="322" endBytecode="322" sourcefile="Parser.java" sourcepath="de/prob/animationscript/parser/parser/Parser.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 18 Jul 2011 11:41:57 +0200" total_classes="77" referenced_classes="117" total_bugs="46" total_size="4178" num_packages="6" vm_version="19.0-b09" cpu_seconds="45.27" clock_seconds="62.22" peak_mbytes="79.28" alloc_mbytes="989.88" gc_seconds="2.18" priority_2="44" priority_1="2">
+    <PackageStats package="" total_bugs="0" total_types="1" total_size="5">
+      <ClassStats class="DummyTest" sourceFile="DummyTest.java" interface="false" size="5" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.hhu.stups.sablecc.patch" total_bugs="0" total_types="7" total_size="200">
+      <ClassStats class="de.hhu.stups.sablecc.patch.IParser" sourceFile="IParser.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.IToken" sourceFile="IToken.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.ITokenListContainer" sourceFile="ITokenListContainer.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.PositionedNode" sourceFile="PositionedNode.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcePosition" sourceFile="SourcePosition.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcePositions" sourceFile="SourcePositions.java" interface="false" size="142" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcecodeRange" sourceFile="SourcecodeRange.java" interface="false" size="14" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.prob.animationscript.parser.analysis" total_bugs="0" total_types="4" total_size="686">
+      <ClassStats class="de.prob.animationscript.parser.analysis.Analysis" sourceFile="Analysis.java" interface="true" size="54" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.analysis.AnalysisAdapter" sourceFile="AnalysisAdapter.java" interface="false" size="176" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.analysis.DepthFirstAdapter" sourceFile="DepthFirstAdapter.java" interface="false" size="227" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.analysis.ReversedDepthFirstAdapter" sourceFile="ReversedDepthFirstAdapter.java" interface="false" size="229" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.prob.animationscript.parser.lexer" total_bugs="2" total_types="4" total_size="530" priority_2="1" priority_1="1">
+      <ClassStats class="de.prob.animationscript.parser.lexer.AnimationScriptLexer" sourceFile="AnimationScriptLexer.java" interface="false" size="59" bugs="1" priority_1="1"/>
+      <ClassStats class="de.prob.animationscript.parser.lexer.Lexer" sourceFile="Lexer.java" interface="false" size="450" bugs="1" priority_2="1"/>
+      <ClassStats class="de.prob.animationscript.parser.lexer.Lexer$State" sourceFile="Lexer.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.lexer.LexerException" sourceFile="LexerException.java" interface="false" size="4" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.prob.animationscript.parser.node" total_bugs="0" total_types="57" total_size="1496">
+      <ClassStats class="de.prob.animationscript.parser.node.AAssertStatement" sourceFile="AAssertStatement.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AConsistencyStatement" sourceFile="AConsistencyStatement.java" interface="false" size="94" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ACoverageStatement" sourceFile="ACoverageStatement.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ADisabledStatement" sourceFile="ADisabledStatement.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AEnabledStatement" sourceFile="AEnabledStatement.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AGetSeedStatement" sourceFile="AGetSeedStatement.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AInvariantDefinition" sourceFile="AInvariantDefinition.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ALanguageDefinition" sourceFile="ALanguageDefinition.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ALoadStatement" sourceFile="ALoadStatement.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ALtlStatement" sourceFile="ALtlStatement.java" interface="false" size="75" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AOpcallStatement" sourceFile="AOpcallStatement.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.AParseUnit" sourceFile="AParseUnit.java" interface="false" size="68" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.APlainParameter" sourceFile="APlainParameter.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ASeedDefinition" sourceFile="ASeedDefinition.java" interface="false" size="94" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.ASettingsStatement" sourceFile="ASettingsStatement.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.EOF" sourceFile="EOF.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.Node" sourceFile="Node.java" interface="false" size="33" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.PDefinition" sourceFile="PDefinition.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.PParameter" sourceFile="PParameter.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.PParseUnit" sourceFile="PParseUnit.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.PStatement" sourceFile="PStatement.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.Start" sourceFile="Start.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.Switch" sourceFile="Switch.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.Switchable" sourceFile="Switchable.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TAssert" sourceFile="TAssert.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TChar" sourceFile="TChar.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TColon" sourceFile="TColon.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TComment" sourceFile="TComment.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TCommentEnd" sourceFile="TCommentEnd.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TCommentStart" sourceFile="TCommentStart.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TConsistency" sourceFile="TConsistency.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TCoverage" sourceFile="TCoverage.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TDisabled" sourceFile="TDisabled.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TEnabled" sourceFile="TEnabled.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TGetseed" sourceFile="TGetseed.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TInvariant" sourceFile="TInvariant.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TLanguage" sourceFile="TLanguage.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TLineBreak" sourceFile="TLineBreak.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TLoad" sourceFile="TLoad.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TLtl" sourceFile="TLtl.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TMode" sourceFile="TMode.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TNumber" sourceFile="TNumber.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TOpname" sourceFile="TOpname.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TParamBegin" sourceFile="TParamBegin.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TParamEnd" sourceFile="TParamEnd.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TParamString" sourceFile="TParamString.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TReduction" sourceFile="TReduction.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TSeed" sourceFile="TSeed.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TSetting" sourceFile="TSetting.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TSettings" sourceFile="TSettings.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TStarting" sourceFile="TStarting.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TStatistic" sourceFile="TStatistic.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TString" sourceFile="TString.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TStringDelimiter" sourceFile="TStringDelimiter.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TSwitch" sourceFile="TSwitch.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.TWhiteSpace" sourceFile="TWhiteSpace.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.node.Token" sourceFile="Token.java" interface="false" size="27" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.prob.animationscript.parser.parser" total_bugs="44" total_types="4" total_size="1261" priority_2="43" priority_1="1">
+      <ClassStats class="de.prob.animationscript.parser.parser.Parser" sourceFile="Parser.java" interface="false" size="1154" bugs="44" priority_2="43" priority_1="1"/>
+      <ClassStats class="de.prob.animationscript.parser.parser.ParserException" sourceFile="ParserException.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.parser.State" sourceFile="State.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="de.prob.animationscript.parser.parser.TokenIndex" sourceFile="TokenIndex.java" interface="false" size="91" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" totalMilliseconds="11" invocations="77" avgMicrosecondsPerInvocation="153" maxMicrosecondsPerInvocation="1367" standardDeviationMircosecondsPerInvocation="221"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CheckImmutableAnnotation" totalMilliseconds="11" invocations="77" avgMicrosecondsPerInvocation="155" maxMicrosecondsPerInvocation="9265" standardDeviationMircosecondsPerInvocation="1051"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ClassContextClassAnalysisEngine" totalMilliseconds="14" invocations="237" avgMicrosecondsPerInvocation="59" maxMicrosecondsPerInvocation="8112" standardDeviationMircosecondsPerInvocation="527"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ConfusedInheritance" totalMilliseconds="16" invocations="77" avgMicrosecondsPerInvocation="213" maxMicrosecondsPerInvocation="8607" standardDeviationMircosecondsPerInvocation="1249"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" totalMilliseconds="17" invocations="117" avgMicrosecondsPerInvocation="149" maxMicrosecondsPerInvocation="3196" standardDeviationMircosecondsPerInvocation="366"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="17" invocations="77" avgMicrosecondsPerInvocation="228" maxMicrosecondsPerInvocation="7126" standardDeviationMircosecondsPerInvocation="807"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.AssertionMethodsFactory" totalMilliseconds="18" invocations="71" avgMicrosecondsPerInvocation="259" maxMicrosecondsPerInvocation="8463" standardDeviationMircosecondsPerInvocation="1116"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BooleanReturnNull" totalMilliseconds="21" invocations="77" avgMicrosecondsPerInvocation="274" maxMicrosecondsPerInvocation="11865" standardDeviationMircosecondsPerInvocation="1333"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InvalidJUnitTest" totalMilliseconds="21" invocations="77" avgMicrosecondsPerInvocation="282" maxMicrosecondsPerInvocation="21022" standardDeviationMircosecondsPerInvocation="2379"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ReturnPathTypeDataflowFactory" totalMilliseconds="23" invocations="2" avgMicrosecondsPerInvocation="11706" maxMicrosecondsPerInvocation="22578" standardDeviationMircosecondsPerInvocation="10871"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.DominatorsAnalysisFactory" totalMilliseconds="24" invocations="2" avgMicrosecondsPerInvocation="12095" maxMicrosecondsPerInvocation="12977" standardDeviationMircosecondsPerInvocation="875"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" totalMilliseconds="25" invocations="77" avgMicrosecondsPerInvocation="328" maxMicrosecondsPerInvocation="5779" standardDeviationMircosecondsPerInvocation="927"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUninitializedGet" totalMilliseconds="26" invocations="77" avgMicrosecondsPerInvocation="349" maxMicrosecondsPerInvocation="11525" standardDeviationMircosecondsPerInvocation="1597"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CloneIdiom" totalMilliseconds="27" invocations="77" avgMicrosecondsPerInvocation="357" maxMicrosecondsPerInvocation="18491" standardDeviationMircosecondsPerInvocation="2081"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InconsistentAnnotations" totalMilliseconds="28" invocations="77" avgMicrosecondsPerInvocation="367" maxMicrosecondsPerInvocation="22852" standardDeviationMircosecondsPerInvocation="2581"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField" totalMilliseconds="31" invocations="77" avgMicrosecondsPerInvocation="403" maxMicrosecondsPerInvocation="7224" standardDeviationMircosecondsPerInvocation="1120"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnconditionalWait" totalMilliseconds="31" invocations="77" avgMicrosecondsPerInvocation="403" maxMicrosecondsPerInvocation="15001" standardDeviationMircosecondsPerInvocation="1724"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" totalMilliseconds="32" invocations="117" avgMicrosecondsPerInvocation="274" maxMicrosecondsPerInvocation="13836" standardDeviationMircosecondsPerInvocation="1439"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine" totalMilliseconds="32" invocations="425" avgMicrosecondsPerInvocation="76" maxMicrosecondsPerInvocation="23017" standardDeviationMircosecondsPerInvocation="1125"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" totalMilliseconds="33" invocations="77" avgMicrosecondsPerInvocation="437" maxMicrosecondsPerInvocation="15339" standardDeviationMircosecondsPerInvocation="1944"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" totalMilliseconds="33" invocations="117" avgMicrosecondsPerInvocation="289" maxMicrosecondsPerInvocation="13611" standardDeviationMircosecondsPerInvocation="1316"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison2" totalMilliseconds="35" invocations="77" avgMicrosecondsPerInvocation="465" maxMicrosecondsPerInvocation="18247" standardDeviationMircosecondsPerInvocation="2058"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSpinLoop" totalMilliseconds="36" invocations="77" avgMicrosecondsPerInvocation="478" maxMicrosecondsPerInvocation="19525" standardDeviationMircosecondsPerInvocation="2220"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.VarArgsProblems" totalMilliseconds="37" invocations="77" avgMicrosecondsPerInvocation="483" maxMicrosecondsPerInvocation="11141" standardDeviationMircosecondsPerInvocation="1724"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StaticCalendarDetector" totalMilliseconds="41" invocations="77" avgMicrosecondsPerInvocation="535" maxMicrosecondsPerInvocation="10816" standardDeviationMircosecondsPerInvocation="1842"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" totalMilliseconds="41" invocations="77" avgMicrosecondsPerInvocation="540" maxMicrosecondsPerInvocation="11015" standardDeviationMircosecondsPerInvocation="1616"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessControlFlow" totalMilliseconds="42" invocations="77" avgMicrosecondsPerInvocation="555" maxMicrosecondsPerInvocation="13550" standardDeviationMircosecondsPerInvocation="2073"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindTwoLockWait" totalMilliseconds="45" invocations="77" avgMicrosecondsPerInvocation="595" maxMicrosecondsPerInvocation="20506" standardDeviationMircosecondsPerInvocation="3182"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodFactory" totalMilliseconds="45" invocations="178" avgMicrosecondsPerInvocation="258" maxMicrosecondsPerInvocation="11124" standardDeviationMircosecondsPerInvocation="1214"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InitializationChain" totalMilliseconds="48" invocations="77" avgMicrosecondsPerInvocation="633" maxMicrosecondsPerInvocation="24802" standardDeviationMircosecondsPerInvocation="3062"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" totalMilliseconds="50" invocations="77" avgMicrosecondsPerInvocation="649" maxMicrosecondsPerInvocation="18134" standardDeviationMircosecondsPerInvocation="2295"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession" totalMilliseconds="50" invocations="77" avgMicrosecondsPerInvocation="653" maxMicrosecondsPerInvocation="20731" standardDeviationMircosecondsPerInvocation="2825"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" totalMilliseconds="50" invocations="117" avgMicrosecondsPerInvocation="430" maxMicrosecondsPerInvocation="19751" standardDeviationMircosecondsPerInvocation="2245"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadlyOverriddenAdapter" totalMilliseconds="50" invocations="77" avgMicrosecondsPerInvocation="661" maxMicrosecondsPerInvocation="22594" standardDeviationMircosecondsPerInvocation="3225"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Methods" totalMilliseconds="51" invocations="117" avgMicrosecondsPerInvocation="436" maxMicrosecondsPerInvocation="31996" standardDeviationMircosecondsPerInvocation="2988"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LoadedFieldSetFactory" totalMilliseconds="52" invocations="685" avgMicrosecondsPerInvocation="77" maxMicrosecondsPerInvocation="26208" standardDeviationMircosecondsPerInvocation="1037"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" totalMilliseconds="52" invocations="77" avgMicrosecondsPerInvocation="686" maxMicrosecondsPerInvocation="19667" standardDeviationMircosecondsPerInvocation="2921"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.VolatileUsage" totalMilliseconds="57" invocations="77" avgMicrosecondsPerInvocation="751" maxMicrosecondsPerInvocation="15826" standardDeviationMircosecondsPerInvocation="2629"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DuplicateBranches" totalMilliseconds="59" invocations="77" avgMicrosecondsPerInvocation="777" maxMicrosecondsPerInvocation="21866" standardDeviationMircosecondsPerInvocation="3013"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRunInvocations" totalMilliseconds="60" invocations="77" avgMicrosecondsPerInvocation="781" maxMicrosecondsPerInvocation="20363" standardDeviationMircosecondsPerInvocation="2948"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNakedNotify" totalMilliseconds="60" invocations="77" avgMicrosecondsPerInvocation="789" maxMicrosecondsPerInvocation="28156" standardDeviationMircosecondsPerInvocation="3617"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject" totalMilliseconds="61" invocations="77" avgMicrosecondsPerInvocation="799" maxMicrosecondsPerInvocation="21995" standardDeviationMircosecondsPerInvocation="2963"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" totalMilliseconds="63" invocations="117" avgMicrosecondsPerInvocation="538" maxMicrosecondsPerInvocation="29886" standardDeviationMircosecondsPerInvocation="3140"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.WaitInLoop" totalMilliseconds="64" invocations="77" avgMicrosecondsPerInvocation="839" maxMicrosecondsPerInvocation="16288" standardDeviationMircosecondsPerInvocation="2574"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LazyInit" totalMilliseconds="64" invocations="77" avgMicrosecondsPerInvocation="840" maxMicrosecondsPerInvocation="46964" standardDeviationMircosecondsPerInvocation="5436"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InstantiateStaticClass" totalMilliseconds="64" invocations="77" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="17784" standardDeviationMircosecondsPerInvocation="3181"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" totalMilliseconds="65" invocations="117" avgMicrosecondsPerInvocation="555" maxMicrosecondsPerInvocation="18912" standardDeviationMircosecondsPerInvocation="2324"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MutableStaticFields" totalMilliseconds="66" invocations="77" avgMicrosecondsPerInvocation="862" maxMicrosecondsPerInvocation="22644" standardDeviationMircosecondsPerInvocation="3115"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment" totalMilliseconds="66" invocations="77" avgMicrosecondsPerInvocation="866" maxMicrosecondsPerInvocation="21862" standardDeviationMircosecondsPerInvocation="3281"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" totalMilliseconds="66" invocations="77" avgMicrosecondsPerInvocation="868" maxMicrosecondsPerInvocation="40418" standardDeviationMircosecondsPerInvocation="4699"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InefficientToArray" totalMilliseconds="67" invocations="77" avgMicrosecondsPerInvocation="879" maxMicrosecondsPerInvocation="24245" standardDeviationMircosecondsPerInvocation="3786"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MutableLock" totalMilliseconds="69" invocations="77" avgMicrosecondsPerInvocation="900" maxMicrosecondsPerInvocation="24667" standardDeviationMircosecondsPerInvocation="3433"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" totalMilliseconds="69" invocations="77" avgMicrosecondsPerInvocation="904" maxMicrosecondsPerInvocation="33091" standardDeviationMircosecondsPerInvocation="4167"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.WrongMapIterator" totalMilliseconds="69" invocations="77" avgMicrosecondsPerInvocation="908" maxMicrosecondsPerInvocation="21067" standardDeviationMircosecondsPerInvocation="3312"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" totalMilliseconds="75" invocations="77" avgMicrosecondsPerInvocation="979" maxMicrosecondsPerInvocation="28380" standardDeviationMircosecondsPerInvocation="4291"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteCheckReturnValueAnnotations" totalMilliseconds="75" invocations="117" avgMicrosecondsPerInvocation="647" maxMicrosecondsPerInvocation="25506" standardDeviationMircosecondsPerInvocation="3038"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" totalMilliseconds="82" invocations="77" avgMicrosecondsPerInvocation="1075" maxMicrosecondsPerInvocation="18399" standardDeviationMircosecondsPerInvocation="3580"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="83" invocations="11" avgMicrosecondsPerInvocation="7583" maxMicrosecondsPerInvocation="33417" standardDeviationMircosecondsPerInvocation="10001"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnnecessaryMath" totalMilliseconds="84" invocations="77" avgMicrosecondsPerInvocation="1091" maxMicrosecondsPerInvocation="66788" standardDeviationMircosecondsPerInvocation="7554"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" totalMilliseconds="89" invocations="77" avgMicrosecondsPerInvocation="1161" maxMicrosecondsPerInvocation="33518" standardDeviationMircosecondsPerInvocation="4448"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass" totalMilliseconds="89" invocations="77" avgMicrosecondsPerInvocation="1164" maxMicrosecondsPerInvocation="23233" standardDeviationMircosecondsPerInvocation="3721"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField" totalMilliseconds="92" invocations="77" avgMicrosecondsPerInvocation="1194" maxMicrosecondsPerInvocation="23440" standardDeviationMircosecondsPerInvocation="3213"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" totalMilliseconds="93" invocations="77" avgMicrosecondsPerInvocation="1215" maxMicrosecondsPerInvocation="18306" standardDeviationMircosecondsPerInvocation="3850"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSqlInjection" totalMilliseconds="96" invocations="77" avgMicrosecondsPerInvocation="1247" maxMicrosecondsPerInvocation="15240" standardDeviationMircosecondsPerInvocation="2757"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" totalMilliseconds="96" invocations="77" avgMicrosecondsPerInvocation="1250" maxMicrosecondsPerInvocation="25741" standardDeviationMircosecondsPerInvocation="4002"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StringConcatenation" totalMilliseconds="96" invocations="77" avgMicrosecondsPerInvocation="1251" maxMicrosecondsPerInvocation="20391" standardDeviationMircosecondsPerInvocation="4132"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindMaskedFields" totalMilliseconds="103" invocations="77" avgMicrosecondsPerInvocation="1339" maxMicrosecondsPerInvocation="24102" standardDeviationMircosecondsPerInvocation="4597"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDoubleCheck" totalMilliseconds="103" invocations="77" avgMicrosecondsPerInvocation="1349" maxMicrosecondsPerInvocation="34343" standardDeviationMircosecondsPerInvocation="4990"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantPoolGenFactory" totalMilliseconds="111" invocations="77" avgMicrosecondsPerInvocation="1447" maxMicrosecondsPerInvocation="24774" standardDeviationMircosecondsPerInvocation="4303"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FormatStringChecker" totalMilliseconds="112" invocations="77" avgMicrosecondsPerInvocation="1456" maxMicrosecondsPerInvocation="28674" standardDeviationMircosecondsPerInvocation="5013"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="115" invocations="77" avgMicrosecondsPerInvocation="1501" maxMicrosecondsPerInvocation="56877" standardDeviationMircosecondsPerInvocation="6706"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.XMLFactoryBypass" totalMilliseconds="117" invocations="77" avgMicrosecondsPerInvocation="1524" maxMicrosecondsPerInvocation="48561" standardDeviationMircosecondsPerInvocation="6212"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnsyncGet" totalMilliseconds="117" invocations="77" avgMicrosecondsPerInvocation="1531" maxMicrosecondsPerInvocation="20801" standardDeviationMircosecondsPerInvocation="4542"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" totalMilliseconds="119" invocations="77" avgMicrosecondsPerInvocation="1546" maxMicrosecondsPerInvocation="24997" standardDeviationMircosecondsPerInvocation="4354"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="123" invocations="19" avgMicrosecondsPerInvocation="6504" maxMicrosecondsPerInvocation="102151" standardDeviationMircosecondsPerInvocation="22913"/>
+      <ClassProfile name="edu.umd.cs.findbugs.NonReportingDetectorToDetector2Adapter" totalMilliseconds="126" invocations="1675" avgMicrosecondsPerInvocation="75" maxMicrosecondsPerInvocation="20754" standardDeviationMircosecondsPerInvocation="861"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="130" invocations="78" avgMicrosecondsPerInvocation="1677" maxMicrosecondsPerInvocation="30506" standardDeviationMircosecondsPerInvocation="5162"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" totalMilliseconds="137" invocations="77" avgMicrosecondsPerInvocation="1781" maxMicrosecondsPerInvocation="30540" standardDeviationMircosecondsPerInvocation="5746"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ObligationDataflowFactory" totalMilliseconds="140" invocations="113" avgMicrosecondsPerInvocation="1247" maxMicrosecondsPerInvocation="32523" standardDeviationMircosecondsPerInvocation="4770"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" totalMilliseconds="146" invocations="77" avgMicrosecondsPerInvocation="1898" maxMicrosecondsPerInvocation="25421" standardDeviationMircosecondsPerInvocation="5002"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Naming" totalMilliseconds="146" invocations="77" avgMicrosecondsPerInvocation="1907" maxMicrosecondsPerInvocation="23199" standardDeviationMircosecondsPerInvocation="4516"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" totalMilliseconds="147" invocations="77" avgMicrosecondsPerInvocation="1914" maxMicrosecondsPerInvocation="37022" standardDeviationMircosecondsPerInvocation="5669"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethodInvocations" totalMilliseconds="149" invocations="77" avgMicrosecondsPerInvocation="1940" maxMicrosecondsPerInvocation="22307" standardDeviationMircosecondsPerInvocation="4390"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" totalMilliseconds="150" invocations="77" avgMicrosecondsPerInvocation="1951" maxMicrosecondsPerInvocation="59433" standardDeviationMircosecondsPerInvocation="7252"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" totalMilliseconds="167" invocations="77" avgMicrosecondsPerInvocation="2168" maxMicrosecondsPerInvocation="45325" standardDeviationMircosecondsPerInvocation="6369"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadResultSetAccess" totalMilliseconds="167" invocations="77" avgMicrosecondsPerInvocation="2169" maxMicrosecondsPerInvocation="24616" standardDeviationMircosecondsPerInvocation="4671"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="167" invocations="77" avgMicrosecondsPerInvocation="2173" maxMicrosecondsPerInvocation="51716" standardDeviationMircosecondsPerInvocation="6702"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant" totalMilliseconds="175" invocations="77" avgMicrosecondsPerInvocation="2280" maxMicrosecondsPerInvocation="30508" standardDeviationMircosecondsPerInvocation="5911"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" totalMilliseconds="176" invocations="77" avgMicrosecondsPerInvocation="2288" maxMicrosecondsPerInvocation="25121" standardDeviationMircosecondsPerInvocation="5219"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindReturnRef" totalMilliseconds="180" invocations="77" avgMicrosecondsPerInvocation="2341" maxMicrosecondsPerInvocation="28386" standardDeviationMircosecondsPerInvocation="5974"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="184" invocations="77" avgMicrosecondsPerInvocation="2389" maxMicrosecondsPerInvocation="27404" standardDeviationMircosecondsPerInvocation="5672"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation" totalMilliseconds="188" invocations="77" avgMicrosecondsPerInvocation="2453" maxMicrosecondsPerInvocation="61252" standardDeviationMircosecondsPerInvocation="8051"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.DepthFirstSearchFactory" totalMilliseconds="203" invocations="770" avgMicrosecondsPerInvocation="264" maxMicrosecondsPerInvocation="54169" standardDeviationMircosecondsPerInvocation="2546"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ReverseDepthFirstSearchFactory" totalMilliseconds="206" invocations="685" avgMicrosecondsPerInvocation="302" maxMicrosecondsPerInvocation="30161" standardDeviationMircosecondsPerInvocation="2131"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="208" invocations="77" avgMicrosecondsPerInvocation="2702" maxMicrosecondsPerInvocation="39238" standardDeviationMircosecondsPerInvocation="5972"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="213" invocations="77" avgMicrosecondsPerInvocation="2776" maxMicrosecondsPerInvocation="28510" standardDeviationMircosecondsPerInvocation="5566"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="223" invocations="77" avgMicrosecondsPerInvocation="2896" maxMicrosecondsPerInvocation="24809" standardDeviationMircosecondsPerInvocation="5982"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NumberConstructor" totalMilliseconds="226" invocations="77" avgMicrosecondsPerInvocation="2938" maxMicrosecondsPerInvocation="39703" standardDeviationMircosecondsPerInvocation="7446"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonShortCircuit" totalMilliseconds="229" invocations="77" avgMicrosecondsPerInvocation="2986" maxMicrosecondsPerInvocation="59859" standardDeviationMircosecondsPerInvocation="8282"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="231" invocations="77" avgMicrosecondsPerInvocation="3003" maxMicrosecondsPerInvocation="41468" standardDeviationMircosecondsPerInvocation="7386"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="231" invocations="77" avgMicrosecondsPerInvocation="3004" maxMicrosecondsPerInvocation="56291" standardDeviationMircosecondsPerInvocation="7953"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" totalMilliseconds="240" invocations="77" avgMicrosecondsPerInvocation="3122" maxMicrosecondsPerInvocation="30423" standardDeviationMircosecondsPerInvocation="7001"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadForLoop" totalMilliseconds="247" invocations="77" avgMicrosecondsPerInvocation="3211" maxMicrosecondsPerInvocation="37097" standardDeviationMircosecondsPerInvocation="7267"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="257" invocations="77" avgMicrosecondsPerInvocation="3340" maxMicrosecondsPerInvocation="76980" standardDeviationMircosecondsPerInvocation="10820"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="257" invocations="77" avgMicrosecondsPerInvocation="3342" maxMicrosecondsPerInvocation="48928" standardDeviationMircosecondsPerInvocation="7114"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" totalMilliseconds="261" invocations="77" avgMicrosecondsPerInvocation="3391" maxMicrosecondsPerInvocation="31094" standardDeviationMircosecondsPerInvocation="6819"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="263" invocations="77" avgMicrosecondsPerInvocation="3420" maxMicrosecondsPerInvocation="32541" standardDeviationMircosecondsPerInvocation="7010"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFloatEquality" totalMilliseconds="263" invocations="77" avgMicrosecondsPerInvocation="3423" maxMicrosecondsPerInvocation="29746" standardDeviationMircosecondsPerInvocation="6898"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" totalMilliseconds="264" invocations="77" avgMicrosecondsPerInvocation="3429" maxMicrosecondsPerInvocation="30805" standardDeviationMircosecondsPerInvocation="6968"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="264" invocations="77" avgMicrosecondsPerInvocation="3430" maxMicrosecondsPerInvocation="54151" standardDeviationMircosecondsPerInvocation="9781"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="275" invocations="77" avgMicrosecondsPerInvocation="3583" maxMicrosecondsPerInvocation="64285" standardDeviationMircosecondsPerInvocation="9420"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadCast2" totalMilliseconds="287" invocations="77" avgMicrosecondsPerInvocation="3731" maxMicrosecondsPerInvocation="57162" standardDeviationMircosecondsPerInvocation="9097"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="320" invocations="77" avgMicrosecondsPerInvocation="4167" maxMicrosecondsPerInvocation="63877" standardDeviationMircosecondsPerInvocation="10671"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="329" invocations="77" avgMicrosecondsPerInvocation="4281" maxMicrosecondsPerInvocation="146360" standardDeviationMircosecondsPerInvocation="17388"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="354" invocations="468" avgMicrosecondsPerInvocation="756" maxMicrosecondsPerInvocation="30397" standardDeviationMircosecondsPerInvocation="3000"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.URLProblems" totalMilliseconds="361" invocations="77" avgMicrosecondsPerInvocation="4688" maxMicrosecondsPerInvocation="56410" standardDeviationMircosecondsPerInvocation="9412"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="362" invocations="8510" avgMicrosecondsPerInvocation="42" maxMicrosecondsPerInvocation="31632" standardDeviationMircosecondsPerInvocation="644"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="380" invocations="117" avgMicrosecondsPerInvocation="3256" maxMicrosecondsPerInvocation="76446" standardDeviationMircosecondsPerInvocation="9948"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="430" invocations="77" avgMicrosecondsPerInvocation="5597" maxMicrosecondsPerInvocation="51985" standardDeviationMircosecondsPerInvocation="9515"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="453" invocations="77" avgMicrosecondsPerInvocation="5894" maxMicrosecondsPerInvocation="69598" standardDeviationMircosecondsPerInvocation="11446"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="512" invocations="130" avgMicrosecondsPerInvocation="3944" maxMicrosecondsPerInvocation="123061" standardDeviationMircosecondsPerInvocation="12396"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="513" invocations="117" avgMicrosecondsPerInvocation="4387" maxMicrosecondsPerInvocation="43715" standardDeviationMircosecondsPerInvocation="8096"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="521" invocations="117" avgMicrosecondsPerInvocation="4461" maxMicrosecondsPerInvocation="45294" standardDeviationMircosecondsPerInvocation="8481"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="524" invocations="5855" avgMicrosecondsPerInvocation="89" maxMicrosecondsPerInvocation="28767" standardDeviationMircosecondsPerInvocation="1045"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="562" invocations="117" avgMicrosecondsPerInvocation="4811" maxMicrosecondsPerInvocation="92620" standardDeviationMircosecondsPerInvocation="11893"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="567" invocations="77" avgMicrosecondsPerInvocation="7370" maxMicrosecondsPerInvocation="110038" standardDeviationMircosecondsPerInvocation="14352"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="596" invocations="685" avgMicrosecondsPerInvocation="870" maxMicrosecondsPerInvocation="38067" standardDeviationMircosecondsPerInvocation="3780"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="865" invocations="685" avgMicrosecondsPerInvocation="1264" maxMicrosecondsPerInvocation="38924" standardDeviationMircosecondsPerInvocation="3982"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="888" invocations="117" avgMicrosecondsPerInvocation="7596" maxMicrosecondsPerInvocation="86466" standardDeviationMircosecondsPerInvocation="16751"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.obl.ObligationAnalysis" totalMilliseconds="1082" invocations="113" avgMicrosecondsPerInvocation="9578" maxMicrosecondsPerInvocation="48069" standardDeviationMircosecondsPerInvocation="10445"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="1173" invocations="752" avgMicrosecondsPerInvocation="1559" maxMicrosecondsPerInvocation="321956" standardDeviationMircosecondsPerInvocation="12213"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="1245" invocations="685" avgMicrosecondsPerInvocation="1818" maxMicrosecondsPerInvocation="41807" standardDeviationMircosecondsPerInvocation="4809"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="1381" invocations="117" avgMicrosecondsPerInvocation="11804" maxMicrosecondsPerInvocation="195343" standardDeviationMircosecondsPerInvocation="24858"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="1658" invocations="464" avgMicrosecondsPerInvocation="3575" maxMicrosecondsPerInvocation="62344" standardDeviationMircosecondsPerInvocation="8592"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="2163" invocations="596" avgMicrosecondsPerInvocation="3630" maxMicrosecondsPerInvocation="55360" standardDeviationMircosecondsPerInvocation="7124"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="2519" invocations="2371" avgMicrosecondsPerInvocation="1062" maxMicrosecondsPerInvocation="174417" standardDeviationMircosecondsPerInvocation="5271"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="2681" invocations="117" avgMicrosecondsPerInvocation="22922" maxMicrosecondsPerInvocation="382958" standardDeviationMircosecondsPerInvocation="48300"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="2704" invocations="687" avgMicrosecondsPerInvocation="3936" maxMicrosecondsPerInvocation="407414" standardDeviationMircosecondsPerInvocation="16945"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="3251" invocations="687" avgMicrosecondsPerInvocation="4732" maxMicrosecondsPerInvocation="195636" standardDeviationMircosecondsPerInvocation="11279"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="4115" invocations="770" avgMicrosecondsPerInvocation="5344" maxMicrosecondsPerInvocation="135511" standardDeviationMircosecondsPerInvocation="11939"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="4266" invocations="685" avgMicrosecondsPerInvocation="6229" maxMicrosecondsPerInvocation="417508" standardDeviationMircosecondsPerInvocation="18312"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="4576" invocations="685" avgMicrosecondsPerInvocation="6681" maxMicrosecondsPerInvocation="97994" standardDeviationMircosecondsPerInvocation="10360"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="4785" invocations="685" avgMicrosecondsPerInvocation="6986" maxMicrosecondsPerInvocation="180744" standardDeviationMircosecondsPerInvocation="12762"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

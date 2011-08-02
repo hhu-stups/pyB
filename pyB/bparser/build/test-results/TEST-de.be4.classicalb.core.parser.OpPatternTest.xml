@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.OpPatternTest" tests="4" time="0.063" timestamp="2011-07-18T09:44:31">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.OpPatternTest" name="testNoArgs" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.OpPatternTest" name="testSimpleArgument" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.OpPatternTest" name="testSimpleArguments" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.OpPatternTest" name="testEmptyArguments" time="0.022" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

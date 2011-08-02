@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.EnglishVsFrenshManual" tests="3" time="2.279" timestamp="2011-07-18T09:44:24">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.EnglishVsFrenshManual" name="testImplicationVsEquivalence" time="1.757" />
+  <testcase classname="de.be4.classicalb.core.parser.EnglishVsFrenshManual" name="testEquivalenceVsAnd" time="0.067" />
+  <testcase classname="de.be4.classicalb.core.parser.EnglishVsFrenshManual" name="testOverrideExpression" time="0.046" />
+  <system-out><![CDATA[EMMA: collecting runtime coverage data ...
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

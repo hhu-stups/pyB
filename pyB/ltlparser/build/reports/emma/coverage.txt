@@ -1,0 +1,26 @@
+[EMMA v2.0.5312 report, generated Mon Jul 18 11:49:32 CEST 2011]
+-------------------------------------------------------------------------------
+OVERALL COVERAGE SUMMARY:
+
+[class, %]	[method, %]	[block, %]	[line, %]	[name]
+91%  (71/78)!	48%  (372/780)!	59%  (5872/10011)!	61%  (1798/2967)!	all classes
+
+OVERALL STATS SUMMARY:
+
+total packages:	7
+total classes:	78
+total methods:	780
+total executable files:	76
+total executable lines:	2967
+
+COVERAGE BREAKDOWN BY PACKAGE:
+
+[class, %]	[method, %]	[block, %]	[line, %]	[name]
+75%  (3/4)!	23%  (7/30)!	6%   (35/595)!	10%  (15/147)!	de.hhu.stups.sablecc.patch
+67%  (2/3)!	27%  (58/212)!	33%  (465/1406)!	31%  (182/582)!	de.be4.ltl.core.parser.analysis
+98%  (58/59)!	45%  (173/386)!	38%  (1324/3527)!	50%  (544/1084)!	de.be4.ltl.core.parser.node
+50%  (1/2)!	43%  (3/7)!	50%  (62/125)!	55%  (18/33)!	de.be4.ltl.core.parser
+67%  (2/3)!	84%  (16/19)	82%  (291/354)	82%  (72,8/89)	de.be4.ltl.core.parser.internal
+67%  (2/3)!	92%  (45/49)	90%  (1472/1629)	91%  (352,8/387)	de.be4.ltl.core.parser.lexer
+75%  (3/4)!	91%  (70/77)	94%  (2223/2375)	95%  (613,5/645)	de.be4.ltl.core.parser.parser
+-------------------------------------------------------------------------------

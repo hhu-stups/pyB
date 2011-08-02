@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.SubstitutionTest" tests="10" time="0.122" timestamp="2011-07-18T09:44:58">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testParallelAssignWithComposedId" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testParallelAssignWithNonIdentifier" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testPreconditionBool" time="0.001" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testParallelList" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testSequenceList" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testParallelAndSequence" time="0.001" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testOperation1" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testOperation2" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testFunctionSubstitution" time="0.001" />
+  <testcase classname="de.be4.classicalb.core.parser.SubstitutionTest" name="testMultiFunctionSubstitution" time="0.007" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

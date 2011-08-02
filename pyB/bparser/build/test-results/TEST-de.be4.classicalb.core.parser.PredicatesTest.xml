@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.PredicatesTest" tests="15" time="0.201" timestamp="2011-07-18T09:44:59">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testBFalse" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testAndOrPrio" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testParallelBelongs" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testParallelBelongs2" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testInvariant1" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testUniversalQuantification" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testUniversalQuantificationCouple1" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testUniversalQuantificationCouple2" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testCoupleInExistentialQuantification1" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testCoupleInUniversalQuantification1" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testExampleThesis1" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testMultiCompositions" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testWithComposition" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testEqualVsImplication" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.PredicatesTest" name="testNonIdentifiersInQuantification" time="0.01" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

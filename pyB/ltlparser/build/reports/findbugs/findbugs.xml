@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="1.3.9" sequence="0" timestamp="1310982564000" analysisTimestamp="1310982582452" release="-textui">
+  <Project projectName="">
+    <Jar>/home/stupsi/pypy_kram/jvm/javavm/probparsers/ltlparser/build/classes</Jar>
+    <AuxClasspathEntry>/home/stupsi/.gradle/cache/junit/junit/jars/junit-4.8.2.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/stupsi/.gradle/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/stupsi/pypy_kram/jvm/javavm/probparsers/prologlib/build/libs/prologlib-2.0.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/stupsi/pypy_kram/jvm/javavm/probparsers/parserbase/build/libs/parserbase-2.0.1.jar</AuxClasspathEntry>
+    <SrcDir>/home/stupsi/pypy_kram/jvm/javavm/probparsers/ltlparser/build/temp</SrcDir>
+  </Project>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.lexer.Lexer">
+      <SourceLine classname="de.be4.ltl.core.parser.lexer.Lexer" start="15" end="896" sourcefile="Lexer.java" sourcepath="de/be4/ltl/core/parser/lexer/Lexer.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.lexer.Lexer" name="getToken" signature="()Lde/be4/ltl/core/parser/node/Token;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.lexer.Lexer" start="89" end="648" startBytecode="0" endBytecode="4255" sourcefile="Lexer.java" sourcepath="de/be4/ltl/core/parser/lexer/Lexer.java"/>
+    </Method>
+    <SourceLine classname="de.be4.ltl.core.parser.lexer.Lexer" start="148" end="148" startBytecode="229" endBytecode="229" sourcefile="Lexer.java" sourcepath="de/be4/ltl/core/parser/lexer/Lexer.java"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new0" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="493" end="516" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="498" end="498" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new11" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="793" end="813" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="798" end="798" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new12" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="820" end="835" startBytecode="0" endBytecode="38" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="4" pc="34" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="826" end="826" startBytecode="32" endBytecode="32" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new12" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="820" end="835" startBytecode="0" endBytecode="38" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList3" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="824" end="824" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList3"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new13" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="842" end="859" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="846" end="846" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new14" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="866" end="883" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="870" end="870" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new15" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="890" end="910" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="895" end="895" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new16" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="917" end="937" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="922" end="922" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new17" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="944" end="964" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="949" end="949" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new18" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="971" end="991" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="976" end="976" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new19" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="998" end="1018" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1003" end="1003" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new2" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="543" end="566" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="548" end="548" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new20" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1025" end="1045" startBytecode="0" endBytecode="40" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1030" end="1030" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new23" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1104" end="1121" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1108" end="1108" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new24" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1128" end="1145" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1132" end="1132" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new25" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1152" end="1169" startBytecode="0" endBytecode="31" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList1" register="2" pc="23" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1156" end="1156" startBytecode="22" endBytecode="22" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList1"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new3" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="573" end="596" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="578" end="578" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new5" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="623" end="646" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="628" end="628" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new6" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="653" end="676" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="658" end="658" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new7" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="683" end="706" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="688" end="688" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new8" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="713" end="736" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="718" end="718" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" abbrev="DLS" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="new9" signature="()Ljava/util/ArrayList;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="743" end="766" startBytecode="0" endBytecode="49" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <LocalVariable name="nodeArrayList2" register="3" pc="28" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="748" end="748" startBytecode="27" endBytecode="27" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="nodeArrayList2"/>
+  </BugInstance>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="goTo" signature="(I)I" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="189" end="213" startBytecode="0" endBytecode="261" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="196" end="196" startBytecode="39" endBytecode="39" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+  </BugInstance>
+  <BugInstance type="IM_AVERAGE_COMPUTATION_COULD_OVERFLOW" priority="2" abbrev="IM" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="parse" signature="()Lde/be4/ltl/core/parser/node/Start;" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="244" end="485" startBytecode="0" endBytecode="2047" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="279" end="279" startBytecode="197" endBytecode="197" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+  </BugInstance>
+  <BugInstance type="NP_ALWAYS_NULL" priority="1" abbrev="NP" category="CORRECTNESS">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="findBeginPos" signature="(Ljava/util/ArrayList;Lde/hhu/stups/sablecc/patch/PositionedNode;)I" isStatic="false">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="102" end="127" startBytecode="0" endBytecode="300" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <Field classname="java.lang.System" name="err" signature="Ljava/io/PrintStream;" isStatic="true" role="FIELD_VALUE_OF">
+      <SourceLine classname="java.lang.System" sourcefile="System.java" sourcepath="java/lang/System.java"/>
+    </Field>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="125" end="125" startBytecode="142" endBytecode="142" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java" role="SOURCE_LINE_DEREF"/>
+  </BugInstance>
+  <BugInstance type="REC_CATCH_EXCEPTION" priority="2" abbrev="REC" category="STYLE">
+    <Class classname="de.be4.ltl.core.parser.parser.Parser">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="19" end="1337" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Class>
+    <Method classname="de.be4.ltl.core.parser.parser.Parser" name="&lt;clinit&gt;" signature="()V" isStatic="true">
+      <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1272" end="1337" startBytecode="0" endBytecode="671" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+    </Method>
+    <SourceLine classname="de.be4.ltl.core.parser.parser.Parser" start="1333" end="1333" startBytecode="322" endBytecode="322" sourcefile="Parser.java" sourcepath="de/be4/ltl/core/parser/parser/Parser.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 18 Jul 2011 11:49:24 +0200" total_classes="87" referenced_classes="138" total_bugs="27" total_size="4176" num_packages="8" vm_version="19.0-b09" cpu_seconds="41.54" clock_seconds="59.21" peak_mbytes="85.51" alloc_mbytes="989.88" gc_seconds="2.66" priority_2="26" priority_1="1">
+    <PackageStats package="" total_bugs="0" total_types="1" total_size="5">
+      <ClassStats class="DummyTest" sourceFile="DummyTest.java" interface="false" size="5" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser" total_bugs="0" total_types="4" total_size="218">
+      <ClassStats class="de.be4.ltl.core.parser.LtlParseException" sourceFile="LtlParseException.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.LtlParser" sourceFile="LtlParser.java" interface="false" size="32" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.PrologGeneratorTest" sourceFile="PrologGeneratorTest.java" interface="false" size="143" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.PrologGeneratorTest$DummyParser" sourceFile="PrologGeneratorTest.java" interface="false" size="31" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser.analysis" total_bugs="0" total_types="4" total_size="860">
+      <ClassStats class="de.be4.ltl.core.parser.analysis.Analysis" sourceFile="Analysis.java" interface="true" size="61" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.analysis.AnalysisAdapter" sourceFile="AnalysisAdapter.java" interface="false" size="197" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.analysis.DepthFirstAdapter" sourceFile="DepthFirstAdapter.java" interface="false" size="301" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.analysis.ReversedDepthFirstAdapter" sourceFile="ReversedDepthFirstAdapter.java" interface="false" size="301" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser.internal" total_bugs="0" total_types="3" total_size="120">
+      <ClassStats class="de.be4.ltl.core.parser.internal.LtlLexer" sourceFile="LtlLexer.java" interface="false" size="34" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.internal.PrologGenerator" sourceFile="PrologGenerator.java" interface="false" size="74" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.internal.PrologGenerator$LtlAdapterException" sourceFile="PrologGenerator.java" interface="false" size="12" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser.lexer" total_bugs="1" total_types="3" total_size="455" priority_2="1">
+      <ClassStats class="de.be4.ltl.core.parser.lexer.Lexer" sourceFile="Lexer.java" interface="false" size="436" bugs="1" priority_2="1"/>
+      <ClassStats class="de.be4.ltl.core.parser.lexer.Lexer$State" sourceFile="Lexer.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.lexer.LexerException" sourceFile="LexerException.java" interface="false" size="4" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser.node" total_bugs="0" total_types="61" total_size="1567">
+      <ClassStats class="de.be4.ltl.core.parser.node.AActionLtl" sourceFile="AActionLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AAndLtl" sourceFile="AAndLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ACurrentLtl" sourceFile="ACurrentLtl.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ADeadlockLtl" sourceFile="ADeadlockLtl.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AEnabledLtl" sourceFile="AEnabledLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AFalseLtl" sourceFile="AFalseLtl.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AFinallyLtl" sourceFile="AFinallyLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AGloballyLtl" sourceFile="AGloballyLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AHistoricallyLtl" sourceFile="AHistoricallyLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AImpliesLtl" sourceFile="AImpliesLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ANextLtl" sourceFile="ANextLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ANotLtl" sourceFile="ANotLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AOnceLtl" sourceFile="AOnceLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AOrLtl" sourceFile="AOrLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AReleaseLtl" sourceFile="AReleaseLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ASinceLtl" sourceFile="ASinceLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ASinkLtl" sourceFile="ASinkLtl.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ATriggerLtl" sourceFile="ATriggerLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.ATrueLtl" sourceFile="ATrueLtl.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AUnparsedLtl" sourceFile="AUnparsedLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AUntilLtl" sourceFile="AUntilLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AWeakuntilLtl" sourceFile="AWeakuntilLtl.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.AYesterdayLtl" sourceFile="AYesterdayLtl.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.EOF" sourceFile="EOF.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.Node" sourceFile="Node.java" interface="false" size="33" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.PLtl" sourceFile="PLtl.java" interface="false" size="3" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.Start" sourceFile="Start.java" interface="false" size="56" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.Switch" sourceFile="Switch.java" interface="true" size="1" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.Switchable" sourceFile="Switchable.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TActionBegin" sourceFile="TActionBegin.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TActionEnd" sourceFile="TActionEnd.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TAnd" sourceFile="TAnd.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TApChar" sourceFile="TApChar.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TAtomicPropositionBegin" sourceFile="TAtomicPropositionBegin.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TAtomicPropositionEnd" sourceFile="TAtomicPropositionEnd.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TCurrent" sourceFile="TCurrent.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TDeadlock" sourceFile="TDeadlock.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TEnabled" sourceFile="TEnabled.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TFalse" sourceFile="TFalse.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TFinally" sourceFile="TFinally.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TGlobally" sourceFile="TGlobally.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.THistorically" sourceFile="THistorically.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TImplies" sourceFile="TImplies.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TLPar" sourceFile="TLPar.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TLSq" sourceFile="TLSq.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TNext" sourceFile="TNext.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TNot" sourceFile="TNot.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TOnce" sourceFile="TOnce.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TOr" sourceFile="TOr.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TRPar" sourceFile="TRPar.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TRelease" sourceFile="TRelease.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TSince" sourceFile="TSince.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TSink" sourceFile="TSink.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TTpChar" sourceFile="TTpChar.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TTrigger" sourceFile="TTrigger.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TTrue" sourceFile="TTrue.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TUntil" sourceFile="TUntil.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TWeakuntil" sourceFile="TWeakuntil.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TWhiteSpace" sourceFile="TWhiteSpace.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.TYesterday" sourceFile="TYesterday.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.node.Token" sourceFile="Token.java" interface="false" size="27" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.be4.ltl.core.parser.parser" total_bugs="26" total_types="4" total_size="751" priority_2="25" priority_1="1">
+      <ClassStats class="de.be4.ltl.core.parser.parser.Parser" sourceFile="Parser.java" interface="false" size="638" bugs="26" priority_2="25" priority_1="1"/>
+      <ClassStats class="de.be4.ltl.core.parser.parser.ParserException" sourceFile="ParserException.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.parser.State" sourceFile="State.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="de.be4.ltl.core.parser.parser.TokenIndex" sourceFile="TokenIndex.java" interface="false" size="97" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="de.hhu.stups.sablecc.patch" total_bugs="0" total_types="7" total_size="200">
+      <ClassStats class="de.hhu.stups.sablecc.patch.IParser" sourceFile="IParser.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.IToken" sourceFile="IToken.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.ITokenListContainer" sourceFile="ITokenListContainer.java" interface="true" size="2" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.PositionedNode" sourceFile="PositionedNode.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcePosition" sourceFile="SourcePosition.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcePositions" sourceFile="SourcePositions.java" interface="false" size="142" bugs="0"/>
+      <ClassStats class="de.hhu.stups.sablecc.patch.SourcecodeRange" sourceFile="SourcecodeRange.java" interface="false" size="14" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InconsistentAnnotations" totalMilliseconds="12" invocations="87" avgMicrosecondsPerInvocation="138" maxMicrosecondsPerInvocation="6827" standardDeviationMircosecondsPerInvocation="723"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.QuestionableBooleanAssignment" totalMilliseconds="13" invocations="87" avgMicrosecondsPerInvocation="155" maxMicrosecondsPerInvocation="7843" standardDeviationMircosecondsPerInvocation="838"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.PreferZeroLengthArrays" totalMilliseconds="13" invocations="87" avgMicrosecondsPerInvocation="155" maxMicrosecondsPerInvocation="11109" standardDeviationMircosecondsPerInvocation="1181"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Methods" totalMilliseconds="13" invocations="138" avgMicrosecondsPerInvocation="98" maxMicrosecondsPerInvocation="6415" standardDeviationMircosecondsPerInvocation="547"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ConfusionBetweenInheritedAndOuterMethod" totalMilliseconds="13" invocations="87" avgMicrosecondsPerInvocation="159" maxMicrosecondsPerInvocation="13474" standardDeviationMircosecondsPerInvocation="1435"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RedundantInterfaces" totalMilliseconds="14" invocations="87" avgMicrosecondsPerInvocation="168" maxMicrosecondsPerInvocation="14265" standardDeviationMircosecondsPerInvocation="1520"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.HugeSharedStringConstants" totalMilliseconds="15" invocations="87" avgMicrosecondsPerInvocation="172" maxMicrosecondsPerInvocation="6898" standardDeviationMircosecondsPerInvocation="835"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindEmptySynchronizedBlock" totalMilliseconds="16" invocations="87" avgMicrosecondsPerInvocation="187" maxMicrosecondsPerInvocation="7828" standardDeviationMircosecondsPerInvocation="848"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessControlFlow" totalMilliseconds="18" invocations="87" avgMicrosecondsPerInvocation="215" maxMicrosecondsPerInvocation="10889" standardDeviationMircosecondsPerInvocation="1167"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindJSR166LockMonitorenter" totalMilliseconds="19" invocations="87" avgMicrosecondsPerInvocation="223" maxMicrosecondsPerInvocation="17000" standardDeviationMircosecondsPerInvocation="1811"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindTwoLockWait" totalMilliseconds="19" invocations="87" avgMicrosecondsPerInvocation="225" maxMicrosecondsPerInvocation="9496" standardDeviationMircosecondsPerInvocation="1082"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindMaskedFields" totalMilliseconds="19" invocations="87" avgMicrosecondsPerInvocation="226" maxMicrosecondsPerInvocation="8219" standardDeviationMircosecondsPerInvocation="920"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnreleasedLock" totalMilliseconds="20" invocations="87" avgMicrosecondsPerInvocation="230" maxMicrosecondsPerInvocation="18659" standardDeviationMircosecondsPerInvocation="1987"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IDivResultCastToDouble" totalMilliseconds="20" invocations="87" avgMicrosecondsPerInvocation="235" maxMicrosecondsPerInvocation="11954" standardDeviationMircosecondsPerInvocation="1279"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.VarArgsProblems" totalMilliseconds="20" invocations="87" avgMicrosecondsPerInvocation="236" maxMicrosecondsPerInvocation="14375" standardDeviationMircosecondsPerInvocation="1529"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InefficientToArray" totalMilliseconds="20" invocations="87" avgMicrosecondsPerInvocation="237" maxMicrosecondsPerInvocation="15207" standardDeviationMircosecondsPerInvocation="1617"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IteratorIdioms" totalMilliseconds="21" invocations="87" avgMicrosecondsPerInvocation="242" maxMicrosecondsPerInvocation="20058" standardDeviationMircosecondsPerInvocation="2136"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FinalizerNullsFields" totalMilliseconds="22" invocations="87" avgMicrosecondsPerInvocation="258" maxMicrosecondsPerInvocation="20848" standardDeviationMircosecondsPerInvocation="2220"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnnecessaryMath" totalMilliseconds="22" invocations="87" avgMicrosecondsPerInvocation="259" maxMicrosecondsPerInvocation="8230" standardDeviationMircosecondsPerInvocation="1223"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InstantiateStaticClass" totalMilliseconds="22" invocations="87" avgMicrosecondsPerInvocation="260" maxMicrosecondsPerInvocation="16924" standardDeviationMircosecondsPerInvocation="1800"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteJCIPAnnotation" totalMilliseconds="22" invocations="138" avgMicrosecondsPerInvocation="165" maxMicrosecondsPerInvocation="7328" standardDeviationMircosecondsPerInvocation="790"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MutableStaticFields" totalMilliseconds="23" invocations="87" avgMicrosecondsPerInvocation="265" maxMicrosecondsPerInvocation="10280" standardDeviationMircosecondsPerInvocation="1276"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StartInConstructor" totalMilliseconds="23" invocations="87" avgMicrosecondsPerInvocation="267" maxMicrosecondsPerInvocation="20149" standardDeviationMircosecondsPerInvocation="2144"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindMismatchedWaitOrNotify" totalMilliseconds="23" invocations="87" avgMicrosecondsPerInvocation="269" maxMicrosecondsPerInvocation="12009" standardDeviationMircosecondsPerInvocation="1444"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UncallableMethodOfAnonymousClass" totalMilliseconds="24" invocations="87" avgMicrosecondsPerInvocation="280" maxMicrosecondsPerInvocation="23262" standardDeviationMircosecondsPerInvocation="2478"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRunInvocations" totalMilliseconds="26" invocations="87" avgMicrosecondsPerInvocation="298" maxMicrosecondsPerInvocation="11932" standardDeviationMircosecondsPerInvocation="1530"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnconditionalWait" totalMilliseconds="26" invocations="87" avgMicrosecondsPerInvocation="300" maxMicrosecondsPerInvocation="11025" standardDeviationMircosecondsPerInvocation="1370"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StringConcatenation" totalMilliseconds="26" invocations="87" avgMicrosecondsPerInvocation="307" maxMicrosecondsPerInvocation="8708" standardDeviationMircosecondsPerInvocation="1286"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InitializationChain" totalMilliseconds="27" invocations="87" avgMicrosecondsPerInvocation="314" maxMicrosecondsPerInvocation="23889" standardDeviationMircosecondsPerInvocation="2542"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DontUseEnum" totalMilliseconds="30" invocations="87" avgMicrosecondsPerInvocation="347" maxMicrosecondsPerInvocation="17425" standardDeviationMircosecondsPerInvocation="2149"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ExceptionSetFactoryFactory" totalMilliseconds="31" invocations="816" avgMicrosecondsPerInvocation="38" maxMicrosecondsPerInvocation="28700" standardDeviationMircosecondsPerInvocation="1003"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNakedNotify" totalMilliseconds="31" invocations="87" avgMicrosecondsPerInvocation="363" maxMicrosecondsPerInvocation="11111" standardDeviationMircosecondsPerInvocation="1650"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InheritanceUnsafeGetResource" totalMilliseconds="31" invocations="87" avgMicrosecondsPerInvocation="367" maxMicrosecondsPerInvocation="13941" standardDeviationMircosecondsPerInvocation="1843"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadUseOfReturnValue" totalMilliseconds="33" invocations="87" avgMicrosecondsPerInvocation="382" maxMicrosecondsPerInvocation="23958" standardDeviationMircosecondsPerInvocation="2569"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnsyncGet" totalMilliseconds="36" invocations="87" avgMicrosecondsPerInvocation="418" maxMicrosecondsPerInvocation="12528" standardDeviationMircosecondsPerInvocation="1614"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.AssertionMethodsFactory" totalMilliseconds="36" invocations="81" avgMicrosecondsPerInvocation="456" maxMicrosecondsPerInvocation="20490" standardDeviationMircosecondsPerInvocation="2538"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDoubleCheck" totalMilliseconds="36" invocations="87" avgMicrosecondsPerInvocation="425" maxMicrosecondsPerInvocation="16351" standardDeviationMircosecondsPerInvocation="1966"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.IncompatMask" totalMilliseconds="37" invocations="87" avgMicrosecondsPerInvocation="426" maxMicrosecondsPerInvocation="31895" standardDeviationMircosecondsPerInvocation="3394"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFinalizeInvocations" totalMilliseconds="37" invocations="87" avgMicrosecondsPerInvocation="427" maxMicrosecondsPerInvocation="20296" standardDeviationMircosecondsPerInvocation="2406"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LockCheckerFactory" totalMilliseconds="37" invocations="816" avgMicrosecondsPerInvocation="45" maxMicrosecondsPerInvocation="17610" standardDeviationMircosecondsPerInvocation="686"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizeAndNullCheckField" totalMilliseconds="40" invocations="87" avgMicrosecondsPerInvocation="460" maxMicrosecondsPerInvocation="21335" standardDeviationMircosecondsPerInvocation="2357"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StaticCalendarDetector" totalMilliseconds="42" invocations="87" avgMicrosecondsPerInvocation="493" maxMicrosecondsPerInvocation="10540" standardDeviationMircosecondsPerInvocation="1810"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.VolatileUsage" totalMilliseconds="42" invocations="87" avgMicrosecondsPerInvocation="493" maxMicrosecondsPerInvocation="27780" standardDeviationMircosecondsPerInvocation="3056"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonSerializableValuePassedToWriteObject" totalMilliseconds="43" invocations="87" avgMicrosecondsPerInvocation="498" maxMicrosecondsPerInvocation="15724" standardDeviationMircosecondsPerInvocation="2136"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodFactory" totalMilliseconds="45" invocations="207" avgMicrosecondsPerInvocation="222" maxMicrosecondsPerInvocation="10342" standardDeviationMircosecondsPerInvocation="1152"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReadReturnShouldBeChecked" totalMilliseconds="46" invocations="87" avgMicrosecondsPerInvocation="529" maxMicrosecondsPerInvocation="15907" standardDeviationMircosecondsPerInvocation="2115"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EmptyZipFileEntry" totalMilliseconds="47" invocations="87" avgMicrosecondsPerInvocation="551" maxMicrosecondsPerInvocation="17130" standardDeviationMircosecondsPerInvocation="2480"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUninitializedGet" totalMilliseconds="48" invocations="87" avgMicrosecondsPerInvocation="560" maxMicrosecondsPerInvocation="20360" standardDeviationMircosecondsPerInvocation="2725"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ClassContextClassAnalysisEngine" totalMilliseconds="49" invocations="285" avgMicrosecondsPerInvocation="172" maxMicrosecondsPerInvocation="24109" standardDeviationMircosecondsPerInvocation="1657"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LazyInit" totalMilliseconds="49" invocations="87" avgMicrosecondsPerInvocation="565" maxMicrosecondsPerInvocation="37731" standardDeviationMircosecondsPerInvocation="4104"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine" totalMilliseconds="50" invocations="432" avgMicrosecondsPerInvocation="117" maxMicrosecondsPerInvocation="16881" standardDeviationMircosecondsPerInvocation="1119"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ObligationDataflowFactory" totalMilliseconds="53" invocations="89" avgMicrosecondsPerInvocation="602" maxMicrosecondsPerInvocation="30129" standardDeviationMircosecondsPerInvocation="3371"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteCheckReturnValue" totalMilliseconds="53" invocations="138" avgMicrosecondsPerInvocation="389" maxMicrosecondsPerInvocation="14460" standardDeviationMircosecondsPerInvocation="1858"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SuspiciousThreadInterrupted" totalMilliseconds="56" invocations="87" avgMicrosecondsPerInvocation="653" maxMicrosecondsPerInvocation="19573" standardDeviationMircosecondsPerInvocation="2969"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MutableLock" totalMilliseconds="57" invocations="87" avgMicrosecondsPerInvocation="658" maxMicrosecondsPerInvocation="26499" standardDeviationMircosecondsPerInvocation="3301"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SuperfluousInstanceOf" totalMilliseconds="61" invocations="87" avgMicrosecondsPerInvocation="705" maxMicrosecondsPerInvocation="24789" standardDeviationMircosecondsPerInvocation="3525"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSpinLoop" totalMilliseconds="61" invocations="87" avgMicrosecondsPerInvocation="709" maxMicrosecondsPerInvocation="24180" standardDeviationMircosecondsPerInvocation="3056"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.WrongMapIterator" totalMilliseconds="61" invocations="87" avgMicrosecondsPerInvocation="710" maxMicrosecondsPerInvocation="28307" standardDeviationMircosecondsPerInvocation="3897"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindLocalSelfAssignment2" totalMilliseconds="61" invocations="87" avgMicrosecondsPerInvocation="711" maxMicrosecondsPerInvocation="21164" standardDeviationMircosecondsPerInvocation="2933"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" totalMilliseconds="65" invocations="87" avgMicrosecondsPerInvocation="752" maxMicrosecondsPerInvocation="47357" standardDeviationMircosecondsPerInvocation="5074"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CloneIdiom" totalMilliseconds="66" invocations="87" avgMicrosecondsPerInvocation="760" maxMicrosecondsPerInvocation="22420" standardDeviationMircosecondsPerInvocation="3177"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison2" totalMilliseconds="69" invocations="87" avgMicrosecondsPerInvocation="803" maxMicrosecondsPerInvocation="28988" standardDeviationMircosecondsPerInvocation="3417"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BooleanReturnNull" totalMilliseconds="69" invocations="87" avgMicrosecondsPerInvocation="804" maxMicrosecondsPerInvocation="28104" standardDeviationMircosecondsPerInvocation="3793"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantPoolGenFactory" totalMilliseconds="69" invocations="87" avgMicrosecondsPerInvocation="804" maxMicrosecondsPerInvocation="32399" standardDeviationMircosecondsPerInvocation="3870"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBugsSummaryStats" totalMilliseconds="71" invocations="138" avgMicrosecondsPerInvocation="515" maxMicrosecondsPerInvocation="26467" standardDeviationMircosecondsPerInvocation="2868"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.XMLFactoryBypass" totalMilliseconds="75" invocations="87" avgMicrosecondsPerInvocation="865" maxMicrosecondsPerInvocation="22870" standardDeviationMircosecondsPerInvocation="3433"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonNullAnnotations" totalMilliseconds="76" invocations="138" avgMicrosecondsPerInvocation="555" maxMicrosecondsPerInvocation="34260" standardDeviationMircosecondsPerInvocation="3556"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteAnnotationRetention" totalMilliseconds="78" invocations="138" avgMicrosecondsPerInvocation="570" maxMicrosecondsPerInvocation="34210" standardDeviationMircosecondsPerInvocation="3590"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteSuppressedWarnings" totalMilliseconds="86" invocations="138" avgMicrosecondsPerInvocation="627" maxMicrosecondsPerInvocation="18046" standardDeviationMircosecondsPerInvocation="2672"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" totalMilliseconds="86" invocations="87" avgMicrosecondsPerInvocation="996" maxMicrosecondsPerInvocation="36354" standardDeviationMircosecondsPerInvocation="4985"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="88" invocations="87" avgMicrosecondsPerInvocation="1012" maxMicrosecondsPerInvocation="18261" standardDeviationMircosecondsPerInvocation="2628"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="91" invocations="21" avgMicrosecondsPerInvocation="4369" maxMicrosecondsPerInvocation="88090" standardDeviationMircosecondsPerInvocation="18721"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteUnconditionalParamDerefs" totalMilliseconds="91" invocations="87" avgMicrosecondsPerInvocation="1055" maxMicrosecondsPerInvocation="19086" standardDeviationMircosecondsPerInvocation="2827"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ReverseDepthFirstSearchFactory" totalMilliseconds="94" invocations="816" avgMicrosecondsPerInvocation="115" maxMicrosecondsPerInvocation="26424" standardDeviationMircosecondsPerInvocation="1132"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Naming" totalMilliseconds="98" invocations="87" avgMicrosecondsPerInvocation="1132" maxMicrosecondsPerInvocation="21870" standardDeviationMircosecondsPerInvocation="3404"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="98" invocations="12" avgMicrosecondsPerInvocation="8213" maxMicrosecondsPerInvocation="28814" standardDeviationMircosecondsPerInvocation="9657"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteRecursiveLoop" totalMilliseconds="106" invocations="87" avgMicrosecondsPerInvocation="1222" maxMicrosecondsPerInvocation="17605" standardDeviationMircosecondsPerInvocation="3315"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFloatEquality" totalMilliseconds="106" invocations="87" avgMicrosecondsPerInvocation="1223" maxMicrosecondsPerInvocation="32565" standardDeviationMircosecondsPerInvocation="4290"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="112" invocations="87" avgMicrosecondsPerInvocation="1293" maxMicrosecondsPerInvocation="22000" standardDeviationMircosecondsPerInvocation="3700"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FormatStringChecker" totalMilliseconds="114" invocations="87" avgMicrosecondsPerInvocation="1315" maxMicrosecondsPerInvocation="30940" standardDeviationMircosecondsPerInvocation="3932"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="114" invocations="87" avgMicrosecondsPerInvocation="1316" maxMicrosecondsPerInvocation="20969" standardDeviationMircosecondsPerInvocation="3592"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnrelatedTypesInGenericContainer" totalMilliseconds="114" invocations="87" avgMicrosecondsPerInvocation="1321" maxMicrosecondsPerInvocation="19502" standardDeviationMircosecondsPerInvocation="3379"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="115" invocations="88" avgMicrosecondsPerInvocation="1309" maxMicrosecondsPerInvocation="17901" standardDeviationMircosecondsPerInvocation="3555"/>
+      <ClassProfile name="edu.umd.cs.findbugs.NonReportingDetectorToDetector2Adapter" totalMilliseconds="122" invocations="1968" avgMicrosecondsPerInvocation="62" maxMicrosecondsPerInvocation="24106" standardDeviationMircosecondsPerInvocation="811"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LostLoggerDueToWeakReference" totalMilliseconds="124" invocations="87" avgMicrosecondsPerInvocation="1427" maxMicrosecondsPerInvocation="26336" standardDeviationMircosecondsPerInvocation="3820"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizingOnContentsOfFieldToProtectField" totalMilliseconds="129" invocations="87" avgMicrosecondsPerInvocation="1493" maxMicrosecondsPerInvocation="22506" standardDeviationMircosecondsPerInvocation="4301"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.DepthFirstSearchFactory" totalMilliseconds="130" invocations="946" avgMicrosecondsPerInvocation="138" maxMicrosecondsPerInvocation="32103" standardDeviationMircosecondsPerInvocation="1362"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonSerializableStoreIntoSession" totalMilliseconds="132" invocations="87" avgMicrosecondsPerInvocation="1519" maxMicrosecondsPerInvocation="23220" standardDeviationMircosecondsPerInvocation="4337"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="133" invocations="87" avgMicrosecondsPerInvocation="1532" maxMicrosecondsPerInvocation="62350" standardDeviationMircosecondsPerInvocation="6959"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" totalMilliseconds="134" invocations="87" avgMicrosecondsPerInvocation="1549" maxMicrosecondsPerInvocation="26587" standardDeviationMircosecondsPerInvocation="4262"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindReturnRef" totalMilliseconds="143" invocations="87" avgMicrosecondsPerInvocation="1651" maxMicrosecondsPerInvocation="45114" standardDeviationMircosecondsPerInvocation="5844"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadForLoop" totalMilliseconds="145" invocations="87" avgMicrosecondsPerInvocation="1674" maxMicrosecondsPerInvocation="29155" standardDeviationMircosecondsPerInvocation="5100"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="150" invocations="87" avgMicrosecondsPerInvocation="1731" maxMicrosecondsPerInvocation="52925" standardDeviationMircosecondsPerInvocation="7700"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NumberConstructor" totalMilliseconds="151" invocations="87" avgMicrosecondsPerInvocation="1736" maxMicrosecondsPerInvocation="22874" standardDeviationMircosecondsPerInvocation="4846"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizeOnClassLiteralNotGetClass" totalMilliseconds="153" invocations="87" avgMicrosecondsPerInvocation="1760" maxMicrosecondsPerInvocation="33475" standardDeviationMircosecondsPerInvocation="6023"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SynchronizationOnSharedBuiltinConstant" totalMilliseconds="157" invocations="87" avgMicrosecondsPerInvocation="1816" maxMicrosecondsPerInvocation="24534" standardDeviationMircosecondsPerInvocation="4643"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSqlInjection" totalMilliseconds="164" invocations="87" avgMicrosecondsPerInvocation="1885" maxMicrosecondsPerInvocation="27679" standardDeviationMircosecondsPerInvocation="4457"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFieldSelfAssignment" totalMilliseconds="165" invocations="87" avgMicrosecondsPerInvocation="1904" maxMicrosecondsPerInvocation="37665" standardDeviationMircosecondsPerInvocation="6270"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="166" invocations="87" avgMicrosecondsPerInvocation="1912" maxMicrosecondsPerInvocation="30601" standardDeviationMircosecondsPerInvocation="5191"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUncalledPrivateMethods" totalMilliseconds="169" invocations="87" avgMicrosecondsPerInvocation="1953" maxMicrosecondsPerInvocation="55005" standardDeviationMircosecondsPerInvocation="7247"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethodInvocations" totalMilliseconds="170" invocations="87" avgMicrosecondsPerInvocation="1961" maxMicrosecondsPerInvocation="32954" standardDeviationMircosecondsPerInvocation="5308"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="174" invocations="87" avgMicrosecondsPerInvocation="2002" maxMicrosecondsPerInvocation="19849" standardDeviationMircosecondsPerInvocation="4265"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadResultSetAccess" totalMilliseconds="174" invocations="87" avgMicrosecondsPerInvocation="2010" maxMicrosecondsPerInvocation="23737" standardDeviationMircosecondsPerInvocation="5275"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReadOfInstanceFieldInMethodInvokedByConstructorInSuperclass" totalMilliseconds="175" invocations="87" avgMicrosecondsPerInvocation="2016" maxMicrosecondsPerInvocation="26514" standardDeviationMircosecondsPerInvocation="5516"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDerefsInvolvingNonShortCircuitEvaluation" totalMilliseconds="178" invocations="87" avgMicrosecondsPerInvocation="2052" maxMicrosecondsPerInvocation="60481" standardDeviationMircosecondsPerInvocation="7827"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonShortCircuit" totalMilliseconds="182" invocations="87" avgMicrosecondsPerInvocation="2096" maxMicrosecondsPerInvocation="20770" standardDeviationMircosecondsPerInvocation="4900"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LoadedFieldSetFactory" totalMilliseconds="197" invocations="816" avgMicrosecondsPerInvocation="241" maxMicrosecondsPerInvocation="31350" standardDeviationMircosecondsPerInvocation="2079"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="213" invocations="87" avgMicrosecondsPerInvocation="2458" maxMicrosecondsPerInvocation="52173" standardDeviationMircosecondsPerInvocation="6871"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.AppendingToAnObjectOutputStream" totalMilliseconds="218" invocations="87" avgMicrosecondsPerInvocation="2507" maxMicrosecondsPerInvocation="32140" standardDeviationMircosecondsPerInvocation="5933"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="227" invocations="87" avgMicrosecondsPerInvocation="2616" maxMicrosecondsPerInvocation="43043" standardDeviationMircosecondsPerInvocation="7375"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="229" invocations="138" avgMicrosecondsPerInvocation="1663" maxMicrosecondsPerInvocation="36748" standardDeviationMircosecondsPerInvocation="5476"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="244" invocations="87" avgMicrosecondsPerInvocation="2810" maxMicrosecondsPerInvocation="43253" standardDeviationMircosecondsPerInvocation="7633"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="249" invocations="87" avgMicrosecondsPerInvocation="2870" maxMicrosecondsPerInvocation="163969" standardDeviationMircosecondsPerInvocation="18934"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteNonnullReturnValues" totalMilliseconds="293" invocations="87" avgMicrosecondsPerInvocation="3369" maxMicrosecondsPerInvocation="80834" standardDeviationMircosecondsPerInvocation="10257"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.URLProblems" totalMilliseconds="299" invocations="87" avgMicrosecondsPerInvocation="3443" maxMicrosecondsPerInvocation="38979" standardDeviationMircosecondsPerInvocation="7293"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="324" invocations="87" avgMicrosecondsPerInvocation="3729" maxMicrosecondsPerInvocation="56012" standardDeviationMircosecondsPerInvocation="8572"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="344" invocations="87" avgMicrosecondsPerInvocation="3958" maxMicrosecondsPerInvocation="58989" standardDeviationMircosecondsPerInvocation="9603"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="367" invocations="138" avgMicrosecondsPerInvocation="2664" maxMicrosecondsPerInvocation="40272" standardDeviationMircosecondsPerInvocation="6433"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadCast2" totalMilliseconds="371" invocations="87" avgMicrosecondsPerInvocation="4267" maxMicrosecondsPerInvocation="82825" standardDeviationMircosecondsPerInvocation="10648"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="383" invocations="87" avgMicrosecondsPerInvocation="4412" maxMicrosecondsPerInvocation="56862" standardDeviationMircosecondsPerInvocation="9640"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="392" invocations="87" avgMicrosecondsPerInvocation="4510" maxMicrosecondsPerInvocation="34911" standardDeviationMircosecondsPerInvocation="7664"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="394" invocations="816" avgMicrosecondsPerInvocation="483" maxMicrosecondsPerInvocation="39813" standardDeviationMircosecondsPerInvocation="2530"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="398" invocations="87" avgMicrosecondsPerInvocation="4579" maxMicrosecondsPerInvocation="47443" standardDeviationMircosecondsPerInvocation="8436"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="400" invocations="87" avgMicrosecondsPerInvocation="4604" maxMicrosecondsPerInvocation="54949" standardDeviationMircosecondsPerInvocation="9303"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DuplicateBranches" totalMilliseconds="427" invocations="87" avgMicrosecondsPerInvocation="4912" maxMicrosecondsPerInvocation="398130" standardDeviationMircosecondsPerInvocation="42415"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="438" invocations="9621" avgMicrosecondsPerInvocation="45" maxMicrosecondsPerInvocation="35602" standardDeviationMircosecondsPerInvocation="813"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="454" invocations="157" avgMicrosecondsPerInvocation="2892" maxMicrosecondsPerInvocation="111575" standardDeviationMircosecondsPerInvocation="10125"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="475" invocations="138" avgMicrosecondsPerInvocation="3445" maxMicrosecondsPerInvocation="49822" standardDeviationMircosecondsPerInvocation="8187"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="508" invocations="486" avgMicrosecondsPerInvocation="1046" maxMicrosecondsPerInvocation="42802" standardDeviationMircosecondsPerInvocation="3814"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="514" invocations="87" avgMicrosecondsPerInvocation="5916" maxMicrosecondsPerInvocation="48356" standardDeviationMircosecondsPerInvocation="9304"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="557" invocations="5589" avgMicrosecondsPerInvocation="99" maxMicrosecondsPerInvocation="25272" standardDeviationMircosecondsPerInvocation="1021"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="571" invocations="138" avgMicrosecondsPerInvocation="4140" maxMicrosecondsPerInvocation="56430" standardDeviationMircosecondsPerInvocation="9989"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="762" invocations="816" avgMicrosecondsPerInvocation="934" maxMicrosecondsPerInvocation="29550" standardDeviationMircosecondsPerInvocation="3349"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="819" invocations="138" avgMicrosecondsPerInvocation="5937" maxMicrosecondsPerInvocation="82363" standardDeviationMircosecondsPerInvocation="12041"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="1265" invocations="816" avgMicrosecondsPerInvocation="1550" maxMicrosecondsPerInvocation="31890" standardDeviationMircosecondsPerInvocation="4634"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="1389" invocations="482" avgMicrosecondsPerInvocation="2882" maxMicrosecondsPerInvocation="73387" standardDeviationMircosecondsPerInvocation="7552"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="1414" invocations="889" avgMicrosecondsPerInvocation="1590" maxMicrosecondsPerInvocation="277094" standardDeviationMircosecondsPerInvocation="10316"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.obl.ObligationAnalysis" totalMilliseconds="1429" invocations="89" avgMicrosecondsPerInvocation="16060" maxMicrosecondsPerInvocation="486113" standardDeviationMircosecondsPerInvocation="56379"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="1644" invocations="138" avgMicrosecondsPerInvocation="11914" maxMicrosecondsPerInvocation="369222" standardDeviationMircosecondsPerInvocation="35452"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="1982" invocations="817" avgMicrosecondsPerInvocation="2426" maxMicrosecondsPerInvocation="68137" standardDeviationMircosecondsPerInvocation="5945"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="2116" invocations="138" avgMicrosecondsPerInvocation="15338" maxMicrosecondsPerInvocation="182349" standardDeviationMircosecondsPerInvocation="29088"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="2306" invocations="719" avgMicrosecondsPerInvocation="3208" maxMicrosecondsPerInvocation="91690" standardDeviationMircosecondsPerInvocation="8326"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="2351" invocations="2794" avgMicrosecondsPerInvocation="841" maxMicrosecondsPerInvocation="78534" standardDeviationMircosecondsPerInvocation="3700"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="3338" invocations="948" avgMicrosecondsPerInvocation="3521" maxMicrosecondsPerInvocation="152869" standardDeviationMircosecondsPerInvocation="9110"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="3397" invocations="822" avgMicrosecondsPerInvocation="4133" maxMicrosecondsPerInvocation="184437" standardDeviationMircosecondsPerInvocation="10515"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="3617" invocations="816" avgMicrosecondsPerInvocation="4432" maxMicrosecondsPerInvocation="107107" standardDeviationMircosecondsPerInvocation="9211"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="4572" invocations="816" avgMicrosecondsPerInvocation="5603" maxMicrosecondsPerInvocation="219574" standardDeviationMircosecondsPerInvocation="13419"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="5169" invocations="816" avgMicrosecondsPerInvocation="6335" maxMicrosecondsPerInvocation="402566" standardDeviationMircosecondsPerInvocation="18267"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>

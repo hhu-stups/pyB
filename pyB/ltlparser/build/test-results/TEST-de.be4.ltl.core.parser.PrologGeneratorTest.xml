@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.ltl.core.parser.PrologGeneratorTest" tests="25" time="0.586" timestamp="2011-07-18T09:49:31">
+  <properties />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testTrue" time="0.293" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testFalse" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testImplication" time="0.024" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testSink" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testDeadlock" time="0.014" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testCurrent" time="0.002" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testAnd" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testOr" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testNot" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testAction" time="0.005" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testEnabled" time="0.004" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testPredicate" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testUntil" time="0.006" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testWeakUntil" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testRelease" time="0.004" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testSince" time="0.004" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testTrigger" time="0.007" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testGlobally" time="0.005" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testFinally" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testNext" time="0.004" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testHistorically" time="0.006" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testOnce" time="0.003" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testYesterday" time="0.005" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testGloballyFinallyAP" time="0.002" />
+  <testcase classname="de.be4.ltl.core.parser.PrologGeneratorTest" name="testComplex2" time="0.009" />
+  <system-out><![CDATA[EMMA: collecting runtime coverage data ...
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

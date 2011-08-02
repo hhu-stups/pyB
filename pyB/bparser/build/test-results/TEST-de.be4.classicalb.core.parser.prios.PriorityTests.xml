@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.prios.PriorityTests" tests="341" time="5.344" timestamp="2011-07-18T09:45:04">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for multiplication or Cartesian product / power(* **): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for addition / multiplication or Cartesian product(+ *): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for addition / power(+ **): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for addition / division(+ /): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for addition / modulo(+ mod): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / multiplication or Cartesian product(+-&gt; *): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / power(+-&gt; **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / addition(+-&gt; +): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / subtraction(+-&gt; -): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / insertion at front(+-&gt; -&gt;): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / interval(+-&gt; ..): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / division(+-&gt; /): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / intersection(+-&gt; /\): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / restriction at front(+-&gt; /|\): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / function override(+-&gt; &lt;+): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / insertion at end(+-&gt; &lt;-): testPriority" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / domain subtraction(+-&gt; &lt;&lt;|): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / domain restriction(+-&gt; &lt;|): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / direct relational product(+-&gt; &gt;&lt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / union(+-&gt; \/): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / restriction of sequence(+-&gt; \|/): testPriority" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / concatenation(+-&gt; ^): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / modulo(+-&gt; mod): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / maplet(+-&gt; |-&gt;): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / range restriction(+-&gt; |&gt;): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial function / range subtraction(+-&gt; |&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / multiplication or Cartesian product(+-&gt;&gt; *): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / power(+-&gt;&gt; **): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / addition(+-&gt;&gt; +): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / subtraction(+-&gt;&gt; -): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / insertion at front(+-&gt;&gt; -&gt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / interval(+-&gt;&gt; ..): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / division(+-&gt;&gt; /): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / intersection(+-&gt;&gt; /\): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / restriction at front(+-&gt;&gt; /|\): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / function override(+-&gt;&gt; &lt;+): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / insertion at end(+-&gt;&gt; &lt;-): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / domain subtraction(+-&gt;&gt; &lt;&lt;|): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / domain restriction(+-&gt;&gt; &lt;|): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / direct relational product(+-&gt;&gt; &gt;&lt;): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / union(+-&gt;&gt; \/): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / restriction of sequence(+-&gt;&gt; \|/): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / concatenation(+-&gt;&gt; ^): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / modulo(+-&gt;&gt; mod): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / maplet(+-&gt;&gt; |-&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / range restriction(+-&gt;&gt; |&gt;): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial surjection / range subtraction(+-&gt;&gt; |&gt;&gt;): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for subtraction / multiplication or Cartesian product(- *): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for subtraction / power(- **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for subtraction / division(- /): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for subtraction / modulo(- mod): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / multiplication or Cartesian product(--&gt; *): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / power(--&gt; **): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / addition(--&gt; +): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / subtraction(--&gt; -): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / insertion at front(--&gt; -&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / interval(--&gt; ..): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / division(--&gt; /): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / intersection(--&gt; /\): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / restriction at front(--&gt; /|\): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / function override(--&gt; &lt;+): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / insertion at end(--&gt; &lt;-): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / domain subtraction(--&gt; &lt;&lt;|): testPriority" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / domain restriction(--&gt; &lt;|): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / direct relational product(--&gt; &gt;&lt;): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / union(--&gt; \/): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / restriction of sequence(--&gt; \|/): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / concatenation(--&gt; ^): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / modulo(--&gt; mod): testPriority" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / maplet(--&gt; |-&gt;): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / range restriction(--&gt; |&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total function / range subtraction(--&gt; |&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / multiplication or Cartesian product(--&gt;&gt; *): testPriority" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / power(--&gt;&gt; **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / addition(--&gt;&gt; +): testPriority" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / subtraction(--&gt;&gt; -): testPriority" time="0.03" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / insertion at front(--&gt;&gt; -&gt;): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / interval(--&gt;&gt; ..): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / division(--&gt;&gt; /): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / intersection(--&gt;&gt; /\): testPriority" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / restriction at front(--&gt;&gt; /|\): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / function override(--&gt;&gt; &lt;+): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / insertion at end(--&gt;&gt; &lt;-): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / domain subtraction(--&gt;&gt; &lt;&lt;|): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / domain restriction(--&gt;&gt; &lt;|): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / direct relational product(--&gt;&gt; &gt;&lt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / union(--&gt;&gt; \/): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / restriction of sequence(--&gt;&gt; \|/): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / concatenation(--&gt;&gt; ^): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / modulo(--&gt;&gt; mod): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / maplet(--&gt;&gt; |-&gt;): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / range restriction(--&gt;&gt; |&gt;): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total surjection / range subtraction(--&gt;&gt; |&gt;&gt;): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / multiplication or Cartesian product(-&gt; *): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / power(-&gt; **): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / addition(-&gt; +): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / subtraction(-&gt; -): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / interval(-&gt; ..): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / division(-&gt; /): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at front / modulo(-&gt; mod): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / multiplication or Cartesian product(.. *): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / power(.. **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / addition(.. +): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / subtraction(.. -): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / division(.. /): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for interval / modulo(.. mod): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for division / power(/ **): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / multiplication or Cartesian product(/\ *): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / power(/\ **): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / addition(/\ +): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / subtraction(/\ -): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / interval(/\ ..): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / division(/\ /): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for intersection / modulo(/\ mod): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / multiplication or Cartesian product(/|\ *): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / power(/|\ **): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / addition(/|\ +): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / subtraction(/|\ -): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / interval(/|\ ..): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / division(/|\ /): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction at front / modulo(/|\ mod): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / multiplication or Cartesian product(; *): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / power(; **): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / addition(; +): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / partial function(; +-&gt;): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / partial surjection(; +-&gt;&gt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / subtraction(; -): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / total function(; --&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / total surjection(; --&gt;&gt;): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / insertion at front(; -&gt;): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / interval(; ..): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / division(; /): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / intersection(; /\): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / restriction at front(; /|\): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / function override(; &lt;+): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / relations(; &lt;-&gt;): testPriority" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / insertion at end(; &lt;-): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / domain subtraction(; &lt;&lt;|): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / domain restriction(; &lt;|): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / partial injection(; &gt;+&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / total injection(; &gt;-&gt;): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / total bijection(; &gt;-&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / direct relational product(; &gt;&lt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / union(; \/): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / restriction of sequence(; \|/): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / concatenation(; ^): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / modulo(; mod): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / maplet(; |-&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / range restriction(; |&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for composition / range subtraction(; |&gt;&gt;): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / multiplication or Cartesian product(&lt;+ *): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / power(&lt;+ **): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / addition(&lt;+ +): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / subtraction(&lt;+ -): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / interval(&lt;+ ..): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / division(&lt;+ /): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for function override / modulo(&lt;+ mod): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / multiplication or Cartesian product(&lt;-&gt; *): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / power(&lt;-&gt; **): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / addition(&lt;-&gt; +): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / subtraction(&lt;-&gt; -): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / insertion at front(&lt;-&gt; -&gt;): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / interval(&lt;-&gt; ..): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / division(&lt;-&gt; /): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / intersection(&lt;-&gt; /\): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / restriction at front(&lt;-&gt; /|\): testPriority" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / function override(&lt;-&gt; &lt;+): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / insertion at end(&lt;-&gt; &lt;-): testPriority" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / domain subtraction(&lt;-&gt; &lt;&lt;|): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / domain restriction(&lt;-&gt; &lt;|): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / direct relational product(&lt;-&gt; &gt;&lt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / union(&lt;-&gt; \/): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / restriction of sequence(&lt;-&gt; \|/): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / concatenation(&lt;-&gt; ^): testPriority" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / modulo(&lt;-&gt; mod): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / maplet(&lt;-&gt; |-&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / range restriction(&lt;-&gt; |&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relations / range subtraction(&lt;-&gt; |&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / multiplication or Cartesian product(&lt;- *): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / power(&lt;- **): testPriority" time="0.023" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / addition(&lt;- +): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / subtraction(&lt;- -): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / interval(&lt;- ..): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / division(&lt;- /): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for insertion at end / modulo(&lt;- mod): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / multiplication or Cartesian product(&lt;&lt;| *): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / power(&lt;&lt;| **): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / addition(&lt;&lt;| +): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / subtraction(&lt;&lt;| -): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / interval(&lt;&lt;| ..): testPriority" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / division(&lt;&lt;| /): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain subtraction / modulo(&lt;&lt;| mod): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / multiplication or Cartesian product(&lt;| *): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / power(&lt;| **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / addition(&lt;| +): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / subtraction(&lt;| -): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / interval(&lt;| ..): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / division(&lt;| /): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for domain restriction / modulo(&lt;| mod): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / multiplication or Cartesian product(&gt;+&gt; *): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / power(&gt;+&gt; **): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / addition(&gt;+&gt; +): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / subtraction(&gt;+&gt; -): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / insertion at front(&gt;+&gt; -&gt;): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / interval(&gt;+&gt; ..): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / division(&gt;+&gt; /): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / intersection(&gt;+&gt; /\): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / restriction at front(&gt;+&gt; /|\): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / function override(&gt;+&gt; &lt;+): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / insertion at end(&gt;+&gt; &lt;-): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / domain subtraction(&gt;+&gt; &lt;&lt;|): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / domain restriction(&gt;+&gt; &lt;|): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / direct relational product(&gt;+&gt; &gt;&lt;): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / union(&gt;+&gt; \/): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / restriction of sequence(&gt;+&gt; \|/): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / concatenation(&gt;+&gt; ^): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / modulo(&gt;+&gt; mod): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / maplet(&gt;+&gt; |-&gt;): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / range restriction(&gt;+&gt; |&gt;): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for partial injection / range subtraction(&gt;+&gt; |&gt;&gt;): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / multiplication or Cartesian product(&gt;-&gt; *): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / power(&gt;-&gt; **): testPriority" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / addition(&gt;-&gt; +): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / subtraction(&gt;-&gt; -): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / insertion at front(&gt;-&gt; -&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / interval(&gt;-&gt; ..): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / division(&gt;-&gt; /): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / intersection(&gt;-&gt; /\): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / restriction at front(&gt;-&gt; /|\): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / function override(&gt;-&gt; &lt;+): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / insertion at end(&gt;-&gt; &lt;-): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / domain subtraction(&gt;-&gt; &lt;&lt;|): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / domain restriction(&gt;-&gt; &lt;|): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / direct relational product(&gt;-&gt; &gt;&lt;): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / union(&gt;-&gt; \/): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / restriction of sequence(&gt;-&gt; \|/): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / concatenation(&gt;-&gt; ^): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / modulo(&gt;-&gt; mod): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / maplet(&gt;-&gt; |-&gt;): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / range restriction(&gt;-&gt; |&gt;): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total injection / range subtraction(&gt;-&gt; |&gt;&gt;): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / multiplication or Cartesian product(&gt;-&gt;&gt; *): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / power(&gt;-&gt;&gt; **): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / addition(&gt;-&gt;&gt; +): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / subtraction(&gt;-&gt;&gt; -): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / insertion at front(&gt;-&gt;&gt; -&gt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / interval(&gt;-&gt;&gt; ..): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / division(&gt;-&gt;&gt; /): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / intersection(&gt;-&gt;&gt; /\): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / restriction at front(&gt;-&gt;&gt; /|\): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / function override(&gt;-&gt;&gt; &lt;+): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / insertion at end(&gt;-&gt;&gt; &lt;-): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / domain subtraction(&gt;-&gt;&gt; &lt;&lt;|): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / domain restriction(&gt;-&gt;&gt; &lt;|): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / direct relational product(&gt;-&gt;&gt; &gt;&lt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / union(&gt;-&gt;&gt; \/): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / restriction of sequence(&gt;-&gt;&gt; \|/): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / concatenation(&gt;-&gt;&gt; ^): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / modulo(&gt;-&gt;&gt; mod): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / maplet(&gt;-&gt;&gt; |-&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / range restriction(&gt;-&gt;&gt; |&gt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for total bijection / range subtraction(&gt;-&gt;&gt; |&gt;&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / multiplication or Cartesian product(&gt;&lt; *): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / power(&gt;&lt; **): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / addition(&gt;&lt; +): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / subtraction(&gt;&lt; -): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / interval(&gt;&lt; ..): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / division(&gt;&lt; /): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for direct relational product / modulo(&gt;&lt; mod): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / multiplication or Cartesian product(\/ *): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / power(\/ **): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / addition(\/ +): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / subtraction(\/ -): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / interval(\/ ..): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / division(\/ /): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for union / modulo(\/ mod): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / multiplication or Cartesian product(\|/ *): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / power(\|/ **): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / addition(\|/ +): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / subtraction(\|/ -): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / interval(\|/ ..): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / division(\|/ /): testPriority" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for restriction of sequence / modulo(\|/ mod): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / multiplication or Cartesian product(^ *): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / power(^ **): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / addition(^ +): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / subtraction(^ -): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / interval(^ ..): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / division(^ /): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for concatenation / modulo(^ mod): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for modulo / power(mod **): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / multiplication or Cartesian product(|-&gt; *): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / power(|-&gt; **): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / addition(|-&gt; +): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / subtraction(|-&gt; -): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / interval(|-&gt; ..): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / division(|-&gt; /): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for maplet / modulo(|-&gt; mod): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / multiplication or Cartesian product(|&gt; *): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / power(|&gt; **): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / addition(|&gt; +): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / subtraction(|&gt; -): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / interval(|&gt; ..): testPriority" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / division(|&gt; /): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range restriction / modulo(|&gt; mod): testPriority" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / multiplication or Cartesian product(|&gt;&gt; *): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / power(|&gt;&gt; **): testPriority" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / addition(|&gt;&gt; +): testPriority" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / subtraction(|&gt;&gt; -): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / interval(|&gt;&gt; ..): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / division(|&gt;&gt; /): testPriority" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for range subtraction / modulo(|&gt;&gt; mod): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / multiplication or Cartesian product(|| *): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / power(|| **): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / addition(|| +): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / partial function(|| +-&gt;): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / partial surjection(|| +-&gt;&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / subtraction(|| -): testPriority" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / total function(|| --&gt;): testPriority" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / total surjection(|| --&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / insertion at front(|| -&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / interval(|| ..): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / division(|| /): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / intersection(|| /\): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / restriction at front(|| /|\): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / function override(|| &lt;+): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / relations(|| &lt;-&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / insertion at end(|| &lt;-): testPriority" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / domain subtraction(|| &lt;&lt;|): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / domain restriction(|| &lt;|): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / partial injection(|| &gt;+&gt;): testPriority" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / total injection(|| &gt;-&gt;): testPriority" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / total bijection(|| &gt;-&gt;&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / direct relational product(|| &gt;&lt;): testPriority" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / union(|| \/): testPriority" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / restriction of sequence(|| \|/): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / concatenation(|| ^): testPriority" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / modulo(|| mod): testPriority" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / maplet(|| |-&gt;): testPriority" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / range restriction(|| |&gt;): testPriority" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.PriorityTests" name="Priority for relational parallel product / range subtraction(|| |&gt;&gt;): testPriority" time="0.005" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

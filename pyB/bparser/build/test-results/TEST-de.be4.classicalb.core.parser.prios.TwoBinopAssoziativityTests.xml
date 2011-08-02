@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" tests="279" time="5.061" timestamp="2011-07-18T09:44:59">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for multiplication or Cartesian product / multiplication or Cartesian product(* *): testAssociativity" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for multiplication or Cartesian product / division(* /): testAssociativity" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for multiplication or Cartesian product / modulo(* mod): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for power / power(** **): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for addition / addition(+ +): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for addition / subtraction(+ -): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / partial function(+-&gt; +-&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / partial surjection(+-&gt; +-&gt;&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / total function(+-&gt; --&gt;): testAssociativity" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / total surjection(+-&gt; --&gt;&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / relations(+-&gt; &lt;-&gt;): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / partial injection(+-&gt; &gt;+&gt;): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / total injection(+-&gt; &gt;-&gt;): testAssociativity" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial function / total bijection(+-&gt; &gt;-&gt;&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / partial function(+-&gt;&gt; +-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / partial surjection(+-&gt;&gt; +-&gt;&gt;): testAssociativity" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / total function(+-&gt;&gt; --&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / total surjection(+-&gt;&gt; --&gt;&gt;): testAssociativity" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / relations(+-&gt;&gt; &lt;-&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / partial injection(+-&gt;&gt; &gt;+&gt;): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / total injection(+-&gt;&gt; &gt;-&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial surjection / total bijection(+-&gt;&gt; &gt;-&gt;&gt;): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for subtraction / addition(- +): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for subtraction / subtraction(- -): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / partial function(--&gt; +-&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / partial surjection(--&gt; +-&gt;&gt;): testAssociativity" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / total function(--&gt; --&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / total surjection(--&gt; --&gt;&gt;): testAssociativity" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / relations(--&gt; &lt;-&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / partial injection(--&gt; &gt;+&gt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / total injection(--&gt; &gt;-&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total function / total bijection(--&gt; &gt;-&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / partial function(--&gt;&gt; +-&gt;): testAssociativity" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / partial surjection(--&gt;&gt; +-&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / total function(--&gt;&gt; --&gt;): testAssociativity" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / total surjection(--&gt;&gt; --&gt;&gt;): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / relations(--&gt;&gt; &lt;-&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / partial injection(--&gt;&gt; &gt;+&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / total injection(--&gt;&gt; &gt;-&gt;): testAssociativity" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total surjection / total bijection(--&gt;&gt; &gt;-&gt;&gt;): testAssociativity" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / insertion at front(-&gt; -&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / intersection(-&gt; /\): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / restriction at front(-&gt; /|\): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / function override(-&gt; &lt;+): testAssociativity" time="0.002" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / insertion at end(-&gt; &lt;-): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / domain subtraction(-&gt; &lt;&lt;|): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / domain restriction(-&gt; &lt;|): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / direct relational product(-&gt; &gt;&lt;): testAssociativity" time="0.029" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / union(-&gt; \/): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / restriction of sequence(-&gt; \|/): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / concatenation(-&gt; ^): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / maplet(-&gt; |-&gt;): testAssociativity" time="0.023" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / range restriction(-&gt; |&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at front / range subtraction(-&gt; |&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for interval / interval(.. ..): testAssociativity" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for division / multiplication or Cartesian product(/ *): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for division / division(/ /): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for division / modulo(/ mod): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / insertion at front(/\ -&gt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / intersection(/\ /\): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / restriction at front(/\ /|\): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / function override(/\ &lt;+): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / insertion at end(/\ &lt;-): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / domain subtraction(/\ &lt;&lt;|): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / domain restriction(/\ &lt;|): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / direct relational product(/\ &gt;&lt;): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / union(/\ \/): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / restriction of sequence(/\ \|/): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / concatenation(/\ ^): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / maplet(/\ |-&gt;): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / range restriction(/\ |&gt;): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for intersection / range subtraction(/\ |&gt;&gt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / insertion at front(/|\ -&gt;): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / intersection(/|\ /\): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / restriction at front(/|\ /|\): testAssociativity" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / function override(/|\ &lt;+): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / insertion at end(/|\ &lt;-): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / domain subtraction(/|\ &lt;&lt;|): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / domain restriction(/|\ &lt;|): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / direct relational product(/|\ &gt;&lt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / union(/|\ \/): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / restriction of sequence(/|\ \|/): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / concatenation(/|\ ^): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / maplet(/|\ |-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / range restriction(/|\ |&gt;): testAssociativity" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction at front / range subtraction(/|\ |&gt;&gt;): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for composition / composition(; ;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for composition / relational parallel product(; ||): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / insertion at front(&lt;+ -&gt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / intersection(&lt;+ /\): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / restriction at front(&lt;+ /|\): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / function override(&lt;+ &lt;+): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / insertion at end(&lt;+ &lt;-): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / domain subtraction(&lt;+ &lt;&lt;|): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / domain restriction(&lt;+ &lt;|): testAssociativity" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / direct relational product(&lt;+ &gt;&lt;): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / union(&lt;+ \/): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / restriction of sequence(&lt;+ \|/): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / concatenation(&lt;+ ^): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / maplet(&lt;+ |-&gt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / range restriction(&lt;+ |&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for function override / range subtraction(&lt;+ |&gt;&gt;): testAssociativity" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / partial function(&lt;-&gt; +-&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / partial surjection(&lt;-&gt; +-&gt;&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / total function(&lt;-&gt; --&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / total surjection(&lt;-&gt; --&gt;&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / relations(&lt;-&gt; &lt;-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / partial injection(&lt;-&gt; &gt;+&gt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / total injection(&lt;-&gt; &gt;-&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relations / total bijection(&lt;-&gt; &gt;-&gt;&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / insertion at front(&lt;- -&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / intersection(&lt;- /\): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / restriction at front(&lt;- /|\): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / function override(&lt;- &lt;+): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / insertion at end(&lt;- &lt;-): testAssociativity" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / domain subtraction(&lt;- &lt;&lt;|): testAssociativity" time="0.018" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / domain restriction(&lt;- &lt;|): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / direct relational product(&lt;- &gt;&lt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / union(&lt;- \/): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / restriction of sequence(&lt;- \|/): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / concatenation(&lt;- ^): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / maplet(&lt;- |-&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / range restriction(&lt;- |&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for insertion at end / range subtraction(&lt;- |&gt;&gt;): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / insertion at front(&lt;&lt;| -&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / intersection(&lt;&lt;| /\): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / restriction at front(&lt;&lt;| /|\): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / function override(&lt;&lt;| &lt;+): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / insertion at end(&lt;&lt;| &lt;-): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / domain subtraction(&lt;&lt;| &lt;&lt;|): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / domain restriction(&lt;&lt;| &lt;|): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / direct relational product(&lt;&lt;| &gt;&lt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / union(&lt;&lt;| \/): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / restriction of sequence(&lt;&lt;| \|/): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / concatenation(&lt;&lt;| ^): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / maplet(&lt;&lt;| |-&gt;): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / range restriction(&lt;&lt;| |&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain subtraction / range subtraction(&lt;&lt;| |&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / insertion at front(&lt;| -&gt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / intersection(&lt;| /\): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / restriction at front(&lt;| /|\): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / function override(&lt;| &lt;+): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / insertion at end(&lt;| &lt;-): testAssociativity" time="0.019" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / domain subtraction(&lt;| &lt;&lt;|): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / domain restriction(&lt;| &lt;|): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / direct relational product(&lt;| &gt;&lt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / union(&lt;| \/): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / restriction of sequence(&lt;| \|/): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / concatenation(&lt;| ^): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / maplet(&lt;| |-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / range restriction(&lt;| |&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for domain restriction / range subtraction(&lt;| |&gt;&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / partial function(&gt;+&gt; +-&gt;): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / partial surjection(&gt;+&gt; +-&gt;&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / total function(&gt;+&gt; --&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / total surjection(&gt;+&gt; --&gt;&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / relations(&gt;+&gt; &lt;-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / partial injection(&gt;+&gt; &gt;+&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / total injection(&gt;+&gt; &gt;-&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for partial injection / total bijection(&gt;+&gt; &gt;-&gt;&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / partial function(&gt;-&gt; +-&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / partial surjection(&gt;-&gt; +-&gt;&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / total function(&gt;-&gt; --&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / total surjection(&gt;-&gt; --&gt;&gt;): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / relations(&gt;-&gt; &lt;-&gt;): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / partial injection(&gt;-&gt; &gt;+&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / total injection(&gt;-&gt; &gt;-&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total injection / total bijection(&gt;-&gt; &gt;-&gt;&gt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / partial function(&gt;-&gt;&gt; +-&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / partial surjection(&gt;-&gt;&gt; +-&gt;&gt;): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / total function(&gt;-&gt;&gt; --&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / total surjection(&gt;-&gt;&gt; --&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / relations(&gt;-&gt;&gt; &lt;-&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / partial injection(&gt;-&gt;&gt; &gt;+&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / total injection(&gt;-&gt;&gt; &gt;-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for total bijection / total bijection(&gt;-&gt;&gt; &gt;-&gt;&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / insertion at front(&gt;&lt; -&gt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / intersection(&gt;&lt; /\): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / restriction at front(&gt;&lt; /|\): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / function override(&gt;&lt; &lt;+): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / insertion at end(&gt;&lt; &lt;-): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / domain subtraction(&gt;&lt; &lt;&lt;|): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / domain restriction(&gt;&lt; &lt;|): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / direct relational product(&gt;&lt; &gt;&lt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / union(&gt;&lt; \/): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / restriction of sequence(&gt;&lt; \|/): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / concatenation(&gt;&lt; ^): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / maplet(&gt;&lt; |-&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / range restriction(&gt;&lt; |&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for direct relational product / range subtraction(&gt;&lt; |&gt;&gt;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / insertion at front(\/ -&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / intersection(\/ /\): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / restriction at front(\/ /|\): testAssociativity" time="0.021" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / function override(\/ &lt;+): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / insertion at end(\/ &lt;-): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / domain subtraction(\/ &lt;&lt;|): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / domain restriction(\/ &lt;|): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / direct relational product(\/ &gt;&lt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / union(\/ \/): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / restriction of sequence(\/ \|/): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / concatenation(\/ ^): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / maplet(\/ |-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / range restriction(\/ |&gt;): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for union / range subtraction(\/ |&gt;&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / insertion at front(\|/ -&gt;): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / intersection(\|/ /\): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / restriction at front(\|/ /|\): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / function override(\|/ &lt;+): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / insertion at end(\|/ &lt;-): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / domain subtraction(\|/ &lt;&lt;|): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / domain restriction(\|/ &lt;|): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / direct relational product(\|/ &gt;&lt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / union(\|/ \/): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / restriction of sequence(\|/ \|/): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / concatenation(\|/ ^): testAssociativity" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / maplet(\|/ |-&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / range restriction(\|/ |&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for restriction of sequence / range subtraction(\|/ |&gt;&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / insertion at front(^ -&gt;): testAssociativity" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / intersection(^ /\): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / restriction at front(^ /|\): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / function override(^ &lt;+): testAssociativity" time="0.026" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / insertion at end(^ &lt;-): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / domain subtraction(^ &lt;&lt;|): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / domain restriction(^ &lt;|): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / direct relational product(^ &gt;&lt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / union(^ \/): testAssociativity" time="0.017" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / restriction of sequence(^ \|/): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / concatenation(^ ^): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / maplet(^ |-&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / range restriction(^ |&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for concatenation / range subtraction(^ |&gt;&gt;): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for modulo / multiplication or Cartesian product(mod *): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for modulo / division(mod /): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for modulo / modulo(mod mod): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / insertion at front(|-&gt; -&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / intersection(|-&gt; /\): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / restriction at front(|-&gt; /|\): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / function override(|-&gt; &lt;+): testAssociativity" time="0.022" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / insertion at end(|-&gt; &lt;-): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / domain subtraction(|-&gt; &lt;&lt;|): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / domain restriction(|-&gt; &lt;|): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / direct relational product(|-&gt; &gt;&lt;): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / union(|-&gt; \/): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / restriction of sequence(|-&gt; \|/): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / concatenation(|-&gt; ^): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / maplet(|-&gt; |-&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / range restriction(|-&gt; |&gt;): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for maplet / range subtraction(|-&gt; |&gt;&gt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / insertion at front(|&gt; -&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / intersection(|&gt; /\): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / restriction at front(|&gt; /|\): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / function override(|&gt; &lt;+): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / insertion at end(|&gt; &lt;-): testAssociativity" time="0.024" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / domain subtraction(|&gt; &lt;&lt;|): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / domain restriction(|&gt; &lt;|): testAssociativity" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / direct relational product(|&gt; &gt;&lt;): testAssociativity" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / union(|&gt; \/): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / restriction of sequence(|&gt; \|/): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / concatenation(|&gt; ^): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / maplet(|&gt; |-&gt;): testAssociativity" time="0.006" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / range restriction(|&gt; |&gt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range restriction / range subtraction(|&gt; |&gt;&gt;): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / insertion at front(|&gt;&gt; -&gt;): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / intersection(|&gt;&gt; /\): testAssociativity" time="0.011" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / restriction at front(|&gt;&gt; /|\): testAssociativity" time="0.014" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / function override(|&gt;&gt; &lt;+): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / insertion at end(|&gt;&gt; &lt;-): testAssociativity" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / domain subtraction(|&gt;&gt; &lt;&lt;|): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / domain restriction(|&gt;&gt; &lt;|): testAssociativity" time="0.01" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / direct relational product(|&gt;&gt; &gt;&lt;): testAssociativity" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / union(|&gt;&gt; \/): testAssociativity" time="0.008" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / restriction of sequence(|&gt;&gt; \|/): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / concatenation(|&gt;&gt; ^): testAssociativity" time="0.02" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / maplet(|&gt;&gt; |-&gt;): testAssociativity" time="0.005" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / range restriction(|&gt;&gt; |&gt;): testAssociativity" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for range subtraction / range subtraction(|&gt;&gt; |&gt;&gt;): testAssociativity" time="0.007" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relational parallel product / composition(|| ;): testAssociativity" time="0.012" />
+  <testcase classname="de.be4.classicalb.core.parser.prios.TwoBinopAssoziativityTests" name="Assoziativity for relational parallel product / relational parallel product(|| ||): testAssociativity" time="0.014" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

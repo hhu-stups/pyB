@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.DefinitionFilesTest" tests="7" time="0.36" timestamp="2011-07-18T09:44:31">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testOneDefinitionFile" time="0.098" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testRecursiveReference" time="0.048" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testCircleReference" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testNonCircleReference" time="0.028" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testRealFiles" time="0.059" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testNotExistingFile" time="0.003" />
+  <testcase classname="de.be4.classicalb.core.parser.DefinitionFilesTest" name="testDefCaching" time="0.037" />
+  <system-out><![CDATA[TOtherClauseBegin('MACHINE') TSomething(' ') TSomething('T') TSomething('e') TSomething('s') TSomething('t') TSomething('
+') TDefinitions('DEFINITIONS') TDoubleQuotation('"') TFilename('DefFile') TDoubleQuotation('"') TSemicolon(';') TIdentifierLiteral('def1') TBeginDefBody('==') TRhsBody('xx') TOtherClauseBegin('INVARIANT') TSomething(' ') TSomething('d') TSomething('e') TSomething('f') TSomething('2') TSomething(' ') TSomething('=') TSomething(' ') TSomething('d') TSomething('e') TSomething('f') TSomething('3') TSomething('
+') TEndMachine('END') TDefinitions('DEFINITIONS') TIdentifierLiteral('def2') TBeginDefBody('==') TRhsBody('yy') TSemicolon(';') TIdentifierLiteral('def3') TBeginDefBody('==') TRhsBody('zz') TKwPredicate('#PREDICATE') TIdentifierLiteral('yy') TKwExpression('#EXPRESSION') TIdentifierLiteral('yy') TKwSubstitution('#SUBSTITUTION') TIdentifierLiteral('yy') TKwPredicate('#PREDICATE') TIdentifierLiteral('zz') TKwExpression('#EXPRESSION') TIdentifierLiteral('zz') TKwSubstitution('#SUBSTITUTION') TIdentifierLiteral('zz') 
+TDefinitions('DEFINITIONS') TIdentifierLiteral('def2') TDoubleEqual('==') TIdentifierLiteral('yy') TSemicolon(';') TIdentifierLiteral('def3') TDoubleEqual('==') TIdentifierLiteral('zz') TKwPredicate('#PREDICATE') TIdentifierLiteral('xx') TKwExpression('#EXPRESSION') TIdentifierLiteral('xx') TKwSubstitution('#SUBSTITUTION') TIdentifierLiteral('xx') 
+TMachine('MACHINE') TIdentifierLiteral('Test') TDefinitions('DEFINITIONS') TDoubleQuotation('"') TStringBody('DefFile') TDoubleQuotation('"') TSemicolon(';') TIdentifierLiteral('def1') TDoubleEqual('==') TIdentifierLiteral('xx') TInvariant('INVARIANT') TIdentifierLiteral('def2') TEqual('=') TIdentifierLiteral('def3') TEnd('END') ]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

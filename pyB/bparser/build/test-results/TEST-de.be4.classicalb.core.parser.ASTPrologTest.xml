@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.be4.classicalb.core.parser.ASTPrologTest" tests="14" time="0.742" timestamp="2011-07-18T09:44:26">
+  <properties />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testMachine" time="0.167" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testRefinement" time="0.009" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testPredicates" time="0.037" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testExpressions" time="0.044" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testSubstitutions" time="0.029" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testDefinitions" time="0.115" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testRewrite" time="0.039" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testTrueFalse" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testBFalse" time="0.004" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testProverSET" time="0.015" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testOperationCalls" time="0.027" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testEvent" time="0.016" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testPartition" time="0.013" />
+  <testcase classname="de.be4.classicalb.core.parser.ASTPrologTest" name="testOppattern" time="0.025" />
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite errors="0" failures="0" hostname="stupsi" name="de.prob.prolog.output.PrologTermStringOutputTest" tests="8" time="0.389" timestamp="2011-07-18T09:37:58">
+  <properties />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testTerms" time="0.164" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testEscape" time="0.001" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testEscape2" time="0.001" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testLists" time="0.002" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testStrings" time="0.001" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testVariables" time="0.001" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testInvalidVariables" time="0.001" />
+  <testcase classname="de.prob.prolog.output.PrologTermStringOutputTest" name="testZeroArity" time="0.001" />
+  <system-out><![CDATA[EMMA: collecting runtime coverage data ...
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
