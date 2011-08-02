@@ -1,1 +1,0 @@
-#PREDICATE 8 mod 3 = 2

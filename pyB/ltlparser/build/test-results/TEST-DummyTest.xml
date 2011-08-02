@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite errors="0" failures="0" hostname="stupsi" name="DummyTest" tests="1" time="0.334" timestamp="2011-07-18T09:49:30">
-  <properties />
-  <testcase classname="DummyTest" name="testEmpty" time="0.007" />
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
