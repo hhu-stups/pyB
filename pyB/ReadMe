@@ -1,0 +1,30 @@
+03.08.2011 by John Witulski 
+
+Config:
+    the jar files must be in the correct dir. see pyB.py Line 7-13
+    This hard-codes path must be set manually at the moment
+
+Run pyB:
+    python pyB.py <FileName>
+    e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" 
+
+Run Tests:
+    py.test
+    the tests are in the tests folder
+
+Features:
+    Evals arith. Preds like 1+1=2
+    Evals set Preds like x:ID 
+    (variables must been given hard-code-values at the moment)
+
+How it works:
+    A AST visitor "ASTPython.java" gens a String with pythoncode.
+    This string is executed with "exec" in "pyB.py".
+    The string is mapped to the ASTNodes in "ast_nodes.py"
+    This AST is eval. via "interp.py"
+
+TODO:
+    - 1. replace depricated set module
+    - 2. implement AST Gen for Node with more than two children
+    - 3. write more AST-Gen tests
+
