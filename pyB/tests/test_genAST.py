@@ -1,22 +1,14 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import inperpret, Environment
-from helpers import file_to_AST_str
-
+from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
 
 class TestGenAST():
-    def string_to_file(self, string):
-        f = open(file_name,"w")
-        f.write(string)
-        f.close
-        return f
-
-
     def test_genAST_expr_add(self):
         # Build AST
-        self.string_to_file("#PREDICATE 1+1=3")
+        string_to_file("#PREDICATE 1+1=3", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -27,7 +19,7 @@ class TestGenAST():
 
     def test_genAST_expr_add2(self):
         # Build AST
-        self.string_to_file("#PREDICATE 1+1=2")
+        string_to_file("#PREDICATE 1+1=2", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -38,7 +30,7 @@ class TestGenAST():
 
     def test_genAST_expr_sub(self):
         # Build AST
-        self.string_to_file("#PREDICATE 4-3=1")
+        string_to_file("#PREDICATE 4-3=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -46,9 +38,10 @@ class TestGenAST():
         env = Environment()
         assert inperpret(root, env)
 
+
     def test_genAST_expr_mul(self):
         # Build AST
-        self.string_to_file("#PREDICATE 4*0=0")
+        string_to_file("#PREDICATE 4*0=0", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -59,7 +52,7 @@ class TestGenAST():
 
     def test_genAST_expr_div(self):
         # Build AST
-        self.string_to_file("#PREDICATE 8/2=4")
+        string_to_file("#PREDICATE 8/2=4", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -70,7 +63,7 @@ class TestGenAST():
 
     def test_genAST_expr_mod(self):
         # Build AST
-        self.string_to_file("#PREDICATE 8 mod 3=2")
+        string_to_file("#PREDICATE 8 mod 3=2", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
@@ -81,8 +74,53 @@ class TestGenAST():
 
     def test_genAST_expr_neq(self):
         # Build AST
-        self.string_to_file("#PREDICATE 0 /= 1")
+        string_to_file("#PREDICATE 0 /= 1", file_name)
         ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root, env)
+
+
+    def test_genAST_and(self):
+        # Build AST
+        string_to_file("#PREDICATE 1+1=2 & 7<8", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root, env)
+
+
+    def test_genAST_or(self):
+        # Build AST
+        string_to_file("#PREDICATE 4*0=0 or 4*0=4", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root, env)
+
+
+    def test_genAST_impl(self):
+        # Build AST
+        string_to_file("#PREDICATE 4>3 => 4>2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root, env)
+
+
+    def test_genAST_equi(self):
+        # Build AST
+        string_to_file("#PREDICATE (1+1=2) <=> (2+2=4)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        print ast_string
         exec ast_string
 
         # Test
@@ -92,7 +130,7 @@ class TestGenAST():
 
     def test_genAST_pred_gt(self):
         # Build AST:
-        self.string_to_file("#PREDICATE 6>x")
+        string_to_file("#PREDICATE 6>x", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 

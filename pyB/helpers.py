@@ -21,3 +21,10 @@ def file_to_AST_str(file_name_str):
     w.close()
     e.close()
     return out.replace(" ","")
+
+
+def string_to_file(string, file_name):
+    f = open(file_name,"w")
+    f.write(string)
+    f.close
+    return f

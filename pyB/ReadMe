@@ -23,8 +23,10 @@ How it works:
     The string is mapped to the ASTNodes in "ast_nodes.py"
     This AST is eval. via "interp.py"
 
+DONE:
+    - replace depricated set module
+
 TODO:
-    - 1. replace depricated set module
-    - 2. implement AST Gen for Node with more than two children
-    - 3. write more AST-Gen tests
+    - implement AST Gen for Node with more than two children
+    - write more AST-Gen tests
 
