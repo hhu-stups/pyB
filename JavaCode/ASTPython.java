@@ -6,12 +6,21 @@ import de.be4.classicalb.core.parser.node.*;
 
 public class ASTPython extends DepthFirstAdapter{
     public String out = "";
-    int idCounter = 0;
+    private int idCounter = 0;
+
+    private String getClassName(Node node)
+    {
+        String clsname = node.getClass().getName();
+        int mid= clsname.lastIndexOf ('.') + 1;
+        return clsname.substring(mid);
+    }
+
 
     public void outAPredicateParseUnit(APredicateParseUnit node)
     {
         out += "root = id"+(idCounter-1)+ "\n";
     }
+
 
     public void outAIntegerExpression(AIntegerExpression node)
     {
@@ -20,6 +29,7 @@ public class ASTPython extends DepthFirstAdapter{
         out += node.getLiteral().toString() + ")\n";
     }
 
+
     public void outAIdentifierExpression(AIdentifierExpression node)
     {
         out += "id"+ (idCounter++) +"=";
@@ -27,10 +37,13 @@ public class ASTPython extends DepthFirstAdapter{
         out += node.getIdentifier().toString().replace("[","").replace("]","") + "\")\n";
     }
 
-    public void defaultOut(Node node)
+
+    public void outAEmptySetExpression(AEmptySetExpression node)
     {
-        printStdOut_twoChildren(node);
+        out += "id"+ (idCounter++) +"=";
+        out += "AEmptySetExpression()\n";
     }
+
 
     public void outStart(Start node)
     {
@@ -38,53 +51,205 @@ public class ASTPython extends DepthFirstAdapter{
         // dont call defaultOut(Node)
     }
 
-
-    public void outANegationPredicate(ANegationPredicate node)
-    {
-        printStdOut_oneChild(node);
-    }
-
-
-    public void outACardExpression(ACardExpression node)
-    {
-        printStdOut_oneChild(node);
-    }
-
-
     public void outASetExtensionExpression(ASetExtensionExpression node)
     {
         printStdOut_manyChildren(node);
     }
 
 
-    private void printStdOut_oneChild(Node node)
+    public void caseAAddExpression(AAddExpression node)
     {
-        String nodeid   = ""+idCounter;
-        String childid = ""+(idCounter-1);
-        String clsname = node.getClass().getName();
-        int mid= clsname.lastIndexOf ('.') + 1;
-        String finalClsName = clsname.substring(mid);
-        out += "id"+ (idCounter++) +"=";
-        out += finalClsName +"()\n";
-        out += "id"+nodeid;
-        out += ".children.append(id"+childid+")\n";
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    private void printStdOut_twoChildren(Node node)
+    public void caseAMinusOrSetSubtractExpression(AMinusOrSetSubtractExpression node)
     {
-        String nodeid   = ""+idCounter;
-        String childid1 = ""+(idCounter-1);
-        String childid2 = ""+(idCounter-2);
-        String clsname = node.getClass().getName();
-        int mid= clsname.lastIndexOf ('.') + 1;
-        String finalClsName = clsname.substring(mid);
-        out += "id"+ (idCounter++) +"=";
-        out += finalClsName +"()\n";
-        out += "id"+nodeid;
-        out += ".children.append(id"+childid2+")\n";
-        out += "id"+nodeid;
-        out += ".children.append(id"+childid1+")\n";
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAMultOrCartExpression(AMultOrCartExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseADivExpression(ADivExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAModuloExpression(AModuloExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseACardExpression(ACardExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAUnionExpression(AUnionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAIntersectionExpression(AIntersectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseABelongPredicate(ABelongPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseANotBelongPredicate(ANotBelongPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAIncludePredicate(AIncludePredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseANotIncludePredicate(ANotIncludePredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAIncludeStrictlyPredicate(AIncludeStrictlyPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseANotIncludeStrictlyPredicate(ANotIncludeStrictlyPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseANegationPredicate(ANegationPredicate node)
+    {
+        printStdOut_oneChild(node, node.getPredicate());
+    }
+
+
+    public void caseAGreaterPredicate(AGreaterPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAGreaterEqualPredicate(AGreaterEqualPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAEquivalencePredicate(AEquivalencePredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAEqualPredicate(AEqualPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAUnequalPredicate(AUnequalPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseALessPredicate(ALessPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseALessEqualPredicate(ALessEqualPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAConjunctPredicate(AConjunctPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseADisjunctPredicate(ADisjunctPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAImplicationPredicate(AImplicationPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    private void printStdOut_oneChild(Node node, Node cnode)
+    {
+        String nodeid, childid;
+
+        if(cnode != null)
+        {
+            cnode.apply(this);
+            childid = ""+(idCounter-1);
+            nodeid = ""+idCounter;
+            out += "id"+ nodeid +"=";
+            out += getClassName(node) +"()\n";
+            idCounter++;
+            out += "id"+nodeid+".children.append(id"+childid+")\n";
+        }
+    }
+
+
+    private void printStdOut_twoChildren(Node node, Node left, Node right)
+    {
+        String nodeid, childid1="", childid2="";
+
+        if(left != null)
+        {
+            left.apply(this);
+            childid1 = ""+(idCounter-1);
+        }
+
+        if(right != null)
+        {
+            right.apply(this);
+            childid2 = ""+(idCounter-1);
+        }
+
+        nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        if(left != null)
+            out += "id"+nodeid+".children.append(id"+childid1+")\n";
+
+        if(right != null)
+            out += "id"+nodeid+".children.append(id"+childid2+")\n";
     }
 
 

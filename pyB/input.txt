@@ -1,1 +1,1 @@
-#PREDICATE (1+1=2) <=> (2+2=4)
+#PREDICATE 6>x

@@ -32,6 +32,7 @@ class TestGenAST():
         # Build AST
         string_to_file("#PREDICATE 4-3=1", file_name)
         ast_string = file_to_AST_str(file_name)
+        print ast_string
         exec ast_string
 
         # Test
@@ -120,13 +121,22 @@ class TestGenAST():
         # Build AST
         string_to_file("#PREDICATE (1+1=2) <=> (2+2=4)", file_name)
         ast_string = file_to_AST_str(file_name)
-        print ast_string
         exec ast_string
 
         # Test
         env = Environment()
         assert inperpret(root, env)
 
+
+    def test_genAST_complex_arith(self):
+        # Build AST
+        string_to_file("#PREDICATE 6 = (2+2)*4+(10-0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not inperpret(root, env)
 
     def test_genAST_pred_gt(self):
         # Build AST:
