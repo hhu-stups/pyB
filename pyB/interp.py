@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-import sets # FIXME: depricated
 
 class Environment():
     variable_values = {} #values of global and local vars
@@ -65,8 +64,8 @@ def inperpret(node, env):
     elif isinstance(node, AMultOrCartExpression):
         expr1 = inperpret(node.children[0], env)
         expr2 = inperpret(node.children[1], env)
-        if isinstance(expr1, sets.Set) and isinstance(expr2, sets.Set):
-            return sets.Set(((x,y) for x in expr1 for y in expr2))
+        if isinstance(expr1, set) and isinstance(expr2, set):
+            return set(((x,y) for x in expr1 for y in expr2))
         else:
             return expr1 * expr2
     elif isinstance(node, ADivExpression):
@@ -92,12 +91,12 @@ def inperpret(node, env):
         for child in node.children:
             elm = inperpret(child, env)
             lst.append(elm)
-        return sets.Set(lst)
+        return set(lst)
     elif isinstance(node, ACardExpression):
         aSet = inperpret(node.children[0], env)
         return len(aSet)
     elif isinstance(node, AEmptySetExpression):
-        return sets.Set()
+        return set()
     elif isinstance(node, AUnionExpression):
         aSet1 = inperpret(node.children[0], env)
         aSet2 = inperpret(node.children[1], env)

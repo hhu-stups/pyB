@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import inperpret, Environment
-from pyB import file_to_AST_str
-import sets
+from helpers import file_to_AST_str
+
 
 file_name = "input.txt"
 
