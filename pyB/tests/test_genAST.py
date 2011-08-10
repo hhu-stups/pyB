@@ -138,6 +138,48 @@ class TestGenAST():
         env = Environment()
         assert not inperpret(root, env)
 
+    def test_genAST_complex_arith2(self):
+        # Build AST
+        string_to_file("#PREDICATE 26 = (2+2)*4+(10-0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root, env)
+
+    def test_genAST_member(self):
+        # Build AST
+        string_to_file("#PREDICATE x:S", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["x"] = "x"
+        env.variable_values["S"] = set(["x","y","z"])
+        assert inperpret(root, env)
+
+        env.variable_values["S"] = set(["a","b","c"])
+        assert not inperpret(root, env)
+
+    def test_genAST_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE S<:T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["S"] = set(["x","y","z"])
+        assert not inperpret(root, env)
+
+        env.variable_values["S"] = set(["a","b","c"])
+        env.variable_values["T"] = set(["a","b","c"])
+        assert inperpret(root, env)
+
+
     def test_genAST_pred_gt(self):
         # Build AST:
         string_to_file("#PREDICATE 6>x", file_name)
