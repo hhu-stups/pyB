@@ -32,7 +32,6 @@ class TestGenAST():
         # Build AST
         string_to_file("#PREDICATE 4-3=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        print ast_string
         exec ast_string
 
         # Test
@@ -196,3 +195,46 @@ class TestGenAST():
 
         env.variable_values["x"] = 6
         assert not inperpret(root, env)
+
+
+    def test_genAST_set_enum(self):
+        # Build AST:
+        string_to_file("#PREDICATE yy:{aa,bb,cc}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        print ast_string
+
+        #Test
+        env = Environment()
+        env.variable_values["yy"] = "aa"
+        env.variable_values["aa"] = "aa" #FIXME: maybe this is a Bug..
+        env.variable_values["bb"] = "bb" #
+        env.variable_values["cc"] = "cc" #
+        assert inperpret(root, env)
+
+        env.variable_values["yy"] = "yy"
+        assert not inperpret(root, env)
+
+
+    def test_genAST_pred_exist(self):
+        # Build AST:
+        string_to_file("#PREDICATE #(z).( z<4 & z>0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["z"] = 0 # FIXME
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_forall(self):
+        # Build AST:
+        string_to_file("#PREDICATE !(z).( z<4 => z<5)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["z"] = 0 # FIXME
+        assert inperpret(root,env)

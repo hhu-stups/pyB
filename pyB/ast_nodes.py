@@ -40,6 +40,12 @@ class AEmptySetExpression(Expression):
 class ASetExtensionExpression(Expression):
     pass
 
+class AExistentialQuantificationPredicate(Predicate):
+    pass
+
+class AUniversalQuantificationPredicate(Predicate):
+    pass
+
 class ABelongPredicate(Predicate):
     pass
 

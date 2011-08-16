@@ -13,8 +13,10 @@ Run Tests:
     the tests are in the tests folder
 
 Features:
-    Evals arith. Preds like 1+1=2
-    Evals set Preds like x:ID 
+    Evals arith. Preds like:   1+1=2
+    Evals set Preds like:   x:ID 
+    Evals set extentions like:  {a,b,c}
+    Evals quantified preds like: #(z).(z<4 & z>0)
     (variables must been given hard-code-values at the moment)
 
 How it works:

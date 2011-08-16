@@ -1,1 +1,1 @@
-#PREDICATE 6>x
+#PREDICATE !(z).( z<4 => z<5)

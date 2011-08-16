@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 
+min_int = -1
+max_int = 5
+
 class Environment():
     variable_values = {} #values of global and local vars
 
@@ -121,5 +124,23 @@ def inperpret(node, env):
         aSet1 = inperpret(node.children[0], env)
         aSet2 = inperpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
+    elif isinstance(node, AUniversalQuantificationPredicate):
+        # FIXME: supports only integers, and only one var
+        pred = node.children[len(node.children) -1]
+        idName = node.children[0].idName
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if not inperpret(pred, env):
+                return False
+        return True
+    elif isinstance(node, AExistentialQuantificationPredicate):
+        # FIXME: supports only integers, and only one var
+        pred = node.children[len(node.children) -1]
+        idName = node.children[0].idName
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if inperpret(pred, env):
+                return True
+        return False
     else:
         raise Exception("Unknown Node: %s",node)
