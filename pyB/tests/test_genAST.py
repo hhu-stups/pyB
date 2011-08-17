@@ -197,6 +197,27 @@ class TestGenAST():
         assert not inperpret(root, env)
 
 
+    def test_genAST_pred_set_contains(self):
+        # Build AST:
+        string_to_file("#PREDICATE 1:{0,1,2,3,4}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_set_contains2(self):
+        # Build AST:
+        string_to_file("#PREDICATE 41:{0,1,2,3,4}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not inperpret(root,env)
+
     def test_genAST_set_enum(self):
         # Build AST:
         string_to_file("#PREDICATE yy:{aa,bb,cc}", file_name)
@@ -265,3 +286,46 @@ class TestGenAST():
         # Test
         env = Environment()
         assert not inperpret(root,env)
+
+
+    def test_genAST_pred_set_couple(self):
+        # Build AST:
+        string_to_file("#PREDICATE (1,0,41):{(0,0,41),(1,0,41),(0,1,41),(1,1,41)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root,env)
+
+    def test_genAST_pred_set_couple2(self):
+        # Build AST:
+        string_to_file("#PREDICATE (1,2,41):{(0,0,41),(1,0,41),(0,1,41),(1,1,41)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not inperpret(root,env)
+
+
+    def test_genAST_pred_set_compreh(self):
+        # Build AST:
+        string_to_file("#PREDICATE (1,0,1):{(x,y,z) | x>=0 & x<=1 & y>=0 & y<=1 & z=1}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_set_compreh2(self):
+        # Build AST:
+        string_to_file("#PREDICATE (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root,env)

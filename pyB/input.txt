@@ -1,1 +1,1 @@
-#PREDICATE !(x,y,z).( x>0 & y>0 & z<4 => x+y=z)
+#PREDICATE (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x}

@@ -20,7 +20,7 @@ def inperpret(node, env):
         expr1 = inperpret(node.children[0], env)
         expr2 = inperpret(node.children[1], env)
         if expr1 and not expr2:
-            return False # True=>False
+            return False # True=>False is False
         else:
             return True
     elif isinstance(node, AEquivalencePredicate):
@@ -125,7 +125,7 @@ def inperpret(node, env):
         aSet2 = inperpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
-        # FIXME: supports only integers, and only one var
+        # FIXME: supports only integers!
         max_depth = len(node.children) -2
         if not forall_recursive_helper(0, max_depth, node, env):
             return False
@@ -138,10 +138,56 @@ def inperpret(node, env):
             return True
         else:
             return False
+    elif isinstance(node, AComprehensionSetExpression):
+        # FIXME: supports only integers!
+        max_depth = len(node.children) -2
+        lst = set_comprehension_recursive_helper(0, max_depth, node, env)
+        # FIXME: maybe wrong:
+        # [[x1,y1],[x2,y2]..] => [(x1,y2),(x2,y2)...]
+        result = []
+        for i in lst:
+            result.append(tuple(flatten(i,[])))
+        return set(result)
+    elif isinstance(node, ACoupleExpression):
+        lst = []
+        for child in node.children:
+            elm = inperpret(child, env)
+            lst.append(elm)
+        return tuple(lst)
     else:
         raise Exception("Unknown Node: %s",node)
 
+def flatten(lst, res):
+    for e in lst:
+        if not isinstance(e,list):
+            res.append(e)
+        else:
+            res = flatten(e, res)
+    return res
 
+# FIXME: rename quantified variables!
+def set_comprehension_recursive_helper(depth, max_depth, node, env):
+    result = []
+    pred = node.children[len(node.children) -1]
+    idName = node.children[depth].idName
+    if depth == max_depth:
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if inperpret(pred, env):
+                result.append(i)
+        return result
+    else:
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            partial_result = set_comprehension_recursive_helper(depth+1, max_depth, node, env)
+            for j in partial_result:
+                temp = []
+                temp.append(i)
+                temp.append(j)
+                result.append(temp)
+        return result
+
+# FIXME: rename quantified variables!
 def exist_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
@@ -158,7 +204,7 @@ def exist_recursive_helper(depth, max_depth, node, env):
                 return True
         return False
 
-
+# FIXME: rename quantified variables!
 def forall_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName

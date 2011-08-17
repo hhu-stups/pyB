@@ -3,10 +3,10 @@
 from subprocess import Popen, PIPE
 
 command_str = "java -cp "
-command_str += "../bparser/build/libs/bparser-2.0.59.jar"
+command_str += "../bparser/build/libs/bparser-2.0.63.jar"
 command_str += ":../prologlib/build/libs/prologlib-2.0.1.jar"
 command_str += ":../parserbase/build/libs/parserbase-2.0.1.jar"
-command_str += ":../cliparser/build/libs/cliparser-2.0.59.jar"
+command_str += ":../cliparser/build/libs/cliparser-2.0.63.jar"
 command_str += ":../cliparser/build/libs/"
 command_str += ":. de.prob.cliparser.CliBParser %s %s"
 #option_str = " -ast"

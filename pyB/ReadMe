@@ -1,8 +1,12 @@
 03.08.2011 by John Witulski 
 
 Config:
+    copy ASTPython.java to .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
+    overwrite BParser.java  CliBParser.java  ConsoleOptions.java  ParsingBehaviour.java inside the correct src folder
+    generate the jar by typing "./gradlew jar" in the project-root-dir
     the jar files must be in the correct dir. see pyB.py Line 7-13
     This hard-codes path must be set manually at the moment
+
 
 Run pyB:
     python pyB.py <FileName>
@@ -10,14 +14,15 @@ Run pyB:
 
 Run Tests:
     py.test
-    the tests are in the tests folder
+    the /tests are in the tests folder
 
 Features:
     Evals arith. Preds like:   1+1=2
     Evals set Preds like:   x:ID 
     Evals set extentions like:  {a,b,c}
-    Evals quantified preds like: #(z).(z<4 & z>0)
-    (variables must been given hard-code-values at the moment)
+    Evals quantified preds like: #(z).(z<4 & z>0) (only integer!)
+    Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} (only integer!)
+
 
 How it works:
     A AST visitor "ASTPython.java" gens a String with pythoncode.
@@ -27,9 +32,10 @@ How it works:
 
 DONE:
     - replace depricated set module
-
-TODO:
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
+
+TODO:
     - write more AST-Gen tests
+    - rename quantified variables in helper-funcs
 

@@ -2,6 +2,8 @@ package de.be4.classicalb.core.parser.analysis.python;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
+import java.util.ArrayList;
+import java.util.List;
 // walks the tree and prints a pythonlike AST
 
 public class ASTPython extends DepthFirstAdapter{
@@ -51,11 +53,34 @@ public class ASTPython extends DepthFirstAdapter{
         // dont call defaultOut(Node)
     }
 
-    public void outASetExtensionExpression(ASetExtensionExpression node)
+
+    public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
-        printStdOut_manyChildren(node);
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
     }
 
+
+    public void caseAComprehensionSetExpression(AComprehensionSetExpression node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicates());
+    }
+
+
+    public void caseAUniversalQuantificationPredicate(AUniversalQuantificationPredicate node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getImplication());
+    }
+
+
+    public void caseASetExtensionExpression(ASetExtensionExpression node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getExpressions()),null);
+    }
+
+    public void caseACoupleExpression(ACoupleExpression node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getList()),null);
+    }
 
     public void caseAAddExpression(AAddExpression node)
     {
@@ -253,8 +278,29 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    private void printStdOut_manyChildren(Node node)
+    private void printStdOut_manyChildren(Node node, List<PExpression> copy, Node extra)
     {
-        out += "IMPLEMENT ME\n";
+        String[] ids = new String[copy.size()+1];
+        int i=0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(extra!=null)
+        {
+            extra.apply(this);
+            ids[copy.size()] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<ids.length-1; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        if(extra!=null)
+            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
     }
 }
