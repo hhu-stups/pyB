@@ -126,21 +126,51 @@ def inperpret(node, env):
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
         # FIXME: supports only integers, and only one var
-        pred = node.children[len(node.children) -1]
-        idName = node.children[0].idName
-        for i in range(min_int, max_int):
-            env.variable_values[idName] = i
-            if not inperpret(pred, env):
-                return False
-        return True
+        max_depth = len(node.children) -2
+        if not forall_recursive_helper(0, max_depth, node, env):
+            return False
+        else:
+            return True
     elif isinstance(node, AExistentialQuantificationPredicate):
-        # FIXME: supports only integers, and only one var
-        pred = node.children[len(node.children) -1]
-        idName = node.children[0].idName
+        # FIXME: supports only integers!
+        max_depth = len(node.children) -2
+        if exist_recursive_helper(0, max_depth, node, env):
+            return True
+        else:
+            return False
+    else:
+        raise Exception("Unknown Node: %s",node)
+
+
+def exist_recursive_helper(depth, max_depth, node, env):
+    pred = node.children[len(node.children) -1]
+    idName = node.children[depth].idName
+    if depth == max_depth:
         for i in range(min_int, max_int):
             env.variable_values[idName] = i
             if inperpret(pred, env):
                 return True
         return False
     else:
-        raise Exception("Unknown Node: %s",node)
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if exist_recursive_helper(depth+1, max_depth, node, env):
+                return True
+        return False
+
+
+def forall_recursive_helper(depth, max_depth, node, env):
+    pred = node.children[len(node.children) -1]
+    idName = node.children[depth].idName
+    if depth == max_depth:
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if not inperpret(pred, env):
+                return False
+        return True
+    else:
+        for i in range(min_int, max_int):
+            env.variable_values[idName] = i
+            if not forall_recursive_helper(depth+1, max_depth, node, env):
+                return False
+        return True

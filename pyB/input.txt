@@ -1,1 +1,1 @@
-#PREDICATE !(z).( z<4 => z<5)
+#PREDICATE !(x,y,z).( x>0 & y>0 & z<4 => x+y=z)

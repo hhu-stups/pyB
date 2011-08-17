@@ -224,9 +224,27 @@ class TestGenAST():
 
         # Test
         env = Environment()
-        env.variable_values["z"] = 0 # FIXME
         assert inperpret(root,env)
 
+    def test_genAST_pred_exist2(self):
+        # Build AST:
+        string_to_file("#PREDICATE #(x,y).( x<0 & y>0 & x>y)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not inperpret(root,env)
+
+    def test_genAST_pred_exist3(self):
+        # Build AST:
+        string_to_file("#PREDICATE #(x,y).( x<0 & y>0 & y>x)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert inperpret(root,env)
 
     def test_genAST_pred_forall(self):
         # Build AST:
@@ -236,5 +254,14 @@ class TestGenAST():
 
         # Test
         env = Environment()
-        env.variable_values["z"] = 0 # FIXME
         assert inperpret(root,env)
+
+    def test_genAST_pred_forall2(self):
+        # Build AST:
+        string_to_file("#PREDICATE !(x,y,z).( x>0 & y>0 & z<4 => x+y=z)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not inperpret(root,env)
