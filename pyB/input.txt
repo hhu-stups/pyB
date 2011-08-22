@@ -1,1 +1,1 @@
-#PREDICATE S=ran(f)
+#PREDICATE r=id(S)

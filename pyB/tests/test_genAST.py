@@ -449,18 +449,37 @@ class TestGenAST():
         assert inperpret(root,env)
 
 
-    def test_genAST_pred_rel_ran(self):
+    def test_genAST_pred_rel_comp(self):
         # Build AST:
-        string_to_file("#PREDICATE S=ran(f)", file_name)
+        string_to_file("#PREDICATE S= (p ; q)", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["x"])
-        env.variable_values["f"] = set([("a","x")])
+        env.variable_values["S"] = set([("1","x")])
+        env.variable_values["p"] = set([("1","a")])
+        env.variable_values["q"] = set([("a","x")])
         assert inperpret(root,env)
 
-        env.variable_values["f"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
-        env.variable_values["S"] = set(["x","y","z"])
+        env.variable_values["S"] = set([("1","a")])
+        env.variable_values["p"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
+        env.variable_values["q"] = set([("x","a")])
+        assert inperpret(root,env)
+
+        env.variable_values["S"] = set([("1","a"),("2","a")])
+        env.variable_values["p"] = set([("1","x"),("2","x"),("3","z")])
+        env.variable_values["q"] = set([("x","a")])
+        assert inperpret(root,env)
+
+    def test_genAST_pred_rel_id(self):
+        # Build AST:
+        string_to_file("#PREDICATE r=id(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b","c"])
+        env.variable_values["r"] = set([("a","a"),("b","b"),("c","c")])
         assert inperpret(root,env)

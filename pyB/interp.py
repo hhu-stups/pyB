@@ -185,6 +185,15 @@ def inperpret(node, env):
         aSet = inperpret(node.children[0], env)
         ran = [e[1] for e in list(aSet)]
         return set(ran)
+    elif isinstance(node, ACompositionExpression):
+        aSet1 = inperpret(node.children[0], env)
+        aSet2 = inperpret(node.children[1], env)
+        new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
+        return set(new_rel)
+    elif isinstance(node, AIdentityExpression):
+        aSet = inperpret(node.children[0], env)
+        id_r = [(x,x) for x in aSet]
+        return set(id_r)
     else:
         raise Exception("Unknown Node: %s",node)
 

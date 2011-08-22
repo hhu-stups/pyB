@@ -58,6 +58,12 @@ class ADomainExpression(Expression):
 class ARangeExpression(Expression):
     pass
 
+class ACompositionExpression(Expression):
+    pass
+
+class AIdentityExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
