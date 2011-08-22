@@ -77,10 +77,18 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getExpressions()),null);
     }
 
+
     public void caseACoupleExpression(ACoupleExpression node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getList()),null);
     }
+
+
+    public void caseARelationsExpression(ARelationsExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
 
     public void caseAAddExpression(AAddExpression node)
     {
@@ -169,6 +177,54 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseANegationPredicate(ANegationPredicate node)
     {
         printStdOut_oneChild(node, node.getPredicate());
+    }
+
+
+    public void caseADomainExpression(ADomainExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseARangeExpression(ARangeExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAIdentityExpression(AIdentityExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAPowSubsetExpression(APowSubsetExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAPow1SubsetExpression(APow1SubsetExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAFinSubsetExpression(AFinSubsetExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAFin1SubsetExpression(AFin1SubsetExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseACompositionExpression(ACompositionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 

@@ -197,6 +197,85 @@ class TestGenAST():
         assert not inperpret(root, env)
 
 
+    def test_genAST_pred_set_cart(self):
+        # Build AST:
+        string_to_file("#PREDICATE u:S*T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["u"] = ("a","x")
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_power_set(self):
+        # Build AST:
+        string_to_file("#PREDICATE X:POW(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["X"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set(["a","b"])
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set(["a","c"])
+        assert not inperpret(root,env)
+
+        env.variable_values["X"] = set(["a"])
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set(["b"])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_power_set2(self):
+        # Build AST:
+        string_to_file("#PREDICATE X:POW(POW(S))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["X"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set([frozenset([])])
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set([frozenset(["a","b"])])
+        assert inperpret(root,env)
+
+    def test_genAST_pred_pow1_set(self):
+        # Build AST:
+        string_to_file("#PREDICATE X:POW1(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["X"] = set(frozenset([]))
+        assert not inperpret(root,env)
+
+        env.variable_values["X"] = set(frozenset(["a"]))
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set(frozenset(["b"]))
+        assert inperpret(root,env)
+
+        env.variable_values["X"] = set(frozenset(["a","b"]))
+        assert inperpret(root,env)
+
+
     def test_genAST_pred_set_contains(self):
         # Build AST:
         string_to_file("#PREDICATE 1:{0,1,2,3,4}", file_name)
@@ -223,7 +302,6 @@ class TestGenAST():
         string_to_file("#PREDICATE yy:{aa,bb,cc}", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
-        print ast_string
 
         #Test
         env = Environment()

@@ -43,6 +43,12 @@ class ASetExtensionExpression(Expression):
 class ACoupleExpression(Expression):
     pass
 
+class APowSubsetExpression(Expression):
+    pass
+
+class APow1SubsetExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

@@ -37,5 +37,7 @@ DONE:
 
 TODO:
     - write more AST-Gen tests
+    - wirte a build-script
+    - sets and frozensets are mixed in POW..fix that
     - rename quantified variables in helper-funcs
 
