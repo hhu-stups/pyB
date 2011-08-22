@@ -288,6 +288,30 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseADomainRestrictionExpression(ADomainRestrictionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseADomainSubtractionExpression(ADomainSubtractionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseARangeRestrictionExpression(ARangeRestrictionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseARangeSubtractionExpression(ARangeSubtractionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     private void printStdOut_oneChild(Node node, Node cnode)
     {
         String nodeid, childid;

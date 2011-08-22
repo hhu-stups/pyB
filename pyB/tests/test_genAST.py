@@ -472,6 +472,7 @@ class TestGenAST():
         env.variable_values["q"] = set([("x","a")])
         assert inperpret(root,env)
 
+
     def test_genAST_pred_rel_id(self):
         # Build AST:
         string_to_file("#PREDICATE r=id(S)", file_name)
@@ -482,4 +483,67 @@ class TestGenAST():
         env = Environment()
         env.variable_values["S"] = set(["a","b","c"])
         env.variable_values["r"] = set([("a","a"),("b","b"),("c","c")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_domres(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=S<|r", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a"])
+        env.variable_values["f"] = set([("a","1")])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("a","1"),("a","42")])
+        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_domsub(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=S<<|r", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a"])
+        env.variable_values["f"] = set([("b","42"),("c","777")])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("c","777")])
+        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_ranres(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=r|>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["T"] = set(["1"])
+        env.variable_values["f"] = set([("a","1")])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+    def test_genAST_pred_rel_ransub(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=r|>>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["T"] = set(["1"])
+        env.variable_values["f"] = set([("b","42"),("c","777")])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
         assert inperpret(root,env)

@@ -64,6 +64,18 @@ class ACompositionExpression(Expression):
 class AIdentityExpression(Expression):
     pass
 
+class ADomainRestrictionExpression(Expression):
+    pass
+
+class ADomainSubtractionExpression(Expression):
+    pass
+
+class ARangeRestrictionExpression(Expression):
+    pass
+
+class ARangeSubtractionExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

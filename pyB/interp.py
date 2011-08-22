@@ -194,6 +194,27 @@ def inperpret(node, env):
         aSet = inperpret(node.children[0], env)
         id_r = [(x,x) for x in aSet]
         return set(id_r)
+    elif isinstance(node, ADomainRestrictionExpression):
+        aSet = inperpret(node.children[0], env)
+        rel = inperpret(node.children[1], env)
+        new_rel = [x for x in rel if x[0] in aSet]
+        return set(new_rel)
+    elif isinstance(node, ADomainSubtractionExpression):
+        aSet = inperpret(node.children[0], env)
+        rel = inperpret(node.children[1], env)
+        new_rel = [x for x in rel if not x[0] in aSet]
+        return set(new_rel)
+    elif isinstance(node, ARangeRestrictionExpression):
+        aSet = inperpret(node.children[1], env)
+        rel = inperpret(node.children[0], env)
+        print rel
+        new_rel = [x for x in rel if x[1] in aSet]
+        return set(new_rel)
+    elif isinstance(node, ARangeSubtractionExpression):
+        aSet = inperpret(node.children[1], env)
+        rel = inperpret(node.children[0], env)
+        new_rel = [x for x in rel if not x[1] in aSet]
+        return set(new_rel)
     else:
         raise Exception("Unknown Node: %s",node)
 

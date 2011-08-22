@@ -1,1 +1,1 @@
-#PREDICATE r=id(S)
+#PREDICATE f=r|>>T
