@@ -49,6 +49,15 @@ class APowSubsetExpression(Expression):
 class APow1SubsetExpression(Expression):
     pass
 
+class ARelationsExpression(Expression):
+    pass
+
+class ADomainExpression(Expression):
+    pass
+
+class ARangeExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

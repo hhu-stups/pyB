@@ -407,3 +407,60 @@ class TestGenAST():
         # Test
         env = Environment()
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel(self):
+        # Build AST:
+        string_to_file("#PREDICATE f:S<->T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["f"] = set([("a","x")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("a","x"),("a","y")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("a","x"),("b","y")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_dom(self):
+        # Build AST:
+        string_to_file("#PREDICATE S=dom(f)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a"])
+        env.variable_values["f"] = set([("a","x")])
+        assert inperpret(root,env)
+        
+        env.variable_values["f"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
+        env.variable_values["S"] = set(["1","2","3"])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_ran(self):
+        # Build AST:
+        string_to_file("#PREDICATE S=ran(f)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["x"])
+        env.variable_values["f"] = set([("a","x")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
+        env.variable_values["S"] = set(["x","y","z"])
+        assert inperpret(root,env)

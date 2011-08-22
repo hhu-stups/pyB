@@ -167,6 +167,24 @@ def inperpret(node, env):
         lst = [frozenset(e) for e in powerlist]
         lst.remove(frozenset([]))
         return set(lst)
+    elif isinstance(node, ARelationsExpression):
+        aSet1 = inperpret(node.children[0], env)
+        aSet2 = inperpret(node.children[1], env)
+        cartSet = set(((x,y) for x in aSet1 for y in aSet2))
+        res = powerset(cartSet)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        return set(lst)
+    elif isinstance(node, ADomainExpression):
+        # FIXME: crashs if this is not a set of 2-tuple
+        aSet = inperpret(node.children[0], env)
+        dom = [e[0] for e in list(aSet)]
+        return set(dom)
+    elif isinstance(node, ARangeExpression):
+        # FIXME: crashs if this is not a set of 2-tuple
+        aSet = inperpret(node.children[0], env)
+        ran = [e[1] for e in list(aSet)]
+        return set(ran)
     else:
         raise Exception("Unknown Node: %s",node)
 
