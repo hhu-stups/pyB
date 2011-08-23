@@ -231,6 +231,28 @@ def inperpret(node, env):
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]
         return set(r2_list + new_r)
+    elif isinstance(node, AFirstProjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        cart = set(((x,y) for x in S for y in T))
+        proj = [(x,x[0]) for x in cart]
+        return set(proj)
+    elif isinstance(node, ASecondProjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        cart = set(((x,y) for x in S for y in T))
+        proj = [(x,x[1]) for x in cart]
+        return set(proj)
+    elif isinstance(node, ADirectProductExpression):
+        p = inperpret(node.children[0], env)
+        q = inperpret(node.children[1], env)
+        d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
+        return set(d_prod)
+    elif isinstance(node, AParallelProductExpression):
+        p = inperpret(node.children[0], env)
+        q = inperpret(node.children[1], env)
+        p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+        return set(p_prod)
     else:
         raise Exception("Unknown Node: %s",node)
 

@@ -234,6 +234,30 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseADirectProductExpression(ADirectProductExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAParallelProductExpression(AParallelProductExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAFirstProjectionExpression(AFirstProjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getExp1(), node.getExp2());
+    }
+
+
+    public void caseASecondProjectionExpression(ASecondProjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getExp1(), node.getExp2());
+    }
+
+
     public void caseAImageExpression(AImageExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());

@@ -620,3 +620,83 @@ class TestGenAST():
         env.variable_values["r2"] = set([("d","17"),("b","41")])
         env.variable_values["r1"] = set([("a","1"),("b","42"),("c","777")])
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_proj1(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=prj1(S,T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([])
+        env.variable_values["S"] = set([])
+        env.variable_values["T"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([(("a","y"),"a"),(("b","y"),"b"),(("a","x"),"a"),(("b","x"),"b")])
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_proj2(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=prj2(S,T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([])
+        env.variable_values["S"] = set([])
+        env.variable_values["T"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([(("a","y"),"y"),(("b","y"),"y"),(("a","x"),"x"),(("b","x"),"x")])
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        assert inperpret(root,env)
+
+    def test_genAST_pred_rel_direct_prod(self):
+        # Build AST:
+        string_to_file("#PREDICATE f= p >< q", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([])
+        env.variable_values["p"] = set([])
+        env.variable_values["q"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([])
+        env.variable_values["p"] = set([("x","1"),("y","2")])
+        env.variable_values["q"] = set([("a","3"),("b","4")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("x",("1","3"))])
+        env.variable_values["p"] = set([("x","1"),("y","2")])
+        env.variable_values["q"] = set([("x","3"),("b","4")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_parallel_prod(self):
+        # Build AST:
+        string_to_file("#PREDICATE f= (p || q)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([])
+        env.variable_values["p"] = set([])
+        env.variable_values["q"] = set([])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([(("x","a"),("1","3")),(("x","b"),("1","4"))])
+        env.variable_values["p"] = set([("x","1")])
+        env.variable_values["q"] = set([("a","3"),("b","4")])
+        assert inperpret(root,env)

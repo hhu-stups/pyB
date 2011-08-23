@@ -85,6 +85,18 @@ class AImageExpression(Expression):
 class AOverwriteExpression(Expression):
     pass
 
+class ADirectProductExpression(Expression):
+    pass
+
+class AFirstProjectionExpression(Expression):
+    pass
+
+class ASecondProjectionExpression(Expression):
+    pass
+
+class AParallelProductExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
