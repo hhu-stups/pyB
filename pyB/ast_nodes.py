@@ -76,6 +76,15 @@ class ARangeRestrictionExpression(Expression):
 class ARangeSubtractionExpression(Expression):
     pass
 
+class AReverseExpression(Expression):
+    pass
+
+class AImageExpression(Expression):
+    pass
+
+class AOverwriteExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

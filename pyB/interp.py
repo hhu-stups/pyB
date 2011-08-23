@@ -215,6 +215,22 @@ def inperpret(node, env):
         rel = inperpret(node.children[0], env)
         new_rel = [x for x in rel if not x[1] in aSet]
         return set(new_rel)
+    elif isinstance(node, AReverseExpression):
+        rel = inperpret(node.children[0], env)
+        new_rel = [(x[1],x[0]) for x in rel]
+        return set(new_rel)
+    elif isinstance(node, AImageExpression):
+        rel = inperpret(node.children[0], env)
+        aSet = inperpret(node.children[1], env)
+        image = [x[1] for x in rel if x[0] in aSet ]
+        return set(image)
+    elif isinstance(node, AOverwriteExpression):
+        r1 = inperpret(node.children[0], env)
+        r2 = inperpret(node.children[1], env)
+        dom_r2 = [x[0] for x in r2]
+        new_r  = [x for x in r1 if x[0] not in dom_r2]
+        r2_list= [x for x in r2]
+        return set(r2_list + new_r)
     else:
         raise Exception("Unknown Node: %s",node)
 

@@ -222,6 +222,24 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAReverseExpression(AReverseExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAOverwriteExpression(AOverwriteExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAImageExpression(AImageExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseACompositionExpression(ACompositionExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());

@@ -1,1 +1,1 @@
-#PREDICATE f=r|>>T
+#PREDICATE f=r1 <+ r2

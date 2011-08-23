@@ -535,6 +535,11 @@ class TestGenAST():
         env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
         assert inperpret(root,env)
 
+        env.variable_values["f"] = set([("a","1"),("b","1")])
+        env.variable_values["r"] = set([("a","1"),("b","1"),("c","777")])
+        assert inperpret(root,env)
+
+
     def test_genAST_pred_rel_ransub(self):
         # Build AST:
         string_to_file("#PREDICATE f=r|>>T", file_name)
@@ -546,4 +551,72 @@ class TestGenAST():
         env.variable_values["T"] = set(["1"])
         env.variable_values["f"] = set([("b","42"),("c","777")])
         env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("c","777")])
+        env.variable_values["r"] = set([("a","1"),("b","1"),("c","777")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_inverse(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=r~", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([("1","a"),("42","b"),("777","c")])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([])
+        env.variable_values["r"] = set([])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_image(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=r[S]", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["S"] = set(["a"])
+        env.variable_values["f"] = set(["1"])
+        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set(["1","42"])
+        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["S"] = set(["a","c"])
+        env.variable_values["f"] = set(["1","42","777"])
+        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["S"] = set(["c"])
+        env.variable_values["f"] = set(["777"])
+        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_rel_overriding(self):
+        # Build AST:
+        string_to_file("#PREDICATE f=r1 <+ r2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["f"] = set([("a","1"),("b","42"),("c","777"),("d","17")])
+        env.variable_values["r1"] = set([("d","17")])
+        env.variable_values["r2"] = set([("a","1"),("b","42"),("c","777")])
+        assert inperpret(root,env)
+
+        env.variable_values["f"] = set([("a","1"),("b","41"),("c","777"),("d","17")])
+        env.variable_values["r2"] = set([("d","17"),("b","41")])
+        env.variable_values["r1"] = set([("a","1"),("b","42"),("c","777")])
         assert inperpret(root,env)
