@@ -97,6 +97,27 @@ class ASecondProjectionExpression(Expression):
 class AParallelProductExpression(Expression):
     pass
 
+class APartialFunctionExpression(Expression):
+    pass
+
+class ATotalFunctionExpression(Expression):
+    pass
+
+class APartialInjectionExpression(Expression):
+    pass
+
+class ATotalInjectionExpression(Expression):
+    pass
+
+class APartialSurjectionExpression(Expression):
+    pass
+
+class ATotalSurjectionExpression(Expression):
+    pass
+
+class ATotalBijectionExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

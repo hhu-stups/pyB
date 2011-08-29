@@ -170,11 +170,8 @@ def inperpret(node, env):
     elif isinstance(node, ARelationsExpression):
         aSet1 = inperpret(node.children[0], env)
         aSet2 = inperpret(node.children[1], env)
-        cartSet = set(((x,y) for x in aSet1 for y in aSet2))
-        res = powerset(cartSet)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        return set(lst)
+        aSet = make_set_of_realtions(aSet1, aSet2)
+        return aSet
     elif isinstance(node, ADomainExpression):
         # FIXME: crashs if this is not a set of 2-tuple
         aSet = inperpret(node.children[0], env)
@@ -207,7 +204,6 @@ def inperpret(node, env):
     elif isinstance(node, ARangeRestrictionExpression):
         aSet = inperpret(node.children[1], env)
         rel = inperpret(node.children[0], env)
-        print rel
         new_rel = [x for x in rel if x[1] in aSet]
         return set(new_rel)
     elif isinstance(node, ARangeSubtractionExpression):
@@ -253,6 +249,58 @@ def inperpret(node, env):
         q = inperpret(node.children[1], env)
         p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
         return set(p_prod)
+    elif isinstance(node, APartialFunctionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        return fun
+    elif isinstance(node, ATotalFunctionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        total_fun = filter_not_total(fun, S) # S-->T
+        return total_fun
+    elif isinstance(node, APartialInjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        inj_fun = filter_not_injective(fun) # S>+>T
+        return inj_fun
+    elif isinstance(node, ATotalInjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        inj_fun = filter_not_injective(fun) # S>+>T
+        total_inj_fun = filter_not_total(inj_fun, S) # S>->T
+        return total_inj_fun
+    elif isinstance(node, APartialSurjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        surj_fun = filter_not_surjective(fun, T) # S+->>T
+        return surj_fun
+    elif isinstance(node, ATotalSurjectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        surj_fun = filter_not_surjective(fun, T) # S+->>T
+        total_surj_fun = filter_not_total(surj_fun, S) # S-->>T
+        return total_surj_fun
+    elif isinstance(node, ATotalBijectionExpression):
+        S = inperpret(node.children[0], env)
+        T = inperpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        inj_fun = filter_not_injective(fun) # S>+>T
+        total_inj_fun = filter_not_total(inj_fun, S) # S>->T
+        bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
+        return bij_fun
     else:
         raise Exception("Unknown Node: %s",node)
 
@@ -264,6 +312,83 @@ def flatten(lst, res):
         else:
             res = flatten(e, res)
     return res
+
+
+# checks if a list contains a duplicate element
+def double_element_check(lst):
+    for element in lst:
+        if lst.count(element)>1:
+            return True
+    return False
+
+
+# filters out every function which is not injective
+def filter_not_injective(functions):
+    injective_funs = []
+    for fun in functions:
+        image = [x[1] for x in fun]
+        if not double_element_check(image):
+            injective_funs.append(fun)
+    return set(injective_funs)
+
+
+# filters out every function which is not surjective
+def filter_not_surjective(functions, T):
+    surj_funs = []
+    for fun in functions:
+        if is_a_surj_function(fun, T):
+            surj_funs.append(fun)
+    return set(surj_funs)
+
+
+# filters out every function which is not total
+def filter_not_total(functions, S):
+    total_funs = []
+    for fun in functions:
+        if is_a_total_function(fun, S):
+            total_funs.append(fun)
+    return set(total_funs)
+
+
+# checks if the function it total 
+def is_a_total_function(function, preimage_set):
+    preimage = [x[0] for x in function]
+    preimage_set2 =  set(preimage)
+    return preimage_set == preimage_set2
+
+
+# checks if the function it surjective
+def is_a_surj_function(function, image_set):
+    image = [x[1] for x in function]
+    image_set2= set(image) # remove duplicate items
+    return image_set == image_set2
+
+
+# filters out every set which is no function
+def filter_no_function(relations):
+    functions = []
+    for r in relations:
+        if is_a_function(r):
+            functions.append(r)
+    return set(functions)
+
+
+# checks if a relation is a function
+def is_a_function(relation):
+    preimage_set = [x[0] for x in relation]
+    if double_element_check(preimage_set):
+        return False
+    else:
+        return True
+
+
+# returns S<-->T
+def make_set_of_realtions(S,T):
+    cartSet = set(((x,y) for x in S for y in T))
+    res = powerset(cartSet)
+    powerlist = list(res)
+    lst = [frozenset(e) for e in powerlist]
+    return set(lst)
 
 
 # from http://docs.python.org/library/itertools.html

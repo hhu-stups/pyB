@@ -700,3 +700,178 @@ class TestGenAST():
         env.variable_values["p"] = set([("x","1")])
         env.variable_values["q"] = set([("a","3"),("b","4")])
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_part_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S+->T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([]))
+        l.append(frozenset([("a","x")]))
+        l.append(frozenset([("a","y")]))
+        l.append(frozenset([("b","x")]))
+        l.append(frozenset([("b","y")]))
+        l.append(frozenset([("a","x"),("b","x")]))
+        l.append(frozenset([("a","y"),("b","y")]))
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        l = []
+        l.append(frozenset([("1","hallo_welt")]))
+        l.append(frozenset([("2","hallo_welt")]))
+        l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
+        l.append(frozenset([]))
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_total_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S-->T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([("a","x"),("b","x")]))
+        l.append(frozenset([("a","y"),("b","y")]))
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        l = []
+        l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+    def test_genAST_pred_part_inj_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S>+>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([]))
+        l.append(frozenset([("a","x")]))
+        l.append(frozenset([("a","y")]))
+        l.append(frozenset([("b","x")]))
+        l.append(frozenset([("b","y")]))
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        l = []
+        l.append(frozenset([("1","hallo_welt")]))
+        l.append(frozenset([("2","hallo_welt")]))
+        l.append(frozenset([]))
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_total_inj_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S>->T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_part_surj_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S+->>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        l = []
+        l.append(frozenset([("1","hallo_welt")]))
+        l.append(frozenset([("2","hallo_welt")]))
+        l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_total_surj_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S-->>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([("a","x"),("b","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["x","y"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        l = []
+        l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+    def test_genAST_pred_bij_fun(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S>->>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = []
+        l.append(frozenset([("a","x"),("b","y"),("c","z")]))
+        l.append(frozenset([("a","y"),("b","x"),("c","z")]))
+        l.append(frozenset([("a","z"),("b","y"),("c","x")]))
+        l.append(frozenset([("a","x"),("b","z"),("c","y")]))
+        l.append(frozenset([("a","y"),("b","z"),("c","x")]))
+        l.append(frozenset([("a","z"),("b","x"),("c","y")]))
+        env = Environment()
+        env.variable_values["S"] = set(["a","b","c"])
+        env.variable_values["T"] = set(["x","y","z"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+        env.variable_values["S"] = set(["1","2"])
+        env.variable_values["T"] = set(["hallo_welt",])
+        env.variable_values["F"] = set([])
+        assert inperpret(root,env)

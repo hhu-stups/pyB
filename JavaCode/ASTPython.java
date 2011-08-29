@@ -84,6 +84,48 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAPartialFunctionExpression(APartialFunctionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseATotalFunctionExpression(ATotalFunctionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAPartialInjectionExpression(APartialInjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAPartialSurjectionExpression(APartialSurjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseATotalSurjectionExpression(ATotalSurjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseATotalBijectionExpression(ATotalBijectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseATotalInjectionExpression(ATotalInjectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseARelationsExpression(ARelationsExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
