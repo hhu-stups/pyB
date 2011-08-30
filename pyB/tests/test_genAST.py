@@ -875,3 +875,49 @@ class TestGenAST():
         env.variable_values["T"] = set(["hallo_welt",])
         env.variable_values["F"] = set([])
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_bij_fun2(self):
+        # Build AST:
+        string_to_file("#PREDICATE F=S>->>T>->>U", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        l = [frozenset([(frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z1'), (frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z2')]), frozenset([(frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z1'), (frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z2')])]
+        env = Environment()
+        env.variable_values["S"] = set(["x1","x2"])
+        env.variable_values["T"] = set(["y1","y2"])
+        env.variable_values["U"] = set(["z1","z2"])
+        env.variable_values["F"] = set(l)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_fun_app(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={(a,x),(b,y)} & f(b)=y", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
+        env.variable_values["x"] = "x"
+        env.variable_values["y"] = "y"
+        env.variable_values["f"] = set([("a","x"),("b","y")])
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_fun_app2(self):
+        # Build AST:
+        string_to_file("#PREDICATE f:S*T>->>V & x:S*T & f(x)=y", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["S"] = set(["x1","x2"])
+        env.variable_values["T"] = set(["y1","y2"])
+        env.variable_values["V"] = set(["z1","z2","z3","z4"])
+        env.variable_values["x"] = ("x1","y1")
+        env.variable_values["f"] = frozenset([(("x1","y1"),"z1"),(("x2","y2"),"z2"),(("x1","y2"),"z3"),(("x2","y1"),"z4")])
+        env.variable_values["y"] = "z1"
+        assert inperpret(root,env)

@@ -118,6 +118,9 @@ class ATotalSurjectionExpression(Expression):
 class ATotalBijectionExpression(Expression):
     pass
 
+class AFunctionExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

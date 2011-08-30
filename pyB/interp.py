@@ -301,6 +301,13 @@ def inperpret(node, env):
         total_inj_fun = filter_not_total(inj_fun, S) # S>->T
         bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
         return bij_fun
+    elif isinstance(node, AFunctionExpression):
+        function = inperpret(node.children[0], env)
+        args = []
+        for child in node.children[1:]:
+            arg = inperpret(child, env)
+            args.append(arg)
+        return get_image(function, args[0])
     else:
         raise Exception("Unknown Node: %s",node)
 
@@ -313,6 +320,12 @@ def flatten(lst, res):
             res = flatten(e, res)
     return res
 
+
+def get_image(function, preimage):
+    for atuple in function:
+        if atuple[0] == preimage:
+            return atuple[1]
+    return None #no image found
 
 # checks if a list contains a duplicate element
 def double_element_check(lst):

@@ -1,1 +1,1 @@
-#PREDICATE F=S>->>T
+#PREDICATE f:S*T>->>V & x:S*T & f(x)=y
