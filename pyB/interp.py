@@ -384,6 +384,25 @@ def inperpret(node, env):
             new_sequence.append(tuple([i,tup[1]]))
             i = i-1
         return set(new_sequence)
+    elif isinstance(node, ARestrictFrontExpression):
+        sequence = inperpret(node.children[0], env)
+        take = inperpret(node.children[1], env)
+        assert take>0
+        lst = list(sequence)
+        lst.sort()
+        return set(lst[:-take])
+    elif isinstance(node, ARestrictTailExpression):
+        sequence = inperpret(node.children[0], env)
+        drop = inperpret(node.children[1], env)
+        assert drop>0
+        lst = list(sequence)
+        lst.sort()
+        new_list = []
+        i = 0
+        for tup in lst[drop:]:
+            i = i+1
+            new_list.append(tuple([i,tup[1]]))
+        return set(new_list)
     else:
         raise Exception("Unknown Node: %s",node)
 

@@ -154,6 +154,12 @@ class ASizeExpression(Expression):
 class ARevExpression(Expression):
     pass
 
+class ARestrictFrontExpression(Expression):
+    pass
+
+class ARestrictTailExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

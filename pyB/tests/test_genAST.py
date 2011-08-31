@@ -1059,3 +1059,35 @@ class TestGenAST():
         env.variable_values["a"] = "a"
         env.variable_values["b"] = "b"
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_seq_take(self):
+        # Build AST:
+        string_to_file("#PREDICATE s=[a,b,c,d,e]/|\\3", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
+        env.variable_values["c"] = "c"
+        env.variable_values["d"] = "d"
+        env.variable_values["e"] = "e"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_seq_drop(self):
+        # Build AST:
+        string_to_file("#PREDICATE s=[a,b,c,d,e]\\|/3", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["s"] = frozenset([(1, 'd'), (2, 'e')]) 
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
+        env.variable_values["c"] = "c"
+        env.variable_values["d"] = "d"
+        env.variable_values["e"] = "e"
+        assert inperpret(root,env)

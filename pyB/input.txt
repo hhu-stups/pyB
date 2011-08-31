@@ -1,1 +1,1 @@
-#PREDICATE s=[a,b] & rev(s)=[b,a]
+#PREDICATE s=[a,b,c,d,e]\|/3
