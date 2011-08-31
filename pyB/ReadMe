@@ -41,4 +41,4 @@ TODO:
     - sets and frozensets are mixed in POW..fix that
     - rename quantified variables in helper-funcs
     - Maybe the implemenation has to be fixed if infinite sets are introduced
-
+    - enable function applications (4.1.9) with many args

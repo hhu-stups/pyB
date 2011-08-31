@@ -327,6 +327,7 @@ def inperpret(node, env):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         return set(sequence_list)
     elif isinstance(node,AIseqExpression):
+        # TODO: this can be impl. much better
         S = inperpret(node.children[0], env)
         sequence_list = [frozenset([])]
         max_len = 1
@@ -335,7 +336,8 @@ def inperpret(node, env):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         return set(inj_sequence_list)
-    elif isinstance(node,APermExpression):
+    elif isinstance(node,APermExpression): 
+        # TODO: this can be impl. much better
         S = inperpret(node.children[0], env)
         sequence_list = [frozenset([])]
         max_len = 1
@@ -345,6 +347,24 @@ def inperpret(node, env):
         inj_sequence_list = filter_not_injective(sequence_list)
         perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
         return set(perm_sequence_list)
+    elif isinstance(node, AConcatExpression):
+        s = inperpret(node.children[0], env)
+        t = inperpret(node.children[1], env)
+        new_t = []
+        for tup in t:
+            new_t.append(tuple([tup[0]+len(s),tup[1]]))
+        return set(list(s)+new_t)
+    elif isinstance(node, AInsertFrontExpression):
+        E = inperpret(node.children[0], env)
+        s = inperpret(node.children[1], env)
+        new_s = [(1,E)]
+        for tup in s:
+            new_s.append(tuple([tup[0]+1,tup[1]]))
+        return set(new_s)
+    elif isinstance(node, AInsertTailExpression):
+        s = inperpret(node.children[0], env)
+        E = inperpret(node.children[1], env)
+        return set(list(s)+[tuple([len(s)+1,E])])
     else:
         raise Exception("Unknown Node: %s",node)
 

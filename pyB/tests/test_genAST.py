@@ -993,3 +993,43 @@ class TestGenAST():
         env.variable_values["S"] = set(["a","b"])
         env.variable_values["s"] = set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])])
         assert inperpret(root,env)
+
+        env.variable_values["s"] = frozenset([])
+        assert not inperpret(root,env)
+
+    def test_genAST_pred_seq_conc(self):
+        # Build AST:
+        string_to_file("#PREDICATE s:perm(S) & t:perm(S) => s^t:seq(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
+        env.variable_values["t"] = frozenset([(1, 'a'), (2, 'b')])
+        assert inperpret(root,env)
+
+    def test_genAST_pred_seq_prepend(self):
+        # Build AST:
+        string_to_file("#PREDICATE s:perm(S) => a->s:seq(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
+        env.variable_values["a"] = "a"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_seq_append(self):
+        # Build AST:
+        string_to_file("#PREDICATE s:perm(S) => s<-a:seq(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
+        env.variable_values["a"] = "a"
+        assert inperpret(root,env)

@@ -103,6 +103,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAConcatExpression(AConcatExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseATotalFunctionExpression(ATotalFunctionExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
@@ -170,6 +176,18 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseAModuloExpression(AModuloExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAInsertFrontExpression(AInsertFrontExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAInsertTailExpression(AInsertTailExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }

@@ -136,6 +136,15 @@ class AIseqExpression(Expression):
 class APermExpression(Expression):
     pass
 
+class AConcatExpression(Expression):
+    pass
+
+class AInsertFrontExpression(Expression):
+    pass
+
+class AInsertTailExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
