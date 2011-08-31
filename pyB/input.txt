@@ -1,1 +1,1 @@
-#PREDICATE f:S*T>->>V & x:S*T & f(x)=y
+#PREDICATE s=perm(S)

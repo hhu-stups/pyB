@@ -47,6 +47,13 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAEmptySequenceExpression(AEmptySequenceExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "AEmptySequenceExpression()\n";
+    }
+
+
     public void outStart(Start node)
     {
         // dont add a start node now
@@ -81,6 +88,12 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseACoupleExpression(ACoupleExpression node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getList()),null);
+    }
+
+
+    public void caseAFunctionExpression(AFunctionExpression node)
+    {
+        printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());
     }
 
 
@@ -163,6 +176,30 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseACardExpression(ACardExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseASeqExpression(ASeqExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseASeq1Expression(ASeq1Expression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAIseqExpression(AIseqExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAPermExpression(APermExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
     }
@@ -466,5 +503,35 @@ public class ASTPython extends DepthFirstAdapter{
             out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
         if(extra!=null)
             out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
+    }
+
+
+    // Node first
+    private void printStdOut_manyChildren2(Node node, List<PExpression> copy, Node extra)
+    {
+        String[] ids = new String[copy.size()+1];
+        int i=0;
+        if(extra!=null)
+        {
+            extra.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        if(extra!=null)
+            out += "id"+nodeid+".children.append(id"+ids[0]+")\n";
+        for(i=1; i<ids.length; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+
     }
 }

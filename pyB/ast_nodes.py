@@ -121,6 +121,21 @@ class ATotalBijectionExpression(Expression):
 class AFunctionExpression(Expression):
     pass
 
+class AEmptySequenceExpression(Expression):
+    pass
+
+class ASeqExpression(Expression):
+    pass
+
+class ASeq1Expression(Expression):
+    pass
+
+class AIseqExpression(Expression):
+    pass
+
+class APermExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

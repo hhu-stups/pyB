@@ -303,13 +303,71 @@ def inperpret(node, env):
         return bij_fun
     elif isinstance(node, AFunctionExpression):
         function = inperpret(node.children[0], env)
-        args = []
+        args = [] # TODO: enamble many args
         for child in node.children[1:]:
             arg = inperpret(child, env)
             args.append(arg)
         return get_image(function, args[0])
+    elif isinstance(node,AEmptySequenceExpression):
+        return set([])
+    elif isinstance(node,ASeqExpression):
+        S = inperpret(node.children[0], env)
+        sequence_list = [frozenset([])]
+        max_len = 1
+        # find all seq from 1..max_int
+        for i in range(1,max_int+1):
+            sequence_list += create_all_seq_w_fixlen(list(S),i)
+        return set(sequence_list)
+    elif isinstance(node,ASeq1Expression):
+        S = inperpret(node.children[0], env)
+        sequence_list = []
+        max_len = 1
+        # find all seq from 1..max_int
+        for i in range(1,max_int+1):
+            sequence_list += create_all_seq_w_fixlen(list(S),i)
+        return set(sequence_list)
+    elif isinstance(node,AIseqExpression):
+        S = inperpret(node.children[0], env)
+        sequence_list = [frozenset([])]
+        max_len = 1
+        # find all seq from 1..max_int
+        for i in range(1,max_int+1):
+            sequence_list += create_all_seq_w_fixlen(list(S),i)
+        inj_sequence_list = filter_not_injective(sequence_list)
+        return set(inj_sequence_list)
+    elif isinstance(node,APermExpression):
+        S = inperpret(node.children[0], env)
+        sequence_list = [frozenset([])]
+        max_len = 1
+        # find all seq from 1..max_int
+        for i in range(1,max_int+1):
+            sequence_list += create_all_seq_w_fixlen(list(S),i)
+        inj_sequence_list = filter_not_injective(sequence_list)
+        perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
+        return set(perm_sequence_list)
     else:
         raise Exception("Unknown Node: %s",node)
+
+
+# XXX: Warning: this could take some time...
+def create_all_seq_w_fixlen(images, length):
+    result = []
+    basis = len(images)
+    noc = basis**length # number of combinations
+    for i in range(noc):
+        lst = create_sequence(images, i, length)
+        result.append(frozenset(lst))
+    return result
+
+def create_sequence(images, number, length):
+    result = []
+    basis = len(images)
+    for i in range(length):
+        symbol = tuple([i+1,images[number % basis]])
+        result.append(symbol)
+        number /= basis
+    result.reverse()
+    return result
 
 
 def flatten(lst, res):
