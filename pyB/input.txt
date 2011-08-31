@@ -1,1 +1,1 @@
-#PREDICATE s=[a,b,c,d,e]\|/3
+#PREDICATE s=[a,b,c,d,e] & front(s)=t

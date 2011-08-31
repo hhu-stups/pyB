@@ -45,6 +45,7 @@ TODO:
     - enable function applications (4.1.9) with many args
     - not tested: sequences of sequences
     - not tested: append/preprend more than one element
+    - Maybe a BUG: there are no local vars. all vars are global
 
 
 MISSING FEATURES:
@@ -57,5 +58,6 @@ MISSING FEATURES:
     - interval sum and pi
     - itrations and closure
     - lambda abstractions
+    - generalized cinc and strings
     - finding the env(only fix environment at the moment)
     - and maybe more...;-)

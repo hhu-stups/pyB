@@ -160,6 +160,18 @@ class ARestrictFrontExpression(Expression):
 class ARestrictTailExpression(Expression):
     pass
 
+class AFirstExpression(Expression):
+    pass
+
+class ALastExpression(Expression):
+    pass
+
+class ATailExpression(Expression):
+    pass
+
+class AFrontExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

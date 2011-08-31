@@ -403,6 +403,30 @@ def inperpret(node, env):
             i = i+1
             new_list.append(tuple([i,tup[1]]))
         return set(new_list)
+    elif isinstance(node, AFirstExpression):
+        sequence = inperpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[0][0]==1
+        return lst[0][1]
+    elif isinstance(node, ALastExpression):
+        sequence = inperpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[len(sequence)-1][0]==len(sequence)
+        return lst[len(sequence)-1][1]
+    elif isinstance(node, ATailExpression):
+        sequence = inperpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[0][0]==1
+        return set(lst[1:])
+    elif isinstance(node, AFrontExpression):
+        sequence = inperpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        lst.pop()
+        return set(lst)
     else:
         raise Exception("Unknown Node: %s",node)
 
