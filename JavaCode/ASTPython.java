@@ -53,6 +53,17 @@ public class ASTPython extends DepthFirstAdapter{
         out += "AEmptySequenceExpression()\n";
     }
 
+    public void caseANatSetExpression(ANatSetExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "ANatSetExpression()\n";
+    }
+
+    public void caseANat1SetExpression(ANat1SetExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "ANat1SetExpression()\n";
+    }
 
     public void outStart(Start node)
     {

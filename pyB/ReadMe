@@ -62,4 +62,5 @@ MISSING FEATURES:
     - generalized cinc and strings
     - finding the env(only fix environment at the moment)
     - sum prod (sigma/pi) only works in sp. cases.
+    - NAT and NAT1 is not infinite!
     - and maybe more...;-)

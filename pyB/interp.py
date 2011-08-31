@@ -463,6 +463,10 @@ def inperpret(node, env):
                 if inperpret(preds, env):
                     prod *= inperpret(node.children[-1], env)
         return prod
+    elif isinstance(node, ANatSetExpression):
+        return set(range(0,max_int+1))
+    elif isinstance(node, ANat1SetExpression):
+        return set(range(1,max_int+1))
     else:
         raise Exception("Unknown Node: %s",node)
 

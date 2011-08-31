@@ -356,6 +356,36 @@ class TestGenAST():
         assert inperpret(root,env)
 
 
+    def test_genAST_pred_nat(self):
+        # Build AST:
+        string_to_file("#PREDICATE x:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["x"] = 2
+        assert inperpret(root,env)
+
+        env.variable_values["x"] = 0
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_nat1(self):
+        # Build AST:
+        string_to_file("#PREDICATE x:NAT1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["x"] = 2
+        assert inperpret(root,env)
+
+        env.variable_values["x"] = 0
+        assert not inperpret(root,env)
+
+
     def test_genAST_pred_pi(self):
         # Build AST:
         string_to_file("#PREDICATE (PI zz . (zz:1..5 | zz))=120", file_name)

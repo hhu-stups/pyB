@@ -181,6 +181,12 @@ class AGeneralSumExpression(Expression):
 class AGeneralProductExpression(Expression):
     pass
 
+class ANatSetExpression(Expression):
+    pass
+
+class ANat1SetExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
