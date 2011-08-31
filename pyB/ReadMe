@@ -46,6 +46,7 @@ TODO:
     - not tested: sequences of sequences
     - not tested: append/preprend more than one element
     - Maybe a BUG: there are no local vars. all vars are global
+    - move tests in seperated files
 
 
 MISSING FEATURES:
@@ -60,4 +61,5 @@ MISSING FEATURES:
     - lambda abstractions
     - generalized cinc and strings
     - finding the env(only fix environment at the moment)
+    - sum prod (sigma/pi) only works in sp. cases.
     - and maybe more...;-)

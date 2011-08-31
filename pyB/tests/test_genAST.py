@@ -297,6 +297,77 @@ class TestGenAST():
         env = Environment()
         assert not inperpret(root,env)
 
+
+    def test_genAST_pred_set_contains3(self):
+        # Build AST:
+        string_to_file("#PREDICATE x:{x}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["x"] = "x"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_set_orderd_pair(self):
+        # Build AST:
+        string_to_file("#PREDICATE x|->y:{(x,y)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["x"] = "x"
+        env.variable_values["y"] = "y"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_interval(self):
+        # Build AST:
+        string_to_file("#PREDICATE zz:1..5", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["zz"] = 4
+        assert inperpret(root,env)
+
+        env.variable_values["zz"] = 5
+        assert inperpret(root,env)
+
+        env.variable_values["zz"] = 6
+        assert not inperpret(root,env)
+
+        env.variable_values["zz"] = 0
+        assert not inperpret(root,env)
+
+
+    def test_genAST_pred_sigma(self):
+        # Build AST:
+        string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["zz"] = "zz"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_pi(self):
+        # Build AST:
+        string_to_file("#PREDICATE (PI zz . (zz:1..5 | zz))=120", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["zz"] = "zz"
+        assert inperpret(root,env)
+
+
     def test_genAST_set_enum(self):
         # Build AST:
         string_to_file("#PREDICATE yy:{aa,bb,cc}", file_name)

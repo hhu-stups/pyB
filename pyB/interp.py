@@ -427,6 +427,42 @@ def inperpret(node, env):
         lst.sort()
         lst.pop()
         return set(lst)
+    elif isinstance(node, AIntervalExpression):
+        left = inperpret(node.children[0], env)
+        right = inperpret(node.children[1], env)
+        return set(range(left, right+1))
+    elif isinstance(node, AGeneralSumExpression):
+        # BUG: only works in sp. cases
+        # TODO: implement me: find solutuions for ids if ids are not nums
+        sum_ = 0
+        ids = []
+        for child in node.children[:-2]:
+            ids.append(inperpret(child, env))
+        preds = node.children[-2] 
+        # gen. all values:
+        all_val = [x for x in range(min_int,max_int+1)]
+        for idName in ids: #TODO: this code dont checks all possibilities!
+            for i in all_val:
+                env.variable_values[idName] = i
+                if inperpret(preds, env):
+                    sum_ += inperpret(node.children[-1], env)
+        return sum_
+    elif isinstance(node, AGeneralProductExpression):
+        # BUG: only works in sp. cases
+        # TODO: implement me: find solutuions for ids if ids are not nums
+        prod = 1
+        ids = []
+        for child in node.children[:-2]:
+            ids.append(inperpret(child, env))
+        preds = node.children[-2] 
+        # gen. all values:
+        all_val = [x for x in range(min_int,max_int+1)]
+        for idName in ids: #TODO: this code dont checks all possibilities!
+            for i in all_val:
+                env.variable_values[idName] = i
+                if inperpret(preds, env):
+                    prod *= inperpret(node.children[-1], env)
+        return prod
     else:
         raise Exception("Unknown Node: %s",node)
 

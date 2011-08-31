@@ -172,6 +172,15 @@ class ATailExpression(Expression):
 class AFrontExpression(Expression):
     pass
 
+class AIntervalExpression(Expression):
+    pass
+
+class AGeneralSumExpression(Expression):
+    pass
+
+class AGeneralProductExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
