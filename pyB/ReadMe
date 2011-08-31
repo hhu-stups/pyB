@@ -1,4 +1,4 @@
-03.08.2011 by John Witulski 
+31.08.2011 by John Witulski 
 
 Config:
     copy ASTPython.java to .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
@@ -22,6 +22,7 @@ Features:
     Evals set extentions like:  {a,b,c}
     Evals quantified preds like: #(z).(z<4 & z>0) (only integer!)
     Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} (only integer!)
+    Evals realtions, functions and sequences
 
 
 How it works:
@@ -38,7 +39,23 @@ DONE:
 TODO:
     - write more AST-Gen tests
     - wirte a build-script
-    - sets and frozensets are mixed in POW..fix that
+    - sets and frozensets are mixed (e.g in POW)..fix that
     - rename quantified variables in helper-funcs
     - Maybe the implemenation has to be fixed if infinite sets are introduced
     - enable function applications (4.1.9) with many args
+    - not tested: sequences of sequences
+    - not tested: append/preprend more than one element
+
+
+MISSING FEATURES:
+    - infinite sets/sequences/relations
+    - substitutions
+    - uni/ex quantification for preds. without numbers
+    - singleton sets
+    - sp. union/inter buildins
+    - min/max an the natural numbers
+    - interval sum and pi
+    - itrations and closure
+    - lambda abstractions
+    - finding the env(only fix environment at the moment)
+    - and maybe more...;-)

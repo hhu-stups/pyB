@@ -365,6 +365,25 @@ def inperpret(node, env):
         s = inperpret(node.children[0], env)
         E = inperpret(node.children[1], env)
         return set(list(s)+[tuple([len(s)+1,E])])
+    elif isinstance(node, ASequenceExtensionExpression):
+        sequence = []
+        i = 0
+        for child in node.children:
+            i = i+1
+            e = inperpret(child, env)
+            sequence.append(tuple([i,e]))
+        return set(sequence)
+    elif isinstance(node, ASizeExpression):
+        sequence = inperpret(node.children[0], env)
+        return len(sequence)
+    elif isinstance(node, ARevExpression):
+        sequence = inperpret(node.children[0], env)
+        new_sequence = []
+        i = len(sequence)
+        for tup in sequence:
+            new_sequence.append(tuple([i,tup[1]]))
+            i = i-1
+        return set(new_sequence)
     else:
         raise Exception("Unknown Node: %s",node)
 

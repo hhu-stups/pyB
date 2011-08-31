@@ -1033,3 +1033,29 @@ class TestGenAST():
         env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
         env.variable_values["a"] = "a"
         assert inperpret(root,env)
+
+
+    def test_genAST_pred_seq_size(self):
+        # Build AST:
+        string_to_file("#PREDICATE s=[a,b] & size(s)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_seq_reverse(self):
+        # Build AST:
+        string_to_file("#PREDICATE s=[a,b] & rev(s)=[b,a]", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
+        assert inperpret(root,env)

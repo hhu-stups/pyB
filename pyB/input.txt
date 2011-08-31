@@ -1,1 +1,1 @@
-#PREDICATE s:perm(S) => s<-a:seq(S)
+#PREDICATE s=[a,b] & rev(s)=[b,a]

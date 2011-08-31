@@ -145,6 +145,15 @@ class AInsertFrontExpression(Expression):
 class AInsertTailExpression(Expression):
     pass
 
+class ASequenceExtensionExpression(Expression):
+    pass
+
+class ASizeExpression(Expression):
+    pass
+
+class ARevExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 

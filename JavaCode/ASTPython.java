@@ -91,6 +91,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseASequenceExtensionExpression(ASequenceExtensionExpression node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getExpression()),null);
+    }
+
+
     public void caseAFunctionExpression(AFunctionExpression node)
     {
         printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());
@@ -194,6 +200,18 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseACardExpression(ACardExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseASizeExpression(ASizeExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseARevExpression(ARevExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
     }
