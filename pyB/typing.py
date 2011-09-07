@@ -10,30 +10,49 @@ class IntegerType(BType):
     def __init__(self, data):
         self.data = data
 
+class PowerSetType(BType):
+    def __init__(self, data):
+        self.data = data
+
+class SetType(BType):
+    def __init__(self, data):
+        self.data = data
+        self.name = "SET"
 
 # returns Type, None or String
 # sideeffect: changes env
 def typeit(node, env):
     if isinstance(node, ANatSetExpression):
-        return IntegerType(None)
+        return PowerSetType(IntegerType(None))
     elif isinstance(node, ANat1SetExpression):
-        return IntegerType(None)
+        return PowerSetType(IntegerType(None))
     elif isinstance(node, AIntervalExpression):
-        return IntegerType(None)
+        return PowerSetType(IntegerType(None))
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)
     elif isinstance(node, AIdentifierExpression):
-        idtype = env.variable_type[node.idName]
-        if idtype == None:
+        try:
+            idtype = env.variable_type[node.idName]
+            if idtype == None:
+                return node.idName # special case
+            else:
+                return idtype
+        except KeyError:
             return node.idName # special case
-        else:
-            return idtype
+    elif isinstance(node, ASetExtensionExpression):
+        lst = []
+        for child in node.children:
+            elm = typeit(child, env)
+            assert isinstance(elm, str)
+            lst.append(elm)
+        return PowerSetType(SetType(set(lst)))
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env)
         set_type = typeit(node.children[1], env)
         if isinstance(elm_type, str) and not set_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
-            env.variable_type[elm_type] = set_type
+            assert isinstance(set_type, PowerSetType)
+            env.variable_type[elm_type] = set_type.data
             return
         else:
             raise Exception("Unimplemented case")
@@ -90,5 +109,9 @@ def typeit(node, env):
         typeit(node.children[-2], env)
         typeit(node.children[-1], env)
         return IntegerType(None)
+    elif isinstance(node, ACardExpression):
+        typeit(node.children[0], env)
+        return IntegerType(None)
     else:
-        raise Exception("Unimplemented case: %s",node)
+        for child in node.children:
+            typeit(child, env)

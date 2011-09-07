@@ -1,1 +1,1 @@
-#PREDICATE x<=5
+#PREDICATE ID={aa,bb}

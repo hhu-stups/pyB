@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import typeit, IntegerType
+from typing import typeit, IntegerType, PowerSetType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -234,3 +234,30 @@ class TestTypesNumbers():
         env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
+
+
+    def test_types_interval(self):
+        # Build AST:
+        string_to_file("#PREDICATE x:1..5", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["x"] = None
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+
+
+    def test_types_interval2(self):
+        # Build AST:
+        string_to_file("#PREDICATE x=1..5", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["x"] = None
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], PowerSetType)
+        assert isinstance(env.variable_type["x"].data, IntegerType)
