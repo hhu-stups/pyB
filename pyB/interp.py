@@ -5,7 +5,8 @@ min_int = -1
 max_int = 5
 
 class Environment():
-    variable_values = {} #values of global and local vars
+    variable_values = {} # values of global and local vars vv: str->val
+    variable_type = {}  # types of global and local vars vt: str->str
 
 def inperpret(node, env):
     if isinstance(node, AConjunctPredicate):
