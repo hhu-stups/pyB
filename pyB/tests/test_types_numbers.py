@@ -105,6 +105,7 @@ class TestTypesNumbers():
         assert isinstance(env.variable_type["x"], IntegerType)
 
 
+    # TODO: survie refactoring
     def test_types_simple_equal(self):
         # Build AST
         string_to_file("#PREDICATE x=y", file_name)
@@ -120,6 +121,7 @@ class TestTypesNumbers():
         assert isinstance(env.variable_type["x"], IntegerType)
 
 
+    # TODO: survie refactoring 
     def test_types_simple_equal2(self):
         # Build AST
         string_to_file("#PREDICATE y=x", file_name)
