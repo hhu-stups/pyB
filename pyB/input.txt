@@ -1,1 +1,1 @@
-#PREDICATE S={a,b} & ID={x,y|x<10 & y:S}
+#PREDICATE S=A\/B & T=A/\B & R = A-B

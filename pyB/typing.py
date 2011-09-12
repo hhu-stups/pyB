@@ -8,16 +8,18 @@ class BType:
 
 class IntegerType(BType):
     def __init__(self, number_or_None):
-        self.data = number_or_None
+        self.data = number_or_None # TODO: maybe this data is useless
+
 
 class PowerSetType(BType):
     def __init__(self, aset_type):
         self.data = aset_type
 
+
 class SetType(BType):
-    def __init__(self, aset):
-        self.data = aset
-        self.name = "SET"
+    def __init__(self, name):
+        self.data = name # None when name unknown
+
 
 # returns Type, None or String
 # sideeffect: changes env
@@ -29,13 +31,13 @@ def typeit(node, env):
     elif isinstance(node, AIntervalExpression):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AEmptySetExpression):
-        return PowerSetType(SetType(set()))
+        return PowerSetType(SetType(None))
     elif isinstance(node, AComprehensionSetExpression):
         pred = node.children[len(node.children) -1]
         typeit(pred, env)
         for child in node.children[:-1]:
             assert not env.variable_type[child.idName]==None
-        return PowerSetType(SetType(None)) #TODO: calc set
+        return PowerSetType(SetType(None)) #name unknown
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)
     elif isinstance(node, AIdentifierExpression):
@@ -48,12 +50,9 @@ def typeit(node, env):
         except KeyError:
             return node.idName # special case
     elif isinstance(node, ASetExtensionExpression):
-        lst = []
         for child in node.children:
-            elm = typeit(child, env)
-            assert isinstance(elm, str)
-            lst.append(elm)
-        return PowerSetType(SetType(set(lst)))
+            typeit(child, env)
+        return PowerSetType(SetType(None)) # name unknown
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env)
         set_type = typeit(node.children[1], env)
@@ -69,13 +68,23 @@ def typeit(node, env):
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, str) and not expr2_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
+            if isinstance(expr2_type, PowerSetType) and  isinstance(expr2_type.data, SetType) and expr2_type.data.data == None:
+                expr2_type.data.data = expr1_type # set name
             env.variable_type[expr1_type] = expr2_type
         elif isinstance(expr2_type, str) and not expr1_type == None:
             assert isinstance(node.children[1], AIdentifierExpression)
+            if isinstance(expr1_type, PowerSetType) and  isinstance(expr1_type.data, SetType) and expr1_type.data.data == None: # TODO: think about that...
+                expr1_type.data.data = expr2_type # set name
             env.variable_type[expr2_type] = expr1_type
         else:
             assert expr1_type.__class__ == expr2_type.__class__
         return None
+    elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
+        asettype0 = typeit(node.children[0], env)
+        asettype1 = typeit(node.children[1], env)
+        assert asettype1.data.data == asettype0.data.data # same name
+        assert asettype1.__class__ == asettype0.__class__
+        return asettype1
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)
@@ -100,6 +109,9 @@ def typeit(node, env):
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, IntegerType) and isinstance(expr2_type, IntegerType): # Minus
             return IntegerType(None)
+        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType):
+            assert expr1_type.data.data== expr2_type.data.data # same name
+            return expr1_type
         else:
             raise Exception("Unimplemented case: %s",node)
     elif isinstance(node, AMultOrCartExpression):

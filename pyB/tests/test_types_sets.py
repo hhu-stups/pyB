@@ -35,7 +35,7 @@ class TestTypesSets():
         typeit(root, env)
         assert isinstance(env.variable_type["ID"], PowerSetType)
         assert isinstance(env.variable_type["ID"].data, SetType)
-        assert isinstance(env.variable_type["ID"].data.data, set)
+        assert env.variable_type["ID"].data.data =="ID"
 
 
     def test_types_simple_set_empty(self):
@@ -75,10 +75,38 @@ class TestTypesSets():
         env = Environment()
         env.variable_type["ID"] = None
         env.variable_type["S"] = None
-        env.variable_type["a"] = "a"
-        env.variable_type["b"] = "b"
+        env.variable_values["a"] = "a"
+        env.variable_values["b"] = "b"
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
         assert isinstance(env.variable_type["ID"], PowerSetType)
         assert isinstance(env.variable_type["x"], IntegerType)
         assert isinstance(env.variable_type["y"], SetType)
+        assert env.variable_type["y"].data =="S"
+
+
+    def test_types_simple_set_union(self):
+        # Build AST
+        string_to_file("#PREDICATE S=A\/B & T=A/\\B & R = A-B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["S"] = None
+        env.variable_type["T"] = None
+        env.variable_type["R"] = None
+        env.variable_type["A"] = PowerSetType(SetType(set()))
+        env.variable_type["B"] = PowerSetType(SetType(set()))
+        env.variable_type["A"].data.data = "X"
+        env.variable_type["B"].data.data = "X"
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data =="X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data =="X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data =="X"

@@ -47,6 +47,7 @@ TODO:
     - not tested: append/preprend more than one element
     - Maybe a BUG: there are no local vars. all vars are global
     - move tests in seperated files
+    - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
 
 
 MISSING FEATURES:
