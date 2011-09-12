@@ -1,1 +1,1 @@
-#PREDICATE ID={aa,bb}
+#PREDICATE S={a,b} & ID={x,y|x<10 & y:S}

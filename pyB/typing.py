@@ -7,16 +7,16 @@ class BType:
 
 
 class IntegerType(BType):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, number_or_None):
+        self.data = number_or_None
 
 class PowerSetType(BType):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, aset_type):
+        self.data = aset_type
 
 class SetType(BType):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, aset):
+        self.data = aset
         self.name = "SET"
 
 # returns Type, None or String
@@ -28,6 +28,14 @@ def typeit(node, env):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AIntervalExpression):
         return PowerSetType(IntegerType(None))
+    elif isinstance(node, AEmptySetExpression):
+        return PowerSetType(SetType(set()))
+    elif isinstance(node, AComprehensionSetExpression):
+        pred = node.children[len(node.children) -1]
+        typeit(pred, env)
+        for child in node.children[:-1]:
+            assert not env.variable_type[child.idName]==None
+        return PowerSetType(SetType(None)) #TODO: calc set
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)
     elif isinstance(node, AIdentifierExpression):
