@@ -139,3 +139,19 @@ class TestTypesSets():
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
         assert isinstance(env.variable_type["S"].data, PowerSetType)
+
+
+    def test_types_simple_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE S<:B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["S"] = None
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"

@@ -1,1 +1,1 @@
-#PREDICATE S=POW(B)
+#PREDICATE r=prj2(A,B)
