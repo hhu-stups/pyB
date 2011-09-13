@@ -21,6 +21,11 @@ class SetType(BType):
         self.data = name # None when name unknown
 
 
+class CartType(BType):
+    def __init__(self, setA, setB):
+        self.data = (setA, setB)
+
+
 # returns Type, None or String
 # sideeffect: changes env
 def typeit(node, env):
@@ -62,7 +67,7 @@ def typeit(node, env):
             env.variable_type[elm_type] = set_type.data
             return
         else:
-            raise Exception("Unimplemented case")
+            raise Exception("Unimplemented case: no ID on left side")
     elif isinstance(node, AEqualPredicate):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)
@@ -113,12 +118,14 @@ def typeit(node, env):
             assert expr1_type.data.data== expr2_type.data.data # same name
             return expr1_type
         else:
-            raise Exception("Unimplemented case: %s",node)
+            raise Exception("Unimplemented case: no sets and no ints!")
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, IntegerType) and isinstance(expr2_type, IntegerType): # Mul
             return IntegerType(None)
+        elif isinstance(expr1_type, PowerSetType) and  isinstance(expr2_type, PowerSetType):
+            return PowerSetType(CartType(expr1_type.data, expr2_type.data))
         else:
             raise Exception("Unimplemented case: %s",node)
     elif isinstance(node, AGeneralSumExpression):
@@ -132,6 +139,30 @@ def typeit(node, env):
     elif isinstance(node, ACardExpression):
         typeit(node.children[0], env)
         return IntegerType(None)
+    elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
+        atype = typeit(node.children[0], env)
+        assert isinstance(atype, PowerSetType)
+        return PowerSetType(atype)
+    elif isinstance(node, ARelationsExpression):
+        atype0 = typeit(node.children[0], env)
+        atype1 = typeit(node.children[1], env)
+        return PowerSetType(PowerSetType(CartType(atype0.data, atype1.data)))
+    elif isinstance(node, ADomainExpression):
+        rel_type =  typeit(node.children[0], env)
+        assert isinstance(rel_type.data, CartType)
+        return PowerSetType(rel_type.data.data[0]) # pow of preimage settype
+    elif isinstance(node, ARangeExpression):
+        rel_type =  typeit(node.children[0], env)
+        assert isinstance(rel_type.data, CartType)
+        return PowerSetType(rel_type.data.data[1]) # pow of image settype
+    elif isinstance(node, ACompositionExpression):
+        rel_type0 =  typeit(node.children[0], env)
+        rel_type1 =  typeit(node.children[1], env)
+        assert isinstance(rel_type0.data, CartType)
+        assert isinstance(rel_type1.data, CartType)
+        preimagetype = rel_type0.data.data[1]
+        imagetype = rel_type1.data.data[0]
+        return PowerSetType(CartType(preimagetype, imagetype))
     else:
         for child in node.children:
             typeit(child, env)

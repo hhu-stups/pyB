@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import typeit, IntegerType, PowerSetType, SetType
+from typing import typeit, IntegerType, PowerSetType, SetType, CartType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -96,10 +96,8 @@ class TestTypesSets():
         env.variable_type["S"] = None
         env.variable_type["T"] = None
         env.variable_type["R"] = None
-        env.variable_type["A"] = PowerSetType(SetType(set()))
-        env.variable_type["B"] = PowerSetType(SetType(set()))
-        env.variable_type["A"].data.data = "X"
-        env.variable_type["B"].data.data = "X"
+        env.variable_type["A"] = PowerSetType(SetType("X"))
+        env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
         assert isinstance(env.variable_type["S"].data, SetType)
@@ -110,3 +108,34 @@ class TestTypesSets():
         assert isinstance(env.variable_type["R"], PowerSetType)
         assert isinstance(env.variable_type["R"].data, SetType)
         assert env.variable_type["R"].data.data =="X"
+
+
+    def test_types_simple_cart_prod(self):
+        # Build AST
+        string_to_file("#PREDICATE S=A*B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["S"] = None
+        env.variable_type["A"] = PowerSetType(SetType("X"))
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, CartType)
+
+
+    def test_types_simple_pow(self):
+        # Build AST
+        string_to_file("#PREDICATE S=POW(B)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["S"] = None
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, PowerSetType)
