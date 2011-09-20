@@ -1,1 +1,1 @@
-#PREDICATE r=prj2(A,B)
+#PREDICATE S<:B

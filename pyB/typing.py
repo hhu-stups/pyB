@@ -242,6 +242,103 @@ def typeit(node, env):
         assert isinstance(type1, PowerSetType)
         assert isinstance(type1.data, SetType)
         return PowerSetType(CartType(CartType(type0.data,type1.data),type1.data))
+    elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression):
+        type0 = typeit(node.children[0], env)
+        type1 = typeit(node.children[1], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, SetType)
+        assert isinstance(type1, PowerSetType)
+        assert isinstance(type1.data, SetType)
+        return PowerSetType(PowerSetType(CartType(type0.data,type1.data)))
+    elif isinstance(node, AFunctionExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[1], SetType)
+        return type0.data.data[1]
+    elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, SetType)
+        return PowerSetType(PowerSetType(CartType(IntegerType(None),type0.data)))
+    elif isinstance(node, AConcatExpression):
+        type0 = typeit(node.children[0], env)
+        type1 = typeit(node.children[1], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type1, PowerSetType)
+        assert isinstance(type1.data, CartType)
+        assert isinstance(type1.data.data[0], IntegerType)
+        assert type0.data.data[1].data == type1.data.data[1].data
+        return PowerSetType(CartType(IntegerType(None),type0.data.data[1]))
+    elif isinstance(node, AInsertFrontExpression):
+        type0 = typeit(node.children[0], env)
+        type1 = typeit(node.children[1], env)
+        assert isinstance(type1, PowerSetType)
+        assert isinstance(type1.data, CartType)
+        assert isinstance(type1.data.data[0], IntegerType)
+        assert isinstance(type1.data.data[1], SetType)
+        assert isinstance(type0, SetType)
+        assert type0.data == type1.data.data[1].data
+        return type1
+    elif isinstance(node, AInsertTailExpression):
+        type0 = typeit(node.children[0], env)
+        type1 = typeit(node.children[1], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type1, SetType)
+        assert type1.data == type0.data.data[1].data
+        return type0
+    elif isinstance(node, ASequenceExtensionExpression):
+        type_list = []
+        for child in node.children:
+            t = typeit(child, env)
+            type_list.append(t)
+        atype = type_list[0]
+        for t in type_list[1:]:
+            # TODO: learn types: all types must be equal!
+            assert t.data == atype.data
+        return PowerSetType(CartType(IntegerType(None),atype))
+    elif isinstance(node, ASizeExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        return IntegerType(None)
+    elif isinstance(node, ARevExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        return type0
+    elif isinstance(node, ARestrictFrontExpression) or isinstance(node, ARestrictTailExpression):
+        type0 = typeit(node.children[0], env)
+        type1 = typeit(node.children[1], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type1, IntegerType)
+        return type0
+    elif isinstance(node, AFirstExpression) or isinstance(node, ALastExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        return type0.data.data[1]
+    elif isinstance(node, ATailExpression) or isinstance(node, AFrontExpression):
+        type0 = typeit(node.children[0], env)
+        assert isinstance(type0, PowerSetType)
+        assert isinstance(type0.data, CartType)
+        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[1], SetType)
+        return type0
     else:
         for child in node.children:
             typeit(child, env)
