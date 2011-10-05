@@ -15,8 +15,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -29,8 +27,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -43,8 +39,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -57,8 +51,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -71,8 +63,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -85,8 +75,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -99,8 +87,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -115,8 +101,6 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         env.variable_type["y"] = IntegerType(None)
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -131,8 +115,6 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         env.variable_type["y"] = IntegerType(None)
-        env.variable_type["x"] = None
-        assert env.variable_type["x"] == None
         typeit(root, env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -168,7 +150,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["zz"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["zz"], IntegerType)
 
@@ -181,7 +162,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["zz"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["zz"], IntegerType)
 
@@ -194,7 +174,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -207,7 +186,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -220,7 +198,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -233,7 +210,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -246,7 +222,6 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], IntegerType)
 
@@ -259,7 +234,31 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["x"] = None
         typeit(root,env)
         assert isinstance(env.variable_type["x"], PowerSetType)
         assert isinstance(env.variable_type["x"].data, IntegerType)
+
+    def test_genAST_expr_equ(self):
+        # Build AST
+        string_to_file("#PREDICATE x=y & x=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+
+
+    def test_genAST_expr_leq(self):
+        # Build AST
+        string_to_file("#PREDICATE x<y & y=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)

@@ -48,11 +48,9 @@ def typeit(node, env):
     elif isinstance(node, AIdentifierExpression):
         try:
             idtype = env.variable_type[node.idName]
-            if idtype == None:
-                return node.idName # special case
-            else:
-                return idtype
-        except KeyError:
+            return idtype
+        except KeyError: # add unknown-type: this is importand in unify(x,y)
+            env.variable_type[node.idName] = node.idName 
             return node.idName # special case
     elif isinstance(node, ASetExtensionExpression):
         for child in node.children:
@@ -64,7 +62,7 @@ def typeit(node, env):
         if isinstance(elm_type, str) and not set_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
             assert isinstance(set_type, PowerSetType)
-            env.variable_type[elm_type] = set_type.data
+            unify(elm_type, set_type.data, env)
             return
         else:
             raise Exception("Unimplemented case: no ID on left side")
@@ -75,14 +73,18 @@ def typeit(node, env):
             assert isinstance(node.children[0], AIdentifierExpression)
             if isinstance(expr2_type, PowerSetType) and  isinstance(expr2_type.data, SetType) and expr2_type.data.data == None:
                 expr2_type.data.data = expr1_type # set name
-            env.variable_type[expr1_type] = expr2_type
+            unify(expr1_type, expr2_type, env)
         elif isinstance(expr2_type, str) and not expr1_type == None:
             assert isinstance(node.children[1], AIdentifierExpression)
             if isinstance(expr1_type, PowerSetType) and  isinstance(expr1_type.data, SetType) and expr1_type.data.data == None: # TODO: think about that...
                 expr1_type.data.data = expr2_type # set name
-            env.variable_type[expr2_type] = expr1_type
+            unify(expr2_type, expr1_type, env)
         else:
             assert expr1_type.__class__ == expr2_type.__class__
+            if isinstance(expr1_type, str) and isinstance(expr2_type, str):
+                # Both unknown: remember same type via string
+                # this is resolved in a later phase
+                unify(expr1_type, expr2_type, env)
         return None
     elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
         asettype0 = typeit(node.children[0], env)
@@ -94,9 +96,9 @@ def typeit(node, env):
         asettype0 = typeit(node.children[0], env)
         asettype1 = typeit(node.children[1], env)
         if isinstance(asettype0, str) and not asettype1 == None:
-            env.variable_type[asettype0] = asettype1
+            unify(asettype0, asettype1, env)
         elif isinstance(asettype1, str) and not asettype0 == None:
-            env.variable_type[asettype1] = asettype0
+            unify(asettype1, asettype0, env)
         else:
             raise Exception("Unimplemented case")
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
@@ -110,10 +112,10 @@ def typeit(node, env):
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, str) and not expr2_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
-            env.variable_type[expr1_type] = expr2_type
+            unify(expr1_type, expr2_type, env)
         elif isinstance(expr2_type, str) and not expr1_type == None:
             assert isinstance(node.children[1], AIdentifierExpression)
-            env.variable_type[expr2_type] = expr1_type
+            unify(expr2_type, expr1_type, env)
         else:
             assert isinstance(expr1_type, IntegerType)
             assert isinstance(expr2_type, IntegerType)
@@ -342,3 +344,30 @@ def typeit(node, env):
     else:
         for child in node.children:
             typeit(child, env)
+
+
+# this function exsist to handle preds like "x=y & y=1" and find the
+# type of x and y after one run.
+# here x is set to the (unkonwn-)type y
+# When the (unknown-)y-type is set to IntegerType
+# all y-types are set to ist in a lin. search
+# TODO: replace lin. search by pointers to unknown types 
+def unify(maybe_type0, maybe_type1, env):
+    if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
+        if maybe_type0.__class__ == maybe_type1.__class__:
+            return
+        print "TYPEERROR: %s %s", maybe_type0, maybe_type1
+        raise Exception() #TODO: Throw TypeException
+    # one of them must be an ID-name
+    assert isinstance(maybe_type0, str) or isinstance(maybe_type1, str)
+
+    if isinstance(maybe_type0, str): # a unknown type is set to maybe_type1
+        var_list =[x for x in env.variable_type if env.variable_type[x]==maybe_type0]
+        for v in var_list: # vars with the unknown-type maybe_type0
+            env.variable_type[v] = maybe_type1
+    elif isinstance(maybe_type1, str):
+        var_list =[x for x in env.variable_type if env.variable_type[x]==maybe_type1]
+        for v in var_list: # vars with the unknown-type maybe_type1
+            env.variable_type[v] = maybe_type0
+    else:
+        env.variable_type[maybe_type0] = maybe_type1

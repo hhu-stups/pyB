@@ -15,7 +15,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r"] = None
         env.variable_type["S"] = PowerSetType(SetType("X"))
         env.variable_type["T"] = PowerSetType(SetType("X"))
         typeit(root, env)
@@ -34,8 +33,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r"] = None
-        env.variable_type["x"] = None
         env.variable_type["S"] = PowerSetType(SetType("X"))
         env.variable_type["T"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -51,8 +48,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r"] = None
-        env.variable_type["x"] = None
         env.variable_type["S"] = PowerSetType(SetType("X"))
         env.variable_type["T"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -68,9 +63,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r0"] = None
-        env.variable_type["r1"] = None
-        env.variable_type["x"] = None
         env.variable_type["S"] = PowerSetType(SetType("X"))
         env.variable_type["T"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -86,7 +78,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
         env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
@@ -135,9 +126,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
-        env.variable_type["x"] = None
-        env.variable_type["r"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -156,9 +144,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r1"] = None
-        env.variable_type["r2"] = None
-        env.variable_type["r3"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -166,8 +151,8 @@ class TestTypesRelations():
         assert isinstance(env.variable_type["r3"].data, CartType)
         assert env.variable_type["r3"].data.data[0].data == "X"
         assert env.variable_type["r3"].data.data[1].data == "Y"
-        assert not env.variable_type["r1"]==None
-        assert not env.variable_type["r2"]==None
+        assert not env.variable_type["r1"]=="r1"
+        assert not env.variable_type["r2"]=="r2"
 
 
     def test_types_simple_parprod(self):
@@ -178,9 +163,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r1"] = None
-        env.variable_type["r2"] = None
-        env.variable_type["r3"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         env.variable_type["C"] = PowerSetType(SetType("M"))
@@ -212,9 +194,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r1"] = None
-        env.variable_type["r2"] = None
-        env.variable_type["r3"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         env.variable_type["C"] = PowerSetType(SetType("X"))
@@ -241,7 +220,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         typeit(root, env)
@@ -266,7 +244,6 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        env.variable_type["r"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("Y"))
         typeit(root, env)

@@ -237,4 +237,3 @@ class TestInterpNumbers():
         env = Environment()
         env.variable_values["zz"] = "zz"
         assert inperpret(root,env)
-

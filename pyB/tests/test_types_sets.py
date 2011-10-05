@@ -15,7 +15,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
         env.variable_values["S"] = set(["Huey", "Dewey", "Louie"])
         typeit(root, env)
 
@@ -28,7 +27,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["ID"] = None
         env.variable_values["aa"] = "aa"
         env.variable_values["bb"] = "bb"
         env.variable_values["ID"] = set(["aa", "bb"])
@@ -46,7 +44,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["ID"] = None
         typeit(root, env)
         assert isinstance(env.variable_type["ID"], PowerSetType)
 
@@ -59,7 +56,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["ID"] = None
         typeit(root, env)
         assert isinstance(env.variable_type["ID"], PowerSetType)
         assert isinstance(env.variable_type["x"], IntegerType)
@@ -73,10 +69,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["ID"] = None
-        env.variable_type["S"] = None
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
         assert isinstance(env.variable_type["ID"], PowerSetType)
@@ -93,9 +85,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
-        env.variable_type["T"] = None
-        env.variable_type["R"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
@@ -118,7 +107,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
         env.variable_type["A"] = PowerSetType(SetType("X"))
         env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
@@ -134,7 +122,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
         env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
@@ -149,7 +136,6 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.variable_type["S"] = None
         env.variable_type["B"] = PowerSetType(SetType("X"))
         typeit(root, env)
         assert isinstance(env.variable_type["S"], PowerSetType)
