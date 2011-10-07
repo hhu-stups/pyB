@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import inperpret, Environment
+from typing import typeit
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -137,6 +138,7 @@ class TestInterpNumbers():
         env = Environment()
         assert not inperpret(root, env)
 
+
     def test_genAST_complex_arith2(self):
         # Build AST
         string_to_file("#PREDICATE 26 = (2+2)*4+(10-0)", file_name)
@@ -146,6 +148,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         assert inperpret(root, env)
+
 
     def test_genAST_pred_gt(self):
         # Build AST:
@@ -173,7 +176,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        typeit(root, env)
         assert inperpret(root,env)
+
 
     def test_genAST_pred_exist2(self):
         # Build AST:
@@ -183,7 +188,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        typeit(root, env)
         assert not inperpret(root,env)
+
 
     def test_genAST_pred_exist3(self):
         # Build AST:
@@ -193,7 +200,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        typeit(root, env)
         assert inperpret(root,env)
+
 
     def test_genAST_pred_forall(self):
         # Build AST:
@@ -203,7 +212,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        typeit(root, env)
         assert inperpret(root,env)
+
 
     def test_genAST_pred_forall2(self):
         # Build AST:
@@ -213,8 +224,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        typeit(root, env)
         assert not inperpret(root,env)
-
 
     def test_genAST_pred_sigma(self):
         # Build AST:
@@ -226,6 +237,7 @@ class TestInterpNumbers():
         env = Environment()
         env.variable_values["zz"] = "zz"
         assert inperpret(root,env)
+
 
     def test_genAST_pred_pi(self):
         # Build AST:

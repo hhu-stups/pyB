@@ -51,7 +51,8 @@ def typeit(node, env):
             return idtype
         except KeyError: 
             # add unknown-type: this is importand in unify(x,y)
-            # TODO: Throw Var not def error
+            # TODO: Throw Var not def error 
+            # only for not-quantified vars which dont appear in the pred
             env.variable_type[node.idName] = node.idName 
             return node.idName # special case
     elif isinstance(node, ASetExtensionExpression):
@@ -65,6 +66,9 @@ def typeit(node, env):
             assert isinstance(node.children[0], AIdentifierExpression)
             assert isinstance(set_type, PowerSetType)
             unify(elm_type, set_type.data, env)
+            return
+        elif isinstance(elm_type, SetType) and isinstance(set_type, PowerSetType):
+            # TODO: implement me
             return
         else:
             raise Exception("Unimplemented case: no ID on left side")

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from typing import typeit, IntegerType, PowerSetType, SetType
 
 min_int = -1
 max_int = 5
@@ -127,14 +128,12 @@ def inperpret(node, env):
         aSet2 = inperpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
-        # FIXME: supports only integers!
         max_depth = len(node.children) -2
         if not forall_recursive_helper(0, max_depth, node, env):
             return False
         else:
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
-        # FIXME: supports only integers!
         max_depth = len(node.children) -2
         if exist_recursive_helper(0, max_depth, node, env):
             return True
@@ -435,7 +434,7 @@ def inperpret(node, env):
         return set(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
         # BUG: only works in sp. cases
-        # TODO: implement me: find solutuions for ids if ids are not nums
+        # TODO: implement me: find solutions for ids if ids are not nums
         sum_ = 0
         ids = []
         for child in node.children[:-2]:
@@ -622,13 +621,13 @@ def exist_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.variable_values[idName] = i
             if inperpret(pred, env):
                 return True
         return False
     else: # recursive call
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.variable_values[idName] = i
             if exist_recursive_helper(depth+1, max_depth, node, env):
                 return True
@@ -640,14 +639,36 @@ def forall_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.variable_values[idName] = i
             if not inperpret(pred, env):
                 return False
         return True
     else: # recursive call
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.variable_values[idName] = i
             if not forall_recursive_helper(depth+1, max_depth, node, env):
                 return False
         return True
+
+# returns a list with "all" possible values of a type
+# only works if the typechecking/typing of typeit was successful
+def all_values(idName, env):
+    # TODO: support more than integer
+    if isinstance(env.variable_type[idName], IntegerType):
+        return range(min_int, max_int)
+    elif isinstance(env.variable_type[idName], SetType):
+        type_name =  env.variable_type[idName].data
+        assert isinstance(env.variable_values[type_name], set)
+        return env.variable_values[type_name]
+    elif isinstance(env.variable_type[idName], PowerSetType):
+        # TODO: implement POW(POW(S)), POW(POW(POW(S))) ect.
+        # maybe with call powerset(S) and recursion...
+        if isinstance(env.variable_type[idName].data, SetType):
+            type_name = env.variable_type[idName].data.data
+            assert isinstance(env.variable_values[type_name], set)
+            res = powerset(env.variable_values[type_name])
+            powerlist = list(res)
+            lst = [frozenset(e) for e in powerlist]
+            return lst
+    raise Exception("Unknown Type / Not Implemented: %s", idName)

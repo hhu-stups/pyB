@@ -1,4 +1,5 @@
-31.08.2011 by John Witulski 
+31.08.2011 - 07.10.2011
+by John Witulski 
 
 Config:
     copy ASTPython.java to .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
@@ -30,13 +31,18 @@ How it works:
     This string is executed with "exec" in "pyB.py".
     The string is mapped to the ASTNodes in "ast_nodes.py"
     This AST is eval. via "interp.py"
+    A map Varname-> Type is created via the typeit method.
+    It uses a unify method to handel unknown types like S=V\/T T:POW(X)
+    The typing is necessery to eval. quantified preds
 
 DONE:
     - replace depricated set module
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
+    - move tests in seperated files
 
 TODO:
+    - assumes that all functions are 2-tuple: otherwise crash
     - write more AST-Gen tests
     - wirte a build-script
     - sets and frozensets are mixed (e.g in POW)..fix that
@@ -46,7 +52,6 @@ TODO:
     - not tested: sequences of sequences
     - not tested: append/preprend more than one element
     - Maybe a BUG: there are no local vars. all vars are global
-    - move tests in seperated files
     - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
 
 

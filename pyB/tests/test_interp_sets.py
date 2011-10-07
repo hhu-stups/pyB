@@ -2,6 +2,7 @@
 from ast_nodes import *
 from interp import inperpret, Environment
 from helpers import file_to_AST_str, string_to_file
+from typing import typeit, IntegerType, PowerSetType, SetType
 
 file_name = "input.txt"
 
@@ -279,3 +280,33 @@ class TestInterpSets():
         env = Environment()
         assert inperpret(root,env)
 
+
+    def test_genAST_pred_forall3(self):
+        # Build AST:
+        string_to_file("#PREDICATE T<:S & S:POW(ID) & !(x).(x:T => x:S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["ID"] = set(["a","b"])
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_values["T"] = set(["a"])
+        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        typeit(root, env)
+        assert inperpret(root,env)
+
+
+    def test_genAST_pred_forall4(self):
+        # Build AST:
+        string_to_file("#PREDICATE S:POW(ID) & !(X,y).(X<:S => card(X)=y)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["ID"] = set(["a","b"])
+        env.variable_values["S"] = set(["a","b"])
+        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        typeit(root, env)
+        assert not inperpret(root,env)
