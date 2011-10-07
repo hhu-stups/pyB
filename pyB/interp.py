@@ -651,6 +651,7 @@ def forall_recursive_helper(depth, max_depth, node, env):
                 return False
         return True
 
+# ** THE ENUMERATOR **
 # returns a list with "all" possible values of a type
 # only works if the typechecking/typing of typeit was successful
 def all_values(idName, env):
@@ -662,8 +663,6 @@ def all_values(idName, env):
         assert isinstance(env.variable_values[type_name], set)
         return env.variable_values[type_name]
     elif isinstance(env.variable_type[idName], PowerSetType):
-        # TODO: implement POW(POW(S)), POW(POW(POW(S))) ect.
-        # maybe with call powerset(S) and recursion...
         if isinstance(env.variable_type[idName].data, SetType):
             type_name = env.variable_type[idName].data.data
             assert isinstance(env.variable_values[type_name], set)
@@ -671,4 +670,21 @@ def all_values(idName, env):
             powerlist = list(res)
             lst = [frozenset(e) for e in powerlist]
             return lst
+        elif isinstance(env.variable_type[idName].data, PowerSetType):
+            count = 1
+            atype = env.variable_type[idName].data
+            # TODO: Think of this again ;-)
+            # unpack POW(POW(S)), POW(POW(POW(S))) ect. ....
+            while not isinstance(atype, SetType):
+                count = count +1
+                atype = atype.data
+            value = env.variable_values[atype.data]
+            assert isinstance(value, set)
+            # create all(!) values
+            for i in range(count):
+                res = powerset(value)
+                powerlist = list(res)
+                value = [frozenset(e) for e in powerlist]
+            print value
+            return value
     raise Exception("Unknown Type / Not Implemented: %s", idName)

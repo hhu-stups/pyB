@@ -310,3 +310,18 @@ class TestInterpSets():
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
         assert not inperpret(root,env)
+
+
+    def test_genAST_pred_exist4(self):
+        # Build AST:
+        string_to_file("#PREDICATE T<:POW(ID) & #(X).(X<:POW(ID) => X=T )", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["ID"] = set(["a","b"])
+        env.variable_values["T"] = set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])])
+        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        typeit(root, env)
+        assert inperpret(root,env)
