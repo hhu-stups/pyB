@@ -141,3 +141,129 @@ class TestTypesSets():
         assert isinstance(env.variable_type["S"], PowerSetType)
         assert isinstance(env.variable_type["S"].data, SetType)
         assert env.variable_type["S"].data.data == "X"
+
+
+    def test_types_set_union(self):
+        # Build AST
+        string_to_file("#PREDICATE R=S\/T & S:POW(B)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"
+
+
+    def test_types_set_union2(self):
+        # Build AST
+        string_to_file("#PREDICATE R=S\/T & R:POW(B)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"
+
+
+    def test_types_set_union3(self):
+        # Build AST
+        string_to_file("#PREDICATE R=S\/T & T:POW(B)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"
+
+
+    def test_types_set_union4(self):
+        # Build AST
+        string_to_file("#PREDICATE T:POW(B) & R=S\/T ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"
+
+
+    def test_types_set_union5(self):
+        # Build AST
+        string_to_file("#PREDICATE R:POW(B) & R=S\/T ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"
+
+
+    def test_types_set_union6(self):
+        # Build AST
+        string_to_file("#PREDICATE S:POW(B) & R=S\/T ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        env.variable_type["B"] = PowerSetType(SetType("X"))
+        typeit(root, env)
+        assert isinstance(env.variable_type["S"], PowerSetType)
+        assert isinstance(env.variable_type["S"].data, SetType)
+        assert env.variable_type["S"].data.data == "X"
+        assert isinstance(env.variable_type["R"], PowerSetType)
+        assert isinstance(env.variable_type["R"].data, SetType)
+        assert env.variable_type["R"].data.data == "X"
+        assert isinstance(env.variable_type["T"], PowerSetType)
+        assert isinstance(env.variable_type["T"].data, SetType)
+        assert env.variable_type["T"].data.data == "X"

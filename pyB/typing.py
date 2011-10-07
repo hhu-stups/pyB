@@ -49,7 +49,9 @@ def typeit(node, env):
         try:
             idtype = env.variable_type[node.idName]
             return idtype
-        except KeyError: # add unknown-type: this is importand in unify(x,y)
+        except KeyError: 
+            # add unknown-type: this is importand in unify(x,y)
+            # TODO: Throw Var not def error
             env.variable_type[node.idName] = node.idName 
             return node.idName # special case
     elif isinstance(node, ASetExtensionExpression):
@@ -70,12 +72,16 @@ def typeit(node, env):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, str) and not expr2_type == None:
-            assert isinstance(node.children[0], AIdentifierExpression)
+            # the string maybe a unknown-type of an expression:
+            # e.g. X = U\/T with U and T unknown at this time
+            #assert isinstance(node.children[0], AIdentifierExpression)
             if isinstance(expr2_type, PowerSetType) and  isinstance(expr2_type.data, SetType) and expr2_type.data.data == None:
                 expr2_type.data.data = expr1_type # set name
             unify(expr1_type, expr2_type, env)
         elif isinstance(expr2_type, str) and not expr1_type == None:
-            assert isinstance(node.children[1], AIdentifierExpression)
+            # the string maybe a unknown-type of an expression:
+            # e.g. X = U\/T with U and T unknown at this time
+            #assert isinstance(node.children[1], AIdentifierExpression)
             if isinstance(expr1_type, PowerSetType) and  isinstance(expr1_type.data, SetType) and expr1_type.data.data == None: # TODO: think about that...
                 expr1_type.data.data = expr2_type # set name
             unify(expr2_type, expr1_type, env)
@@ -89,9 +95,16 @@ def typeit(node, env):
     elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
         asettype0 = typeit(node.children[0], env)
         asettype1 = typeit(node.children[1], env)
-        assert asettype1.data.data == asettype0.data.data # same name
-        assert asettype1.__class__ == asettype0.__class__
-        return asettype1
+        if isinstance(asettype0,str):
+            unify(asettype0, asettype1, env)
+            return asettype1
+        elif isinstance(asettype1, str):
+            unify(asettype1, asettype0, env)
+            return asettype0
+        else:
+            assert asettype1.data.data == asettype0.data.data # same name
+            assert asettype1.__class__ == asettype0.__class__
+            return asettype1
     elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate):
         asettype0 = typeit(node.children[0], env)
         asettype1 = typeit(node.children[1], env)

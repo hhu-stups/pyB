@@ -251,6 +251,75 @@ class TestTypesNumbers():
         assert isinstance(env.variable_type["y"], IntegerType)
 
 
+    def test_genAST_expr_equ2(self):
+        # Build AST
+        string_to_file("#PREDICATE z=x & x=y & x=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.variable_type["z"], IntegerType)
+
+
+    def test_genAST_expr_equ3(self):
+        # Build AST
+        string_to_file("#PREDICATE z=x & x=y & y=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.variable_type["z"], IntegerType)
+
+
+    def test_genAST_expr_equ4(self):
+        # Build AST
+        string_to_file("#PREDICATE z=x & z=1 & x=y", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.variable_type["z"], IntegerType)
+
+
+    def test_genAST_expr_equ5(self):
+        # Build AST
+        string_to_file("#PREDICATE x=42 & z=x  & x=y", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.variable_type["z"], IntegerType)
+
+
+    def test_genAST_expr_equ6(self):
+        # Build AST
+        string_to_file("#PREDICATE y=42 & z=x & y=x", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        typeit(root,env)
+        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.variable_type["z"], IntegerType)
+
     def test_genAST_expr_leq(self):
         # Build AST
         string_to_file("#PREDICATE x<y & y=1", file_name)
