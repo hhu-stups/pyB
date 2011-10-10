@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from interp import inperpret, Environment
-from typing import typeit
+from interp import interpret, Environment
+from typing import typeit, IntegerType, PowerSetType, SetType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -15,7 +15,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
 
     def test_genAST_expr_add2(self):
@@ -26,7 +26,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_expr_sub(self):
@@ -37,7 +37,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_expr_mul(self):
@@ -48,7 +48,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_expr_div(self):
@@ -59,7 +59,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_expr_mod(self):
@@ -70,7 +70,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_expr_neq(self):
@@ -81,7 +81,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_and(self):
@@ -92,7 +92,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_or(self):
@@ -103,7 +103,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_impl(self):
@@ -114,7 +114,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_equi(self):
@@ -125,7 +125,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_complex_arith(self):
@@ -136,7 +136,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
 
     def test_genAST_complex_arith2(self):
@@ -147,7 +147,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
     def test_genAST_pred_gt(self):
@@ -159,13 +159,13 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.variable_values["x"] = 1
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
         env.variable_values["x"] = 10
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
         env.variable_values["x"] = 6
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
 
     def test_genAST_pred_exist(self):
@@ -177,7 +177,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         typeit(root, env)
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_exist2(self):
@@ -189,7 +189,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         typeit(root, env)
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_exist3(self):
@@ -201,7 +201,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         typeit(root, env)
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_forall(self):
@@ -213,7 +213,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         typeit(root, env)
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_forall2(self):
@@ -225,7 +225,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         typeit(root, env)
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
     def test_genAST_pred_sigma(self):
         # Build AST:
@@ -236,7 +236,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.variable_values["zz"] = "zz"
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_pi(self):
@@ -248,4 +248,18 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.variable_values["zz"] = "zz"
-        assert inperpret(root,env)
+        assert interpret(root,env)
+
+
+    def test_genAST_pred_sigma2(self):
+        # Build AST:
+        string_to_file("#PREDICATE 4=(SIGMA zz . (zz:POW(ID) | card(zz)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.variable_values["ID"] = set(["a","b"])
+        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        typeit(root, env)
+        assert interpret(root,env)

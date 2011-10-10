@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from interp import inperpret, Environment
+from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
 from typing import typeit, IntegerType, PowerSetType, SetType
 
@@ -17,10 +17,10 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["x"] = "x"
         env.variable_values["S"] = set(["x","y","z"])
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
         env.variable_values["S"] = set(["a","b","c"])
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
     def test_genAST_subset(self):
         # Build AST
@@ -32,11 +32,11 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["T"] = set(["x","y"])
         env.variable_values["S"] = set(["x","y","z"])
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
         env.variable_values["S"] = set(["a","b","c"])
         env.variable_values["T"] = set(["a","b","c"])
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
 
 
@@ -53,7 +53,7 @@ class TestInterpSets():
         env.variable_values["S"] = set(["a","b"])
         env.variable_values["T"] = set(["x","y"])
         env.variable_values["u"] = ("a","x")
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_power_set(self):
@@ -66,19 +66,19 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["S"] = set(["a","b"])
         env.variable_values["X"] = set([])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set(["a","b"])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set(["a","c"])
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
         env.variable_values["X"] = set(["a"])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set(["b"])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_power_set2(self):
@@ -91,13 +91,13 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["S"] = set(["a","b"])
         env.variable_values["X"] = set([])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set([frozenset([])])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set([frozenset(["a","b"])])
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
     def test_genAST_pred_pow1_set(self):
         # Build AST:
@@ -109,16 +109,16 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["S"] = set(["a","b"])
         env.variable_values["X"] = set(frozenset([]))
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
         env.variable_values["X"] = set(frozenset(["a"]))
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set(frozenset(["b"]))
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["X"] = set(frozenset(["a","b"]))
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_contains(self):
@@ -129,7 +129,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_contains2(self):
@@ -140,7 +140,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_set_contains3(self):
@@ -152,7 +152,7 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.variable_values["x"] = "x"
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
     def test_genAST_set_enum(self):
         # Build AST:
@@ -166,10 +166,10 @@ class TestInterpSets():
         env.variable_values["aa"] = "aa" #FIXME: maybe this is a Bug..
         env.variable_values["bb"] = "bb" #
         env.variable_values["cc"] = "cc" #
-        assert inperpret(root, env)
+        assert interpret(root, env)
 
         env.variable_values["yy"] = "yy"
-        assert not inperpret(root, env)
+        assert not interpret(root, env)
 
 
     def test_genAST_pred_set_orderd_pair(self):
@@ -182,7 +182,7 @@ class TestInterpSets():
         env = Environment()
         env.variable_values["x"] = "x"
         env.variable_values["y"] = "y"
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_interval(self):
@@ -194,16 +194,16 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.variable_values["zz"] = 4
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["zz"] = 5
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["zz"] = 6
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
         env.variable_values["zz"] = 0
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
 
@@ -216,10 +216,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.variable_values["x"] = 2
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["x"] = 0
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_nat1(self):
@@ -231,10 +231,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.variable_values["x"] = 2
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
         env.variable_values["x"] = 0
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
 
@@ -246,7 +246,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
     def test_genAST_pred_set_couple2(self):
         # Build AST:
@@ -256,7 +256,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_set_compreh(self):
@@ -267,7 +267,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_compreh2(self):
@@ -278,7 +278,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_forall3(self):
@@ -294,7 +294,7 @@ class TestInterpSets():
         env.variable_values["T"] = set(["a"])
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
-        assert inperpret(root,env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_forall4(self):
@@ -309,7 +309,7 @@ class TestInterpSets():
         env.variable_values["S"] = set(["a","b"])
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
-        assert not inperpret(root,env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_exist4(self):
@@ -324,4 +324,4 @@ class TestInterpSets():
         env.variable_values["T"] = set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])])
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
-        assert inperpret(root,env)
+        assert interpret(root,env)

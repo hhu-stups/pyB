@@ -13,4 +13,4 @@ else:
 ast_string = file_to_AST_str(file_name_str)
 exec ast_string
 env = Environment()
-print inperpret(root, env)
+print interpret(root, env)
