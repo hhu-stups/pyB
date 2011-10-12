@@ -235,7 +235,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.variable_values["zz"] = "zz"
+        #env.variable_values["zz"] = "zz"
         assert interpret(root,env)
 
 

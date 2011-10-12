@@ -7,16 +7,74 @@ max_int = 5
 
 class Environment():
     def __init__(self):
+        # TODO: del maps
         self.variable_values = {} # values of global and local vars vv: str->val
         self.variable_type = {}  # types of global and local vars vt: str->str
+        self.vv_stack = [self.variable_values]
+        self.vt_stack = [self.variable_type]
 
-    # TODO: lookup
+
     def get_value(self, id_Name):
-        return self.variable_values[id_Name]
+        value_map_copy =  [x for x in self.vv_stack] # no ref. copy
+        value_map_copy.reverse()
+        # lookup:
+        for i in range(len(value_map_copy)):
+            try:
+                return value_map_copy[i][id_Name]
+            except KeyError:
+                continue
+        # no ID known, if the inerp called that inside
+        # an ID-Node the keyerror is used to add a (maybe quantified) var
+        raise KeyError 
 
     # TODO: lookup + Throw Typeerror:
+    # TODO: set-lookup tests
     def set_value(self, id_Name, value):
-       self.variable_values[id_Name] = value
+        top_map = self.vv_stack[-1]
+        top_map[id_Name] = value
+
+
+    # Throws Keyerror if lookpup fails: for add Id
+    def get_type(self, id_Name):
+        type_map_copy = [x for x in self.vt_stack] # no ref. copy
+        type_map_copy.reverse()
+        # lookup:
+        for i in range(len(type_map_copy)):
+            try:
+                return type_map_copy[i][id_Name]
+            except KeyError:
+                continue
+        # no ID known, if the inerp called that inside
+        # an ID-Node the keyerror is used to add a (maybe quantified) var
+        raise KeyError 
+
+    # XXX: maybe lookup
+    # returns the topframe
+    def get_all_types(self):
+        return self.vt_stack[-1]
+
+    # TODO: lookup
+    def set_type(self, id_Name, atype):
+        top_map = self.vt_stack[-1]
+        top_map[id_Name] = atype
+
+    # new scope:
+    # push a new frame with new local vars
+    def push_new_frame(self, nodes, ids):
+        self.vv_stack.append({})
+        type_map = {}
+        for i in ids:
+            assert isinstance(i, str)
+            type_map[i] = i
+        self.vt_stack.append(type_map)
+        # FIXME: Typecheck on the fly
+        for node in nodes: # Side-Effect: changes vv and vt_stack
+            typeit(node, self)
+
+    # leave scope:
+    def pop_frame(self):
+        self.vv_stack.pop()
+        self.vt_stack.pop()
 
 
 def interpret(node, env):
@@ -351,6 +409,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         sequence_list = [frozenset([])]
         max_len = 1
+        # TODO: maybe call all_values() here...
         # find all seq from 1..max_int
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
@@ -442,20 +501,22 @@ def interpret(node, env):
         right = interpret(node.children[1], env)
         return set(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
-        # BUG: only works in sp. cases
-        # TODO: implement me: find solutions for ids if ids are not nums
         sum_ = 0
         ids = []
         for child in node.children[:-2]:
-            ids.append(interpret(child, env))
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        # new scope - side-effect: typechecking of node.children
+        env.push_new_frame(node.children, ids)
         preds = node.children[-2] 
         # gen. all values:
-        all_val = [x for x in range(min_int,max_int+1)]
-        for idName in ids: #TODO: this code dont checks all possibilities!
-            for i in all_val:
+        #TODO: this code (maybe) dont checks all possibilities!
+        for idName in ids:
+            for i in all_values(idName, env):
                 env.set_value(idName, i)
                 if interpret(preds, env):
                     sum_ += interpret(node.children[-1], env)
+        env.pop_frame()
         return sum_
     elif isinstance(node, AGeneralProductExpression):
         # BUG: only works in sp. cases
@@ -669,23 +730,23 @@ def forall_recursive_helper(depth, max_depth, node, env):
 # only works if the typechecking/typing of typeit was successful
 def all_values(idName, env):
     # TODO: support cart prod
-    if isinstance(env.variable_type[idName], IntegerType):
+    if isinstance(env.get_type(idName), IntegerType):
         return range(min_int, max_int+1)
-    elif isinstance(env.variable_type[idName], SetType):
-        type_name =  env.variable_type[idName].data
+    elif isinstance(env.get_type(idName), SetType):
+        type_name =  env.get_type(idName).data
         assert isinstance(env.get_value(type_name), set)
         return env.get_value(type_name)
-    elif isinstance(env.variable_type[idName], PowerSetType):
-        if isinstance(env.variable_type[idName].data, SetType):
-            type_name = env.variable_type[idName].data.data
+    elif isinstance(env.get_type(idName), PowerSetType):
+        if isinstance(env.get_type(idName).data, SetType):
+            type_name = env.get_type(idName).data.data
             assert isinstance(env.get_value(type_name), set)
             res = powerset(env.get_value(type_name))
             powerlist = list(res)
             lst = [frozenset(e) for e in powerlist]
             return lst
-        elif isinstance(env.variable_type[idName].data, PowerSetType):
+        elif isinstance(env.get_type(idName).data, PowerSetType):
             count = 1
-            atype = env.variable_type[idName].data
+            atype = env.get_type(idName).data
             # TODO: Think of this again ;-)
             # unpack POW(POW(S)), POW(POW(POW(S))) ect. ....
             while not isinstance(atype, SetType):

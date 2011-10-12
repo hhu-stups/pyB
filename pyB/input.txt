@@ -1,1 +1,1 @@
-#PREDICATE f= (p || q)
+#PREDICATE S:POW(B) & R=S\/T 

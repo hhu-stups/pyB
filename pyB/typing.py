@@ -41,19 +41,18 @@ def typeit(node, env):
         pred = node.children[len(node.children) -1]
         typeit(pred, env)
         for child in node.children[:-1]:
-            assert not env.variable_type[child.idName]==None
+            assert not env.get_type(child.idName)==None
         return PowerSetType(SetType(None)) #name unknown
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)
     elif isinstance(node, AIdentifierExpression):
         try:
-            idtype = env.variable_type[node.idName]
+            idtype = env.get_type(node.idName)
             return idtype
         except KeyError: 
             # add unknown-type: this is importand in unify(x,y)
             # TODO: Throw Var not def error 
-            # only for not-quantified vars which dont appear in the pred
-            env.variable_type[node.idName] = node.idName 
+            env.set_type(node.idName, node.idName)
             return node.idName # special case
     elif isinstance(node, ASetExtensionExpression):
         for child in node.children:
@@ -71,6 +70,8 @@ def typeit(node, env):
             # TODO: implement me
             return
         else:
+            print env.vv_stack
+            print env.vt_stack
             raise Exception("Unimplemented case: no ID on left side")
     elif isinstance(node, AEqualPredicate):
         expr1_type = typeit(node.children[0], env)
@@ -379,12 +380,12 @@ def unify(maybe_type0, maybe_type1, env):
     assert isinstance(maybe_type0, str) or isinstance(maybe_type1, str)
 
     if isinstance(maybe_type0, str): # a unknown type is set to maybe_type1
-        var_list =[x for x in env.variable_type if env.variable_type[x]==maybe_type0]
+        var_list =[x for x in env.get_all_types() if env.get_type(x)==maybe_type0]
         for v in var_list: # vars with the unknown-type maybe_type0
-            env.variable_type[v] = maybe_type1
+            env.set_type(v, maybe_type1)
     elif isinstance(maybe_type1, str):
-        var_list =[x for x in env.variable_type if env.variable_type[x]==maybe_type1]
+        var_list =[x for x in env.get_all_types() if env.get_type(x)==maybe_type1]
         for v in var_list: # vars with the unknown-type maybe_type1
-            env.variable_type[v] = maybe_type0
+            env.set_type(v, maybe_type0)
     else:
-        env.variable_type[maybe_type0] = maybe_type1
+        env.set_type(maybe_type0, maybe_type1)
