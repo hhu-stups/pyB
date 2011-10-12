@@ -73,7 +73,7 @@ def typeit(node, env):
             print env.vv_stack
             print env.vt_stack
             raise Exception("Unimplemented case: no ID on left side")
-    elif isinstance(node, AEqualPredicate):
+    elif isinstance(node, AEqualPredicate) or isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)
         if isinstance(expr1_type, str) and not expr2_type == None:

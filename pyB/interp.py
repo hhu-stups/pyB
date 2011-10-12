@@ -198,7 +198,7 @@ def interpret(node, env):
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
         ids = []
-        for child in node.children[:-2]:
+        for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
         # new scope - side-effect: typechecking of node.children
@@ -212,7 +212,7 @@ def interpret(node, env):
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
         ids = []
-        for child in node.children[:-2]:
+        for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
         # new scope - side-effect: typechecking of node.children
@@ -225,7 +225,12 @@ def interpret(node, env):
             env.pop_frame()
             return False
     elif isinstance(node, AComprehensionSetExpression):
-        # FIXME: supports only integers!
+        ids = []
+        for child in node.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        # new scope - side-effect: typechecking of node.children
+        env.push_new_frame(node.children, ids)
         max_depth = len(node.children) -2
         lst = set_comprehension_recursive_helper(0, max_depth, node, env)
         # FIXME: maybe wrong:
@@ -233,6 +238,7 @@ def interpret(node, env):
         result = []
         for i in lst:
             result.append(tuple(flatten(i,[])))
+        env.pop_frame()
         return set(result)
     elif isinstance(node, ACoupleExpression):
         lst = []
@@ -692,13 +698,13 @@ def set_comprehension_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.set_value(idName, i)
             if interpret(pred, env):
                 result.append(i)
         return result
     else: # recursive call
-        for i in range(min_int, max_int):
+        for i in all_values(idName, env):
             env.set_value(idName, i)
             partial_result = set_comprehension_recursive_helper(depth+1, max_depth, node, env)
             for j in partial_result:
