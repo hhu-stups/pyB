@@ -16,7 +16,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_nat1(self):
@@ -28,7 +28,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_add(self):
@@ -40,7 +40,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_sub(self):
@@ -52,7 +52,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_mul(self):
@@ -64,7 +64,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_div(self):
@@ -76,7 +76,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_mod(self):
@@ -88,7 +88,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     # TODO: survie refactoring
@@ -100,9 +100,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["y"] = IntegerType(None)
+        env.set_type("y", IntegerType(42))
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     # TODO: survie refactoring 
@@ -114,9 +114,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["y"] = IntegerType(None)
+        env.set_type("y", IntegerType(42))
         typeit(root, env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_simple_equal3(self):
@@ -127,7 +127,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.variable_type["y"] = IntegerType(None)
+        env.set_type("y", IntegerType(2))
         typeit(root, env)
 
 
@@ -142,6 +142,7 @@ class TestTypesNumbers():
         typeit(root, env)
 
 
+    # XXX: maybe wrong test
     def test_types_sigma(self):
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)
@@ -151,7 +152,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["zz"], IntegerType)
+        assert isinstance(env.get_type("zz"), IntegerType)
 
 
     def test_types_pi(self):
@@ -163,7 +164,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["zz"], IntegerType)
+        assert isinstance(env.get_type("zz"), IntegerType)
 
 
     def test_types_gt(self):
@@ -175,7 +176,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_ge(self):
@@ -187,7 +188,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_ls(self):
@@ -199,7 +200,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_le(self):
@@ -211,7 +212,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_interval(self):
@@ -223,7 +224,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
 
 
     def test_types_interval2(self):
@@ -235,8 +236,8 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], PowerSetType)
-        assert isinstance(env.variable_type["x"].data, IntegerType)
+        assert isinstance(env.get_type("x"), PowerSetType)
+        assert isinstance(env.get_type("x").data, IntegerType)
 
     def test_genAST_expr_equ(self):
         # Build AST
@@ -247,8 +248,8 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
 
 
     def test_genAST_expr_equ2(self):
@@ -260,9 +261,9 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
-        assert isinstance(env.variable_type["z"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
 
 
     def test_genAST_expr_equ3(self):
@@ -274,9 +275,9 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
-        assert isinstance(env.variable_type["z"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
 
 
     def test_genAST_expr_equ4(self):
@@ -288,9 +289,9 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
-        assert isinstance(env.variable_type["z"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
 
 
     def test_genAST_expr_equ5(self):
@@ -302,9 +303,9 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
-        assert isinstance(env.variable_type["z"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
 
 
     def test_genAST_expr_equ6(self):
@@ -316,9 +317,9 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
-        assert isinstance(env.variable_type["z"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
 
     def test_genAST_expr_leq(self):
         # Build AST
@@ -329,5 +330,5 @@ class TestTypesNumbers():
         # Test
         env = Environment()
         typeit(root,env)
-        assert isinstance(env.variable_type["x"], IntegerType)
-        assert isinstance(env.variable_type["y"], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)

@@ -34,26 +34,28 @@ How it works:
     A map Varname-> Type is created via the typeit method.
     It uses a unify method to handel unknown types like S=V\/T T:POW(X)
     The typing is necessery to eval. quantified preds
-    assumes that both sides of ops like (\/ or /=) have the same type
+    assumes that both sides of ops like (\/ or /=) have the same type.
+    typechecking is done - on the fly
 
 DONE:
     - replace depricated set module
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
     - move tests in seperated files
+    - use new env interface inside tests
+    - !, # set-comp and pi dont use correct enum
+    - rename quantified variables in helper-funcs -solved by scoping
+
 
 TODO:
     - Typing maybe fails if vars have the same name (unify)
     - remove fix value/type from tests if possible
-    - use new env interface inside tests
     - write more scoping tests
-    - !, # set-comp and pi dont use correct enum
     - Tests ignore Frames and Scopes. Fix that
     - assumes that all functions are 2-tuple: otherwise crash
     - write more AST-Gen tests
     - wirte a build-script
     - sets and frozensets are mixed (e.g in POW)..fix that
-    - rename quantified variables in helper-funcs
     - Maybe the implemenation has to be fixed if infinite sets are introduced
     - enable function applications (4.1.9) with many args
     - not tested: sequences of sequences
@@ -65,15 +67,12 @@ TODO:
 MISSING FEATURES:
     - infinite sets/sequences/relations
     - substitutions
-    - uni/ex quantification for preds. without numbers
     - singleton sets
     - sp. union/inter buildins
-    - min/max an the natural numbers
+    - min/max an the natural numbers - not ProB
     - interval sum and pi
     - itrations and closure
     - lambda abstractions
     - generalized cinc and strings
-    - finding the env(only fix environment at the moment)
-    - sum prod (sigma/pi) only works in sp. cases.
     - NAT and NAT1 is not infinite!
     - and maybe more...;-)
