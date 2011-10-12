@@ -158,13 +158,13 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = 1
+        env.set_value("x", 1)
         assert interpret(root, env)
 
-        env.variable_values["x"] = 10
+        env.set_value("x", 10)
         assert not interpret(root, env)
 
-        env.variable_values["x"] = 6
+        env.set_value("x", 6)
         assert not interpret(root, env)
 
 
@@ -247,7 +247,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.variable_values["zz"] = "zz"
+        env.set_value("zz", "zz")
         assert interpret(root,env)
 
 
@@ -259,7 +259,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.variable_values["ID"] = set(["a","b"])
+        env.set_value("ID", set(["a","b"]))
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
         assert interpret(root,env)

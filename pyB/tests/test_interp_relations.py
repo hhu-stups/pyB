@@ -14,18 +14,18 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["f"] = set([("a","x")])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("f", set([("a","x")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("a","x"),("a","y")])
+        env.set_value("f", set([("a","x"),("a","y")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("a","x"),("b","y")])
+        env.set_value("f", set([("a","x"),("b","y")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([])
+        env.set_value("f", set([]))
         assert interpret(root,env)
 
 
@@ -37,12 +37,12 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a"])
-        env.variable_values["f"] = set([("a","x")])
+        env.set_value("S", set(["a"]))
+        env.set_value("f", set([("a","x")]))
         assert interpret(root,env)
         
-        env.variable_values["f"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
-        env.variable_values["S"] = set(["1","2","3"])
+        env.set_value("f", set([("1","x"),("2","y"),("3","z"),("1","y")]))
+        env.set_value("S", set(["1","2","3"]))
         assert interpret(root,env)
 
 
@@ -54,19 +54,19 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set([("1","x")])
-        env.variable_values["p"] = set([("1","a")])
-        env.variable_values["q"] = set([("a","x")])
+        env.set_value("S", set([("1","x")]))
+        env.set_value("p", set([("1","a")]))
+        env.set_value("q", set([("a","x")]))
         assert interpret(root,env)
 
-        env.variable_values["S"] = set([("1","a")])
-        env.variable_values["p"] = set([("1","x"),("2","y"),("3","z"),("1","y")])
-        env.variable_values["q"] = set([("x","a")])
+        env.set_value("S", set([("1","a")]))
+        env.set_value("p", set([("1","x"),("2","y"),("3","z"),("1","y")]))
+        env.set_value("q", set([("x","a")]))
         assert interpret(root,env)
 
-        env.variable_values["S"] = set([("1","a"),("2","a")])
-        env.variable_values["p"] = set([("1","x"),("2","x"),("3","z")])
-        env.variable_values["q"] = set([("x","a")])
+        env.set_value("S", set([("1","a"),("2","a")]))
+        env.set_value("p", set([("1","x"),("2","x"),("3","z")]))
+        env.set_value("q", set([("x","a")]))
         assert interpret(root,env)
 
 
@@ -78,8 +78,8 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b","c"])
-        env.variable_values["r"] = set([("a","a"),("b","b"),("c","c")])
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("r", set([("a","a"),("b","b"),("c","c")]))
         assert interpret(root,env)
 
 
@@ -91,13 +91,13 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a"])
-        env.variable_values["f"] = set([("a","1")])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("S", set(["a"]))
+        env.set_value("f", set([("a","1")]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("a","1"),("a","42")])
-        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        env.set_value("f", set([("a","1"),("a","42")]))
+        env.set_value("r", set([("a","1"),("a","42"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -109,13 +109,13 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a"])
-        env.variable_values["f"] = set([("b","42"),("c","777")])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("S", set(["a"]))
+        env.set_value("f", set([("b","42"),("c","777")]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("c","777")])
-        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        env.set_value("f", set([("c","777")]))
+        env.set_value("r", set([("a","1"),("a","42"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -127,13 +127,13 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["T"] = set(["1"])
-        env.variable_values["f"] = set([("a","1")])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("T", set(["1"]))
+        env.set_value("f", set([("a","1")]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("a","1"),("b","1")])
-        env.variable_values["r"] = set([("a","1"),("b","1"),("c","777")])
+        env.set_value("f", set([("a","1"),("b","1")]))
+        env.set_value("r", set([("a","1"),("b","1"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -145,13 +145,13 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["T"] = set(["1"])
-        env.variable_values["f"] = set([("b","42"),("c","777")])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("T", set(["1"]))
+        env.set_value("f", set([("b","42"),("c","777")]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("c","777")])
-        env.variable_values["r"] = set([("a","1"),("b","1"),("c","777")])
+        env.set_value("f", set([("c","777")]))
+        env.set_value("r", set([("a","1"),("b","1"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -163,12 +163,12 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([("1","a"),("42","b"),("777","c")])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("f", set([("1","a"),("42","b"),("777","c")]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([])
-        env.variable_values["r"] = set([])
+        env.set_value("f", set([]))
+        env.set_value("r", set([]))
         assert interpret(root,env)
 
 
@@ -180,23 +180,23 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a"])
-        env.variable_values["f"] = set(["1"])
-        env.variable_values["r"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("S", set(["a"]))
+        env.set_value("f", set(["1"]))
+        env.set_value("r", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set(["1","42"])
-        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        env.set_value("f", set(["1","42"]))
+        env.set_value("r", set([("a","1"),("a","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["S"] = set(["a","c"])
-        env.variable_values["f"] = set(["1","42","777"])
-        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        env.set_value("S", set(["a","c"]))
+        env.set_value("f", set(["1","42","777"]))
+        env.set_value("r", set([("a","1"),("a","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["S"] = set(["c"])
-        env.variable_values["f"] = set(["777"])
-        env.variable_values["r"] = set([("a","1"),("a","42"),("c","777")])
+        env.set_value("S", set(["c"]))
+        env.set_value("f", set(["777"]))
+        env.set_value("r", set([("a","1"),("a","42"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -208,14 +208,14 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([("a","1"),("b","42"),("c","777"),("d","17")])
-        env.variable_values["r1"] = set([("d","17")])
-        env.variable_values["r2"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("f", set([("a","1"),("b","42"),("c","777"),("d","17")]))
+        env.set_value("r1", set([("d","17")]))
+        env.set_value("r2", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("a","1"),("b","41"),("c","777"),("d","17")])
-        env.variable_values["r2"] = set([("d","17"),("b","41")])
-        env.variable_values["r1"] = set([("a","1"),("b","42"),("c","777")])
+        env.set_value("f", set([("a","1"),("b","41"),("c","777"),("d","17")]))
+        env.set_value("r2", set([("d","17"),("b","41")]))
+        env.set_value("r1", set([("a","1"),("b","42"),("c","777")]))
         assert interpret(root,env)
 
 
@@ -227,14 +227,14 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([])
-        env.variable_values["S"] = set([])
-        env.variable_values["T"] = set([])
+        env.set_value("f", set([]))
+        env.set_value("S", set([]))
+        env.set_value("T", set([]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([(("a","y"),"a"),(("b","y"),"b"),(("a","x"),"a"),(("b","x"),"b")])
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
+        env.set_value("f", set([(("a","y"),"a"),(("b","y"),"b"),(("a","x"),"a"),(("b","x"),"b")]))
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
         assert interpret(root,env)
 
 
@@ -246,14 +246,14 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([])
-        env.variable_values["S"] = set([])
-        env.variable_values["T"] = set([])
+        env.set_value("f", set([]))
+        env.set_value("S", set([]))
+        env.set_value("T", set([]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([(("a","y"),"y"),(("b","y"),"y"),(("a","x"),"x"),(("b","x"),"x")])
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
+        env.set_value("f", set([(("a","y"),"y"),(("b","y"),"y"),(("a","x"),"x"),(("b","x"),"x")]))
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
         assert interpret(root,env)
 
     def test_genAST_pred_rel_direct_prod(self):
@@ -264,19 +264,19 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([])
-        env.variable_values["p"] = set([])
-        env.variable_values["q"] = set([])
+        env.set_value("f", set([]))
+        env.set_value("p", set([]))
+        env.set_value("q", set([]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([])
-        env.variable_values["p"] = set([("x","1"),("y","2")])
-        env.variable_values["q"] = set([("a","3"),("b","4")])
+        env.set_value("f", set([]))
+        env.set_value("p", set([("x","1"),("y","2")]))
+        env.set_value("q", set([("a","3"),("b","4")]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([("x",("1","3"))])
-        env.variable_values["p"] = set([("x","1"),("y","2")])
-        env.variable_values["q"] = set([("x","3"),("b","4")])
+        env.set_value("f", set([("x",("1","3"))]))
+        env.set_value("p", set([("x","1"),("y","2")]))
+        env.set_value("q", set([("x","3"),("b","4")]))
         assert interpret(root,env)
 
 
@@ -288,14 +288,14 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
-        env.variable_values["f"] = set([])
-        env.variable_values["p"] = set([])
-        env.variable_values["q"] = set([])
+        env.set_value("f", set([]))
+        env.set_value("p", set([]))
+        env.set_value("q", set([]))
         assert interpret(root,env)
 
-        env.variable_values["f"] = set([(("x","a"),("1","3")),(("x","b"),("1","4"))])
-        env.variable_values["p"] = set([("x","1")])
-        env.variable_values["q"] = set([("a","3"),("b","4")])
+        env.set_value("f", set([(("x","a"),("1","3")),(("x","b"),("1","4"))]))
+        env.set_value("p", set([("x","1")]))
+        env.set_value("q", set([("a","3"),("b","4")]))
         assert interpret(root,env)
 
 

@@ -8,9 +8,11 @@ max_int = 5
 class Environment():
     def __init__(self):
         # TODO: del maps
-        self.variable_values = {} # values of global and local vars vv: str->val
-        self.variable_type = {}  # types of global and local vars vt: str->str
-        self.vv_stack = [self.variable_values]
+        self.variable_values = {} 
+        self.variable_type = {}  
+        # values of global and local vars vv: str->val
+        self.vv_stack = [{}]
+        # types of global and local vars vt: str->str or str->type
         self.vt_stack = [self.variable_type]
 
 

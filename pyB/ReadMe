@@ -42,6 +42,9 @@ DONE:
     - move tests in seperated files
 
 TODO:
+    - write more scoping tests
+    - !, # set-comp and pi dont use correct enum
+    - Tests ignore Frames and Scopes. Fix that
     - assumes that all functions are 2-tuple: otherwise crash
     - write more AST-Gen tests
     - wirte a build-script

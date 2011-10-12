@@ -23,9 +23,9 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
         l = []
@@ -33,9 +33,9 @@ class TestInterpFunctions():
         l.append(frozenset([("2","hallo_welt")]))
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
         l.append(frozenset([]))
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
 
@@ -51,16 +51,16 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
         l = []
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
     def test_genAST_pred_part_inj_fun(self):
@@ -78,18 +78,18 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
         l = []
         l.append(frozenset([("1","hallo_welt")]))
         l.append(frozenset([("2","hallo_welt")]))
         l.append(frozenset([]))
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
 
@@ -103,9 +103,9 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
 
@@ -119,18 +119,18 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
         l = []
         l.append(frozenset([("1","hallo_welt")]))
         l.append(frozenset([("2","hallo_welt")]))
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
 
@@ -144,16 +144,16 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
         l = []
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
     def test_genAST_pred_bij_fun(self):
@@ -170,14 +170,14 @@ class TestInterpFunctions():
         l.append(frozenset([("a","y"),("b","z"),("c","x")]))
         l.append(frozenset([("a","z"),("b","x"),("c","y")]))
         env = Environment()
-        env.variable_values["S"] = set(["a","b","c"])
-        env.variable_values["T"] = set(["x","y","z"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("T", set(["x","y","z"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
-        env.variable_values["S"] = set(["1","2"])
-        env.variable_values["T"] = set(["hallo_welt",])
-        env.variable_values["F"] = set([])
+        env.set_value("S", set(["1","2"]))
+        env.set_value("T", set(["hallo_welt",]))
+        env.set_value("F", set([]))
         assert interpret(root,env)
 
 
@@ -189,10 +189,10 @@ class TestInterpFunctions():
 
         l = [frozenset([(frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z1'), (frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z2')]), frozenset([(frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z1'), (frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z2')])]
         env = Environment()
-        env.variable_values["S"] = set(["x1","x2"])
-        env.variable_values["T"] = set(["y1","y2"])
-        env.variable_values["U"] = set(["z1","z2"])
-        env.variable_values["F"] = set(l)
+        env.set_value("S", set(["x1","x2"]))
+        env.set_value("T", set(["y1","y2"]))
+        env.set_value("U", set(["z1","z2"]))
+        env.set_value("F", set(l))
         assert interpret(root,env)
 
 
@@ -203,11 +203,11 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["x"] = "x"
-        env.variable_values["y"] = "y"
-        env.variable_values["f"] = set([("a","x"),("b","y")])
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("x", "x")
+        env.set_value("y", "y")
+        env.set_value("f", set([("a","x"),("b","y")]))
         assert interpret(root,env)
 
 
@@ -218,12 +218,12 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["x1","x2"])
-        env.variable_values["T"] = set(["y1","y2"])
-        env.variable_values["V"] = set(["z1","z2","z3","z4"])
-        env.variable_values["x"] = ("x1","y1")
-        env.variable_values["f"] = frozenset([(("x1","y1"),"z1"),(("x2","y2"),"z2"),(("x1","y2"),"z3"),(("x2","y1"),"z4")])
-        env.variable_values["y"] = "z1"
+        env.set_value("S", set(["x1","x2"]))
+        env.set_value("T", set(["y1","y2"]))
+        env.set_value("V", set(["z1","z2","z3","z4"]))
+        env.set_value("x", ("x1","y1"))
+        env.set_value("f", frozenset([(("x1","y1"),"z1"),(("x2","y2"),"z2"),(("x1","y2"),"z3"),(("x2","y1"),"z4")]))
+        env.set_value("y", "z1")
         assert interpret(root,env)
 
 
@@ -244,14 +244,14 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = frozenset([])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([]))
         assert interpret(root,env)
 
-        env.variable_values["s"] = frozenset([(1,"a")])
+        env.set_value("s", frozenset([(1,"a")]))
         assert interpret(root,env)
 
-        env.variable_values["s"] = frozenset([(1,"a"),(2,"b"),(3,"a")])
+        env.set_value("s", frozenset([(1,"a"),(2,"b"),(3,"a")]))
         assert interpret(root,env)
 
 
@@ -262,17 +262,17 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = frozenset([])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([]))
         assert not interpret(root,env)
 
-        env.variable_values["s"] = frozenset([(1,"a")])
+        env.set_value("s", frozenset([(1,"a")]))
         assert interpret(root,env)
 
-        env.variable_values["s"] = frozenset([(1,"b"),(2,"a"),(3,"b")])
+        env.set_value("s", frozenset([(1,"b"),(2,"a"),(3,"b")]))
         assert interpret(root,env)
 
-        env.variable_values["s"] = frozenset([(1,"a"),(1,"b"),(1,"a")])
+        env.set_value("s", frozenset([(1,"a"),(1,"b"),(1,"a")]))
         assert not interpret(root,env)
 
 
@@ -283,8 +283,8 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])]))
         assert interpret(root,env)
 
     def test_genAST_pred_seq_perm(self):
@@ -294,11 +294,11 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])]))
         assert interpret(root,env)
 
-        env.variable_values["s"] = frozenset([])
+        env.set_value("s", frozenset([]))
         assert not interpret(root,env)
 
     def test_genAST_pred_seq_conc(self):
@@ -308,9 +308,9 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
-        env.variable_values["t"] = frozenset([(1, 'a'), (2, 'b')])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
+        env.set_value("t", frozenset([(1, 'a'), (2, 'b')]))
         assert interpret(root,env)
 
     def test_genAST_pred_seq_prepend(self):
@@ -320,9 +320,9 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
-        env.variable_values["a"] = "a"
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
+        env.set_value("a", "a")
         assert interpret(root,env)
 
 
@@ -333,9 +333,9 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["s"] = frozenset([(2, 'a'), (1, 'b')]) 
-        env.variable_values["a"] = "a"
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
+        env.set_value("a", "a")
         assert interpret(root,env)
 
 
@@ -346,9 +346,9 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
         assert interpret(root,env)
 
 
@@ -359,9 +359,9 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
         assert interpret(root,env)
 
 
@@ -372,12 +372,12 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)
 
 
@@ -388,12 +388,12 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'd'), (2, 'e')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'd'), (2, 'e')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)
 
 
@@ -404,12 +404,12 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)
 
 
@@ -420,12 +420,12 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)
 
 
@@ -436,13 +436,13 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')])
-        env.variable_values["t"] = frozenset([ (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("t", frozenset([ (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)
 
 
@@ -453,11 +453,11 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        env.variable_values["s"] = frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')])
-        env.variable_values["t"] = frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd')]) 
-        env.variable_values["a"] = "a"
-        env.variable_values["b"] = "b"
-        env.variable_values["c"] = "c"
-        env.variable_values["d"] = "d"
-        env.variable_values["e"] = "e"
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("t", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd')])) 
+        env.set_value("a", "a")
+        env.set_value("b", "b")
+        env.set_value("c", "c")
+        env.set_value("d", "d")
+        env.set_value("e", "e")
         assert interpret(root,env)

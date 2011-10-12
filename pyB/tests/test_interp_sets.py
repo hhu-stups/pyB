@@ -15,11 +15,11 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = "x"
-        env.variable_values["S"] = set(["x","y","z"])
+        env.set_value("x", "x")
+        env.set_value("S", set(["x","y","z"]))
         assert interpret(root, env)
 
-        env.variable_values["S"] = set(["a","b","c"])
+        env.set_value("S", set(["a","b","c"]))
         assert not interpret(root, env)
 
     def test_genAST_subset(self):
@@ -30,12 +30,12 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["S"] = set(["x","y","z"])
+        env.set_value("T", set(["x","y"]))
+        env.set_value("S", set(["x","y","z"]))
         assert not interpret(root, env)
 
-        env.variable_values["S"] = set(["a","b","c"])
-        env.variable_values["T"] = set(["a","b","c"])
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("T", set(["a","b","c"]))
         assert interpret(root, env)
 
 
@@ -50,9 +50,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["x","y"])
-        env.variable_values["u"] = ("a","x")
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["x","y"]))
+        env.set_value("u", ("a","x"))
         assert interpret(root,env)
 
 
@@ -64,20 +64,20 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["X"] = set([])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("X", set([]))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set(["a","b"])
+        env.set_value("X", set(["a","b"]))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set(["a","c"])
+        env.set_value("X", set(["a","c"]))
         assert not interpret(root,env)
 
-        env.variable_values["X"] = set(["a"])
+        env.set_value("X", set(["a"]))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set(["b"])
+        env.set_value("X", set(["b"]))
         assert interpret(root,env)
 
 
@@ -89,14 +89,14 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["X"] = set([])
+        env.set_value("S", set(["a","b"]))
+        env.set_value("X", set([]))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set([frozenset([])])
+        env.set_value("X", set([frozenset([])]))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set([frozenset(["a","b"])])
+        env.set_value("X", set([frozenset(["a","b"])]))
         assert interpret(root,env)
 
     def test_genAST_pred_pow1_set(self):
@@ -107,17 +107,17 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["X"] = set(frozenset([]))
+        env.set_value("S", set(["a","b"]))
+        env.set_value("X", set(frozenset([])))
         assert not interpret(root,env)
 
-        env.variable_values["X"] = set(frozenset(["a"]))
+        env.set_value("X", set(frozenset(["a"])))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set(frozenset(["b"]))
+        env.set_value("X", set(frozenset(["b"])))
         assert interpret(root,env)
 
-        env.variable_values["X"] = set(frozenset(["a","b"]))
+        env.set_value("X", set(frozenset(["a","b"])))
         assert interpret(root,env)
 
 
@@ -151,7 +151,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = "x"
+        env.set_value("x", "x")
         assert interpret(root,env)
 
     def test_genAST_set_enum(self):
@@ -162,13 +162,13 @@ class TestInterpSets():
 
         #Test
         env = Environment()
-        env.variable_values["yy"] = "aa"
-        env.variable_values["aa"] = "aa" #FIXME: maybe this is a Bug..
-        env.variable_values["bb"] = "bb" #
-        env.variable_values["cc"] = "cc" #
+        env.set_value("yy", "aa")
+        env.set_value("aa", "aa") #FIXME: maybe this is a Bug..
+        env.set_value("bb", "bb") #
+        env.set_value("cc", "cc") #
         assert interpret(root, env)
 
-        env.variable_values["yy"] = "yy"
+        env.set_value("yy","yy")
         assert not interpret(root, env)
 
 
@@ -180,8 +180,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = "x"
-        env.variable_values["y"] = "y"
+        env.set_value("x", "x")
+        env.set_value("y", "y")
         assert interpret(root,env)
 
 
@@ -193,16 +193,16 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["zz"] = 4
+        env.set_value("zz", 4)
         assert interpret(root,env)
 
-        env.variable_values["zz"] = 5
+        env.set_value("zz", 5)
         assert interpret(root,env)
 
-        env.variable_values["zz"] = 6
+        env.set_value("zz", 6)
         assert not interpret(root,env)
 
-        env.variable_values["zz"] = 0
+        env.set_value("zz", 0)
         assert not interpret(root,env)
 
 
@@ -215,10 +215,10 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = 2
+        env.set_value("x", 2)
         assert interpret(root,env)
 
-        env.variable_values["x"] = 0
+        env.set_value("x", 0)
         assert interpret(root,env)
 
 
@@ -230,10 +230,10 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["x"] = 2
+        env.set_value("x", 2)
         assert interpret(root,env)
 
-        env.variable_values["x"] = 0
+        env.set_value("x", 0)
         assert not interpret(root,env)
 
 
@@ -289,9 +289,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["ID"] = set(["a","b"])
-        env.variable_values["S"] = set(["a","b"])
-        env.variable_values["T"] = set(["a"])
+        env.set_value("ID", set(["a","b"]))
+        env.set_value("S", set(["a","b"]))
+        env.set_value("T", set(["a"]))
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
         assert interpret(root,env)
@@ -305,8 +305,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["ID"] = set(["a","b"])
-        env.variable_values["S"] = set(["a","b"])
+        env.set_value("ID", set(["a","b"]))
+        env.set_value("S", set(["a","b"]))
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
         assert not interpret(root,env)
@@ -320,8 +320,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.variable_values["ID"] = set(["a","b"])
-        env.variable_values["T"] = set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])])
+        env.set_value("ID", set(["a","b"]))
+        env.set_value("T", set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
         env.variable_type["ID"] = PowerSetType(SetType("ID"))
         typeit(root, env)
         assert interpret(root,env)
