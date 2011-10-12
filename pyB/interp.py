@@ -197,16 +197,32 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
-        max_depth = len(node.children) -2
+        ids = []
+        for child in node.children[:-2]:
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        # new scope - side-effect: typechecking of node.children
+        env.push_new_frame(node.children, ids)
+        max_depth = len(node.children) -2 # (two preds)
         if not forall_recursive_helper(0, max_depth, node, env):
+            env.pop_frame()
             return False
         else:
+            env.pop_frame()
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
-        max_depth = len(node.children) -2
+        ids = []
+        for child in node.children[:-2]:
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        # new scope - side-effect: typechecking of node.children
+        env.push_new_frame(node.children, ids)
+        max_depth = len(node.children) -2 # (two preds)
         if exist_recursive_helper(0, max_depth, node, env):
+            env.pop_frame()
             return True
         else:
+            env.pop_frame()
             return False
     elif isinstance(node, AComprehensionSetExpression):
         # FIXME: supports only integers!
@@ -512,7 +528,7 @@ def interpret(node, env):
         env.push_new_frame(node.children, ids)
         preds = node.children[-2] 
         # gen. all values:
-        #TODO: this code (maybe) dont checks all possibilities!
+        # TODO: this code (maybe) dont checks all possibilities!
         for idName in ids:
             for i in all_values(idName, env):
                 env.set_value(idName, i)
@@ -521,20 +537,22 @@ def interpret(node, env):
         env.pop_frame()
         return sum_
     elif isinstance(node, AGeneralProductExpression):
-        # BUG: only works in sp. cases
-        # TODO: implement me: find solutuions for ids if ids are not nums
         prod = 1
         ids = []
         for child in node.children[:-2]:
-            ids.append(interpret(child, env))
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        # new scope - side-effect: typechecking of node.children
+        env.push_new_frame(node.children, ids)
         preds = node.children[-2] 
         # gen. all values:
-        all_val = [x for x in range(min_int,max_int+1)]
-        for idName in ids: #TODO: this code dont checks all possibilities!
-            for i in all_val:
+        # TODO: this code (maybe) dont checks all possibilities!
+        for idName in ids:
+            for i in all_values(idName, env):
                 env.set_value(idName, i)
                 if interpret(preds, env):
                     prod *= interpret(node.children[-1], env)
+        env.pop_frame()
         return prod
     elif isinstance(node, ANatSetExpression):
         return set(range(0,max_int+1))

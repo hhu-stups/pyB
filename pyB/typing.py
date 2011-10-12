@@ -118,7 +118,7 @@ def typeit(node, env):
         elif isinstance(asettype1, str) and not asettype0 == None:
             unify(asettype1, asettype0, env)
         else:
-            raise Exception("Unimplemented case")
+            assert asettype1.__class__ == asettype0.__class__
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env)
         expr2_type = typeit(node.children[1], env)

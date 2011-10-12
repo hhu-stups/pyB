@@ -42,6 +42,9 @@ DONE:
     - move tests in seperated files
 
 TODO:
+    - Typing maybe fails if vars have the same name (unify)
+    - remove fix value/type from tests if possible
+    - use new env interface inside tests
     - write more scoping tests
     - !, # set-comp and pi dont use correct enum
     - Tests ignore Frames and Scopes. Fix that

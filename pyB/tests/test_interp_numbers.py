@@ -235,7 +235,6 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        #env.variable_values["zz"] = "zz"
         assert interpret(root,env)
 
 
@@ -247,7 +246,6 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.set_value("zz", "zz")
         assert interpret(root,env)
 
 
@@ -260,6 +258,6 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.set_value("ID", set(["a","b"]))
-        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        env.set_type("ID", PowerSetType(SetType("ID")))
         typeit(root, env)
         assert interpret(root,env)

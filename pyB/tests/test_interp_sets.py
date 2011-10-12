@@ -322,6 +322,6 @@ class TestInterpSets():
         env = Environment()
         env.set_value("ID", set(["a","b"]))
         env.set_value("T", set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
-        env.variable_type["ID"] = PowerSetType(SetType("ID"))
+        env.set_type("ID", PowerSetType(SetType("ID")))
         typeit(root, env)
         assert interpret(root,env)
