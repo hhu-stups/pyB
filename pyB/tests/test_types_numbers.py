@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import typeit, IntegerType, PowerSetType
+from typing import IntegerType, PowerSetType, _test_typeit
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -15,7 +15,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -27,7 +27,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -39,7 +39,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -51,7 +51,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -63,7 +63,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -75,7 +75,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -87,7 +87,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -100,8 +100,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.set_type("y", IntegerType(42))
-        typeit(root, env)
+        lst = [("y", IntegerType(42))]
+        _test_typeit(root, env, lst, ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -114,8 +114,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.set_type("y", IntegerType(42))
-        typeit(root, env)
+        lst = [("y", IntegerType(42))]
+        _test_typeit(root, env, lst, ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -127,8 +127,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        env.set_type("y", IntegerType(2))
-        typeit(root, env)
+        lst = [("y", IntegerType(2))]
+        _test_typeit(root, env, lst, ["y"])
 
 
     def test_types_simple_equal4(self):
@@ -139,7 +139,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
 
 
     # XXX: maybe wrong test
@@ -151,7 +151,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], [])
         assert isinstance(env.get_type("zz"), IntegerType)
 
 
@@ -163,7 +163,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], [])
         assert isinstance(env.get_type("zz"), IntegerType)
 
 
@@ -175,7 +175,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -187,7 +187,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -199,7 +199,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -211,7 +211,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -223,7 +223,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -235,7 +235,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), PowerSetType)
         assert isinstance(env.get_type("x").data, IntegerType)
 
@@ -247,7 +247,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
 
@@ -260,7 +260,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
@@ -274,7 +274,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
@@ -288,7 +288,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
@@ -302,7 +302,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
@@ -316,7 +316,7 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
@@ -329,6 +329,8 @@ class TestTypesNumbers():
 
         # Test
         env = Environment()
-        typeit(root,env)
+        _test_typeit(root, env, [], ["x","y"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
+
+

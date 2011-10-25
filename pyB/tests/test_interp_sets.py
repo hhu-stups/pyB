@@ -2,7 +2,7 @@
 from ast_nodes import *
 from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
-from typing import typeit, IntegerType, PowerSetType, SetType
+from typing import IntegerType, PowerSetType, SetType, _test_typeit
 
 file_name = "input.txt"
 
@@ -267,6 +267,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -278,6 +279,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -292,8 +294,8 @@ class TestInterpSets():
         env.set_value("ID", set(["a","b"]))
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["a"]))
-        env.set_type("ID", PowerSetType(SetType("ID")))
-        typeit(root, env)
+        lst = [("ID", PowerSetType(SetType("ID")))]
+        _test_typeit(root, env, lst, ["T","S"])
         assert interpret(root,env)
 
 
@@ -307,8 +309,8 @@ class TestInterpSets():
         env = Environment()
         env.set_value("ID", set(["a","b"]))
         env.set_value("S", set(["a","b"]))
-        env.set_type("ID", PowerSetType(SetType("ID")))
-        typeit(root, env)
+        lst = [("ID", PowerSetType(SetType("ID")))]
+        _test_typeit(root, env, lst, ["S"])
         assert not interpret(root,env)
 
 
@@ -322,6 +324,6 @@ class TestInterpSets():
         env = Environment()
         env.set_value("ID", set(["a","b"]))
         env.set_value("T", set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
-        env.set_type("ID", PowerSetType(SetType("ID")))
-        typeit(root, env)
+        lst = [("ID", PowerSetType(SetType("ID")))]
+        _test_typeit(root, env, lst, ["T"])
         assert interpret(root,env)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import interpret, Environment
-from typing import typeit, IntegerType, PowerSetType, SetType
+from typing import _test_typeit, IntegerType, PowerSetType, SetType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -176,7 +176,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -188,7 +188,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
         assert not interpret(root,env)
 
 
@@ -200,7 +200,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -212,7 +212,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -224,7 +224,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        typeit(root, env)
+        _test_typeit(root, env, [], [])
         assert not interpret(root,env)
 
     def test_genAST_pred_sigma(self):
@@ -235,6 +235,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -246,6 +247,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        _test_typeit(root, env, [], [])
         assert interpret(root,env)
 
 
@@ -257,7 +259,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        lst = [("ID", PowerSetType(SetType("ID")))]
         env.set_value("ID", set(["a","b"]))
-        env.set_type("ID", PowerSetType(SetType("ID")))
-        typeit(root, env)
+        _test_typeit(root, env, lst, "")
         assert interpret(root,env)

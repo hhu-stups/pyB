@@ -1,4 +1,4 @@
-31.08.2011 - 07.10.2011
+31.08.2011 - 12.10.2011
 by John Witulski 
 
 Config:
@@ -17,51 +17,15 @@ Run Tests:
     py.test
     the /tests are in the tests folder
 
+
 Features:
-    Evals arith. Preds like:   1+1=2
-    Evals set Preds like:   x:ID 
-    Evals set extentions like:  {a,b,c}
-    Evals quantified preds like: #(z).(z<4 & z>0) (only integer!)
-    Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} (only integer!)
-    Evals realtions, functions and sequences
-
-
-How it works:
-    A AST visitor "ASTPython.java" gens a String with pythoncode.
-    This string is executed with "exec" in "pyB.py".
-    The string is mapped to the ASTNodes in "ast_nodes.py"
-    This AST is eval. via "interp.py"
-    A map Varname-> Type is created via the typeit method.
-    It uses a unify method to handel unknown types like S=V\/T T:POW(X)
-    The typing is necessery to eval. quantified preds
-    assumes that both sides of ops like (\/ or /=) have the same type.
-    typechecking is done - on the fly
-
-DONE:
-    - replace depricated set module
-    - implement AST Gen for Node with more than two children
-        e.g. ASetExtensionExpression
-    - move tests in seperated files
-    - use new env interface inside tests
-    - !, # set-comp and pi dont use correct enum
-    - rename quantified variables in helper-funcs -solved by scoping
-
-
-TODO:
-    - Typing maybe fails if vars have the same name (unify)
-    - remove fix value/type from tests if possible
-    - write more scoping tests
-    - Tests ignore Frames and Scopes. Fix that
-    - assumes that all functions are 2-tuple: otherwise crash
-    - write more AST-Gen tests
-    - wirte a build-script
-    - sets and frozensets are mixed (e.g in POW)..fix that
-    - Maybe the implemenation has to be fixed if infinite sets are introduced
-    - enable function applications (4.1.9) with many args
-    - not tested: sequences of sequences
-    - not tested: append/preprend more than one element
-    - Maybe a BUG: there are no local vars. all vars are global
-    - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
+    - Evals arith. Preds like:   1+1=2
+    - Evals set Preds like:   x:ID 
+    - Evals set extentions like:  {a,b,c}
+    - Evals quantified preds like: #(z).(z<4 & z>0) 
+    - Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} 
+    - Evals realtions, functions and sequences
+    - Typechecking of the most preds
 
 
 MISSING FEATURES:
@@ -76,3 +40,57 @@ MISSING FEATURES:
     - generalized cinc and strings
     - NAT and NAT1 is not infinite!
     - and maybe more...;-)
+
+
+How it works:
+    1. A AST visitor "ASTPython.java" gens a String with pythoncode.
+     This string is executed with "exec" in "pyB.py".
+     (This needs to be changed for RPython to Jit it. e.g. through XML-parsing)
+     The string is mapped to the ASTNodes in "ast_nodes.py"
+    2. This AST is eval. via "interp.py"
+    3. A map Varname-> Type is created via the typeit method.
+     typechecking is done - on the fly
+     It uses a unify method to handle unknown types like "S=V\/T T:POW(X)"
+     The typing is necessery to eval. quantified preds
+     assumes that both sides of ops like (\/ or /=) have the same type.
+     The map is filled with the unknown vars before a run.
+     This assumes that an var which is not introduced in the vars section or
+     the parameters of an opp is an quantified var or an error. This
+     is handled in the get_type method of the env.
+     Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
+     and are added to a frame before typing if they are not quantified
+
+
+DONE:
+    - replace depricated set module
+    - implement AST Gen for Node with more than two children
+        e.g. ASetExtensionExpression
+    - move tests in seperated files
+    - use new env interface inside tests
+    - !, # set-comp and pi dont use correct enum
+    - rename quantified variables in helper-funcs -solved by scoping
+    - Maybe a BUG: there are no local vars. all vars are global
+
+
+TODO:
+    - TODO: write prop. python module (e.g for min max int)
+    - FIXME: maybe BUG: eval of preds changes value_stack
+    - TODO: quantiefed vars must be added to the frame
+    - FIXME: Typeerrors are scattered through the whole code via asserts
+    - move namelearning of sets in typing from AUnequal/EqualPredicate to unify
+    - Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
+    - Typing maybe fails if vars have the same name (unify)
+    - remove fix value/type from tests if possible
+    - write more scoping tests
+    - assumes that all functions are 2-tuple: otherwise crash
+    - write more AST-Gen tests
+    - write a build-script
+    - sets and frozensets are mixed (e.g in POW)..fix that
+    - Maybe the implemenation has to be fixed if infinite sets are introduced
+    - enable function applications (4.1.9) with many args
+    - not tested: sequences of sequences
+    - not tested: append/preprend more than one element - possible?
+    - FIXME: Vars are added to a Frame at the wrong position!
+    - Tests ignore Frames and Scopes. Fix that
+    - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
+

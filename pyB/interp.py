@@ -1,79 +1,82 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType
+from typing import typeit, IntegerType, PowerSetType, SetType, BType
 
 min_int = -1
 max_int = 5
 
 class Environment():
     def __init__(self):
-        # values of global and local vars vv: str->val
-        self.vv_stack = [{}]
-        # types of global and local vars vt: str->str or str->type
-        self.vt_stack = [{}]
+        # Values of global and local vars: string -> value
+        # NEW FRAME on this stack via append <=> New Var. Scope
+        self.value_stack = [{}]
+        # Types of AST-ID-Nodes: Node->type
+        # This map is used by the enumeration
+        self.node_to_type_map = {} 
 
 
     def get_value(self, id_Name):
-        value_map_copy =  [x for x in self.vv_stack] # no ref. copy
+        assert isinstance(id_Name, str)
+        value_map_copy =  [x for x in self.value_stack] # no ref. copy
         value_map_copy.reverse()
+        stack_depth = len(value_map_copy)
         # lookup:
-        for i in range(len(value_map_copy)):
+        for i in range(stack_depth):
             try:
                 return value_map_copy[i][id_Name]
             except KeyError:
                 continue
-        # no ID known, if the inerp called that inside
-        # an ID-Node the keyerror is used to add a (maybe quantified) var
-        raise KeyError 
+        # No entry in the value_stack. The Variable with the name id_Name
+        # is unknown. This is an Error found by the typechecker
+        # TODO: raise custom exception. e.g typeerror
+        raise KeyError
 
-    # TODO: lookup + Throw Typeerror:
-    # TODO: set-lookup tests
+
+    # TODO: (maybe) lookup + Throw Typeerror:
+    # TODO: (maybe) set-lookup tests
+    # TODO: (maybe) check if value has the correct type
     def set_value(self, id_Name, value):
-        top_map = self.vv_stack[-1]
+        top_map = self.value_stack[-1]
         top_map[id_Name] = value
 
 
-    # Throws Keyerror if lookpup fails: for add Id
-    def get_type(self, id_Name):
-        type_map_copy = [x for x in self.vt_stack] # no ref. copy
-        type_map_copy.reverse()
-        # lookup:
-        for i in range(len(type_map_copy)):
-            try:
-                return type_map_copy[i][id_Name]
-            except KeyError:
-                continue
-        # no ID known, if the inerp called that inside
-        # an ID-Node the keyerror is used to add a (maybe quantified) var
-        raise KeyError 
+    # This method is used only(!) by the typechecking-tests.
+    # It returns the type of the id "string"
+    def get_type(self, string):
+        assert isinstance(string,str)
+        # linear search for ID with the name string
+        for node in self.node_to_type_map:
+            assert isinstance(node, AIdentifierExpression)
+            # FIXME: if there is more than one "string"
+            if node.idName==string:
+                return self.node_to_type_map[node]
 
-    # XXX: maybe lookup
-    # returns the topframe
-    def get_all_types(self):
-        return self.vt_stack[-1]
 
-    # TODO: lookup
-    def set_type(self, id_Name, atype):
-        top_map = self.vt_stack[-1]
-        top_map[id_Name] = atype
+    # A KeyError or a false assert is a typechecking bug
+    # Used by the eumerator: all_values
+    def get_type_by_node(self, node):
+        assert isinstance(node, AIdentifierExpression)
+        atype = self.node_to_type_map[node]
+        assert isinstance(atype, BType) 
+        return atype
+
 
     # new scope:
     # push a new frame with new local vars
-    def push_new_frame(self, nodes, ids):
-        self.vv_stack.append({})
-        type_map = {}
-        for i in ids:
-            assert isinstance(i, str)
-            type_map[i] = i
-        self.vt_stack.append(type_map)
-        # FIXME: Typecheck on the fly
-        for node in nodes: # Side-Effect: changes vv and vt_stack
-            typeit(node, self)
+    def push_new_frame(self, nodes):
+        # TODO: throw warning if local var with 
+        # the same name like a global var. This is not a B error
+        # but maybe not intended by the User
+        var_map = {}
+        for node in nodes:
+            assert isinstance(node, AIdentifierExpression)
+            var_map[node.idName] = node.idName
+        self.value_stack.append(var_map)
 
-    # leave scope:
+
+    # leave scope: throw all values of local vars away
     def pop_frame(self):
-        self.vv_stack.pop()
-        self.vt_stack.pop()
+        self.value_stack.pop()
 
 
 def interpret(node, env):
@@ -147,6 +150,7 @@ def interpret(node, env):
     elif isinstance(node, AModuloExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        assert expr2 > 0
         return expr1 % expr2
     elif isinstance(node, AIdentifierExpression):
         return env.get_value(node.idName)
@@ -194,12 +198,8 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
-        ids = []
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
         # new scope - side-effect: typechecking of node.children
-        env.push_new_frame(node.children, ids)
+        env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if not forall_recursive_helper(0, max_depth, node, env):
             env.pop_frame()
@@ -208,12 +208,8 @@ def interpret(node, env):
             env.pop_frame()
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
-        ids = []
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
         # new scope - side-effect: typechecking of node.children
-        env.push_new_frame(node.children, ids)
+        env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if exist_recursive_helper(0, max_depth, node, env):
             env.pop_frame()
@@ -222,12 +218,8 @@ def interpret(node, env):
             env.pop_frame()
             return False
     elif isinstance(node, AComprehensionSetExpression):
-        ids = []
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
         # new scope - side-effect: typechecking of node.children
-        env.push_new_frame(node.children, ids)
+        env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2
         lst = set_comprehension_recursive_helper(0, max_depth, node, env)
         # FIXME: maybe wrong:
@@ -523,38 +515,33 @@ def interpret(node, env):
         return set(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
-        ids = []
-        for child in node.children[:-2]:
-            assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
-        # new scope - side-effect: typechecking of node.children
-        env.push_new_frame(node.children, ids)
-        preds = node.children[-2] 
-        # gen. all values:
+        # new scope - side-effect: Adds ID-str of node.children
+        env.push_new_frame(node.children[:-2])
+        preds = node.children[-2]
+        expr = node.children[-1]
         # TODO: this code (maybe) dont checks all possibilities!
-        for idName in ids:
-            for i in all_values(idName, env):
-                env.set_value(idName, i)
+        # gen. all values:
+        for child in node.children[:-2]:
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
                 if interpret(preds, env):
-                    sum_ += interpret(node.children[-1], env)
+                    sum_ += interpret(expr, env)
+        # done
         env.pop_frame()
         return sum_
     elif isinstance(node, AGeneralProductExpression):
         prod = 1
-        ids = []
-        for child in node.children[:-2]:
-            assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
-        # new scope - side-effect: typechecking of node.children
-        env.push_new_frame(node.children, ids)
-        preds = node.children[-2] 
+        # new scope - side-effect:  Adds ID-str of node.children
+        env.push_new_frame(node.children[:-2])
+        preds = node.children[-2]
+        expr = node.children[-1]
         # gen. all values:
         # TODO: this code (maybe) dont checks all possibilities!
-        for idName in ids:
-            for i in all_values(idName, env):
-                env.set_value(idName, i)
+        for child in node.children[:-2]:
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
                 if interpret(preds, env):
-                    prod *= interpret(node.children[-1], env)
+                    prod *= interpret(expr, env)
         env.pop_frame()
         return prod
     elif isinstance(node, ANatSetExpression):
@@ -695,13 +682,13 @@ def set_comprehension_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             if interpret(pred, env):
                 result.append(i)
         return result
     else: # recursive call
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             partial_result = set_comprehension_recursive_helper(depth+1, max_depth, node, env)
             for j in partial_result:
@@ -712,36 +699,35 @@ def set_comprehension_recursive_helper(depth, max_depth, node, env):
         return result
 
 
-# FIXME: rename quantified variables!
 def exist_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             if interpret(pred, env):
                 return True
         return False
     else: # recursive call
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             if exist_recursive_helper(depth+1, max_depth, node, env):
                 return True
         return False
 
 
-# FIXME: rename quantified variables!
+
 def forall_recursive_helper(depth, max_depth, node, env):
     pred = node.children[len(node.children) -1]
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             if not interpret(pred, env):
                 return False
         return True
     else: # recursive call
-        for i in all_values(idName, env):
+        for i in all_values(node.children[depth], env):
             env.set_value(idName, i)
             if not forall_recursive_helper(depth+1, max_depth, node, env):
                 return False
@@ -751,27 +737,29 @@ def forall_recursive_helper(depth, max_depth, node, env):
 # ** THE ENUMERATOR **
 # returns a list with "all" possible values of a type
 # only works if the typechecking/typing of typeit was successful
-def all_values(idName, env):
+def all_values(node, env):
+    assert isinstance(node, AIdentifierExpression)
     # TODO: support cart prod
-    if isinstance(env.get_type(idName), IntegerType):
+    if isinstance(env.get_type_by_node(node), IntegerType):
         return range(min_int, max_int+1)
-    elif isinstance(env.get_type(idName), SetType):
-        type_name =  env.get_type(idName).data
+    elif isinstance(env.get_type_by_node(node), SetType):
+        type_name =  env.get_type_by_node(node).data
         assert isinstance(env.get_value(type_name), set)
         return env.get_value(type_name)
-    elif isinstance(env.get_type(idName), PowerSetType):
-        if isinstance(env.get_type(idName).data, SetType):
-            type_name = env.get_type(idName).data.data
+    elif isinstance(env.get_type_by_node(node), PowerSetType):
+        if isinstance(env.get_type_by_node(node).data, SetType):
+            type_name = env.get_type_by_node(node).data.data
             assert isinstance(env.get_value(type_name), set)
             res = powerset(env.get_value(type_name))
             powerlist = list(res)
             lst = [frozenset(e) for e in powerlist]
             return lst
-        elif isinstance(env.get_type(idName).data, PowerSetType):
+        elif isinstance(env.get_type_by_node(node).data, PowerSetType):
             count = 1
-            atype = env.get_type(idName).data
+            atype = env.get_type_by_node(node).data
             # TODO: Think of this again ;-)
             # unpack POW(POW(S)), POW(POW(POW(S))) ect. ....
+            # TODO: cart prod
             while not isinstance(atype, SetType):
                 count = count +1
                 atype = atype.data
