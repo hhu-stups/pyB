@@ -13,9 +13,10 @@ Run pyB:
     python pyB.py <FileName>
     e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" 
 
+
 Run Tests:
     py.test
-    the /tests are in the tests folder
+    the tests/ are in the tests folder
 
 
 Features:
@@ -48,17 +49,16 @@ How it works:
      (This needs to be changed for RPython to Jit it. e.g. through XML-parsing)
      The string is mapped to the ASTNodes in "ast_nodes.py"
     2. This AST is eval. via "interp.py"
-    3. A map Varname-> Type is created via the typeit method.
-     typechecking is done - on the fly
+    3. A map ASTNode-> Type is created via the typeit method.
      It uses a unify method to handle unknown types like "S=V\/T T:POW(X)"
      The typing is necessery to eval. quantified preds
      assumes that both sides of ops like (\/ or /=) have the same type.
-     The map is filled with the unknown vars before a run.
+     The TypeEnv(!=map) is filled with the unknown vars before a run.
      This assumes that an var which is not introduced in the vars section or
      the parameters of an opp is an quantified var or an error. This
      is handled in the get_type method of the env.
      Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
-     and are added to a frame before typing if they are not quantified
+     and are added to a frame before typing if they are not quantified.
 
 
 DONE:
@@ -70,21 +70,22 @@ DONE:
     - !, # set-comp and pi dont use correct enum
     - rename quantified variables in helper-funcs -solved by scoping
     - Maybe a BUG: there are no local vars. all vars are global
+    - TODO: quantiefed vars must be added to the frame
+    - Typing maybe fails if vars have the same name (unify)
 
 
 TODO:
+    - TODO: throw better Typeexceptions
     - TODO: write prop. python module (e.g for min max int)
     - FIXME: maybe BUG: eval of preds changes value_stack
-    - TODO: quantiefed vars must be added to the frame
     - FIXME: Typeerrors are scattered through the whole code via asserts
-    - move namelearning of sets in typing from AUnequal/EqualPredicate to unify
-    - Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
-    - Typing maybe fails if vars have the same name (unify)
-    - remove fix value/type from tests if possible
-    - write more scoping tests
+    - TODO: move namelearning of sets in typing from AUnequal/EqualPredicate to unify
+    - TODO: Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
+    - TODO: remove fix value/type from tests if possible
+    - TODO: write more scoping tests
     - assumes that all functions are 2-tuple: otherwise crash
-    - write more AST-Gen tests
-    - write a build-script
+    - TODO: write more AST-Gen tests
+    - TODO: write a build-script
     - sets and frozensets are mixed (e.g in POW)..fix that
     - Maybe the implemenation has to be fixed if infinite sets are introduced
     - enable function applications (4.1.9) with many args
@@ -93,4 +94,6 @@ TODO:
     - FIXME: Vars are added to a Frame at the wrong position!
     - Tests ignore Frames and Scopes. Fix that
     - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
+    - typechecker and interpreter has undefined behavior if there is a error in the java-Bparser
+    - check if all astnodes return types (if they have to)
 

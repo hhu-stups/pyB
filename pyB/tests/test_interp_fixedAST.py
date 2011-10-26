@@ -419,7 +419,7 @@ class TestInterp_fixedAST():
         belPred = ABelongPredicate()
         belPred.children.append(idExp)
         belPred.children.append(sexExp)
-        
+
         #Test
         env = Environment()
         env.set_value("yy", "aa")
@@ -652,7 +652,7 @@ class TestInterp_fixedAST():
         cardExp = ACardExpression()
         cardExp.children.append(idExp)
 
-        #TestInterp
+        #Test
         env = Environment()
         env.set_value("S", set(["aa","bb"]))
         assert interpret(cardExp, env)==2

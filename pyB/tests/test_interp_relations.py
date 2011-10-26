@@ -40,7 +40,7 @@ class TestInterpRelations():
         env.set_value("S", set(["a"]))
         env.set_value("f", set([("a","x")]))
         assert interpret(root,env)
-        
+
         env.set_value("f", set([("1","x"),("2","y"),("3","z"),("1","y")]))
         env.set_value("S", set(["1","2","3"]))
         assert interpret(root,env)

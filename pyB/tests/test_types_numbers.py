@@ -91,7 +91,6 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x"), IntegerType)
 
 
-    # TODO: survie refactoring
     def test_types_simple_equal(self):
         # Build AST
         string_to_file("#PREDICATE x=y", file_name)
@@ -105,7 +104,6 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x"), IntegerType)
 
 
-    # TODO: survie refactoring 
     def test_types_simple_equal2(self):
         # Build AST
         string_to_file("#PREDICATE y=x", file_name)
@@ -127,7 +125,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        lst = [("y", IntegerType(2))]
+        lst = [("y", IntegerType(2))] # number not important
         _test_typeit(root, env, lst, ["y"])
 
 
@@ -142,7 +140,6 @@ class TestTypesNumbers():
         _test_typeit(root, env, [], [])
 
 
-    # XXX: maybe wrong test
     def test_types_sigma(self):
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)
@@ -239,6 +236,7 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x"), PowerSetType)
         assert isinstance(env.get_type("x").data, IntegerType)
 
+
     def test_genAST_expr_equ(self):
         # Build AST
         string_to_file("#PREDICATE x=y & x=1", file_name)
@@ -320,6 +318,7 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("z"), IntegerType)
+
 
     def test_genAST_expr_leq(self):
         # Build AST

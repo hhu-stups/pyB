@@ -2,13 +2,14 @@
 from ast_nodes import *
 
 
-class BType:
+class BType: # Baseclass used to repr. concrete type
     pass
 
 
 class IntegerType(BType):
     def __init__(self, number_or_None):
-        self.data = number_or_None # TODO: maybe this data is useless
+        # maybe this data is useless for typechecking
+        self.data = number_or_None 
 
 
 class PowerSetType(BType):
@@ -29,13 +30,14 @@ class CartType(BType):
 class UnknownType(): # no BType: used later to throw Exceptions
     # the arg real_type is only set by tests!
     def __init__(self, name, real_type):
+        # this member is used to learn the name of sets
         self.name = name
         # if this is still None after typechecking 
         # than a Typeerror has been found
         self.real_type = real_type
 
 
-# Helper: will be thrown away after Typechecking
+# Helper env: will be thrown away after Typechecking
 class TypeCheck_Environment():
     def __init__(self):
         # is used to construct the env.node_to_type_map
@@ -45,8 +47,8 @@ class TypeCheck_Environment():
 
     # new scope
     def push_frame(self, id_Names):
-        id_to_nodes_map = {} # A str->NODE
-        id_to_types_map = {} # T str->Type
+        id_to_nodes_map = {} # A: str->NODE
+        id_to_types_map = {} # T: str->Type
         for id_Name in id_Names:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
@@ -80,9 +82,10 @@ class TypeCheck_Environment():
         assert isinstance(utype, UnknownType)
         assert isinstance(ctype, BType)
         utype.real_type = ctype
+        return ctype
 
 
-    # copys to env.node_to_type_map
+    # copies to env.node_to_type_map
     def pop_frame(self, env):
         node_top_map = self.id_to_nodes_stack[-1]
         type_top_map = self.id_to_types_stack[-1]
@@ -92,6 +95,8 @@ class TypeCheck_Environment():
         for idName in type_top_map:
             atype = type_top_map[idName]
             # follow pointers. until none or Btype
+            # FIXME: there are cases when this is wrong!
+            # e.g. "#x.(x:S=>x>=0)".. (*pop*).. "& S=NAT"
             while not isinstance(atype.real_type, BType):
                 if atype==None:
                     # TODO: maybe something more pretty
@@ -104,6 +109,7 @@ class TypeCheck_Environment():
 
 
     # returns BType or String
+    # WARNING: not to be confused with env.get_type
     def get_current_type(self, idName):
         assert isinstance(idName, str)
         # lookup:
@@ -117,7 +123,8 @@ class TypeCheck_Environment():
                     return atype
             except KeyError:
                 continue
-        print "TYPEERROR!" # TODO: something more pretty
+        # TODO: something more pretty
+        print "TYPEERROR! unkown var: ",idName
         raise KeyError
 
 
@@ -132,7 +139,7 @@ def _test_typeit(root, env, known_types_list, idNames):
         atype = atuple[1]
         type_map[id_Name] = UnknownType(id_Name, atype)
         node_map[id_Name] = []
-    type_env.id_to_types_stack = [type_map] # this is a push
+    type_env.id_to_types_stack = [type_map] # this is a implicit push
     type_env.id_to_nodes_stack = [node_map]
     type_env.push_frame(idNames)
     typeit(root, env, type_env)
@@ -141,10 +148,11 @@ def _test_typeit(root, env, known_types_list, idNames):
 
 
 
-# returns Type, None or String
+# returns BType/UnonwType or None(for expr which need no type. e.g. x=y)
 # sideeffect: changes env
-# type_stack is a working stack to type vars with
+# type_env is a working env to type vars with
 # different scops but (maybe) the same names
+# e.g. !x.(x:S =>...) & x:Nat ...
 def typeit(node, env, type_env):
     if isinstance(node, ANatSetExpression):
         return PowerSetType(IntegerType(None))
@@ -157,14 +165,14 @@ def typeit(node, env, type_env):
     elif isinstance(node, ACoupleExpression):
         return SetType(None)
     elif isinstance(node, AComprehensionSetExpression):
-        #TODO: learn that all Elements must have the same type!
         ids = []
         for n in node.children[:-1]:
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
         for child in node.children:
-            typeit(child, env, type_env)
+            atype = typeit(child, env, type_env)
+            #TODO: learn that all Elements must have the same type!
         # assert that all IDs are known (not None)
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
@@ -182,10 +190,13 @@ def typeit(node, env, type_env):
             typeit(child, env,type_env)
         # Add a set with an unknown name.
         # This Name can only be found by the unify-method
+        # or an equal/notequals node
         return PowerSetType(SetType(None)) 
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env,type_env)
         set_type = typeit(node.children[1], env,type_env)
+        #print elm_type
+        #print set_type
         if isinstance(elm_type, UnknownType) and not set_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
             if isinstance(set_type, PowerSetType):
@@ -193,6 +204,7 @@ def typeit(node, env, type_env):
                 unify(elm_type, set_type.data, type_env)
             elif isinstance(set_type, UnknownType):
                 #TODO implement me
+                #FIXME: This is wrong! I dont know why it works :-)
                 unify(elm_type, set_type, type_env)
             else:
                 # no unknown type and no powerset-type
@@ -205,7 +217,7 @@ def typeit(node, env, type_env):
         else:
             # no unknown type and no powerset-type
             raise Exception("Unimplemented case: no ID on left side")
-    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate): # copy-paste of "equal-case"
+    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         if isinstance(expr1_type, UnknownType) and not expr2_type == None:
@@ -240,6 +252,7 @@ def typeit(node, env, type_env):
             return unify(asettype1, asettype0, type_env)
         else:
             # Both sides are concrete types
+            # FIXME: only works in sp. cases
             assert asettype1.data.data == asettype0.data.data # same name
             assert asettype1.__class__ == asettype0.__class__
             return asettype0
@@ -511,6 +524,7 @@ def typeit(node, env, type_env):
         assert isinstance(type0.data.data[1], SetType)
         return type0
     else:
+        # WARNING: Make sure that is only used when no typeinfo is needed
         for child in node.children:
             typeit(child, env, type_env)
 
@@ -520,8 +534,9 @@ def typeit(node, env, type_env):
 # here x is set to the (unkonwn-)type y
 # When the (unknown-)y-type is set to IntegerType
 # all y-types are set to ist in a lin. search
-# TODO: replace lin. search by pointers to unknown types
+# TODO: This function is not full implemented!
 # TODO: find names of unknown sets (e.g. of a ASetExtensionExpression node)
+# now found in equal/not equal-Nodes...
 def unify(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
@@ -530,16 +545,14 @@ def unify(maybe_type0, maybe_type1, type_env):
         print "TYPEERROR: %s %s", maybe_type0, maybe_type1
         raise Exception() #TODO: Throw TypeException
 
-    # one of them must be an ID-name
+    # one of them must be an Unknown Type
     assert isinstance(maybe_type0, UnknownType) or isinstance(maybe_type1, UnknownType)
 
     if isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type0, UnknownType):
-        type_env.set_concrete_type(maybe_type0, maybe_type1)
-        return maybe_type1
+        return type_env.set_concrete_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type1, UnknownType):
-        type_env.set_concrete_type(maybe_type1, maybe_type0)
-        return maybe_type0
+        return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
-        raise Exception()
+        raise Exception() # should never happen

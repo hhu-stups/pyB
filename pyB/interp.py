@@ -7,11 +7,12 @@ max_int = 5
 
 class Environment():
     def __init__(self):
-        # Values of global and local vars: string -> value
-        # NEW FRAME on this stack via append <=> New Var. Scope
+        # Values of global and local vars: string -> value.
+        # NEW FRAME on this stack via append <=> New Var. Scope.
         self.value_stack = [{}]
-        # Types of AST-ID-Nodes: Node->type
+        # Types of AST-ID-Nodes: Node->type.
         # This map is used by the enumeration
+        # and was created and filled by typeit of the module typing.
         self.node_to_type_map = {} 
 
 
@@ -28,13 +29,14 @@ class Environment():
                 continue
         # No entry in the value_stack. The Variable with the name id_Name
         # is unknown. This is an Error found by the typechecker
-        # TODO: raise custom exception. e.g typeerror
+        # TODO: raise custom exception. e.g lookuperror
         raise KeyError
 
 
     # TODO: (maybe) lookup + Throw Typeerror:
     # TODO: (maybe) set-lookup tests
     # TODO: (maybe) check if value has the correct type
+    # used by tests and emumaration
     def set_value(self, id_Name, value):
         top_map = self.value_stack[-1]
         top_map[id_Name] = value
@@ -48,6 +50,7 @@ class Environment():
         for node in self.node_to_type_map:
             assert isinstance(node, AIdentifierExpression)
             # FIXME: if there is more than one "string"
+            # e.g x:Nat & !x.(x:S=>card(x)=3)...
             if node.idName==string:
                 return self.node_to_type_map[node]
 
@@ -198,7 +201,7 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
     elif isinstance(node, AUniversalQuantificationPredicate):
-        # new scope - side-effect: typechecking of node.children
+        # new scope 
         env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if not forall_recursive_helper(0, max_depth, node, env):
@@ -208,7 +211,7 @@ def interpret(node, env):
             env.pop_frame()
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
-        # new scope - side-effect: typechecking of node.children
+        # new scope
         env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if exist_recursive_helper(0, max_depth, node, env):
@@ -218,7 +221,7 @@ def interpret(node, env):
             env.pop_frame()
             return False
     elif isinstance(node, AComprehensionSetExpression):
-        # new scope - side-effect: typechecking of node.children
+        # new scope
         env.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2
         lst = set_comprehension_recursive_helper(0, max_depth, node, env)
@@ -395,7 +398,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         sequence_list = [frozenset([])]
         max_len = 1
-        # find all seq from 1..max_int
+        # find all seq. from 1..max_int
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         return set(sequence_list)
@@ -403,7 +406,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         sequence_list = []
         max_len = 1
-        # find all seq from 1..max_int
+        # find all seq. from 1..max_int
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         return set(sequence_list)
@@ -515,13 +518,14 @@ def interpret(node, env):
         return set(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
-        # new scope - side-effect: Adds ID-str of node.children
+        # new scope
         env.push_new_frame(node.children[:-2])
         preds = node.children[-2]
         expr = node.children[-1]
         # TODO: this code (maybe) dont checks all possibilities!
         # gen. all values:
         for child in node.children[:-2]:
+            # enumeration
             for i in all_values(child, env):
                 env.set_value(child.idName, i)
                 if interpret(preds, env):
@@ -531,13 +535,14 @@ def interpret(node, env):
         return sum_
     elif isinstance(node, AGeneralProductExpression):
         prod = 1
-        # new scope - side-effect:  Adds ID-str of node.children
+        # new scope
         env.push_new_frame(node.children[:-2])
         preds = node.children[-2]
         expr = node.children[-1]
         # gen. all values:
         # TODO: this code (maybe) dont checks all possibilities!
         for child in node.children[:-2]:
+            # enumeration
             for i in all_values(child, env):
                 env.set_value(child.idName, i)
                 if interpret(preds, env):

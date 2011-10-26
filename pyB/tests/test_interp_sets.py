@@ -22,6 +22,7 @@ class TestInterpSets():
         env.set_value("S", set(["a","b","c"]))
         assert not interpret(root, env)
 
+
     def test_genAST_subset(self):
         # Build AST
         string_to_file("#PREDICATE S<:T", file_name)
@@ -37,8 +38,6 @@ class TestInterpSets():
         env.set_value("S", set(["a","b","c"]))
         env.set_value("T", set(["a","b","c"]))
         assert interpret(root, env)
-
-
 
 
 
@@ -99,6 +98,7 @@ class TestInterpSets():
         env.set_value("X", set([frozenset(["a","b"])]))
         assert interpret(root,env)
 
+
     def test_genAST_pred_pow1_set(self):
         # Build AST:
         string_to_file("#PREDICATE X:POW1(S)", file_name)
@@ -154,6 +154,7 @@ class TestInterpSets():
         env.set_value("x", "x")
         assert interpret(root,env)
 
+
     def test_genAST_set_enum(self):
         # Build AST:
         string_to_file("#PREDICATE yy:{aa,bb,cc}", file_name)
@@ -206,7 +207,6 @@ class TestInterpSets():
         assert not interpret(root,env)
 
 
-
     def test_genAST_pred_nat(self):
         # Build AST:
         string_to_file("#PREDICATE x:NAT", file_name)
@@ -237,7 +237,6 @@ class TestInterpSets():
         assert not interpret(root,env)
 
 
-
     def test_genAST_pred_set_couple(self):
         # Build AST:
         string_to_file("#PREDICATE (1,0,41):{(0,0,41),(1,0,41),(0,1,41),(1,1,41)}", file_name)
@@ -247,6 +246,7 @@ class TestInterpSets():
         # Test
         env = Environment()
         assert interpret(root,env)
+
 
     def test_genAST_pred_set_couple2(self):
         # Build AST:
