@@ -320,6 +320,21 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
+    def test_genAST_expr_equ7(self):
+        # Build AST
+        string_to_file("#PREDICATE z=x & z=y & z=w & x=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], ["x","y","z","w"])
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("y"), IntegerType)
+        assert isinstance(env.get_type("z"), IntegerType)
+        assert isinstance(env.get_type("w"), IntegerType)
+
+
     def test_genAST_expr_leq(self):
         # Build AST
         string_to_file("#PREDICATE x<y & y=1", file_name)

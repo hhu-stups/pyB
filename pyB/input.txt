@@ -1,1 +1,1 @@
-#PREDICATE T<:S & S:POW(ID) & !(x).(x:T => x:S)
+#PREDICATE S:POW(B) & R=S\/T 

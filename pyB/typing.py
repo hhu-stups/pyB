@@ -540,19 +540,35 @@ def typeit(node, env, type_env):
 def unify(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
+        # TODO: unification if not int or settype. e.g cart or power-type
         if maybe_type0.__class__ == maybe_type1.__class__:
             return maybe_type0
         print "TYPEERROR: %s %s", maybe_type0, maybe_type1
         raise Exception() #TODO: Throw TypeException
-
-    # one of them must be an Unknown Type
-    assert isinstance(maybe_type0, UnknownType) or isinstance(maybe_type1, UnknownType)
-
-    if isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
+    elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
+        # TODO: not compleate
+        maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
-    elif isinstance(maybe_type0, UnknownType):
+    elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
+        # TODO: not compleate
+        maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_concrete_type(maybe_type0, maybe_type1)
-    elif isinstance(maybe_type1, UnknownType):
+    elif isinstance(maybe_type1, UnknownType) and isinstance(maybe_type0, BType):
+        # TODO: not compleate
+        maybe_type1 = unknown_closure(maybe_type1)
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
         raise Exception() # should never happen
+
+
+# follows an UnknownType pointer chain:
+# returns an UnknownType which points to a BType or None
+# None: learn typinformation
+# BType: unificationcheck
+def unknown_closure(atype):
+    while True:
+        if not isinstance(atype.real_type, UnknownType):
+            break
+        atype = atype.real_type
+    assert isinstance(atype.real_type, BType) or atype.real_type==None
+    return atype
