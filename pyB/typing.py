@@ -128,6 +128,53 @@ class TypeCheck_Environment():
         raise KeyError
 
 
+# env.node_to_type_map should be a set of tree with 
+# Nodes as leafs and Btypes as roots. 
+# This method should throw away all unknowntypes 
+# by walking from the leafs to the roots.
+# If this is not possible the typechecking has failed
+def resolve_type(env):
+    for node in env.node_to_type_map:
+        tree = env.node_to_type_map[node]
+        tree_without_unknown = throw_away_unknown(tree)
+        env.node_to_type_map[node] = tree_without_unknown
+
+
+# TODO: at this moment this is not a tree.
+# it is a list an becomes a tree when carttype is implemented
+# It uses the data attr of BTypes as pointers
+def throw_away_unknown(tree):
+    if isinstance(tree, SetType) or isinstance(tree, IntegerType):
+        return tree
+    elif isinstance(tree, PowerSetType):
+        if isinstance(tree.data, UnknownType):
+            last_unknown = unknown_closure(tree.data)
+            tree.data = last_unknown.real_type
+        throw_away_unknown(tree.data)
+        return tree
+    elif isinstance(tree, CartType): #TODO: implement me
+        return tree
+    elif tree==None:
+        raise Exception("TYPEERROR in resolve")
+    else:
+        raise Exception("resolve fail: Not Implemented %s",tree)
+
+
+# follows an UnknownType pointer chain:
+# returns an UnknownType which points to a BType or None
+# None: learn typinformation
+# BType: unificationcheck
+# WARNING: assumes cyclic - free
+def unknown_closure(atype):
+    if not isinstance(atype, UnknownType):
+        return atype
+    while True:
+        if not isinstance(atype.real_type, UnknownType):
+            break
+        atype = atype.real_type
+    assert isinstance(atype.real_type, BType) or atype.real_type==None
+    return atype
+
 
 # should only be called by tests
 def _test_typeit(root, env, known_types_list, idNames):
@@ -145,6 +192,7 @@ def _test_typeit(root, env, known_types_list, idNames):
     typeit(root, env, type_env)
     type_env.pop_frame(env)
     type_env.pop_frame(env)
+    resolve_type(env) # throw away unknown types
 
 
 
@@ -199,20 +247,26 @@ def typeit(node, env, type_env):
         #print set_type
         if isinstance(elm_type, UnknownType) and not set_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
+            set_type = unknown_closure(set_type)
+            elm_type = unknown_closure(elm_type)
             if isinstance(set_type, PowerSetType):
                 # map unknown type elm_type to set_type for all elm_type
                 unify(elm_type, set_type.data, type_env)
             elif isinstance(set_type, UnknownType):
-                #TODO implement me
-                #FIXME: This is wrong! I dont know why it works :-)
-                unify(elm_type, set_type, type_env)
+                # FIXME: not all cases!
+                if set_type.real_type == None:
+                    unify(set_type, PowerSetType(elm_type), type_env)
+                elif isinstance(set_type.real_type, PowerSetType):
+                    unify(elm_type, set_type.real_type.data, type_env)
+                else:
+                    #FIXME: quick fix - this is wrong
+                    unify(elm_type, set_type, type_env)
             else:
                 # no unknown type and no powerset-type
-                raise Exception("Unimplemented case: no ID on left side")
+                raise Exception("Unimplemented case:  no unknown type and no powerset-type")
             return
-        elif isinstance(elm_type, SetType) and isinstance(set_type, PowerSetType):
-            assert elm_type.__class__ == set_type.data.__class__
-            # TODO: implement me: unification-call
+        elif isinstance(elm_type, BType):
+            unify(PowerSetType(elm_type), set_type, type_env)
             return
         else:
             # no unknown type and no powerset-type
@@ -333,8 +387,8 @@ def typeit(node, env, type_env):
         return IntegerType(None)
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         atype = typeit(node.children[0], env, type_env)
-        # TODO: add-case: unknown type
-        assert isinstance(atype, PowerSetType)
+        # TODO: atype must be PowersetType of something. This info is not used
+        #assert isinstance(atype, PowerSetType)
         return PowerSetType(atype)
     elif isinstance(node, ARelationsExpression):
         atype0 = typeit(node.children[0], env, type_env)
@@ -540,35 +594,26 @@ def typeit(node, env, type_env):
 def unify(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
-        # TODO: unification if not int or settype. e.g cart or power-type
         if maybe_type0.__class__ == maybe_type1.__class__:
+            # TODO: unification if not int or settype. e.g cart or power-type
+            if isinstance(maybe_type0, PowerSetType):
+                unify(maybe_type0.data, maybe_type1.data, type_env)
+            elif isinstance(maybe_type0, CartType):
+                raise Exception("not implemented:CartType unify")
             return maybe_type0
         print "TYPEERROR: %s %s", maybe_type0, maybe_type1
         raise Exception() #TODO: Throw TypeException
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
-        # TODO: not compleate
+        # TODO: not complete
         maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
-        # TODO: not compleate
+        # TODO: not complete
         maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_concrete_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type1, UnknownType) and isinstance(maybe_type0, BType):
-        # TODO: not compleate
+        # TODO: not complete
         maybe_type1 = unknown_closure(maybe_type1)
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
         raise Exception() # should never happen
-
-
-# follows an UnknownType pointer chain:
-# returns an UnknownType which points to a BType or None
-# None: learn typinformation
-# BType: unificationcheck
-def unknown_closure(atype):
-    while True:
-        if not isinstance(atype.real_type, UnknownType):
-            break
-        atype = atype.real_type
-    assert isinstance(atype.real_type, BType) or atype.real_type==None
-    return atype
