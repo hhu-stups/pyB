@@ -1,1 +1,1 @@
-#PREDICATE x:POW(A) & x:POW(B) & A=NAT
+#PREDICATE x:POW(A) & A=NAT & x:POW(B)

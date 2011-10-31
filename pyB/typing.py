@@ -562,7 +562,7 @@ def typeit(node, env, type_env):
 # now found in equal/not equal-Nodes...
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
-    print maybe_type0, maybe_type1
+    #print maybe_type0, maybe_type1
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
         if maybe_type0.__class__ == maybe_type1.__class__:
             # TODO: unification if not int or settype. e.g cart or power-type
@@ -592,11 +592,17 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
 
 # calles by (and only by) the Belong-Node
 def unify_element_of(elm_type, set_type, type_env):
-    print "elementof"
+    # (1) type already known?
+    set_type = unknown_closure(set_type)
+    elm_type = unknown_closure(elm_type)
+    if isinstance(elm_type, UnknownType) and isinstance(elm_type.real_type, BType):
+        elm_type = elm_type.real_type
+    if isinstance(set_type, UnknownType) and isinstance(set_type.real_type, BType):
+        set_type = set_type.real_type
+
+    # (2) unify
     if isinstance(elm_type, UnknownType) and not set_type == None:
         #assert isinstance(node.children[0], AIdentifierExpression)
-        set_type = unknown_closure(set_type)
-        elm_type = unknown_closure(elm_type)
         if isinstance(set_type, PowerSetType):
             # map unknown type elm_type to set_type for all elm_type
             unify_equal(elm_type, set_type.data, type_env)
@@ -607,8 +613,7 @@ def unify_element_of(elm_type, set_type, type_env):
             elif isinstance(set_type.real_type, PowerSetType):
                 unify_equal(elm_type, set_type.real_type.data, type_env)
             else:
-                #FIXME: quick fix - this is wrong
-                unify_equal(elm_type, set_type, type_env)
+                raise Exception("Unimplemented case: unknown args")
         else:
             # no unknown type and no powerset-type
             raise Exception("Unimplemented case:  no unknown type and no powerset-type")
