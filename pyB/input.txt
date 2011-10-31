@@ -1,1 +1,1 @@
-#PREDICATE x:POW(A) & A=NAT & x:POW(B)
+#PREDICATE #x.(x:S=>x>=0) & S=NAT

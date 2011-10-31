@@ -93,19 +93,16 @@ class TypeCheck_Environment():
         self.id_to_types_stack.pop()
         #assert isinstance(env, Environment)
         for idName in type_top_map:
-            atype = type_top_map[idName]
-            # follow pointers. until none or Btype
-            # FIXME: there are cases when this is wrong!
-            # e.g. "#x.(x:S=>x>=0)".. (*pop*).. "& S=NAT"
-            while not isinstance(atype.real_type, BType):
-                if atype==None:
-                    # TODO: maybe something more pretty
-                    print "TYPEERROR: %s",idName
-                    raise Exception()
-                atype = atype.real_type
+            utype = type_top_map[idName]
+            atype = unknown_closure(utype)
+            # unknown now. will be found in resole()
+            # This is when local vars use global vars
+            # which are unknown a this time
+            if atype==None:
+                atype= utype
             node_lst = node_top_map[idName]
             for node in node_lst:
-                env.node_to_type_map[node] = atype.real_type
+                env.node_to_type_map[node] = atype
 
 
     # returns BType or String
@@ -148,8 +145,9 @@ def throw_away_unknown(tree):
         return tree
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
-            last_unknown = unknown_closure(tree.data)
-            tree.data = last_unknown.real_type
+            atype = unknown_closure(tree.data)
+            assert isinstance(atype, BType)
+            tree.data = atype
         throw_away_unknown(tree.data)
         return tree
     elif isinstance(tree, CartType): #TODO: implement me
@@ -161,9 +159,8 @@ def throw_away_unknown(tree):
 
 
 # follows an UnknownType pointer chain:
-# returns an UnknownType which points to a BType or None
-# None: learn typinformation
-# BType: unificationcheck
+# returns an UnknownType or a BType
+# WARNING: This BType could point on other UnknownTypes. e.g. POW(X)
 # WARNING: assumes cyclic - free
 def unknown_closure(atype):
     if not isinstance(atype, UnknownType):
@@ -172,8 +169,11 @@ def unknown_closure(atype):
         if not isinstance(atype.real_type, UnknownType):
             break
         atype = atype.real_type
-    assert isinstance(atype.real_type, BType) or atype.real_type==None
-    return atype
+    if isinstance(atype.real_type, BType):
+        return atype.real_type
+    else:
+        assert atype.real_type==None
+        return atype
 
 
 # should only be called by tests
@@ -563,6 +563,9 @@ def typeit(node, env, type_env):
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
     #print maybe_type0, maybe_type1
+    # TODO: not complete
+    maybe_type0 = unknown_closure(maybe_type0)
+    maybe_type1 = unknown_closure(maybe_type1)
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
         if maybe_type0.__class__ == maybe_type1.__class__:
             # TODO: unification if not int or settype. e.g cart or power-type
@@ -574,31 +577,22 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
         print "TYPEERROR: %s %s", maybe_type0, maybe_type1
         raise Exception() #TODO: Throw TypeException
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
-        # TODO: not complete
-        maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
-        # TODO: not complete
-        maybe_type0 = unknown_closure(maybe_type0)
         return type_env.set_concrete_type(maybe_type0, maybe_type1)
     elif isinstance(maybe_type1, UnknownType) and isinstance(maybe_type0, BType):
-        # TODO: not complete
-        maybe_type1 = unknown_closure(maybe_type1)
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
         raise Exception() # should never happen
 
 
 
-# calles by (and only by) the Belong-Node
+# called by (and only by) the Belong-Node
+# calles the unify_equal method with correct args
 def unify_element_of(elm_type, set_type, type_env):
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)
-    if isinstance(elm_type, UnknownType) and isinstance(elm_type.real_type, BType):
-        elm_type = elm_type.real_type
-    if isinstance(set_type, UnknownType) and isinstance(set_type.real_type, BType):
-        set_type = set_type.real_type
 
     # (2) unify
     if isinstance(elm_type, UnknownType) and not set_type == None:
