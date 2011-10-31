@@ -237,40 +237,14 @@ def typeit(node, env, type_env):
         for child in node.children:
             typeit(child, env,type_env)
         # Add a set with an unknown name.
-        # This Name can only be found by the unify-method
+        # This Name can only be found by the unify_equal-method
         # or an equal/notequals node
         return PowerSetType(SetType(None)) 
     elif isinstance(node, ABelongPredicate):
-        elm_type = typeit(node.children[0], env,type_env)
-        set_type = typeit(node.children[1], env,type_env)
-        #print elm_type
-        #print set_type
-        if isinstance(elm_type, UnknownType) and not set_type == None:
-            assert isinstance(node.children[0], AIdentifierExpression)
-            set_type = unknown_closure(set_type)
-            elm_type = unknown_closure(elm_type)
-            if isinstance(set_type, PowerSetType):
-                # map unknown type elm_type to set_type for all elm_type
-                unify(elm_type, set_type.data, type_env)
-            elif isinstance(set_type, UnknownType):
-                # FIXME: not all cases!
-                if set_type.real_type == None:
-                    unify(set_type, PowerSetType(elm_type), type_env)
-                elif isinstance(set_type.real_type, PowerSetType):
-                    unify(elm_type, set_type.real_type.data, type_env)
-                else:
-                    #FIXME: quick fix - this is wrong
-                    unify(elm_type, set_type, type_env)
-            else:
-                # no unknown type and no powerset-type
-                raise Exception("Unimplemented case:  no unknown type and no powerset-type")
-            return
-        elif isinstance(elm_type, BType):
-            unify(PowerSetType(elm_type), set_type, type_env)
-            return
-        else:
-            # no unknown type and no powerset-type
-            raise Exception("Unimplemented case: no ID on left side")
+        elm_type = typeit(node.children[0], env, type_env)
+        set_type = typeit(node.children[1], env, type_env)
+        unify_element_of(elm_type, set_type, type_env)
+        return
     elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
@@ -279,31 +253,23 @@ def typeit(node, env, type_env):
             # e.g. X /= U\/T with U and T unknown at this time
             if isinstance(expr2_type, PowerSetType) and  isinstance(expr2_type.data, SetType) and expr2_type.data.data == None:
                 expr2_type.data.data = expr1_type.name # learn/set name
-            unify(expr1_type, expr2_type, type_env)
+            unify_equal(expr1_type, expr2_type, type_env)
         elif isinstance(expr2_type, UnknownType) and not expr1_type == None:
             # the string maybe a unknown-type of an expression:
             # e.g. X = U\/T with U and T unknown at this time
             if isinstance(expr1_type, PowerSetType) and  isinstance(expr1_type.data, SetType) and expr1_type.data.data == None: # TODO: think about that...
                 expr1_type.data.data = expr2_type.name # learn/set name
-            unify(expr2_type, expr1_type, type_env)
+            unify_equal(expr2_type, expr1_type, type_env)
         else:
-            # both sides have a concrete type (no string)
-            # or both sides are unkown
-            # a crash here means a typeerror
-            # TODO: move that to a more global position
-            assert expr1_type.__class__ == expr2_type.__class__
-            if isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
-                # Both unknown: remember same type via string
-                # this is resolved in a later phase
-                unify(expr1_type, expr2_type, type_env)
+            unify_equal(expr1_type, expr2_type, type_env)
         return None
     elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
         asettype0 = typeit(node.children[0], env, type_env)
         asettype1 = typeit(node.children[1], env, type_env)
         if isinstance(asettype0, UnknownType):
-            return unify(asettype0, asettype1, type_env) 
+            return unify_equal(asettype0, asettype1, type_env) 
         elif isinstance(asettype1, UnknownType):
-            return unify(asettype1, asettype0, type_env)
+            return unify_equal(asettype1, asettype0, type_env)
         else:
             # Both sides are concrete types
             # FIXME: only works in sp. cases
@@ -314,16 +280,16 @@ def typeit(node, env, type_env):
         asettype0 = typeit(node.children[0], env, type_env)
         asettype1 = typeit(node.children[1], env, type_env)
         if isinstance(asettype0, UnknownType) and not asettype1 == None:
-            unify(asettype0, asettype1, type_env)
+            unify_equal(asettype0, asettype1, type_env)
         elif isinstance(asettype1, UnknownType) and not asettype0 == None:
-            unify(asettype1, asettype0, type_env)
+            unify_equal(asettype1, asettype0, type_env)
         else:
-            # TODO: Add case: both unknown-> call unify
+            # TODO: Add case: both unknown-> call unify_equal
             assert asettype1.__class__ == asettype0.__class__
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        # TODO: Add case: both unknown type -> call unify
+        # TODO: Add case: both unknown type -> call unify_equal
         assert isinstance(expr1_type, IntegerType)
         assert isinstance(expr2_type, IntegerType)
         return IntegerType(None)
@@ -332,12 +298,12 @@ def typeit(node, env, type_env):
         expr2_type = typeit(node.children[1], env, type_env)
         if isinstance(expr1_type, UnknownType) and not expr2_type == None:
             assert isinstance(node.children[0], AIdentifierExpression)
-            unify(expr1_type, expr2_type, type_env)
+            unify_equal(expr1_type, expr2_type, type_env)
         elif isinstance(expr2_type, UnknownType) and not expr1_type == None:
             assert isinstance(node.children[1], AIdentifierExpression)
-            unify(expr2_type, expr1_type, type_env)
+            unify_equal(expr2_type, expr1_type, type_env)
         else:
-            # TODO: Add case: both unknown type -> call unify
+            # TODO: Add case: both unknown type -> call unify_equal
             assert isinstance(expr1_type, IntegerType)
             assert isinstance(expr2_type, IntegerType)
         return None
@@ -583,6 +549,9 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
 
 
+
+
+
 # this function exsist to handle preds like "x=y & y=1" and find the
 # type of x and y after one run.
 # here x is set to the (unkonwn-)type y
@@ -591,15 +560,16 @@ def typeit(node, env, type_env):
 # TODO: This function is not full implemented!
 # TODO: find names of unknown sets (e.g. of a ASetExtensionExpression node)
 # now found in equal/not equal-Nodes...
-def unify(maybe_type0, maybe_type1, type_env):
+def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
+    print maybe_type0, maybe_type1
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
         if maybe_type0.__class__ == maybe_type1.__class__:
             # TODO: unification if not int or settype. e.g cart or power-type
             if isinstance(maybe_type0, PowerSetType):
-                unify(maybe_type0.data, maybe_type1.data, type_env)
+                unify_equal(maybe_type0.data, maybe_type1.data, type_env)
             elif isinstance(maybe_type0, CartType):
-                raise Exception("not implemented:CartType unify")
+                raise Exception("not implemented:CartType unify_equal")
             return maybe_type0
         print "TYPEERROR: %s %s", maybe_type0, maybe_type1
         raise Exception() #TODO: Throw TypeException
@@ -617,3 +587,35 @@ def unify(maybe_type0, maybe_type1, type_env):
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
         raise Exception() # should never happen
+
+
+
+# calles by (and only by) the Belong-Node
+def unify_element_of(elm_type, set_type, type_env):
+    print "elementof"
+    if isinstance(elm_type, UnknownType) and not set_type == None:
+        #assert isinstance(node.children[0], AIdentifierExpression)
+        set_type = unknown_closure(set_type)
+        elm_type = unknown_closure(elm_type)
+        if isinstance(set_type, PowerSetType):
+            # map unknown type elm_type to set_type for all elm_type
+            unify_equal(elm_type, set_type.data, type_env)
+        elif isinstance(set_type, UnknownType):
+            # FIXME: not all cases!
+            if set_type.real_type == None:
+                unify_equal(set_type, PowerSetType(elm_type), type_env)
+            elif isinstance(set_type.real_type, PowerSetType):
+                unify_equal(elm_type, set_type.real_type.data, type_env)
+            else:
+                #FIXME: quick fix - this is wrong
+                unify_equal(elm_type, set_type, type_env)
+        else:
+            # no unknown type and no powerset-type
+            raise Exception("Unimplemented case:  no unknown type and no powerset-type")
+        return
+    elif isinstance(elm_type, BType):
+        unify_equal(PowerSetType(elm_type), set_type, type_env)
+        return
+    else:
+        # no unknown type and no powerset-type
+        raise Exception("Unimplemented case:  no unknown type and no powerset-type")

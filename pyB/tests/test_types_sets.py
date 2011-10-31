@@ -344,3 +344,36 @@ class TestTypesSets():
         assert isinstance(env.get_type("S"), PowerSetType)
         assert isinstance(env.get_type("S").data, IntegerType)
         assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_set_power_unify6(self):
+        # Build AST
+        string_to_file("#PREDICATE x:A & x:B & A=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x","A","B"])
+        assert isinstance(env.get_type("A"), PowerSetType)
+        assert isinstance(env.get_type("A").data, IntegerType)
+        assert isinstance(env.get_type("B"), PowerSetType)
+        assert isinstance(env.get_type("B").data, IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_set_power_unify7(self):
+        # Build AST
+        string_to_file("#PREDICATE x:POW(A) & x:POW(B) & A=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x","A","B"])
+        assert isinstance(env.get_type("A"), PowerSetType)
+        assert isinstance(env.get_type("A").data, IntegerType)
+        assert isinstance(env.get_type("B"), PowerSetType)
+        assert isinstance(env.get_type("B").data, IntegerType)
+        assert isinstance(env.get_type("x"), PowerSetType)
+        assert isinstance(env.get_type("x").data, IntegerType)
