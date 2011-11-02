@@ -1,1 +1,1 @@
-#PREDICATE #x.(x:S=>x>=0) & S=NAT
+#PREDICATE {a,42,b}=S

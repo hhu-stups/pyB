@@ -408,3 +408,33 @@ class TestTypesSets():
         assert isinstance(env.get_type("S"), PowerSetType)
         assert isinstance(env.get_type("S").data, IntegerType)
         assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_set_comp_unify(self):
+        # Build AST
+        string_to_file("#PREDICATE S= {1,a,b}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","a","b"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, SetType) # XXX
+        assert isinstance(env.get_type("a"), IntegerType)
+        assert isinstance(env.get_type("b"), IntegerType)
+
+
+    def test_types_set_comp_unify2(self):
+        # Build AST
+        string_to_file("#PREDICATE {a,42,b}=S", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","a","b"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, SetType) # XXX
+        assert isinstance(env.get_type("a"), IntegerType)
+        assert isinstance(env.get_type("b"), IntegerType)

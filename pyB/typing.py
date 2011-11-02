@@ -218,10 +218,9 @@ def typeit(node, env, type_env):
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
+        assert len(node.children)>=1
         for child in node.children:
-            atype = typeit(child, env, type_env)
-            #TODO: learn that all Elements must have the same type!
-        # assert that all IDs are known (not None)
+            typeit(child, env, type_env)
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             assert not type_env.get_current_type(child.idName)==None
@@ -234,8 +233,12 @@ def typeit(node, env, type_env):
         idtype = type_env.get_current_type(node.idName)
         return idtype
     elif isinstance(node, ASetExtensionExpression):
-        for child in node.children:
-            typeit(child, env,type_env)
+        # TODO: maybe new frame?
+        # learn that all Elements must have the same type:
+        reftype = typeit(node.children[0], env, type_env)
+        for child in node.children[1:]:
+            atype = typeit(child, env, type_env)
+            unify_equal(atype, reftype, type_env)
         # Add a set with an unknown name.
         # This Name can only be found by the unify_equal-method
         # or an equal/notequals node
