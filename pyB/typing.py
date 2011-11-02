@@ -105,7 +105,7 @@ class TypeCheck_Environment():
                 env.node_to_type_map[node] = atype
 
 
-    # returns BType or String
+    # returns BType or UnknownType
     # WARNING: not to be confused with env.get_type
     def get_current_type(self, idName):
         assert isinstance(idName, str)
@@ -196,10 +196,10 @@ def _test_typeit(root, env, known_types_list, idNames):
 
 
 
-# returns BType/UnonwType or None(for expr which need no type. e.g. x=y)
+# returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
 # sideeffect: changes env
 # type_env is a working env to type vars with
-# different scops but (maybe) the same names
+# different scopes but (maybe) the same names
 # e.g. !x.(x:S =>...) & x:Nat ...
 def typeit(node, env, type_env):
     if isinstance(node, ANatSetExpression):
@@ -353,7 +353,8 @@ def typeit(node, env, type_env):
         return IntegerType(None)
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         atype = typeit(node.children[0], env, type_env)
-        # TODO: atype must be PowersetType of something. This info is not used
+        # TODO: atype must be PowersetType of something.
+        # This info is not used
         #assert isinstance(atype, PowerSetType)
         return PowerSetType(atype)
     elif isinstance(node, ARelationsExpression):
@@ -552,20 +553,17 @@ def typeit(node, env, type_env):
 
 
 
-# this function exsist to handle preds like "x=y & y=1" and find the
+# This function exist to handle preds like "x=y & y=1" and find the
 # type of x and y after one run.
-# here x is set to the (unkonwn-)type y
-# When the (unknown-)y-type is set to IntegerType
-# all y-types are set to ist in a lin. search
 # TODO: This function is not full implemented!
 # TODO: find names of unknown sets (e.g. of a ASetExtensionExpression node)
 # now found in equal/not equal-Nodes...
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
-    #print maybe_type0, maybe_type1
-    # TODO: not complete
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
+
+    # case 1: BType, BType
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
         if maybe_type0.__class__ == maybe_type1.__class__:
             # TODO: unification if not int or settype. e.g cart or power-type
@@ -573,48 +571,60 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 unify_equal(maybe_type0.data, maybe_type1.data, type_env)
             elif isinstance(maybe_type0, CartType):
                 raise Exception("not implemented:CartType unify_equal")
+            else:
+                assert isinstance(maybe_type0, SetType) or isinstance(maybe_type0, IntegerType)
             return maybe_type0
-        print "TYPEERROR: %s %s", maybe_type0, maybe_type1
-        raise Exception() #TODO: Throw TypeException
+        else:
+            print "TYPEERROR! Not unifiable: %s %s", maybe_type0, maybe_type1
+            raise Exception() #TODO: Throw TypeException
+    # case 2: Unknown, Unknown
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
+    # case 3: Unknown, BType
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
         return type_env.set_concrete_type(maybe_type0, maybe_type1)
-    elif isinstance(maybe_type1, UnknownType) and isinstance(maybe_type0, BType):
+    # case 4: BType, Unknown
+    elif isinstance(maybe_type0, BType) and isinstance(maybe_type1, UnknownType):
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
-        raise Exception() # should never happen
+        # no Unknowntype and no Btype:
+        # If this is ever been raised than this is a bug
+        # inside the typechecker: Every unifiable expression
+        # must be a BType or an UnknownType!
+        raise Exception("Typchecker Bug: no Unknowntype and no Btype!")
 
 
 
 # called by (and only by) the Belong-Node
-# calles the unify_equal method with correct args
+# calls the unify_equal method with correct args
 def unify_element_of(elm_type, set_type, type_env):
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)
+    assert not set_type == None
 
     # (2) unify
-    if isinstance(elm_type, UnknownType) and not set_type == None:
-        #assert isinstance(node.children[0], AIdentifierExpression)
+    if isinstance(elm_type, UnknownType):
         if isinstance(set_type, PowerSetType):
-            # map unknown type elm_type to set_type for all elm_type
+            # map elm_type (UnknownType) to set_type for all elm_type
             unify_equal(elm_type, set_type.data, type_env)
         elif isinstance(set_type, UnknownType):
-            # FIXME: not all cases!
-            if set_type.real_type == None:
-                unify_equal(set_type, PowerSetType(elm_type), type_env)
-            elif isinstance(set_type.real_type, PowerSetType):
-                unify_equal(elm_type, set_type.real_type.data, type_env)
-            else:
-                raise Exception("Unimplemented case: unknown args")
+            assert set_type.real_type == None
+            unify_equal(set_type, PowerSetType(elm_type), type_env)
+        #TODO: add Type-exceptions: e.g. x:POW(42)
         else:
-            # no unknown type and no powerset-type
-            raise Exception("Unimplemented case:  no unknown type and no powerset-type")
+            # no UnknownType and no PowersetType:
+            # If this is ever been raised than this is a bug 
+            # inside the typechecker. In B the right side S of
+            # a Belong-expression (x:S) must be of PowerSetType!
+            raise Exception("Typchecker Bug(?): no UnknownType and no PowersetType")
         return
     elif isinstance(elm_type, BType):
         unify_equal(PowerSetType(elm_type), set_type, type_env)
         return
     else:
-        # no unknown type and no powerset-type
-        raise Exception("Unimplemented case:  no unknown type and no powerset-type")
+        # no Unknowntype and no Btype:
+        # If this is ever been raised than this is a bug
+        # inside the typechecker: Every unifiable expression
+        # must be a BType or an UnknownType!
+        raise Exception("Typchecker Bug: no Unknowntype and no Btype!")
