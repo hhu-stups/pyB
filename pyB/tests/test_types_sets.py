@@ -438,3 +438,18 @@ class TestTypesSets():
         assert isinstance(env.get_type("S").data, SetType) # XXX
         assert isinstance(env.get_type("a"), IntegerType)
         assert isinstance(env.get_type("b"), IntegerType)
+
+
+    def test_types_set_cart_unify(self):
+        # Build AST
+        string_to_file("#PREDICATE S=A*B & A=NAT & B=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","A","B"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, CartType) 
+        assert isinstance(env.get_type("A").data, IntegerType)
+        assert isinstance(env.get_type("B").data, IntegerType)

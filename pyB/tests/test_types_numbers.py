@@ -67,6 +67,22 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x"), IntegerType)
 
 
+    def test_types_simple_mul_unify(self):
+        # Build AST
+        string_to_file("#PREDICATE x=a*b & a=4 & b=7", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x","b","a"])
+        assert isinstance(env.get_type("x"), IntegerType)
+        assert isinstance(env.get_type("a"), IntegerType)
+        assert isinstance(env.get_type("b"), IntegerType)
+
+
+
+
     def test_types_simple_div(self):
         # Build AST
         string_to_file("#PREDICATE x=8/2", file_name)

@@ -1,1 +1,1 @@
-#PREDICATE {a,42,b}=S
+#PREDICATE S=A*B & A=NAT & B=NAT

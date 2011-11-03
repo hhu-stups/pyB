@@ -37,6 +37,13 @@ class UnknownType(): # no BType: used later to throw Exceptions
         self.real_type = real_type
 
 
+# will be decidet in resolve()
+class PowCartORIntegerType(UnknownType):
+    def __init__(self, arg1, arg2):
+        UnknownType.__init__(self, None,None)
+        self.data = (arg1, arg2)
+
+
 # Helper env: will be thrown away after Typechecking
 class TypeCheck_Environment():
     def __init__(self):
@@ -151,6 +158,22 @@ def throw_away_unknown(tree):
         throw_away_unknown(tree.data)
         return tree
     elif isinstance(tree, CartType): #TODO: implement me
+        return tree
+    elif isinstance(tree, PowCartORIntegerType):
+        print tree.real_type
+        data = tree.data
+        arg1 = unknown_closure(data[0])
+        arg2 = unknown_closure(data[1])
+        if not tree.real_type==None:
+            atype = unknown_closure(tree.real_type)
+            assert isinstance(atype, BType)
+            tree = atype
+        else:
+
+            if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
+                tree = PowerSetType(CartType(arg1.data, arg2.data))
+            elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
+                tree = IntegerType(None)
         return tree
     elif tree==None:
         raise Exception("TYPEERROR in resolve")
@@ -324,10 +347,14 @@ def typeit(node, env, type_env):
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        if isinstance(expr1_type, IntegerType) and isinstance(expr2_type, IntegerType): # Mul
+        unify_equal(expr1_type, expr2_type, type_env)
+
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType): # Mul
             return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) and  isinstance(expr2_type, PowerSetType):
+        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType):
             return PowerSetType(CartType(expr1_type.data, expr2_type.data))
+        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
+            return PowCartORIntegerType(expr1_type, expr2_type)
         else:
             # TODO: add-case: unknown type
             raise Exception("Unimplemented case: %s",node)
