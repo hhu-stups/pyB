@@ -88,8 +88,24 @@ class TypeCheck_Environment():
     def set_concrete_type(self, utype, ctype):
         assert isinstance(utype, UnknownType)
         assert isinstance(ctype, BType)
-        utype.real_type = ctype
-        return ctype
+        if isinstance(utype, PowCartORIntegerType):
+            if isinstance(ctype, IntegerType):
+                self.set_concrete_type(utype.data[0], IntegerType(None))
+                self.set_concrete_type(utype.data[1], IntegerType(None))
+                return IntegerType(None)
+            else:
+                assert isinstance(ctype, PowerSetType)
+                cart_type = unknown_closure(ctype.data)
+                assert isinstance(cart_type, CartType)
+                subset_type = cart_type.data[0]
+                assert subset_type.__class__ == cart_type.data[1].__class__
+                pow_type = PowerSetType(subset_type)
+                self.set_concrete_type(utype.data[0], pow_type)
+                self.set_concrete_type(utype.data[1], pow_type)
+                return PowerSetType(CartType(subset_type, subset_type))
+        else:
+            utype.real_type = ctype
+            return ctype
 
 
     # copies to env.node_to_type_map
@@ -160,7 +176,6 @@ def throw_away_unknown(tree):
     elif isinstance(tree, CartType): #TODO: implement me
         return tree
     elif isinstance(tree, PowCartORIntegerType):
-        print tree.real_type
         data = tree.data
         arg1 = unknown_closure(data[0])
         arg2 = unknown_closure(data[1])
@@ -352,11 +367,12 @@ def typeit(node, env, type_env):
         if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType): # Mul
             return IntegerType(None)
         elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType):
+            expr1_type = unknown_closure(expr1_type)
+            expr2_type = unknown_closure(expr2_type)
             return PowerSetType(CartType(expr1_type.data, expr2_type.data))
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
-            # TODO: add-case: unknown type
             raise Exception("Unimplemented case: %s",node)
     elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
         ids = []
