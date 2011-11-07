@@ -35,7 +35,7 @@ class TestTypesSets():
         _test_typeit(root, env, lst, ["ID"])
         assert isinstance(env.get_type("ID"), PowerSetType)
         assert isinstance(env.get_type("ID").data, SetType)
-        assert env.get_type("ID").data.data =="ID"
+        assert env.get_type("ID").data.data =="X"
 
 
     def test_types_simple_set_empty(self):
@@ -77,7 +77,7 @@ class TestTypesSets():
         assert isinstance(env.get_type("ID"), PowerSetType)
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), SetType)
-        assert env.get_type("y").data =="S"
+        assert env.get_type("y").data =="X"
 
 
     def test_types_simple_set_union(self):
@@ -438,6 +438,35 @@ class TestTypesSets():
         assert isinstance(env.get_type("S").data, IntegerType)
         assert isinstance(env.get_type("a"), IntegerType)
         assert isinstance(env.get_type("b"), IntegerType)
+
+
+    def test_types_set_comp_unify3(self):
+        # Build AST
+        string_to_file("#PREDICATE a=42 & S={a}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","a"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, IntegerType) 
+        assert isinstance(env.get_type("a"), IntegerType)
+
+
+
+    def test_types_set_comp_unify4(self):
+        # Build AST
+        string_to_file("#PREDICATE S={a} & a=42 ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","a"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, IntegerType) 
+        assert isinstance(env.get_type("a"), IntegerType)
 
 
     def test_types_set_cart_unify(self):
