@@ -273,14 +273,20 @@ def typeit(node, env, type_env):
     elif isinstance(node, ASetExtensionExpression):
         # TODO: maybe new frame?
         # learn that all Elements must have the same type:
+        int_flag = False
         reftype = typeit(node.children[0], env, type_env)
         for child in node.children[1:]:
             atype = typeit(child, env, type_env)
-            unify_equal(atype, reftype, type_env)
-        # Add a set with an unknown name.
-        # This Name can only be found by the unify_equal-method
-        # or an equal/notequals node
-        return PowerSetType(SetType(None)) 
+            res = unify_equal(atype, reftype, type_env)
+            if isinstance(res, IntegerType):
+                int_flag = True
+        if int_flag:
+            return PowerSetType(IntegerType(None)) 
+        else:
+            # Add a set with an unknown name.
+            # This Name can only be found by the unify_equal-method
+            # or an equal/notequals node
+            return PowerSetType(SetType(None)) 
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)

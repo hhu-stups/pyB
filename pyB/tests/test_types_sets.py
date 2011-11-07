@@ -420,7 +420,7 @@ class TestTypesSets():
         env = Environment()
         _test_typeit(root, env, [], ["S","a","b"])
         assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType) # XXX
+        assert isinstance(env.get_type("S").data, IntegerType) 
         assert isinstance(env.get_type("a"), IntegerType)
         assert isinstance(env.get_type("b"), IntegerType)
 
@@ -435,7 +435,7 @@ class TestTypesSets():
         env = Environment()
         _test_typeit(root, env, [], ["S","a","b"])
         assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType) # XXX
+        assert isinstance(env.get_type("S").data, IntegerType)
         assert isinstance(env.get_type("a"), IntegerType)
         assert isinstance(env.get_type("b"), IntegerType)
 
