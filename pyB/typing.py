@@ -296,17 +296,11 @@ def typeit(node, env, type_env):
     elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
+        # the string maybe a unknown-type of an expression:
+        # e.g. X /= U\/T with U and T unknown at this time
         if isinstance(expr1_type, UnknownType) and not expr2_type == None:
-            # the string maybe a unknown-type of an expression:
-            # e.g. X /= U\/T with U and T unknown at this time
-            if isinstance(expr2_type, PowerSetType) and  isinstance(expr2_type.data, SetType) and expr2_type.data.data == None:
-                expr2_type.data.data = expr1_type.name # learn/set name
             unify_equal(expr1_type, expr2_type, type_env)
         elif isinstance(expr2_type, UnknownType) and not expr1_type == None:
-            # the string maybe a unknown-type of an expression:
-            # e.g. X = U\/T with U and T unknown at this time
-            if isinstance(expr1_type, PowerSetType) and  isinstance(expr1_type.data, SetType) and expr1_type.data.data == None: # TODO: think about that...
-                expr1_type.data.data = expr2_type.name # learn/set name
             unify_equal(expr2_type, expr1_type, type_env)
         else:
             unify_equal(expr1_type, expr2_type, type_env)
@@ -609,8 +603,6 @@ def typeit(node, env, type_env):
 # This function exist to handle preds like "x=y & y=1" and find the
 # type of x and y after one run.
 # TODO: This function is not full implemented!
-# TODO: find names of unknown sets (e.g. of a ASetExtensionExpression node)
-# now found in equal/not equal-Nodes...
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
     maybe_type0 = unknown_closure(maybe_type0)
@@ -619,13 +611,22 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
     # case 1: BType, BType
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
         if maybe_type0.__class__ == maybe_type1.__class__:
-            # TODO: unification if not int or settype. e.g cart or power-type
+            # recursive unification-call
+            # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):
                 unify_equal(maybe_type0.data, maybe_type1.data, type_env)
             elif isinstance(maybe_type0, CartType):
                 raise Exception("not implemented:CartType unify_equal")
+            elif isinstance(maybe_type0, SetType):
+                # learn/set name
+                if maybe_type0.data==None:
+                    maybe_type0.data = maybe_type1.data
+                elif maybe_type1.data==None:
+                    maybe_type1.data = maybe_type0.data
+                else:
+                    assert maybe_type1.data == maybe_type0.data
             else:
-                assert isinstance(maybe_type0, SetType) or isinstance(maybe_type0, IntegerType)
+                assert isinstance(maybe_type0, IntegerType)
             return maybe_type0
         else:
             print "TYPEERROR! Not unifiable: %s %s", maybe_type0, maybe_type1
