@@ -97,3 +97,4 @@ TODO:
     - typechecker and interpreter has undefined behavior if there is a error in the java-Bparser
     - check if all astnodes return types (if they have to)
     - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
+    - TODO: Maybe all asserts inside the typechecker must be replaced by unify_equal()

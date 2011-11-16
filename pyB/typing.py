@@ -22,6 +22,7 @@ class SetType(BType):
         self.data = name # None when name unknown
 
 
+# pairtype
 class CartType(BType):
     def __init__(self, setA, setB):
         self.data = (setA, setB)
@@ -39,6 +40,13 @@ class UnknownType(): # no BType: used later to throw Exceptions
 
 # will be decidet in resolve()
 class PowCartORIntegerType(UnknownType):
+    def __init__(self, arg1, arg2):
+        UnknownType.__init__(self, None,None)
+        self.data = (arg1, arg2)
+
+
+# will be decidet in resolve()
+class PowORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, None,None)
         self.data = (arg1, arg2)
@@ -190,6 +198,20 @@ def throw_away_unknown(tree):
             elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
                 tree = IntegerType(None)
         return tree
+    elif isinstance(tree, PowORIntegerType):
+        data = tree.data
+        arg1 = unknown_closure(data[0])
+        arg2 = unknown_closure(data[1])
+        if not tree.real_type==None:
+            atype = unknown_closure(tree.real_type)
+            assert isinstance(atype, BType)
+            tree = atype
+        else:
+            if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
+                tree = arg1
+            elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
+                tree = arg1
+        return tree
     elif tree==None:
         raise Exception("TYPEERROR in resolve")
     else:
@@ -240,11 +262,7 @@ def _test_typeit(root, env, known_types_list, idNames):
 # different scopes but (maybe) the same names
 # e.g. !x.(x:S =>...) & x:Nat ...
 def typeit(node, env, type_env):
-    if isinstance(node, ANatSetExpression):
-        return PowerSetType(IntegerType(None))
-    elif isinstance(node, ANat1SetExpression):
-        return PowerSetType(IntegerType(None))
-    elif isinstance(node, AIntervalExpression):
+    if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AEmptySetExpression):
         return PowerSetType(SetType(None))
@@ -271,63 +289,24 @@ def typeit(node, env, type_env):
         idtype = type_env.get_current_type(node.idName)
         return idtype
     elif isinstance(node, ASetExtensionExpression):
-        # TODO: maybe new frame?
-        # FIXME: THis code dont works inside a SET-Section
+        # FIXME: This code don't works inside a SET-Section
         # no Vars are declared!
-
+        # TODO: maybe new frame?
         # learn that all Elements must have the same type:
         reftype = typeit(node.children[0], env, type_env)
         for child in node.children[1:]:
             atype = typeit(child, env, type_env)
             reftype = unify_equal(atype, reftype, type_env)
-        #if isinstance(reftype, IntegerType):
-        #    return PowerSetType(IntegerType(None)) 
-        #else:
-            # Add a set with an unknown name.
-            # This Name can only be found by the unify_equal-method
-            # or an equal/notequals node
-        #    return PowerSetType(SetType(None))
         return PowerSetType(reftype)
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
         unify_element_of(elm_type, set_type, type_env)
         return
-    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
+    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate) or isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
-        # the string maybe a unknown-type of an expression:
-        # e.g. X /= U\/T with U and T unknown at this time
-        if isinstance(expr1_type, UnknownType) and not expr2_type == None:
-            unify_equal(expr1_type, expr2_type, type_env)
-        elif isinstance(expr2_type, UnknownType) and not expr1_type == None:
-            unify_equal(expr2_type, expr1_type, type_env)
-        else:
-            unify_equal(expr1_type, expr2_type, type_env)
-        return None
-    elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
-        asettype0 = typeit(node.children[0], env, type_env)
-        asettype1 = typeit(node.children[1], env, type_env)
-        if isinstance(asettype0, UnknownType):
-            return unify_equal(asettype0, asettype1, type_env) 
-        elif isinstance(asettype1, UnknownType):
-            return unify_equal(asettype1, asettype0, type_env)
-        else:
-            # Both sides are concrete types
-            # FIXME: only works in sp. cases
-            assert asettype1.data.data == asettype0.data.data # same name
-            assert asettype1.__class__ == asettype0.__class__
-            return asettype0
-    elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate):
-        asettype0 = typeit(node.children[0], env, type_env)
-        asettype1 = typeit(node.children[1], env, type_env)
-        if isinstance(asettype0, UnknownType) and not asettype1 == None:
-            unify_equal(asettype0, asettype1, type_env)
-        elif isinstance(asettype1, UnknownType) and not asettype0 == None:
-            unify_equal(asettype1, asettype0, type_env)
-        else:
-            # TODO: Add case: both unknown-> call unify_equal
-            assert asettype1.__class__ == asettype0.__class__
+        return unify_equal(expr1_type, expr2_type, type_env)
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
@@ -349,30 +328,34 @@ def typeit(node, env, type_env):
             assert isinstance(expr1_type, IntegerType)
             assert isinstance(expr2_type, IntegerType)
         return None
-    elif isinstance(node, AMinusOrSetSubtractExpression):
-        expr1_type = typeit(node.children[0], env, type_env)
-        expr2_type = typeit(node.children[1], env, type_env)
-        if isinstance(expr1_type, IntegerType) and isinstance(expr2_type, IntegerType): # Minus
-            return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType):
-            assert expr1_type.data.data== expr2_type.data.data # same name
-            return expr1_type
-        else:
-            # TODO: add-case: unknown type
-            raise Exception("Unimplemented case: no sets and no ints!")
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
         unify_equal(expr1_type, expr2_type, type_env)
+        expr1_type = unknown_closure(expr1_type)
+        expr2_type = unknown_closure(expr2_type)
 
-        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType): # Mul
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Mult
             return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType):
-            expr1_type = unknown_closure(expr1_type)
-            expr2_type = unknown_closure(expr2_type)
+        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # Cart 
             return PowerSetType(CartType(expr1_type.data, expr2_type.data))
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
             return PowCartORIntegerType(expr1_type, expr2_type)
+        else:
+            raise Exception("Unimplemented case: %s",node)
+    elif isinstance(node, AMinusOrSetSubtractExpression):
+        expr1_type = typeit(node.children[0], env, type_env)
+        expr2_type = typeit(node.children[1], env, type_env)
+        unify_equal(expr1_type, expr2_type, type_env)
+        expr1_type = unknown_closure(expr1_type)
+        expr2_type = unknown_closure(expr2_type)
+
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Minus
+            return IntegerType(None)
+        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # SetSub
+            return expr1_type
+        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
+            return PowORIntegerType(expr1_type, expr2_type)
         else:
             raise Exception("Unimplemented case: %s",node)
     elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
@@ -631,17 +614,20 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
         else:
             print "TYPEERROR! Not unifiable: %s %s", maybe_type0, maybe_type1
             raise Exception() #TODO: Throw TypeException
+
     # case 2: Unknown, Unknown
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
         return type_env.set_unknown_type(maybe_type0, maybe_type1)
+
     # case 3: Unknown, BType
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
         return type_env.set_concrete_type(maybe_type0, maybe_type1)
+
     # case 4: BType, Unknown
     elif isinstance(maybe_type0, BType) and isinstance(maybe_type1, UnknownType):
         return type_env.set_concrete_type(maybe_type1, maybe_type0)
     else:
-        # no Unknowntype and no Btype:
+        # no UnknownType and no BType:
         # If this is ever been raised than this is a bug
         # inside the typechecker: Every unifiable expression
         # must be a BType or an UnknownType!

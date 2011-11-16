@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # moved for testing-reasons
 from subprocess import Popen, PIPE
+from ast_nodes import *
 
 command_str = "java -cp "
 command_str += "../bparser/build/libs/bparser-2.0.67.jar"
@@ -28,3 +29,17 @@ def string_to_file(string, file_name):
     f.write(string)
     f.close
     return f
+
+
+def find_var_names(node, lst):
+    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
+        return
+    elif isinstance(node, AIdentifierExpression):
+        if not node.idName in lst:
+            lst.append(node.idName)
+    else:
+        try:
+            for n in node.children:
+                find_var_names(n, lst)
+        except AttributeError:
+            return #FIXME no children
