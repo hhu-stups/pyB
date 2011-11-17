@@ -30,6 +30,7 @@ class Environment():
         # No entry in the value_stack. The Variable with the name id_Name
         # is unknown. This is an Error found by the typechecker
         # TODO: raise custom exception. e.g lookuperror
+        print "LookupErr:", id_Name
         raise KeyError
 
 
@@ -744,24 +745,29 @@ def forall_recursive_helper(depth, max_depth, node, env):
 # only works if the typechecking/typing of typeit was successful
 def all_values(node, env):
     assert isinstance(node, AIdentifierExpression)
+    atype = env.get_type_by_node(node)
+    return all_values_by_type(atype, env)
+
+
+def all_values_by_type(atype, env):
     # TODO: support cart prod
-    if isinstance(env.get_type_by_node(node), IntegerType):
+    if isinstance(atype, IntegerType):
         return range(min_int, max_int+1)
-    elif isinstance(env.get_type_by_node(node), SetType):
-        type_name =  env.get_type_by_node(node).data
+    elif isinstance(atype, SetType):
+        type_name =  atype.data
         assert isinstance(env.get_value(type_name), set)
         return env.get_value(type_name)
-    elif isinstance(env.get_type_by_node(node), PowerSetType):
-        if isinstance(env.get_type_by_node(node).data, SetType):
-            type_name = env.get_type_by_node(node).data.data
+    elif isinstance(atype, PowerSetType):
+        if isinstance(atype.data, SetType):
+            type_name = atype.data.data
             assert isinstance(env.get_value(type_name), set)
             res = powerset(env.get_value(type_name))
             powerlist = list(res)
             lst = [frozenset(e) for e in powerlist]
             return lst
-        elif isinstance(env.get_type_by_node(node).data, PowerSetType):
+        elif isinstance(atype.data, PowerSetType):
             count = 1
-            atype = env.get_type_by_node(node).data
+            atype = atype.data
             # TODO: Think of this again ;-)
             # unpack POW(POW(S)), POW(POW(POW(S))) ect. ....
             # TODO: cart prod
