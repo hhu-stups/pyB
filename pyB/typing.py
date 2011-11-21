@@ -97,21 +97,25 @@ class TypeCheck_Environment():
         assert isinstance(utype, UnknownType)
         assert isinstance(ctype, BType)
         if isinstance(utype, PowCartORIntegerType):
+            u0 = unknown_closure(utype.data[0])
+            u1 = unknown_closure(utype.data[1])
             if isinstance(ctype, IntegerType):
-                self.set_concrete_type(utype.data[0], IntegerType(None))
-                self.set_concrete_type(utype.data[1], IntegerType(None))
+                self.set_concrete_type(u0, IntegerType(None))
+                self.set_concrete_type(u1, IntegerType(None))
                 return IntegerType(None)
             else:
                 assert isinstance(ctype, PowerSetType)
                 cart_type = unknown_closure(ctype.data)
                 assert isinstance(cart_type, CartType)
-                subset_type = cart_type.data[0]
-                assert subset_type.__class__ == cart_type.data[1].__class__
-                pow_type = PowerSetType(subset_type)
-                self.set_concrete_type(utype.data[0], pow_type)
-                self.set_concrete_type(utype.data[1], pow_type)
-                return PowerSetType(CartType(subset_type, subset_type))
+                subset_type0 = unknown_closure(cart_type.data[0])
+                subset_type1 = unknown_closure(cart_type.data[1])
+                pow_type0 = PowerSetType(subset_type0)
+                pow_type1 = PowerSetType(subset_type1)
+                self.set_concrete_type(u0, pow_type0)
+                self.set_concrete_type(u1, pow_type1)
+                return PowerSetType(CartType(subset_type0, subset_type1))
         else:
+            #assert utype.real_type==None
             utype.real_type = ctype
             return ctype
 
@@ -192,7 +196,6 @@ def throw_away_unknown(tree):
             assert isinstance(atype, BType)
             tree = atype
         else:
-
             if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
                 tree = PowerSetType(CartType(arg1.data, arg2.data))
             elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
@@ -331,18 +334,22 @@ def typeit(node, env, type_env):
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        unify_equal(expr1_type, expr2_type, type_env)
         expr1_type = unknown_closure(expr1_type)
         expr2_type = unknown_closure(expr2_type)
 
         if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Mult
+            unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # Cart 
+        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType): # Cart 
+            return PowerSetType(CartType(expr1_type.data, expr2_type))
+        elif isinstance(expr2_type, PowerSetType) and isinstance(expr1_type, UnknownType): # Cart 
+            return PowerSetType(CartType(expr1_type, expr2_type.data))
+        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType): # Cart
             return PowerSetType(CartType(expr1_type.data, expr2_type.data))
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
-            raise Exception("Unimplemented case: %s",node)
+            raise Exception("Unimplemented case: %s %s", expr1_type, expr2_type)
     elif isinstance(node, AMinusOrSetSubtractExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
@@ -599,7 +606,21 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
             if isinstance(maybe_type0, PowerSetType):
                 unify_equal(maybe_type0.data, maybe_type1.data, type_env)
             elif isinstance(maybe_type0, CartType):
-                raise Exception("not implemented:CartType unify_equal")
+                t00 = unknown_closure(maybe_type0.data[0])
+                t10 = unknown_closure(maybe_type1.data[0])
+                t01 = unknown_closure(maybe_type0.data[1])
+                t11 = unknown_closure(maybe_type1.data[1])
+                # FIXME: maybe not all cases
+                if isinstance(t00, IntegerType) or isinstance(t00, SetType):
+                    t00 = PowerSetType(t00)
+                if isinstance(t10, IntegerType) or isinstance(t10, SetType):
+                    t10 = PowerSetType(t10)
+                if isinstance(t01, IntegerType) or isinstance(t01, SetType):
+                    t01 = PowerSetType(t01)
+                if isinstance(t11, IntegerType) or isinstance(t11, SetType):
+                    t11 = PowerSetType(t11)
+                unify_equal(t00, t10, type_env)
+                unify_equal(t01, t11, type_env)
             elif isinstance(maybe_type0, SetType):
                 # learn/set name
                 if maybe_type0.data==None:

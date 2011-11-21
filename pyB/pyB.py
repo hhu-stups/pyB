@@ -36,8 +36,10 @@ _test_typeit(root, env, [], idNames) ## FIXME: replace this call someday
 if idNames ==[]:
     print interpret(root, env)
 else:
-    print try_all_values(root, env, idNames)
-for i in idNames:
-    print i,":", env.get_value(i)
+    if try_all_values(root, env, idNames):
+        for i in idNames:
+            print i,":", env.get_value(i)
+    else:
+        print "No Solution found"
 
 

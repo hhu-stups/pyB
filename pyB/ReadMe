@@ -98,3 +98,4 @@ TODO:
     - check if all astnodes return types (if they have to)
     - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
     - TODO: Maybe all asserts inside the typechecker must be replaced by unify_equal()
+    - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a type-tree
