@@ -610,14 +610,14 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 t10 = unknown_closure(maybe_type1.data[0])
                 t01 = unknown_closure(maybe_type0.data[1])
                 t11 = unknown_closure(maybe_type1.data[1])
-                # FIXME: maybe not all cases
-                if isinstance(t00, IntegerType) or isinstance(t00, SetType):
+                # wrapp with PowerSettype
+                if not isinstance(t00, UnknownType):
                     t00 = PowerSetType(t00)
-                if isinstance(t10, IntegerType) or isinstance(t10, SetType):
+                if not isinstance(t10, UnknownType):
                     t10 = PowerSetType(t10)
-                if isinstance(t01, IntegerType) or isinstance(t01, SetType):
+                if not isinstance(t01, UnknownType):
                     t01 = PowerSetType(t01)
-                if isinstance(t11, IntegerType) or isinstance(t11, SetType):
+                if not isinstance(t11, UnknownType):
                     t11 = PowerSetType(t11)
                 unify_equal(t00, t10, type_env)
                 unify_equal(t01, t11, type_env)
