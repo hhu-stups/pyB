@@ -2,6 +2,11 @@
 from ast_nodes import *
 
 
+class BTypeException(Exception):
+    def __init__(self, string):
+        self.string = string
+
+
 class BType: # Baseclass used to repr. concrete type
     pass
 
@@ -82,8 +87,8 @@ class TypeCheck_Environment():
                 return
             except KeyError:
                 continue
-        print "TYPEERROR!" # TODO: something more pretty
-        raise KeyError
+        string = "TypeError: %s not found while adding node: %s! Maybe %s is unkown. IdName not added to type_env (typing.py)?", node.idName, node, node.idName
+        raise BTypeException(string)
 
 
     def set_unknown_type(self, id0_Name, id1_Name):
@@ -155,9 +160,7 @@ class TypeCheck_Environment():
                     return atype
             except KeyError:
                 continue
-        # TODO: something more pretty
-        print "TYPEERROR! unkown var: ",idName
-        raise KeyError
+        raise BTypeException("TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName)
 
 
 # env.node_to_type_map should be a set of tree with 
@@ -216,9 +219,14 @@ def throw_away_unknown(tree):
                 tree = arg1
         return tree
     elif tree==None:
-        raise Exception("TYPEERROR in resolve")
+        raise BTypeException("TypeError: can not resolve a Type")
     else:
-        raise Exception("resolve fail: Not Implemented %s",tree)
+        # error!
+        if isinstance(tree, UnknownType):
+            string = "TypeError: can not resolve a Type of %s", tree.name
+            raise BTypeException(string)
+        else:
+            raise Exception("resolve fail: Not Implemented %s",tree)
 
 
 # follows an UnknownType pointer chain:
@@ -313,30 +321,20 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        # TODO: Add case: both unknown type -> call unify_equal
-        assert isinstance(expr1_type, IntegerType)
-        assert isinstance(expr2_type, IntegerType)
+        unify_equal(expr1_type, IntegerType(None), type_env)
+        unify_equal(expr2_type, IntegerType(None), type_env)
         return IntegerType(None)
     elif isinstance(node, ALessEqualPredicate) or isinstance(node, ALessPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AGreaterPredicate):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        if isinstance(expr1_type, UnknownType) and not expr2_type == None:
-            assert isinstance(node.children[0], AIdentifierExpression)
-            unify_equal(expr1_type, expr2_type, type_env)
-        elif isinstance(expr2_type, UnknownType) and not expr1_type == None:
-            assert isinstance(node.children[1], AIdentifierExpression)
-            unify_equal(expr2_type, expr1_type, type_env)
-        else:
-            # TODO: Add case: both unknown type -> call unify_equal
-            assert isinstance(expr1_type, IntegerType)
-            assert isinstance(expr2_type, IntegerType)
+        unify_equal(expr1_type, IntegerType(None), type_env)
+        unify_equal(expr2_type, IntegerType(None), type_env)
         return None
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
         expr1_type = unknown_closure(expr1_type)
         expr2_type = unknown_closure(expr2_type)
-
         if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Mult
             unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType(None)
@@ -633,8 +631,10 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 assert isinstance(maybe_type0, IntegerType)
             return maybe_type0
         else:
-            print "TYPEERROR! Not unifiable: %s %s", maybe_type0, maybe_type1
-            raise Exception() #TODO: Throw TypeException
+            string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
+            print string
+            raise BTypeException(string)
+
 
     # case 2: Unknown, Unknown
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):
