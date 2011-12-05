@@ -82,7 +82,8 @@ class Environment():
     def pop_frame(self):
         self.value_stack.pop()
 
-
+# sideeffect:
+# evals pred and sets var to values
 def interpret(node, env):
     if isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)

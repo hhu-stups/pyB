@@ -129,6 +129,21 @@ class TestTypesSets():
         assert isinstance(env.get_type("S").data, PowerSetType)
 
 
+    def test_types_simple_pow2(self):
+        # Build AST
+        string_to_file("#PREDICATE S=POW(B) & B=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S","B"])
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, PowerSetType)
+        assert isinstance(env.get_type("B"), PowerSetType)
+        assert isinstance(env.get_type("B").data, IntegerType)
+
+
     def test_types_simple_subset(self):
         # Build AST
         string_to_file("#PREDICATE S<:B", file_name)

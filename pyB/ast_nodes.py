@@ -10,6 +10,24 @@ class Predicate(Node):
 class Expression(Node):
     pass
 
+class Clause(Node):
+    pass
+
+class AMachineHeader(Node):
+    pass
+
+class AAbstractMachineParseUnit(Node):
+    pass
+
+class AConstantsMachineClause(Clause):
+    pass
+
+class APropertiesMachineClause(Clause):
+    pass
+
+class AAssertionsMachineClause(Clause):
+    pass
+
 class AAddExpression(Expression):
     pass
 

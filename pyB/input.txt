@@ -1,1 +1,1 @@
-#PREDICATE a*b=c & a=42 & b=NAT
+#PREDICATE NAT*B=A*POW(NAT)

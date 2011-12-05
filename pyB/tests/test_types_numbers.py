@@ -122,6 +122,34 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("c"), IntegerType)
 
 
+    def test_types_simple_mul_unify4(self):
+        # Build AST
+        string_to_file("#PREDICATE 42=a*b-c", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["a","b","c"])
+        assert isinstance(env.get_type("a"), IntegerType)
+        assert isinstance(env.get_type("b"), IntegerType)
+        assert isinstance(env.get_type("c"), IntegerType)
+
+
+    def test_types_simple_mul_unify5(self):
+        # Build AST
+        string_to_file("#PREDICATE d-a*b-c=42", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["a","b","c","d"])
+        assert isinstance(env.get_type("a"), IntegerType)
+        assert isinstance(env.get_type("b"), IntegerType)
+        assert isinstance(env.get_type("c"), IntegerType)
+        assert isinstance(env.get_type("d"), IntegerType)
+
     def test_types_simple_div(self):
         # Build AST
         string_to_file("#PREDICATE x=8/2", file_name)
@@ -253,6 +281,17 @@ class TestTypesNumbers():
         env = Environment()
         _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_ls2(self):
+        # Build AST:
+        string_to_file("#PREDICATE 1*1<1+1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], [])
 
 
     def test_types_le(self):

@@ -94,8 +94,16 @@ class TypeCheck_Environment():
     def set_unknown_type(self, id0_Name, id1_Name):
         assert isinstance(id0_Name, UnknownType)
         assert isinstance(id1_Name, UnknownType)
-        id0_Name.real_type = id1_Name
-        return id1_Name
+
+        if isinstance(id0_Name, PowORIntegerType):
+            id1_Name.real_type = id0_Name
+            return id1_Name
+        elif isinstance(id0_Name, PowCartORIntegerType):
+            id1_Name.real_type = id0_Name
+            return id1_Name
+        else:
+            id0_Name.real_type = id1_Name
+            return id1_Name
 
 
     def set_concrete_type(self, utype, ctype):
@@ -105,8 +113,14 @@ class TypeCheck_Environment():
             u0 = unknown_closure(utype.data[0])
             u1 = unknown_closure(utype.data[1])
             if isinstance(ctype, IntegerType):
-                self.set_concrete_type(u0, IntegerType(None))
-                self.set_concrete_type(u1, IntegerType(None))
+                if isinstance(u0, UnknownType):
+                    self.set_concrete_type(u0, ctype)
+                else:
+                    assert isinstance(u0, IntegerType)
+                if isinstance(u1, UnknownType):
+                    self.set_concrete_type(u1, ctype)
+                else:
+                    assert isinstance(u1, IntegerType)
                 return IntegerType(None)
             else:
                 assert isinstance(ctype, PowerSetType)
@@ -116,9 +130,31 @@ class TypeCheck_Environment():
                 subset_type1 = unknown_closure(cart_type.data[1])
                 pow_type0 = PowerSetType(subset_type0)
                 pow_type1 = PowerSetType(subset_type1)
-                self.set_concrete_type(u0, pow_type0)
-                self.set_concrete_type(u1, pow_type1)
+                if isinstance(u0, UnknownType):
+                    self.set_concrete_type(u0, pow_type0)
+                else:
+                    assert isinstance(u0, PowerSetType)
+                if isinstance(u1, UnknownType):
+                    self.set_concrete_type(u1, pow_type1)
+                else:
+                    assert isinstance(u1, PowerSetType)
                 return PowerSetType(CartType(subset_type0, subset_type1))
+        elif isinstance(utype, PowORIntegerType):
+            u0 = unknown_closure(utype.data[0])
+            u1 = unknown_closure(utype.data[1])
+            if isinstance(ctype, IntegerType):
+                if isinstance(u0, UnknownType):
+                    self.set_concrete_type(u0, ctype)
+                else:
+                    assert isinstance(u0, IntegerType)
+                if isinstance(u1, UnknownType):
+                    self.set_concrete_type(u1, ctype)
+                else:
+                    assert isinstance(u1, IntegerType)
+                return IntegerType(None)
+            else:
+                assert isinstance(ctype, PowerSetType)
+                # TODO: implement set subtr.
         else:
             #assert utype.real_type==None
             utype.real_type = ctype
@@ -170,12 +206,13 @@ class TypeCheck_Environment():
 # If this is not possible the typechecking has failed
 def resolve_type(env):
     for node in env.node_to_type_map:
+        #print node.idName
         tree = env.node_to_type_map[node]
         tree_without_unknown = throw_away_unknown(tree)
         env.node_to_type_map[node] = tree_without_unknown
 
 
-# TODO: at this moment this is not a tree.
+
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
@@ -194,29 +231,35 @@ def throw_away_unknown(tree):
         data = tree.data
         arg1 = unknown_closure(data[0])
         arg2 = unknown_closure(data[1])
-        if not tree.real_type==None:
-            atype = unknown_closure(tree.real_type)
-            assert isinstance(atype, BType)
-            tree = atype
-        else:
-            if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
-                tree = PowerSetType(CartType(arg1.data, arg2.data))
-            elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
-                tree = IntegerType(None)
+        arg1 = throw_away_unknown(arg1)
+        arg2 = throw_away_unknown(arg2)
+        assert isinstance(arg1, BType)
+        assert isinstance(arg2, BType)
+        if not arg1.__class__ == arg2.__class__:
+            string = "TypeError: not unifiable %s %s",arg1, arg2
+            raise BTypeException(string)
+
+        if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
+            tree = PowerSetType(CartType(arg1.data, arg2.data))
+        elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
+            tree = IntegerType(None)
         return tree
     elif isinstance(tree, PowORIntegerType):
         data = tree.data
         arg1 = unknown_closure(data[0])
         arg2 = unknown_closure(data[1])
-        if not tree.real_type==None:
-            atype = unknown_closure(tree.real_type)
-            assert isinstance(atype, BType)
-            tree = atype
-        else:
-            if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
-                tree = arg1
-            elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
-                tree = arg1
+        arg1 = throw_away_unknown(arg1)
+        arg2 = throw_away_unknown(arg2)
+        assert isinstance(arg1, BType)
+        assert isinstance(arg2, BType)
+        if not arg1.__class__ == arg2.__class__:
+            string = "TypeError: not unifiable %s %s",arg1, arg2
+            raise BTypeException(string)
+
+        if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
+            tree = arg1
+        elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
+            tree = arg1
         return tree
     elif tree==None:
         raise BTypeException("TypeError: can not resolve a Type")
@@ -239,11 +282,15 @@ def unknown_closure(atype):
     while True:
         if not isinstance(atype.real_type, UnknownType):
             break
+        elif isinstance(atype.real_type, PowORIntegerType):
+            break
+        elif isinstance(atype.real_type, PowCartORIntegerType):
+            break
         atype = atype.real_type
-    if isinstance(atype.real_type, BType):
+    if isinstance(atype.real_type, BType) or isinstance(atype.real_type, PowORIntegerType) or isinstance(atype.real_type, PowCartORIntegerType):
         return atype.real_type
     else:
-        assert atype.real_type==None
+        assert atype.real_type==None #XXX: PowORIntegerType/PowCartORIntegerType
         return atype
 
 
@@ -336,6 +383,7 @@ def typeit(node, env, type_env):
         expr1_type = unknown_closure(expr1_type)
         expr2_type = unknown_closure(expr2_type)
         if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Mult
+            # only unify if IntgerType
             unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType(None)
         elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType): # Cart 
@@ -608,7 +656,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 t10 = unknown_closure(maybe_type1.data[0])
                 t01 = unknown_closure(maybe_type0.data[1])
                 t11 = unknown_closure(maybe_type1.data[1])
-                # wrapp with PowerSettype
+                # (1) wrapp with PowerSettype
                 if not isinstance(t00, UnknownType):
                     t00 = PowerSetType(t00)
                 if not isinstance(t10, UnknownType):
@@ -617,6 +665,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                     t01 = PowerSetType(t01)
                 if not isinstance(t11, UnknownType):
                     t11 = PowerSetType(t11)
+                # (2) unify
                 unify_equal(t00, t10, type_env)
                 unify_equal(t01, t11, type_env)
             elif isinstance(maybe_type0, SetType):
@@ -634,7 +683,6 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
             print string
             raise BTypeException(string)
-
 
     # case 2: Unknown, Unknown
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, UnknownType):

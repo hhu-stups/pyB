@@ -72,7 +72,7 @@ DONE:
     - Maybe a BUG: there are no local vars. all vars are global
     - TODO: quantiefed vars must be added to the frame
     - Typing maybe fails if vars have the same name (unify)
-
+    - TODO: Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
 
 TODO:
     - TODO: throw better Typeexceptions
@@ -80,7 +80,6 @@ TODO:
     - FIXME: maybe BUG: eval of preds changes value_stack
     - FIXME: Typeerrors are scattered through the whole code via asserts
     - TODO: move namelearning of sets in typing from AUnequal/EqualPredicate to unify
-    - TODO: Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
     - TODO: remove fix value/type from tests if possible
     - TODO: write more scoping tests
     - assumes that all functions are 2-tuple: otherwise crash
@@ -99,3 +98,4 @@ TODO:
     - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
     - TODO: Maybe all asserts inside the typechecker must be replaced by unify_equal()
     - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a type-tree
+    - TODO: Dont create new instances of IntegerType if not nec.

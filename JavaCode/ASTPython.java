@@ -142,6 +142,77 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
+    {
+        List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
+        String[] ids = new String[copy.size()+2];
+        int i=0;
+        if(node.getType() != null)
+        {
+            node.getType().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getHeader() != null)
+        {
+            node.getHeader().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        for(PMachineClause e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        if(node.getType() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getHeader() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        for(int k=i; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+    }
+
+
+    // TODO: implement me
+    public void caseAMachineHeader(AMachineHeader node)
+    {
+        List<TIdentifierLiteral> copy0 = new ArrayList<TIdentifierLiteral>(node.getName());
+        List<PExpression> copy1 = new ArrayList<PExpression>(node.getParameters());
+        String[] ids = new String[copy0.size()+copy1.size()];
+        int i=0;
+        /*
+        for(TIdentifierLiteral e : copy0)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        */
+        for(PExpression e : copy1)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i=0;
+        //for(int k=i; k<copy0.size(); k++)
+        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        for(int k=i; k<copy1.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+    }
+
+
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
@@ -178,10 +249,39 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAConstantsMachineClause(AConstantsMachineClause node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()),null);
+    }
+
+
+    // sp. case: PPredicate
+    public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
+    {
+        List<PPredicate> copy = new ArrayList<PPredicate>(node.getPredicates());
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(PPredicate e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
     public void caseAFunctionExpression(AFunctionExpression node)
     {
         printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());
     }
+
 
     public void caseAIntervalExpression(AIntervalExpression node)
     {
@@ -294,6 +394,12 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAInsertTailExpression(AInsertTailExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAPropertiesMachineClause(APropertiesMachineClause node)
+    {
+        printStdOut_oneChild(node, node.getPredicates());
     }
 
 
@@ -637,6 +743,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    // visits and prints the node-List first
     private void printStdOut_manyChildren(Node node, List<PExpression> copy, Node extra)
     {
         String[] ids = new String[copy.size()+1];
@@ -664,7 +771,8 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    // Node first
+    // visits and prints the extra-Node first
+    // TODO: refactor ids
     private void printStdOut_manyChildren2(Node node, List<PExpression> copy, Node extra)
     {
         String[] ids = new String[copy.size()+1];

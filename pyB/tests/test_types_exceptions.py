@@ -93,4 +93,5 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
+        #_test_typeit(root, env, [], ["a","b","c"])
         py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\",\"c\"])")
