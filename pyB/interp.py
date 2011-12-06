@@ -759,28 +759,15 @@ def all_values_by_type(atype, env):
         assert isinstance(env.get_value(type_name), set)
         return env.get_value(type_name)
     elif isinstance(atype, PowerSetType):
-        if isinstance(atype.data, SetType):
-            type_name = atype.data.data
-            assert isinstance(env.get_value(type_name), set)
-            res = powerset(env.get_value(type_name))
-            powerlist = list(res)
-            lst = [frozenset(e) for e in powerlist]
-            return lst
-        elif isinstance(atype.data, PowerSetType):
-            count = 1
-            atype = atype.data
-            # TODO: Think of this again ;-)
-            # unpack POW(POW(S)), POW(POW(POW(S))) ect. ....
-            # TODO: cart prod
-            while not isinstance(atype, SetType):
-                count = count +1
-                atype = atype.data
-            value = env.get_value(atype.data)
-            assert isinstance(value, set)
-            # create all(!) values
-            for i in range(count):
-                res = powerset(value)
-                powerlist = list(res)
-                value = [frozenset(e) for e in powerlist]
-            return value
-    raise Exception("Unknown Type / Not Implemented: %s", idName)
+        val_list = all_values_by_type(atype.data, env)
+        res = powerset(val_list)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        return lst
+    elif isinstance(atype, CartType):
+        val_pi = all_values_by_type(atype.data[0], env)
+        val_i = all_values_by_type(atype.data[1], env)
+        lst = set(((x,y) for x in val_pi for y in val_i))
+        return lst
+    string = "Unknown Type / Not Implemented: %s", atype
+    raise Exception(string)

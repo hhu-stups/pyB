@@ -475,7 +475,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AIdentityExpression):
         atype0 = typeit(node.children[0], env, type_env)
         assert isinstance(atype0, PowerSetType)
-        assert isinstance(atype0.data, SetType)
+        assert isinstance(atype0.data, SetType) or isinstance(atype0.data, IntegerType)
         return PowerSetType(PowerSetType(CartType(atype0.data, atype0.data)))
     elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression) or isinstance(node, ARangeRestrictionExpression) or isinstance(node, ARangeSubtractionExpression):
         atype0 = typeit(node.children[0], env, type_env)
