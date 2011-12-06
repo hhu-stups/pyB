@@ -476,12 +476,18 @@ def typeit(node, env, type_env):
         atype0 = typeit(node.children[0], env, type_env)
         assert isinstance(atype0, PowerSetType)
         assert isinstance(atype0.data, SetType) or isinstance(atype0.data, IntegerType)
-        return PowerSetType(PowerSetType(CartType(atype0.data, atype0.data)))
-    elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression) or isinstance(node, ARangeRestrictionExpression) or isinstance(node, ARangeSubtractionExpression):
+        return PowerSetType(CartType(atype0.data, atype0.data))
+    elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression):
         atype0 = typeit(node.children[0], env, type_env)
         rel_type = typeit(node.children[1], env, type_env)
         assert isinstance(atype0, PowerSetType)
-        assert isinstance(atype0.data, SetType)
+        assert isinstance(atype0.data, SetType) or isinstance(atype0.data, IntegerType) 
+        return rel_type
+    elif isinstance(node, ARangeSubtractionExpression) or isinstance(node, ARangeRestrictionExpression):
+        rel_type = typeit(node.children[0], env, type_env)
+        atype0 = typeit(node.children[1], env, type_env)
+        assert isinstance(atype0, PowerSetType)
+        assert isinstance(atype0.data, SetType) or isinstance(atype0.data, IntegerType) 
         return rel_type
     elif isinstance(node, AReverseExpression):
         rel_type0 = typeit(node.children[0], env, type_env)

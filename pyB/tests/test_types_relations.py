@@ -77,10 +77,9 @@ class TestTypesRelations():
         lst = [("B", PowerSetType(SetType("X")))]
         _test_typeit(root, env, lst, ["S"])
         assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, PowerSetType)
-        assert isinstance(env.get_type("S").data.data, CartType)
-        assert isinstance(env.get_type("S").data.data.data[0], SetType)
-        assert isinstance(env.get_type("S").data.data.data[1], SetType)
+        assert isinstance(env.get_type("S").data, CartType)
+        assert isinstance(env.get_type("S").data.data[0], SetType)
+        assert isinstance(env.get_type("S").data.data[1], SetType)
 
 
     def test_types_simple_sub_res(self):

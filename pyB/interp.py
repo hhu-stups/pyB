@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType
 
 min_int = -1
 max_int = 5
+enable_assertions=True
 
 class Environment():
     def __init__(self):
@@ -555,11 +556,26 @@ def interpret(node, env):
         return set(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return set(range(1,max_int+1))
+    elif isinstance(node, AAbstractMachineParseUnit):
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, AConstantsMachineClause):
+        for child in node.children:
+            atype = env.get_type_by_node(child)
+            #print child.idName,":", atype
+            interpret(child, env)
+    elif isinstance(node, APropertiesMachineClause):
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, AAssertionsMachineClause):
+        if enable_assertions:
+            for child in node.children:
+                interpret(child, env)
     else:
         raise Exception("Unknown Node: %s",node)
 
 
-# XXX: Warning: this could take some time...
+# WARNING: this could take some time...
 def create_all_seq_w_fixlen(images, length):
     result = []
     basis = len(images)
@@ -676,6 +692,7 @@ def make_set_of_realtions(S,T):
 
 
 # from http://docs.python.org/library/itertools.html
+# WARNING: this could take some time...
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     from itertools import chain, combinations
