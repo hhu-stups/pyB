@@ -299,3 +299,16 @@ class TestInterpRelations():
         assert interpret(root,env)
 
 
+    def test_genAST_pred_rel_repr(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={aa|->aa, aa|->bb, bb|->bb, bb|->aa} & f=ID*ID", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("aa","aa") # XXX
+        env.set_value("bb","bb") # XXX
+        env.set_value("ID", set(["aa","bb"]))
+        env.set_value("f", set([("aa","bb"),("aa","aa"),("bb","aa"),("bb","bb")]))
+        assert interpret(root,env)

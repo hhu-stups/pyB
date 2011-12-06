@@ -28,7 +28,7 @@ else:
     file_name_str = "input.txt"
 
 ast_string = file_to_AST_str(file_name_str)
-print ast_string
+#print ast_string
 exec ast_string
 idNames = []
 find_var_names(root, idNames) #sideef: fill list

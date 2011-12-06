@@ -350,12 +350,24 @@ def typeit(node, env, type_env):
         # FIXME: This code don't works inside a SET-Section
         # no Vars are declared!
         # TODO: maybe new frame?
-        # learn that all Elements must have the same type:
-        reftype = typeit(node.children[0], env, type_env)
-        for child in node.children[1:]:
-            atype = typeit(child, env, type_env)
-            reftype = unify_equal(atype, reftype, type_env)
-        return PowerSetType(reftype)
+        if isinstance(node.children[0], ACoupleExpression):
+            # a realtion
+            pimage_type = typeit(node.children[0].children[0], env, type_env)
+            image_type = typeit(node.children[0].children[1], env, type_env)
+            # learn that all Elements must have the same type:
+            for child in node.children[1:]:
+                pi_type = typeit(child.children[0], env, type_env)
+                i_type = typeit(child.children[1], env, type_env)
+                pimage_type = unify_equal(pi_type, pimage_type, type_env)
+                image_type = unify_equal(i_type, image_type, type_env)
+            return PowerSetType(CartType(pimage_type, image_type))
+        else:
+            reftype = typeit(node.children[0], env, type_env)
+            # learn that all Elements must have the same type:
+            for child in node.children[1:]:
+                atype = typeit(child, env, type_env)
+                reftype = unify_equal(atype, reftype, type_env)
+            return PowerSetType(reftype)
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)

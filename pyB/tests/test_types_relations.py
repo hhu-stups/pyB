@@ -241,3 +241,20 @@ class TestTypesRelations():
         assert x.data == "X"
         assert y.data == "Y"
         assert z.data == "Y"
+
+
+    def test_types_rel_repr(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={aa|->aa, aa|->bb, bb|->bb, bb|->aa} & g=A*A", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        lst = [("A", PowerSetType(SetType("X"))),("aa",SetType("X")),("bb",SetType("X"))]
+        _test_typeit(root, env, lst, ["f","g"])
+        assert isinstance(env.get_type("g"), PowerSetType)
+        assert isinstance(env.get_type("g").data, CartType)
+        assert isinstance(env.get_type("f"), PowerSetType)
+        assert isinstance(env.get_type("f").data, CartType)
+        
