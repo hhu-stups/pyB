@@ -27,6 +27,11 @@ class SetType(BType):
         self.data = name # None when name unknown
 
 
+class EmptySetType(BType):
+    def __init__(self):
+        pass
+
+
 # pairtype
 class CartType(BType):
     def __init__(self, setA, setB):
@@ -216,7 +221,7 @@ def resolve_type(env):
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
-    if isinstance(tree, SetType) or isinstance(tree, IntegerType):
+    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType):
         return tree
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
@@ -323,7 +328,7 @@ def typeit(node, env, type_env):
     if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AEmptySetExpression):
-        return PowerSetType(SetType(None))
+        return EmptySetType()
     elif isinstance(node, ACoupleExpression):
         return SetType(None)
     elif isinstance(node, AComprehensionSetExpression):
@@ -664,7 +669,11 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
 
     # case 1: BType, BType
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
-        if maybe_type0.__class__ == maybe_type1.__class__:
+        if isinstance(maybe_type0, PowerSetType) and isinstance(maybe_type1, EmptySetType):
+            return maybe_type0
+        elif isinstance(maybe_type1, PowerSetType) and isinstance(maybe_type0, EmptySetType):
+            return maybe_type1
+        elif maybe_type0.__class__ == maybe_type1.__class__:
             # recursive unification-call
             # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType
+from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -47,7 +47,7 @@ class TestTypesSets():
         # Type
         env = Environment()
         _test_typeit(root, env, [], ["ID"])
-        assert isinstance(env.get_type("ID"), PowerSetType)
+        assert isinstance(env.get_type("ID"), EmptySetType)
 
 
     def test_types_simple_set_com(self):

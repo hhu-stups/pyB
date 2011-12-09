@@ -19,6 +19,9 @@ class AMachineHeader(Node):
 class AAbstractMachineParseUnit(Node):
     pass
 
+class APredicateParseUnit(Node):
+    pass
+
 class AConstantsMachineClause(Clause):
     pass
 

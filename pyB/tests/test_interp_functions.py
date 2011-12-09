@@ -26,7 +26,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         l = []
         l.append(frozenset([("1","hallo_welt")]))
@@ -36,7 +36,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_total_fun(self):
@@ -54,14 +54,14 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         l = []
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
     def test_genAST_pred_part_inj_fun(self):
         # Build AST:
@@ -81,7 +81,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         l = []
         l.append(frozenset([("1","hallo_welt")]))
@@ -90,7 +90,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_total_inj_fun(self):
@@ -106,7 +106,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_part_surj_fun(self):
@@ -122,7 +122,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         l = []
         l.append(frozenset([("1","hallo_welt")]))
@@ -131,7 +131,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_total_surj_fun(self):
@@ -147,14 +147,14 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         l = []
         l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
     def test_genAST_pred_bij_fun(self):
         # Build AST:
@@ -173,12 +173,12 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b","c"]))
         env.set_value("T", set(["x","y","z"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("S", set(["1","2"]))
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set([]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_bij_fun2(self):
@@ -193,7 +193,7 @@ class TestInterpFunctions():
         env.set_value("T", set(["y1","y2"]))
         env.set_value("U", set(["z1","z2"]))
         env.set_value("F", set(l))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_fun_app(self):
@@ -208,7 +208,7 @@ class TestInterpFunctions():
         env.set_value("x", "x")
         env.set_value("y", "y")
         env.set_value("f", set([("a","x"),("b","y")]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_fun_app2(self):
@@ -224,7 +224,7 @@ class TestInterpFunctions():
         env.set_value("x", ("x1","y1"))
         env.set_value("f", frozenset([(("x1","y1"),"z1"),(("x2","y2"),"z2"),(("x1","y2"),"z3"),(("x2","y1"),"z4")]))
         env.set_value("y", "z1")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_empty(self):
@@ -234,7 +234,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_simple(self):
@@ -246,13 +246,13 @@ class TestInterpFunctions():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("s", frozenset([]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("s", frozenset([(1,"a")]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("s", frozenset([(1,"a"),(2,"b"),(3,"a")]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_no_empty(self):
@@ -264,16 +264,16 @@ class TestInterpFunctions():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("s", frozenset([]))
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
         env.set_value("s", frozenset([(1,"a")]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("s", frozenset([(1,"b"),(2,"a"),(3,"b")]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("s", frozenset([(1,"a"),(1,"b"),(1,"a")]))
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_injective(self):
@@ -285,7 +285,7 @@ class TestInterpFunctions():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("s", set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
     def test_genAST_pred_seq_perm(self):
         # Build AST:
@@ -296,10 +296,10 @@ class TestInterpFunctions():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("s", set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("s", frozenset([]))
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
     def test_genAST_pred_seq_conc(self):
         # Build AST:
@@ -311,7 +311,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("t", frozenset([(1, 'a'), (2, 'b')]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
     def test_genAST_pred_seq_prepend(self):
         # Build AST:
@@ -323,7 +323,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("a", "a")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_append(self):
@@ -336,7 +336,7 @@ class TestInterpFunctions():
         env.set_value("S", set(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("a", "a")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_size(self):
@@ -349,7 +349,7 @@ class TestInterpFunctions():
         env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_reverse(self):
@@ -362,7 +362,7 @@ class TestInterpFunctions():
         env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_take(self):
@@ -378,7 +378,7 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_drop(self):
@@ -394,7 +394,7 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_first(self):
@@ -410,7 +410,7 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_last(self):
@@ -426,7 +426,7 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_tail(self):
@@ -443,7 +443,7 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_seq_front(self):
@@ -460,4 +460,4 @@ class TestInterpFunctions():
         env.set_value("c", "c")
         env.set_value("d", "d")
         env.set_value("e", "e")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)

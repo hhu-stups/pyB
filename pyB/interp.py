@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, _test_typeit
+from helpers import find_var_names
 
 min_int = -1
 max_int = 5
@@ -86,7 +87,22 @@ class Environment():
 # sideeffect:
 # evals pred and sets var to values
 def interpret(node, env):
-    if isinstance(node, AConjunctPredicate):
+    if isinstance(node,APredicateParseUnit):
+        idNames = []
+        find_var_names(node.children[0], idNames) #sideef: fill list
+        _test_typeit(node.children[0], env, [], idNames) ## FIXME: replace this call someday
+        if idNames ==[]:
+            return interpret(node.children[0], env)
+        else:
+            print "enum. vars:",idNames
+            if try_all_values(node.children[0], env, idNames):
+                for i in idNames:
+                    print i,":", env.get_value(i)
+            else:
+                print "No Solution found"
+                return False
+        return True
+    elif isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 and expr2
@@ -788,3 +804,20 @@ def all_values_by_type(atype, env):
         return lst
     string = "Unknown Type / Not Implemented: %s", atype
     raise Exception(string)
+
+
+def try_all_values(root, env, idNames):
+    name = idNames[0]
+    atype = env.get_type(name)
+    all_values = all_values_by_type(atype, env)
+    if len(idNames)<=1:
+        for val in all_values:
+            env.set_value(name,val)
+            if interpret(root, env):
+                return True
+    else:
+        for val in all_values:
+            env.set_value(name,val)
+            if try_all_values(root, env, idNames[1:]):
+                return True
+    return False

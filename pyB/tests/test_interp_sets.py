@@ -17,10 +17,10 @@ class TestInterpSets():
         env = Environment()
         env.set_value("x", "x")
         env.set_value("S", set(["x","y","z"]))
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
         env.set_value("S", set(["a","b","c"]))
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_subset(self):
@@ -33,11 +33,11 @@ class TestInterpSets():
         env = Environment()
         env.set_value("T", set(["x","y"]))
         env.set_value("S", set(["x","y","z"]))
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
         env.set_value("S", set(["a","b","c"]))
         env.set_value("T", set(["a","b","c"]))
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
 
@@ -52,7 +52,7 @@ class TestInterpSets():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("u", ("a","x"))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_power_set(self):
@@ -65,19 +65,19 @@ class TestInterpSets():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("X", set([]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set(["a","b"]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set(["a","c"]))
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
         env.set_value("X", set(["a"]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set(["b"]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_power_set2(self):
@@ -90,13 +90,13 @@ class TestInterpSets():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("X", set([]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set([frozenset([])]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set([frozenset(["a","b"])]))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_pow1_set(self):
@@ -109,16 +109,16 @@ class TestInterpSets():
         env = Environment()
         env.set_value("S", set(["a","b"]))
         env.set_value("X", set(frozenset([])))
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
         env.set_value("X", set(frozenset(["a"])))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set(frozenset(["b"])))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("X", set(frozenset(["a","b"])))
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_contains(self):
@@ -129,7 +129,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_contains2(self):
@@ -140,7 +140,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_contains3(self):
@@ -152,7 +152,7 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("x", "x")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_set_enum(self):
@@ -167,10 +167,10 @@ class TestInterpSets():
         env.set_value("aa", "aa") #FIXME: maybe this is a Bug..
         env.set_value("bb", "bb") #
         env.set_value("cc", "cc") #
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
         env.set_value("yy","yy")
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_pred_set_orderd_pair(self):
@@ -183,7 +183,7 @@ class TestInterpSets():
         env = Environment()
         env.set_value("x", "x")
         env.set_value("y", "y")
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_interval(self):
@@ -195,16 +195,16 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("zz", 4)
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("zz", 5)
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("zz", 6)
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
         env.set_value("zz", 0)
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_nat(self):
@@ -216,10 +216,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("x", 2)
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("x", 0)
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_nat1(self):
@@ -231,10 +231,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("x", 2)
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
         env.set_value("x", 0)
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_couple(self):
@@ -245,7 +245,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert interpret(root,env)
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_couple2(self):
@@ -256,7 +256,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not interpret(root,env)
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_compreh(self):
@@ -267,8 +267,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_set_compreh2(self):
@@ -279,8 +279,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_forall3(self):
@@ -295,8 +295,8 @@ class TestInterpSets():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["a"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root, env, lst, ["T","S"])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, lst, ["T","S"])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_forall4(self):
@@ -310,8 +310,8 @@ class TestInterpSets():
         env.set_value("ID", set(["a","b"]))
         env.set_value("S", set(["a","b"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root, env, lst, ["S"])
-        assert not interpret(root,env)
+        _test_typeit(root.children[0], env, lst, ["S"])
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_exist4(self):
@@ -325,5 +325,5 @@ class TestInterpSets():
         env.set_value("ID", set(["a","b"]))
         env.set_value("T", set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root, env, lst, ["T"])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, lst, ["T"])
+        assert interpret(root.children[0],env)

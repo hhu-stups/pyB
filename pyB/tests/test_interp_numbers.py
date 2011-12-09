@@ -15,7 +15,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_expr_add2(self):
@@ -26,7 +26,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_expr_sub(self):
@@ -37,7 +37,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_expr_mul(self):
@@ -48,7 +48,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_expr_div(self):
@@ -59,7 +59,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_expr_mod(self):
@@ -70,7 +70,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_expr_neq(self):
@@ -81,7 +81,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_and(self):
@@ -92,7 +92,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_or(self):
@@ -103,7 +103,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_impl(self):
@@ -114,7 +114,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_equi(self):
@@ -125,7 +125,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_complex_arith(self):
@@ -136,7 +136,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_complex_arith2(self):
@@ -147,7 +147,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
 
     def test_genAST_pred_gt(self):
@@ -159,13 +159,13 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.set_value("x", 1)
-        assert interpret(root, env)
+        assert interpret(root.children[0], env)
 
         env.set_value("x", 10)
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
         env.set_value("x", 6)
-        assert not interpret(root, env)
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_pred_exist(self):
@@ -176,8 +176,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_exist2(self):
@@ -188,8 +188,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert not interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert not interpret(root.children[0],env)
 
 
     def test_genAST_pred_exist3(self):
@@ -200,8 +200,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_forall(self):
@@ -212,8 +212,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_forall2(self):
@@ -224,8 +224,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert not interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert not interpret(root.children[0],env)
 
     def test_genAST_pred_sigma(self):
         # Build AST:
@@ -235,8 +235,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_pi(self):
@@ -247,8 +247,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, [], [])
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_sigma2(self):
@@ -261,5 +261,5 @@ class TestInterpNumbers():
         env = Environment()
         lst = [("ID", PowerSetType(SetType("ID")))]
         env.set_value("ID", set(["a","b"]))
-        _test_typeit(root, env, lst, "")
-        assert interpret(root,env)
+        _test_typeit(root.children[0], env, lst, "")
+        assert interpret(root.children[0],env)
