@@ -330,7 +330,12 @@ def typeit(node, env, type_env):
     elif isinstance(node, AEmptySetExpression):
         return EmptySetType()
     elif isinstance(node, ACoupleExpression):
-        return SetType(None)
+        atype0 = typeit(node.children[0], env, type_env)
+        atype1 = typeit(node.children[1], env, type_env)
+        atype = CartType(atype0, atype1)
+        for index in range(len(node.children)-2):
+            atype = CartType(atype, typeit(node.children[index+2], env, type_env))
+        return atype
     elif isinstance(node, AComprehensionSetExpression):
         ids = []
         for n in node.children[:-1]:
@@ -343,8 +348,13 @@ def typeit(node, env, type_env):
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             assert not type_env.get_current_type(child.idName)==None
+        atype = type_env.get_current_type(ids[0])
+        if len(ids)>1:
+            atype = CartType(atype, type_env.get_current_type(ids[1]))
+            for i in ids[2:]:
+                atype = CartType(atype, type_env.get_current_type(i))
         type_env.pop_frame(env)
-        return PowerSetType(SetType(None)) #name unknown
+        return PowerSetType(atype) #name unknown
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)
     elif isinstance(node, AIdentifierExpression):

@@ -227,6 +227,7 @@ class TestInterpNumbers():
         _test_typeit(root.children[0], env, [], [])
         assert not interpret(root.children[0],env)
 
+
     def test_genAST_pred_sigma(self):
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)

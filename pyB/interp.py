@@ -102,6 +102,24 @@ def interpret(node, env):
                 print "No Solution found"
                 return False
         return True
+    elif isinstance(node, AAbstractMachineParseUnit):
+        idNames = []
+        find_var_names(node, idNames) #sideef: fill list
+        _test_typeit(node, env, [], idNames) ## FIXME: replace 
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, AConstantsMachineClause):
+        for child in node.children:
+            atype = env.get_type_by_node(child)
+            #print child.idName,":", atype
+            interpret(child, env)
+    elif isinstance(node, APropertiesMachineClause):
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, AAssertionsMachineClause):
+        if enable_assertions:
+            for child in node.children:
+                interpret(child, env)
     elif isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -572,21 +590,6 @@ def interpret(node, env):
         return set(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return set(range(1,max_int+1))
-    elif isinstance(node, AAbstractMachineParseUnit):
-        for child in node.children:
-            interpret(child, env)
-    elif isinstance(node, AConstantsMachineClause):
-        for child in node.children:
-            atype = env.get_type_by_node(child)
-            #print child.idName,":", atype
-            interpret(child, env)
-    elif isinstance(node, APropertiesMachineClause):
-        for child in node.children:
-            interpret(child, env)
-    elif isinstance(node, AAssertionsMachineClause):
-        if enable_assertions:
-            for child in node.children:
-                interpret(child, env)
     else:
         raise Exception("Unknown Node: %s",node)
 

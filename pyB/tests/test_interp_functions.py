@@ -63,6 +63,7 @@ class TestInterpFunctions():
         env.set_value("F", set(l))
         assert interpret(root.children[0],env)
 
+
     def test_genAST_pred_part_inj_fun(self):
         # Build AST:
         string_to_file("#PREDICATE F=S>+>T", file_name)
@@ -155,6 +156,7 @@ class TestInterpFunctions():
         env.set_value("T", set(["hallo_welt",]))
         env.set_value("F", set(l))
         assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_bij_fun(self):
         # Build AST:
@@ -287,6 +289,7 @@ class TestInterpFunctions():
         env.set_value("s", set([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])]))
         assert interpret(root.children[0],env)
 
+
     def test_genAST_pred_seq_perm(self):
         # Build AST:
         string_to_file("#PREDICATE s=perm(S)", file_name)
@@ -301,6 +304,7 @@ class TestInterpFunctions():
         env.set_value("s", frozenset([]))
         assert not interpret(root.children[0],env)
 
+
     def test_genAST_pred_seq_conc(self):
         # Build AST:
         string_to_file("#PREDICATE s:perm(S) & t:perm(S) => s^t:seq(S)", file_name)
@@ -312,6 +316,7 @@ class TestInterpFunctions():
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("t", frozenset([(1, 'a'), (2, 'b')]))
         assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_seq_prepend(self):
         # Build AST:
