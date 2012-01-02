@@ -112,9 +112,8 @@ def interpret(node, env):
             interpret(child, env)
     elif isinstance(node, AConstantsMachineClause):
         for child in node.children:
-            atype = env.get_type_by_node(child)
-            if isinstance(atype, PowerSetType):
-                env.set_value(child.idName, set([])) # init to empty-set
+            #atype = env.get_type_by_node(child)
+            env.set_value(child.idName, None)
             interpret(child, env)
     elif isinstance(node, APropertiesMachineClause):
         for child in node.children:
@@ -147,11 +146,13 @@ def interpret(node, env):
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
-        # special case: leran values (optimization)
-        if isinstance(node.children[0], AIdentifierExpression):
+        # special case: leran values if None (optimization)
+        if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
             env.set_value(node.children[0].idName, expr2)
-        elif isinstance(node.children[1], AIdentifierExpression):
+            return True
+        elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
             env.set_value(node.children[1].idName, expr1)
+            return True
         else:
             # else normal check
             return expr1 == expr2

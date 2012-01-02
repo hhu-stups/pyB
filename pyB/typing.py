@@ -407,17 +407,17 @@ def typeit(node, env, type_env):
         expr2_type = typeit(node.children[1], env, type_env)
         expr1_type = unknown_closure(expr1_type)
         expr2_type = unknown_closure(expr2_type)
-        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Mult
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Integer-Mult
             # only unify if IntgerType
             unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType): # Cart 
+        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType):  # CartExpression
             return PowerSetType(CartType(expr1_type.data, expr2_type))
-        elif isinstance(expr2_type, PowerSetType) and isinstance(expr1_type, UnknownType): # Cart 
+        elif isinstance(expr2_type, PowerSetType) and isinstance(expr1_type, UnknownType):  # CartExpression
             return PowerSetType(CartType(expr1_type, expr2_type.data))
-        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType): # Cart
+        elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType): # CartExpression
             return PowerSetType(CartType(expr1_type.data, expr2_type.data))
-        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
+        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
             raise Exception("Unimplemented case: %s %s", expr1_type, expr2_type)
@@ -428,11 +428,11 @@ def typeit(node, env, type_env):
         expr1_type = unknown_closure(expr1_type)
         expr2_type = unknown_closure(expr2_type)
 
-        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Minus
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Integer-Minus
             return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # SetSub
+        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # SetSubtract
             return expr1_type
-        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):
+        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
             return PowORIntegerType(expr1_type, expr2_type)
         else:
             raise Exception("Unimplemented case: %s",node)
@@ -543,6 +543,8 @@ def typeit(node, env, type_env):
         y = SetType(rel_type0.data.data[1].data)
         x2 = SetType(rel_type1.data.data[0].data)
         z = SetType(rel_type1.data.data[1].data)
+        #print x.data
+        #print x2.data
         assert x.data == x2.data
         return PowerSetType(CartType(x,CartType(y,z)))
     elif isinstance(node, AFirstProjectionExpression):
