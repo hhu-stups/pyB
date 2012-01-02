@@ -570,3 +570,19 @@ class TestTypesSets():
         env = Environment()
         _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), CartType)
+
+
+    def test_types_set_cart_tuple2(self):
+        # Build AST:
+        string_to_file("#PREDICATE x=(1,2,41) & y={(0,0,41),(1,0,41),(0,1,41),(1,1,41)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], ["x","y"])
+        assert isinstance(env.get_type("x"), CartType)
+        assert isinstance(env.get_type("y"), PowerSetType)
+        assert isinstance(env.get_type("y").data, CartType)
+        assert isinstance(env.get_type("y").data.data[0], CartType)
+        assert isinstance(env.get_type("y").data.data[1], IntegerType)

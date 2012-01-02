@@ -100,8 +100,10 @@ def interpret(node, env):
                     print i,":", env.get_value(i)
             else:
                 print "No Solution found"
-                return False
-        return True
+                print False
+                return
+        print True
+        return
     elif isinstance(node, AAbstractMachineParseUnit):
         idNames = []
         find_var_names(node, idNames) #sideef: fill list
@@ -111,15 +113,18 @@ def interpret(node, env):
     elif isinstance(node, AConstantsMachineClause):
         for child in node.children:
             atype = env.get_type_by_node(child)
-            #print child.idName,":", atype
+            if isinstance(atype, PowerSetType):
+                env.set_value(child.idName, set([])) # init to empty-set
             interpret(child, env)
     elif isinstance(node, APropertiesMachineClause):
         for child in node.children:
             interpret(child, env)
     elif isinstance(node, AAssertionsMachineClause):
         if enable_assertions:
+            print "checking assertions"
             for child in node.children:
-                interpret(child, env)
+                print "\t", interpret(child, env)
+            print "checking done."
     elif isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -142,7 +147,14 @@ def interpret(node, env):
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
-        return expr1 == expr2
+        # special case: leran values (optimization)
+        if isinstance(node.children[0], AIdentifierExpression):
+            env.set_value(node.children[0].idName, expr2)
+        elif isinstance(node.children[1], AIdentifierExpression):
+            env.set_value(node.children[1].idName, expr1)
+        else:
+            # else normal check
+            return expr1 == expr2
     elif isinstance(node, AUnequalPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -812,6 +824,7 @@ def all_values_by_type(atype, env):
 def try_all_values(root, env, idNames):
     name = idNames[0]
     atype = env.get_type(name)
+    print atype
     all_values = all_values_by_type(atype, env)
     if len(idNames)<=1:
         for val in all_values:

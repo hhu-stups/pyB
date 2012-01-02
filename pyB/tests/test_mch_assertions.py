@@ -1,4 +1,13 @@
+# -*- coding: utf-8 -*-
+from ast_nodes import *
+from interp import interpret, Environment
+from helpers import file_to_AST_str, string_to_file
 
+file_name = "input.txt"
+
+class TestInterpSets():
+    def test_abrial_book(self):
+        string = '''
         MACHINE BBook_Page80
         /* Translation of example from page 82 of Abrial's B-Book */
         CONSTANTS p,q,u,s,t
@@ -19,4 +28,16 @@
         s <<| p = {6|->3, 9|->2};
         p |>> t = {3|->5, 3|->9, 6|->3, 9|->2}
         END
-        
+        '''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env)
+        assert isinstance(root.children[2], AAssertionsMachineClause)
+        for pred in root.children[2].children:
+            assert interpret(pred, env)

@@ -691,7 +691,8 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 t10 = unknown_closure(maybe_type1.data[0])
                 t01 = unknown_closure(maybe_type0.data[1])
                 t11 = unknown_closure(maybe_type1.data[1])
-                # (1) wrapp with PowerSettype
+                # FIXME: Carttypes contain not Pow(Type) but only Type
+                # (1) wrapp with PowerSettype,
                 if not isinstance(t00, UnknownType):
                     t00 = PowerSetType(t00)
                 if not isinstance(t10, UnknownType):
