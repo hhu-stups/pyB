@@ -1,1 +1,1 @@
-#PREDICATE x=(1,2,41) & y={(0,0,41),(1,0,41),(0,1,41),(1,1,41)}
+#PREDICATE d=A*B & c=ran(d) & A=NAT & B=NAT

@@ -38,6 +38,36 @@ class TestTypesRelations():
         assert env.get_type("x").data == "X"
 
 
+    def test_types_dom_unify(self):
+        # Build AST
+        string_to_file("#PREDICATE d=A*B & c=dom(d) & A=NAT & B=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        _test_typeit(root, env, [], ["c","d","A","B"])
+        assert isinstance(env.get_type("A"), PowerSetType)
+        assert isinstance(env.get_type("B"), PowerSetType)
+        assert isinstance(env.get_type("c"), PowerSetType)
+        assert isinstance(env.get_type("d"), PowerSetType)
+        assert isinstance(env.get_type("d").data, CartType)
+
+
+    def test_types_ran_unify(self):
+        # Build AST
+        string_to_file("#PREDICATE d=A*B & c=ran(d) & A=NAT & B=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        _test_typeit(root, env, [], ["c","d","A","B"])
+        assert isinstance(env.get_type("A"), PowerSetType)
+        assert isinstance(env.get_type("B"), PowerSetType)
+        assert isinstance(env.get_type("c"), PowerSetType)
+        assert isinstance(env.get_type("d"), PowerSetType)
+        assert isinstance(env.get_type("d").data, CartType)
+
+
     def test_types_range(self):
         # Build AST
         string_to_file("#PREDICATE r:S<->T & x:ran(r)", file_name)

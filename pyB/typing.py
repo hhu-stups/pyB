@@ -471,12 +471,22 @@ def typeit(node, env, type_env):
         return PowerSetType(PowerSetType(CartType(atype0.data, atype1.data)))
     elif isinstance(node, ADomainExpression):
         rel_type =  typeit(node.children[0], env, type_env)
-        assert isinstance(rel_type.data, CartType)
-        return PowerSetType(rel_type.data.data[0]) # pow of preimage settype
+        if isinstance(rel_type, UnknownType):
+            atype = PowerSetType(CartType(UnknownType(None,None), UnknownType(None,None)))
+            unify_equal(rel_type, atype, type_env)
+            return PowerSetType(atype.data.data[0])
+        else:
+            assert isinstance(rel_type.data, CartType)
+            return PowerSetType(rel_type.data.data[0]) # pow of preimage settype
     elif isinstance(node, ARangeExpression):
         rel_type =  typeit(node.children[0], env, type_env)
-        assert isinstance(rel_type.data, CartType)
-        return PowerSetType(rel_type.data.data[1]) # pow of image settype
+        if isinstance(rel_type, UnknownType):
+            atype = PowerSetType(CartType(UnknownType(None,None), UnknownType(None,None)))
+            unify_equal(rel_type, atype, type_env)
+            return PowerSetType(atype.data.data[1])
+        else:
+            assert isinstance(rel_type.data, CartType)
+            return PowerSetType(rel_type.data.data[1]) # pow of image settype
     elif isinstance(node, ACompositionExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)

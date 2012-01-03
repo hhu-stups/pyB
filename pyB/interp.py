@@ -5,7 +5,7 @@ from helpers import find_var_names
 
 min_int = -1
 max_int = 5
-enable_assertions=True
+enable_assertions = True
 
 class Environment():
     def __init__(self):
@@ -146,7 +146,7 @@ def interpret(node, env):
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
-        # special case: leran values if None (optimization)
+        # special case: learn values if None (optimization)
         if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
             env.set_value(node.children[0].idName, expr2)
             return True
