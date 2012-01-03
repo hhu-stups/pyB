@@ -1,1 +1,10 @@
-#PREDICATE d=A*B & c=ran(d) & A=NAT & B=NAT
+
+        MACHINE ACounter
+
+        ABSTRACT_VARIABLES  ii,jj
+
+        INVARIANT  ii:0..10 & jj:0..10 & ii<11 & jj>=0
+
+        INITIALISATION ii,jj := 2,10
+
+        END

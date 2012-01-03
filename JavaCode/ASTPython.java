@@ -18,11 +18,6 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void outAPredicateParseUnit(APredicateParseUnit node)
-    {
-        out += "root = id"+(idCounter-1)+ "\n";
-    }
-
 
     public void outAIntegerExpression(AIntegerExpression node)
     {
@@ -141,12 +136,13 @@ public class ASTPython extends DepthFirstAdapter{
             out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
     }
 
-
+    // TODO: implement me
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
     {
         List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
         String[] ids = new String[copy.size()+2];
         int i=0;
+        /*
         if(node.getType() != null)
         {
             node.getType().apply(this);
@@ -157,6 +153,7 @@ public class ASTPython extends DepthFirstAdapter{
             node.getHeader().apply(this);
             ids[i++] = ""+(idCounter-1);
         }
+        */
         for(PMachineClause e : copy)
         {
             e.apply(this);
@@ -170,12 +167,14 @@ public class ASTPython extends DepthFirstAdapter{
         idCounter++;
 
         i = 0;
-        if(node.getType() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getHeader() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        //if(node.getType() != null)
+        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        //if(node.getHeader() != null)
+        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
         for(int k=i; k<copy.size(); k++)
             out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+
+        out += "root = id"+(idCounter-1)+ "\n";
     }
 
 
@@ -262,6 +261,28 @@ public class ASTPython extends DepthFirstAdapter{
         String[] ids = new String[copy.size()];
         int i=0;
         for(PPredicate e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
+    public void caseAVariablesMachineClause(AVariablesMachineClause node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(PExpression e : copy)
         {
             e.apply(this);
             ids[i++] = ""+(idCounter-1);
@@ -517,6 +538,18 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAInitialisationMachineClause(AInitialisationMachineClause node)
+    {
+        printStdOut_oneChild(node, node.getSubstitutions());
+    }
+
+
+    public void caseAInvariantMachineClause(AInvariantMachineClause node)
+    {
+        printStdOut_oneChild(node, node.getPredicates());
+    }
+
+
     public void caseANegationPredicate(ANegationPredicate node)
     {
         printStdOut_oneChild(node, node.getPredicate());
@@ -568,6 +601,13 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAReverseExpression(AReverseExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAPredicateParseUnit(APredicateParseUnit node)
+    {
+        printStdOut_oneChild(node, node.getPredicate());
+        out += "root = id"+(idCounter-1)+ "\n";
     }
 
 

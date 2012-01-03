@@ -25,6 +25,15 @@ class APredicateParseUnit(Node):
 class AConstantsMachineClause(Clause):
     pass
 
+class AVariablesMachineClause(Clause):
+    pass
+
+class AInvariantMachineClause(Clause):
+    pass
+
+class AInitialisationMachineClause(Clause):
+    pass
+
 class APropertiesMachineClause(Clause):
     pass
 

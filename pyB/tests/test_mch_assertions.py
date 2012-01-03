@@ -5,7 +5,7 @@ from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
 
-class TestInterpSets():
+class TestMCHAssert():
     def test_abrial_book_page82(self):
         string = '''
         MACHINE BBook_Page80

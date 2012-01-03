@@ -107,10 +107,50 @@ def interpret(node, env):
     elif isinstance(node, AAbstractMachineParseUnit):
         idNames = []
         find_var_names(node, idNames) #sideef: fill list
-        _test_typeit(node, env, [], idNames) ## FIXME: replace 
+        _test_typeit(node, env, [], idNames) ## FIXME: replace
+
+        aConstantsMachineClause = None
+        aVariablesMachineClause = None
+        aPropertiesMachineClause = None
+        aAssertionsMachineClause = None
+        aInvariantMachineClause = None
+        aInitialisationMachineClause = None
+
         for child in node.children:
-            interpret(child, env)
+            if isinstance(child, AConstantsMachineClause):
+                aConstantsMachineClause = child
+            elif isinstance(child, AVariablesMachineClause):
+                aVariablesMachineClause = child
+            elif isinstance(child, APropertiesMachineClause):
+                aPropertiesMachineClause = child
+            elif isinstance(child, AAssertionsMachineClause):
+                aAssertionsMachineClause = child
+            elif isinstance(child, AInitialisationMachineClause):
+                aInitialisationMachineClause = child
+            elif isinstance(child, AInvariantMachineClause):
+                aInvariantMachineClause = child
+            else:
+                raise Exception("Unknown clause:",child )
+
+        # TODO: Check with B spec
+        if aConstantsMachineClause:
+            interpret(aConstantsMachineClause, env)
+        if aVariablesMachineClause:
+            interpret(aVariablesMachineClause, env)
+        if aInitialisationMachineClause:
+            interpret(aInitialisationMachineClause, env)
+        if aPropertiesMachineClause:
+            interpret(aPropertiesMachineClause, env)
+        if aInvariantMachineClause:
+            interpret(aInvariantMachineClause, env)
+        if aAssertionsMachineClause:
+            interpret(aAssertionsMachineClause, env)
     elif isinstance(node, AConstantsMachineClause):
+        for child in node.children:
+            #atype = env.get_type_by_node(child)
+            env.set_value(child.idName, None)
+            interpret(child, env)
+    elif isinstance(node, AVariablesMachineClause):
         for child in node.children:
             #atype = env.get_type_by_node(child)
             env.set_value(child.idName, None)
@@ -118,6 +158,11 @@ def interpret(node, env):
     elif isinstance(node, APropertiesMachineClause):
         for child in node.children:
             interpret(child, env)
+    elif isinstance(node, AInitialisationMachineClause):
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, AInvariantMachineClause):
+        return node.children[0]
     elif isinstance(node, AAssertionsMachineClause):
         if enable_assertions:
             print "checking assertions"
