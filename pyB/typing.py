@@ -221,6 +221,7 @@ def resolve_type(env):
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
+    #print tree
     if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType):
         return tree
     elif isinstance(tree, PowerSetType):
@@ -325,7 +326,7 @@ def _test_typeit(root, env, known_types_list, idNames):
 # different scopes but (maybe) the same names
 # e.g. !x.(x:S =>...) & x:Nat ...
 def typeit(node, env, type_env):
-    if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression):
+    if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AEmptySetExpression):
         return EmptySetType()
@@ -672,6 +673,7 @@ def typeit(node, env, type_env):
         return type0
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
+        #print "WARNING: unhandeld node"
         for child in node.children:
             typeit(child, env, type_env)
 

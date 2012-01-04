@@ -99,3 +99,4 @@ TODO:
     - TODO: Maybe all asserts inside the typechecker must be replaced by unify_equal()
     - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a type-tree
     - TODO: Dont create new instances of IntegerType if not nec.
+    - BUG: unknownnodes like NaturalSetExpression create atype == atype.data

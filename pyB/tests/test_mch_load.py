@@ -17,10 +17,6 @@ class TestMCHLaod():
         INITIALISATION ii,jj := 2,10
 
         END'''
-        #OPERATIONS
-        #        inc = SELECT jj>0 THEN ii:= ii+1  || jj:=jj-1 END ;
-        #        result  <-- res = result := ii
-        #END'''
 
         # Build AST
         string_to_file(string, file_name)
@@ -29,6 +25,57 @@ class TestMCHLaod():
 
         # Test
         env = Environment()
-        interpret(root, env) # inti VARIABLES and eval INVARIANT
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+
+
+    def test_examples_simple_bakery0(self):
+        string ='''
+        MACHINE Bakery0
+
+        ABSTRACT_VARIABLES  aa
+
+        INVARIANT  aa:0..2
+
+        INITIALISATION aa:=0
+
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+
+
+    def test_examples_simple_bakery1(self):
+        string ='''
+        MACHINE Bakery1
+
+        ABSTRACT_VARIABLES  p1, p2, y1, y2
+
+        INVARIANT  
+                p1:0..2 & p2:0..2 & y1:NATURAL & y2:NATURAL &
+                (p1=2 => p2<2) &
+                (p2=2 => p1<2) 
+
+        INITIALISATION  p1,p2,y1,y2 := 0,0,0,0
+
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)

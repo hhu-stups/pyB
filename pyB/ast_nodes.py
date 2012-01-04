@@ -214,6 +214,9 @@ class AGeneralProductExpression(Expression):
 class ANatSetExpression(Expression):
     pass
 
+class ANaturalSetExpression(Expression):
+    pass
+
 class ANat1SetExpression(Expression):
     pass
 

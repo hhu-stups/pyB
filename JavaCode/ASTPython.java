@@ -54,6 +54,12 @@ public class ASTPython extends DepthFirstAdapter{
         out += "ANatSetExpression()\n";
     }
 
+    public void caseANaturalSetExpression(ANaturalSetExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "ANaturalSetExpression()\n";
+    }
+
     public void caseANat1SetExpression(ANat1SetExpression node)
     {
         out += "id"+ (idCounter++) +"=";
