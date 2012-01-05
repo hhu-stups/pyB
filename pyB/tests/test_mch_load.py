@@ -150,3 +150,39 @@ class TestMCHLaod():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[4], AInvariantMachineClause)
         assert interpret(root.children[4], env)
+
+
+    def test_examples_schneider_club(self):
+        string = '''
+        MACHINE           Club(capacity)
+
+        CONSTRAINTS       capacity : NAT1 & capacity <= 2
+
+        SETS              NAME={billy, bobby}
+
+        CONSTANTS         total
+
+        PROPERTIES        card(NAME) > capacity & total : NAT1 & total > 2
+
+        VARIABLES         member, waiting
+
+        INVARIANT         member <: NAME & waiting <: NAME 
+                        & member /\ waiting = {}
+                        & card(member) <= 4096
+                        & card(waiting) <= total
+
+        INITIALISATION    member := {} || waiting := {}
+
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[5], AInvariantMachineClause)
+        assert interpret(root.children[5], env)

@@ -146,20 +146,36 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
     {
         List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
-        String[] ids = new String[copy.size()+2];
-        int i=0;
-        /*
+        String[] ids = new String[copy.size()];
+
+        String mtype="";
         if(node.getType() != null)
         {
-            node.getType().apply(this);
-            ids[i++] = ""+(idCounter-1);
+            mtype = node.getType().toString();
         }
+
+        String mname="";
+        String[] param = null;
+        int para_num = 0;
         if(node.getHeader() != null)
         {
-            node.getHeader().apply(this);
-            ids[i++] = ""+(idCounter-1);
+            // TODO: catch classcast-Exception
+            if(node.getHeader() instanceof AMachineHeader)
+            {
+                AMachineHeader head = (AMachineHeader)node.getHeader();
+                mname = head.getName().toString().toString().replace("[","").replace("]","");
+                List<PExpression> para = head.getParameters();
+                param = new String[para.size()];
+                para_num = para.size();
+                int y = 0;
+                for(PExpression p : para)
+                {
+                    param[y++] = p.toString();
+                }
+            }
         }
-        */
+
+        int i=0;
         for(PMachineClause e : copy)
         {
             e.apply(this);
@@ -173,12 +189,22 @@ public class ASTPython extends DepthFirstAdapter{
         idCounter++;
 
         i = 0;
-        //if(node.getType() != null)
-        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        //if(node.getHeader() != null)
-        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
         for(int k=i; k<copy.size(); k++)
             out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".mtype = \""+mtype+"\"\n";
+        out += "id"+nodeid+".mname = \""+mname+"\"\n";
+
+        if(param!=null && para_num!=0)
+        {
+            out += "id"+nodeid+".para = [\""+param[0]+"\"";
+            for(int x=1; x<para_num; x++)
+                out += ",\""+param[x]+"\"";
+            out += "]\n";
+        }
+        else
+        {
+            out += "id"+nodeid+".para = []\n";
+        }
 
         out += "root = id"+(idCounter-1)+ "\n";
     }
@@ -318,21 +344,20 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseADeferredSet(ADeferredSet node)
     {
         List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(node.getIdentifier());
-        String[] ids = new String[copy.size()];
-        int i=0;
+
+        String idName = "";
         for(TIdentifierLiteral e : copy)
         {
+            // XXX
             e.apply(this);
-            ids[i++] = ""+(idCounter-1);
+            idName = idName + e.toString();
         }
 
         String nodeid = ""+ idCounter;
         out += "id" + nodeid + "=";
         out += getClassName(node) +"()\n";
         idCounter++;
-
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        out += "id"+nodeid+".idName = \""+idName+"\"\n";
     }
 
 
@@ -497,6 +522,12 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAInsertTailExpression(AInsertTailExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAConstraintsMachineClause(AConstraintsMachineClause node)
+    {
+        printStdOut_oneChild(node, node.getPredicates());
     }
 
 

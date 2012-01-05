@@ -25,6 +25,12 @@ class APredicateParseUnit(Node):
 class AEnumeratedSet(Node):
     pass
 
+class ADeferredSet(Node):
+    pass
+
+class AConstraintsMachineClause(Clause):
+    pass
+
 class AConstantsMachineClause(Clause):
     pass
 

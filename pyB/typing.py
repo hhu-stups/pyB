@@ -201,7 +201,9 @@ class TypeCheck_Environment():
                     return atype
             except KeyError:
                 continue
-        raise BTypeException("TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName)
+        string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName
+        print string
+        raise BTypeException(string)
 
 
 # env.node_to_type_map should be a set of tree with 
@@ -340,15 +342,15 @@ def typeit(node, env, type_env):
         return atype
     elif isinstance(node, ASetsMachineClause):
         for child in node.children:
-            assert isinstance(child, AEnumeratedSet)
             set_name = child.idName
             utype = type_env.get_current_type(set_name)
             atype = SetType(set_name)
             unify_equal(utype, PowerSetType(atype), type_env)
-            # all elements have the type set_name
-            for elm in child.children:
-                elm_type = typeit(elm, env, type_env)
-                unify_equal(atype, elm_type, type_env)
+            if isinstance(child, AEnumeratedSet):
+                # all elements have the type set_name
+                for elm in child.children:
+                    elm_type = typeit(elm, env, type_env)
+                    unify_equal(atype, elm_type, type_env)
     elif isinstance(node, AComprehensionSetExpression):
         ids = []
         for n in node.children[:-1]:

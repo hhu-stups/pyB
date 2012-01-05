@@ -107,9 +107,18 @@ def interpret(node, env):
     elif isinstance(node, AAbstractMachineParseUnit):
         idNames = []
         find_var_names(node, idNames) #sideef: fill list
+        for name in node.para:
+            idNames.append(name) # add machine-parameters
         _test_typeit(node, env, [], idNames) ## FIXME: replace
 
+        # FIXME: dummy-init of mch-parameters
+        for name in node.para:
+            atype = env.get_type(name) # XXX
+            values = all_values_by_type(atype, env)
+            env.set_value(name, values[0]) #XXX
+
         aConstantsMachineClause = None
+        aConstraintsMachineClause = None
         aSetsMachineClause = None
         aVariablesMachineClause = None
         aPropertiesMachineClause = None
@@ -120,6 +129,8 @@ def interpret(node, env):
         for child in node.children:
             if isinstance(child, AConstantsMachineClause):
                 aConstantsMachineClause = child
+            elif isinstance(child, AConstraintsMachineClause):
+                aConstraintsMachineClause = child
             elif isinstance(child, ASetsMachineClause):
                 aSetsMachineClause = child
             elif isinstance(child, AVariablesMachineClause):
@@ -138,6 +149,8 @@ def interpret(node, env):
         # TODO: Check with B spec
         if aConstantsMachineClause:
             interpret(aConstantsMachineClause, env)
+        if aConstraintsMachineClause:
+            interpret(aConstraintsMachineClause, env)
         if aSetsMachineClause:
             interpret(aSetsMachineClause, env)
         if aVariablesMachineClause:
@@ -162,12 +175,17 @@ def interpret(node, env):
             interpret(child, env)
     elif isinstance(node, ASetsMachineClause):
         for child in node.children:
-            assert isinstance(child, AEnumeratedSet)
-            elm_lst = []
-            for elm in child.children:
-                assert isinstance(elm, AIdentifierExpression)
-                elm_lst.append(elm.idName)
-            env.set_value(child.idName, set(elm_lst))
+            if isinstance(child, AEnumeratedSet):
+                elm_lst = []
+                for elm in child.children:
+                    assert isinstance(elm, AIdentifierExpression)
+                    elm_lst.append(elm.idName)
+                env.set_value(child.idName, set(elm_lst))
+            else:
+                assert isinstance(child, ADeferredSet)
+    elif isinstance(node, AConstraintsMachineClause):
+        for child in node.children:
+            interpret(child, env)
     elif isinstance(node, APropertiesMachineClause):
         for child in node.children:
             interpret(child, env)
