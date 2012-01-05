@@ -184,20 +184,21 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    // TODO: implement me
     public void caseAMachineHeader(AMachineHeader node)
     {
         List<TIdentifierLiteral> copy0 = new ArrayList<TIdentifierLiteral>(node.getName());
         List<PExpression> copy1 = new ArrayList<PExpression>(node.getParameters());
-        String[] ids = new String[copy0.size()+copy1.size()];
+        String[] ids = new String[copy1.size()];
         int i=0;
-        /*
+
+        String idName = "";
         for(TIdentifierLiteral e : copy0)
         {
+            // XXX
             e.apply(this);
-            ids[i++] = ""+(idCounter-1);
+            idName = idName + e.toString();
         }
-        */
+
         for(PExpression e : copy1)
         {
             e.apply(this);
@@ -211,10 +212,9 @@ public class ASTPython extends DepthFirstAdapter{
         idCounter++;
 
         i=0;
-        //for(int k=i; k<copy0.size(); k++)
-        //    out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
         for(int k=i; k<copy1.size(); k++)
             out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".idName = \""+idName+"\"\n";
     }
 
 
@@ -260,6 +260,39 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAEnumeratedSet(AEnumeratedSet node)
+    {
+        List<TIdentifierLiteral> copy0 = new ArrayList<TIdentifierLiteral>(node.getIdentifier());
+        List<PExpression> copy1 = new ArrayList<PExpression>(node.getElements());
+        String[] ids = new String[copy1.size()];
+        int i=0;
+
+        String idName = "";
+        for(TIdentifierLiteral e : copy0)
+        {
+            // XXX
+            e.apply(this);
+            idName = idName + e.toString();
+        }
+
+        for(PExpression e : copy1)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy1.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        out += "id"+nodeid+".idName = \""+idName+"\"\n";
+    }
+
+
     // sp. case: PPredicate
     public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
     {
@@ -282,6 +315,27 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseADeferredSet(ADeferredSet node)
+    {
+        List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(node.getIdentifier());
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(TIdentifierLiteral e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
     public void caseAVariablesMachineClause(AVariablesMachineClause node)
     {
         List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
@@ -289,6 +343,28 @@ public class ASTPython extends DepthFirstAdapter{
         String[] ids = new String[copy.size()];
         int i=0;
         for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
+    public void caseASetsMachineClause(ASetsMachineClause node)
+    {
+        List<PSet> copy = new ArrayList<PSet>(node.getSetDefinitions());
+
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(PSet e : copy)
         {
             e.apply(this);
             ids[i++] = ""+(idCounter-1);
