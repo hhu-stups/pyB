@@ -79,3 +79,74 @@ class TestMCHLaod():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)
+
+
+    def test_examples_simple_gcd(self):
+        string = '''
+        MACHINE GCD
+        VARIABLES x,y
+        INVARIANT
+        x:NAT & y:NAT
+        INITIALISATION x:=70 || y:=40
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+
+
+    def test_examples_simple_lift(self):
+        string = '''
+        MACHINE Lift
+
+        ABSTRACT_VARIABLES  floor
+
+        INVARIANT  floor : 0..99 /* NAT */
+
+        INITIALISATION floor := 4
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+
+
+    def test_examples_simple_testset(self):
+        string = '''
+        MACHINE TestSet
+        SETS
+        ID={aa, bb, cc}
+
+        CONSTANTS iv
+        PROPERTIES
+        iv:ID
+        VARIABLES xx
+        INVARIANT
+        xx:ID
+        INITIALISATION xx:=iv
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[4], AInvariantMachineClause)
+        assert interpret(root.children[4], env)

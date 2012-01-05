@@ -273,6 +273,7 @@ def throw_away_unknown(tree):
         # error!
         if isinstance(tree, UnknownType):
             string = "TypeError: can not resolve a Type of %s", tree.name
+            print string
             raise BTypeException(string)
         else:
             raise Exception("resolve fail: Not Implemented %s",tree)
@@ -337,6 +338,17 @@ def typeit(node, env, type_env):
         for index in range(len(node.children)-2):
             atype = CartType(atype, typeit(node.children[index+2], env, type_env))
         return atype
+    elif isinstance(node, ASetsMachineClause):
+        for child in node.children:
+            assert isinstance(child, AEnumeratedSet)
+            set_name = child.idName
+            utype = type_env.get_current_type(set_name)
+            atype = SetType(set_name)
+            unify_equal(utype, PowerSetType(atype), type_env)
+            # all elements have the type set_name
+            for elm in child.children:
+                elm_type = typeit(elm, env, type_env)
+                unify_equal(atype, elm_type, type_env)
     elif isinstance(node, AComprehensionSetExpression):
         ids = []
         for n in node.children[:-1]:

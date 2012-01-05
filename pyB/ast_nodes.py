@@ -22,6 +22,9 @@ class AAbstractMachineParseUnit(Node):
 class APredicateParseUnit(Node):
     pass
 
+class AEnumeratedSet(Node):
+    pass
+
 class AConstantsMachineClause(Clause):
     pass
 
@@ -38,6 +41,9 @@ class APropertiesMachineClause(Clause):
     pass
 
 class AAssertionsMachineClause(Clause):
+    pass
+
+class ASetsMachineClause(Clause):
     pass
 
 class AAddExpression(Expression):

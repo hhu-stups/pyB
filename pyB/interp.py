@@ -110,6 +110,7 @@ def interpret(node, env):
         _test_typeit(node, env, [], idNames) ## FIXME: replace
 
         aConstantsMachineClause = None
+        aSetsMachineClause = None
         aVariablesMachineClause = None
         aPropertiesMachineClause = None
         aAssertionsMachineClause = None
@@ -119,6 +120,8 @@ def interpret(node, env):
         for child in node.children:
             if isinstance(child, AConstantsMachineClause):
                 aConstantsMachineClause = child
+            elif isinstance(child, ASetsMachineClause):
+                aSetsMachineClause = child
             elif isinstance(child, AVariablesMachineClause):
                 aVariablesMachineClause = child
             elif isinstance(child, APropertiesMachineClause):
@@ -135,6 +138,8 @@ def interpret(node, env):
         # TODO: Check with B spec
         if aConstantsMachineClause:
             interpret(aConstantsMachineClause, env)
+        if aSetsMachineClause:
+            interpret(aSetsMachineClause, env)
         if aVariablesMachineClause:
             interpret(aVariablesMachineClause, env)
         if aInitialisationMachineClause:
@@ -155,6 +160,14 @@ def interpret(node, env):
             #atype = env.get_type_by_node(child)
             env.set_value(child.idName, None)
             interpret(child, env)
+    elif isinstance(node, ASetsMachineClause):
+        for child in node.children:
+            assert isinstance(child, AEnumeratedSet)
+            elm_lst = []
+            for elm in child.children:
+                assert isinstance(elm, AIdentifierExpression)
+                elm_lst.append(elm.idName)
+            env.set_value(child.idName, set(elm_lst))
     elif isinstance(node, APropertiesMachineClause):
         for child in node.children:
             interpret(child, env)
