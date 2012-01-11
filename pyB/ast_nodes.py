@@ -52,6 +52,12 @@ class AAssertionsMachineClause(Clause):
 class ASetsMachineClause(Clause):
     pass
 
+class AGeneralUnionExpression(Expression):
+    pass
+
+class AGeneralIntersectionExpression(Expression):
+    pass
+
 class AAddExpression(Expression):
     pass
 

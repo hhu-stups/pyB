@@ -474,6 +474,10 @@ def typeit(node, env, type_env):
     elif isinstance(node, ACardExpression):
         typeit(node.children[0], env, type_env)
         return IntegerType(None)
+    elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
+        atype = typeit(node.children[0], env, type_env)
+        unify_equal(atype, PowerSetType(PowerSetType(UnknownType(None,None))),type_env)
+        return atype.data
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         atype = typeit(node.children[0], env, type_env)
         # TODO: atype must be PowersetType of something.

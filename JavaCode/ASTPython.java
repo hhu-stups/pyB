@@ -525,6 +525,18 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAGeneralUnionExpression(AGeneralUnionExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAGeneralIntersectionExpression(AGeneralIntersectionExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
     public void caseAConstraintsMachineClause(AConstraintsMachineClause node)
     {
         printStdOut_oneChild(node, node.getPredicates());

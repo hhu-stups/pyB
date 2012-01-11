@@ -586,3 +586,37 @@ class TestTypesSets():
         assert isinstance(env.get_type("y").data, CartType)
         assert isinstance(env.get_type("y").data.data[0], CartType)
         assert isinstance(env.get_type("y").data.data[1], IntegerType)
+
+
+    def test_types_set_gen_union(self):
+        # Build AST:
+        string_to_file("#PREDICATE U:POW(POW(S)) & u=union(U)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        lst = [("S", PowerSetType(SetType("S")))]
+        _test_typeit(root, env, lst, ["U","u"])
+        assert isinstance(env.get_type("U"), PowerSetType)
+        assert isinstance(env.get_type("U").data, PowerSetType)
+        assert isinstance(env.get_type("U").data.data, SetType)
+        assert isinstance(env.get_type("u"), PowerSetType)
+        assert isinstance(env.get_type("u").data, SetType)
+
+
+    def test_types_set_gen_inter(self):
+        # Build AST:
+        string_to_file("#PREDICATE U:POW(POW(S)) & u=inter(U)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        lst = [("S", PowerSetType(SetType("S")))]
+        _test_typeit(root, env, lst, ["U","u"])
+        assert isinstance(env.get_type("U"), PowerSetType)
+        assert isinstance(env.get_type("U").data, PowerSetType)
+        assert isinstance(env.get_type("U").data.data, SetType)
+        assert isinstance(env.get_type("u"), PowerSetType)
+        assert isinstance(env.get_type("u").data, SetType)
