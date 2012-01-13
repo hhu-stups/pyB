@@ -679,6 +679,20 @@ def interpret(node, env):
         return set(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return set(range(1,max_int+1))
+    elif isinstance(node, AGeneralUnionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.union(aset)
+        return acc
+    elif isinstance(node, AGeneralIntersectionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.intersection(aset)
+        return acc
     else:
         raise Exception("Unknown Node: %s",node)
 

@@ -327,3 +327,52 @@ class TestInterpSets():
         lst = [("ID", PowerSetType(SetType("ID")))]
         _test_typeit(root.children[0], env, lst, ["T"])
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_set_gen_union(self):
+        # Build AST:
+        string_to_file("#PREDICATE U:POW(POW(S)) & u=union(U)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("U", set([frozenset(["a","b","c"])]))
+        env.set_value("u", set(["a","b","c"]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b","c"]),frozenset([])]))
+        env.set_value("u", set(["a","b","c"]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"])]))
+        env.set_value("u", set(["a","b","c"]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b"]),frozenset(["a","c"])]))
+        env.set_value("u", set(["a","b","c"]))
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_set_gen_inter(self):
+        # Build AST:
+        string_to_file("#PREDICATE U:POW(POW(S)) & u=inter(U)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("U", set([frozenset(["a","b","c"])]))
+        env.set_value("u", set(["a","b","c"]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b","c"]),frozenset(["a"])]))
+        env.set_value("u", set(["a"]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"])]))
+        env.set_value("u", set([]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"]),frozenset(["a"])]))
+        env.set_value("u", set([]))
+        assert interpret(root.children[0],env)
+        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c","b"]),frozenset(["a","b"])]))
+        env.set_value("u", set(["b"]))
+        assert interpret(root.children[0],env)
