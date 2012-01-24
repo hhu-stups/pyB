@@ -56,6 +56,17 @@ class TestInterpSets():
         assert interpret(root.children[0], env)
 
 
+    def test_genAST_subset2(self):
+        # Build AST
+        string_to_file("#PREDICATE {}<:{1}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
+
+
     def test_genAST_not_subset(self):
         # Build AST
         string_to_file("#PREDICATE S/<:T", file_name)
@@ -126,6 +137,49 @@ class TestInterpSets():
         env.set_value("S", set(["a","b"]))
         env.set_value("T", set(["x","y"]))
         env.set_value("u", ("a","x"))
+        assert interpret(root.children[0],env)
+
+
+
+    def test_genAST_pred_set_union(self):
+        # Build AST:
+        string_to_file("#PREDICATE A={1,2,3,4,5} & B={3,4,5,6,7} & C = A\/B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("A", set([1,2,3,4,5]))
+        env.set_value("B", set([3,4,5,6,7]))
+        env.set_value("C", set([1,2,3,4,5,6,7]))
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_set_intersection(self):
+        # Build AST:
+        string_to_file("#PREDICATE A={1,2,3,4,5} & B={3,4,5,6,7} & C = A/\B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("A", set([1,2,3,4,5]))
+        env.set_value("B", set([3,4,5,6,7]))
+        env.set_value("C", set([3,4,5]))
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_set_diff(self):
+        # Build AST:
+        string_to_file("#PREDICATE A={1,2,3,4,5} & B={3,4,5,6,7} & C = A-B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("A", set([1,2,3,4,5]))
+        env.set_value("B", set([3,4,5,6,7]))
+        env.set_value("C", set([1,2]))
         assert interpret(root.children[0],env)
 
 

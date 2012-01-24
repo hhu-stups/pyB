@@ -168,6 +168,42 @@ class TestInterpNumbers():
         assert not interpret(root.children[0], env)
 
 
+    def test_genAST_pred_ge(self):
+        # Build AST:
+        string_to_file("#PREDICATE 6>=x", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("x", 1)
+        assert interpret(root.children[0], env)
+
+        env.set_value("x", 6)
+        assert interpret(root.children[0], env)
+
+        env.set_value("x", 7)
+        assert not interpret(root.children[0], env)
+
+
+    def test_genAST_pred_le(self):
+        # Build AST:
+        string_to_file("#PREDICATE 6<=x", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("x", 1)
+        assert not interpret(root.children[0], env)
+
+        env.set_value("x", 6)
+        assert interpret(root.children[0], env)
+
+        env.set_value("x", 7)
+        assert interpret(root.children[0], env)
+
+
     def test_genAST_min(self):
         # Build AST:
         string_to_file("#PREDICATE S={1,2,3,4,5} & min(S)=1", file_name)

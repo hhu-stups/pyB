@@ -46,6 +46,17 @@ class TestInterpRelations():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_rel_ran(self):
+        # Build AST:
+        string_to_file("#PREDICATE {4,5,6}=ran({(1|->4),(2|->5),(3|->6)}) ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0],env)
+
+
     def test_genAST_pred_rel_comp(self):
         # Build AST:
         string_to_file("#PREDICATE S= (p ; q)", file_name)
