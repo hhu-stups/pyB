@@ -52,6 +52,18 @@ class AAssertionsMachineClause(Clause):
 class ASetsMachineClause(Clause):
     pass
 
+#class AMinIntExpression(Expression):
+#    pass
+
+#class AMaxIntExpression(Expression):
+#    pass
+
+class AMinExpression(Expression):
+    pass
+
+class AMaxExpression(Expression):
+    pass
+
 class AGeneralUnionExpression(Expression):
     pass
 

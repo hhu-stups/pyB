@@ -401,6 +401,11 @@ def typeit(node, env, type_env):
         set_type = typeit(node.children[1], env, type_env)
         unify_element_of(elm_type, set_type, type_env)
         return
+    elif isinstance(node, AMinExpression) or isinstance(node, AMaxExpression):
+        set_type = typeit(node.children[0], env, type_env)
+        assert isinstance(set_type, PowerSetType)
+        assert isinstance(set_type.data, IntegerType)
+        return set_type.data
     elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate) or isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
@@ -768,6 +773,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
         # If this is ever been raised than this is a bug
         # inside the typechecker: Every unifiable expression
         # must be a BType or an UnknownType!
+        print maybe_type0, maybe_type1
         raise Exception("Typchecker Bug: no Unknowntype and no Btype!")
 
 

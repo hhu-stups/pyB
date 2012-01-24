@@ -66,6 +66,21 @@ public class ASTPython extends DepthFirstAdapter{
         out += "ANat1SetExpression()\n";
     }
 
+
+    public void caseAMinIntExpression(AMinIntExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "AMinIntExpression()\n";
+    }
+
+
+    public void caseAMaxIntExpression(AMaxIntExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "AMaxIntExpression()\n";
+    }
+
+
     public void outStart(Start node)
     {
         // dont add a start node now

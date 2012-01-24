@@ -300,6 +300,12 @@ def interpret(node, env):
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return len(aSet)
+    elif isinstance(node, AMinExpression):
+        aSet = interpret(node.children[0], env)
+        return min(list(aSet))
+    elif isinstance(node, AMaxExpression):
+        aSet = interpret(node.children[0], env)
+        return max(list(aSet))
     elif isinstance(node, AEmptySetExpression):
         return set()
     elif isinstance(node, AUnionExpression):

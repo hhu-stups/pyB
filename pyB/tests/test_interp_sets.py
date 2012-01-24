@@ -23,6 +23,22 @@ class TestInterpSets():
         assert not interpret(root.children[0], env)
 
 
+    def test_genAST_not_member(self):
+        # Build AST
+        string_to_file("#PREDICATE x/:S", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("x", "x")
+        env.set_value("S", set(["x","y","z"]))
+        assert not interpret(root.children[0], env)
+
+        env.set_value("S", set(["a","b","c"]))
+        assert interpret(root.children[0], env)
+
+
     def test_genAST_subset(self):
         # Build AST
         string_to_file("#PREDICATE S<:T", file_name)
@@ -39,6 +55,64 @@ class TestInterpSets():
         env.set_value("T", set(["a","b","c"]))
         assert interpret(root.children[0], env)
 
+
+    def test_genAST_not_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE S/<:T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("T", set(["x","y"]))
+        env.set_value("S", set(["x","y","z"]))
+        assert interpret(root.children[0], env)
+
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("T", set(["a","b","c"]))
+        assert not interpret(root.children[0], env)
+
+
+    def test_genAST_prop_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE S<<:T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("T", set(["x","y"]))
+        env.set_value("S", set(["x","y","z"]))
+        assert not interpret(root.children[0], env)
+
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("T", set(["a","b","c"]))
+        assert not interpret(root.children[0], env)
+
+        env.set_value("S", set(["x","y"]))
+        env.set_value("T", set(["x","y","z"]))
+        assert interpret(root.children[0], env)
+
+
+    def test_genAST_not_prop_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE S/<<:T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("T", set(["x","y"]))
+        env.set_value("S", set(["x","y","z"]))
+        assert interpret(root.children[0], env)
+
+        env.set_value("S", set(["a","b","c"]))
+        env.set_value("T", set(["a","b","c"]))
+        assert interpret(root.children[0], env)
+
+        env.set_value("S", set(["x","y"]))
+        env.set_value("T", set(["x","y","z"]))
+        assert not interpret(root.children[0], env)
 
 
     def test_genAST_pred_set_cart(self):
