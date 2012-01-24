@@ -66,7 +66,7 @@ public class ASTPython extends DepthFirstAdapter{
         out += "ANat1SetExpression()\n";
     }
 
-
+    /* XXXnot testes XXX
     public void caseAMinIntExpression(AMinIntExpression node)
     {
         out += "id"+ (idCounter++) +"=";
@@ -78,7 +78,7 @@ public class ASTPython extends DepthFirstAdapter{
     {
         out += "id"+ (idCounter++) +"=";
         out += "AMaxIntExpression()\n";
-    }
+    }*/
 
 
     public void outStart(Start node)
@@ -540,6 +540,18 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAIterationExpression(AIterationExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseAReflexiveClosureExpression(AReflexiveClosureExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
     public void caseAGeneralUnionExpression(AGeneralUnionExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
@@ -733,6 +745,18 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseAFin1SubsetExpression(AFin1SubsetExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAMinExpression(AMinExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseAMaxExpression(AMaxExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
     }

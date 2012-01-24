@@ -124,6 +124,9 @@ class ACompositionExpression(Expression):
 class AIdentityExpression(Expression):
     pass
 
+class AIterationExpression(Expression):
+    pass
+
 class ADomainRestrictionExpression(Expression):
     pass
 

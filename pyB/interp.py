@@ -407,6 +407,15 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         id_r = [(x,x) for x in aSet]
         return set(id_r)
+    elif isinstance(node, AIterationExpression):
+        arel = interpret(node.children[0], env)
+        n = interpret(node.children[1], env)
+        assert n>=0
+        rel = list(arel)
+        rel = [(x[0],x[0]) for x in rel]
+        for i in range(n):
+            rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+        return set(rel)
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
