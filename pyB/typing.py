@@ -626,8 +626,13 @@ def typeit(node, env, type_env):
     elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
-        assert isinstance(type0.data, SetType)
+        #assert isinstance(type0.data, SetType)
         return PowerSetType(PowerSetType(CartType(IntegerType(None),type0.data)))
+    elif isinstance(node, AGeneralConcatExpression):
+        type0 = typeit(node.children[0], env, type_env)
+        type1 = PowerSetType(CartType(UnknownType(None,None),UnknownType(None,None)))
+        unify_equal(type0, type1, type_env)
+        return type1 # XXX
     elif isinstance(node, AConcatExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)

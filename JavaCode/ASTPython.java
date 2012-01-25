@@ -546,6 +546,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAGeneralConcatExpression(AGeneralConcatExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
     public void caseAReflexiveClosureExpression(AReflexiveClosureExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());

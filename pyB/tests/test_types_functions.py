@@ -253,6 +253,22 @@ class TestTypesFunctions():
         assert isinstance(env.get_type("t").data.data[1], SetType)
 
 
+    def test_types_seq_conc(self):
+        # Build AST
+        string_to_file("#PREDICATE ss:perm(perm(S)) & s=conc(ss)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        lst = [("S", PowerSetType(SetType("X")))]
+        _test_typeit(root, env, lst, ["s","ss"])
+        assert isinstance(env.get_type("s"), PowerSetType)
+        assert isinstance(env.get_type("s").data, CartType)
+        assert isinstance(env.get_type("ss"), PowerSetType)
+        assert isinstance(env.get_type("ss").data, CartType)
+
+
     def test_types_seq_append(self):
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & E:S & t=s<-E", file_name)

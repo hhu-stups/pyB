@@ -466,3 +466,28 @@ class TestInterpFunctions():
         env.set_value("d", "d")
         env.set_value("e", "e")
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_seq_of_seq(self):
+        # Build AST:
+        string_to_file("#PREDICATE s:perm(perm(S))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_seq_conc(self):
+        # Build AST:
+        string_to_file("#PREDICATE s:perm(perm(S)) & t=conc(s)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.set_value("S", set(["a","b"]))
+        env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
+        env.set_value("t", frozenset([(1, 'b'),(2, 'a'),(3, 'a'),(4, 'b')]))
+        assert interpret(root.children[0],env)

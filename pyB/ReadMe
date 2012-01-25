@@ -103,3 +103,4 @@ TODO:
     - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a type-tree
     - TODO: Dont create new instances of IntegerType if not nec.
     - BUG: unknownnodes like NaturalSetExpression create atype == atype.data
+    - Think of unifications like: "it is A or B" e.g. perm(s)

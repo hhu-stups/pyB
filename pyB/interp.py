@@ -420,7 +420,7 @@ def interpret(node, env):
         arel = interpret(node.children[0], env)
         rel = list(arel)
         rel = [(x[0],x[0]) for x in rel]
-        while True: # fixpoint-search
+        while True: # fixpoint-search (do-while-loop)
             new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
             if set(new_rel).union(set(rel))==set(rel):
                 return set(rel)
@@ -586,9 +586,18 @@ def interpret(node, env):
         s = interpret(node.children[0], env)
         t = interpret(node.children[1], env)
         new_t = []
-        for tup in t:
+        for tup in t: # FIXME: maybe wrong order
             new_t.append(tuple([tup[0]+len(s),tup[1]]))
         return set(list(s)+new_t)
+    elif isinstance(node, AGeneralConcatExpression):
+        s = interpret(node.children[0], env)
+        t = []
+        index = 0
+        for squ in dict(s).values():
+            for val in dict(squ).values():
+                index = index +1
+                t.append(tuple([index, val]))
+        return set(t)
     elif isinstance(node, AInsertFrontExpression):
         E = interpret(node.children[0], env)
         s = interpret(node.children[1], env)

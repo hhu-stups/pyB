@@ -226,6 +226,9 @@ class ARestrictFrontExpression(Expression):
 class ARestrictTailExpression(Expression):
     pass
 
+class AGeneralConcatExpression(Expression):
+    pass
+
 class AFirstExpression(Expression):
     pass
 
