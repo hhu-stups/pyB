@@ -416,6 +416,15 @@ def interpret(node, env):
         for i in range(n):
             rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
         return set(rel)
+    elif isinstance(node, AReflexiveClosureExpression):
+        arel = interpret(node.children[0], env)
+        rel = list(arel)
+        rel = [(x[0],x[0]) for x in rel]
+        while True: # fixpoint-search
+            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            if set(new_rel).union(set(rel))==set(rel):
+                return set(rel)
+            rel =list(set(new_rel).union(set(rel)))
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)

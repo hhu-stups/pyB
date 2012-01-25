@@ -94,15 +94,34 @@ class TestInterpRelations():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_simple_closure(self):
+        # Build AST
+        string_to_file("#PREDICATE f=closure(r)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("f", set([(1,3),(3,1),(1,1),(3,3)]))
+        env.set_value("r", set([(1,3),(3,1)]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("f", set([(1,7),(6,2),(8,4),(1,1),(6,6),(8,8)]))
+        env.set_value("r", set([(1,7),(6,2),(8,4)]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("f", set([(1,7),(6,4),(8,4),(1,1),(6,6),(8,8)]))
+        env.set_value("r", set([(1,7),(6,4),(8,4)]))
+        assert interpret(root.children[0],env)
+
     def test_genAST_pred_simple_iterate(self):
         # Build AST
         string_to_file("#PREDICATE f=iterate(r,n)", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Type
+        # Test
         env = Environment()
-
         env.set_value("f", set([(1,1),(6,6),(8,8)])) # XXX
         env.set_value("r", set([(1,7),(6,2),(8,4)]))
         env.set_value("n",0)
@@ -133,10 +152,11 @@ class TestInterpRelations():
         env.set_value("n",1)
         assert interpret(root.children[0],env)
 
-        env.set_value("f", set([(1,1),(3,3)])) # fixpoint
+        env.set_value("f", set([(1,1),(3,3)])) # "fixpoint"
         env.set_value("r", set([(1,3),(3,1)]))
         env.set_value("n",2)
         assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_rel_domres(self):
         # Build AST:

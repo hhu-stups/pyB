@@ -531,6 +531,11 @@ def typeit(node, env, type_env):
         unify_equal(atype0, ctype, type_env)
         unify_equal(atype1, IntegerType(None), type_env)
         return atype0
+    elif isinstance(node, AReflexiveClosureExpression):
+        atype0 = typeit(node.children[0], env, type_env)
+        ctype = PowerSetType(CartType(UnknownType(None,None),UnknownType(None,None)))
+        unify_equal(atype0, ctype, type_env)
+        return atype0
     elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression):
         atype0 = typeit(node.children[0], env, type_env)
         rel_type = typeit(node.children[1], env, type_env)

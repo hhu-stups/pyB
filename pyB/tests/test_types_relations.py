@@ -128,6 +128,21 @@ class TestTypesRelations():
         assert isinstance(env.get_type("n"), IntegerType)
 
 
+    def test_types_simple_closure(self):
+        # Build AST
+        string_to_file("#PREDICATE f=closure(r)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["f","r"])
+        assert isinstance(env.get_type("f"), PowerSetType)
+        assert isinstance(env.get_type("f").data, CartType)
+        assert isinstance(env.get_type("r"), PowerSetType)
+        assert isinstance(env.get_type("r").data, CartType)
+
+
     def test_types_simple_sub_res(self):
         # Build AST
         string_to_file("#PREDICATE r:A<->B & v=S <| r", file_name)

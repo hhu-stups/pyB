@@ -127,6 +127,9 @@ class AIdentityExpression(Expression):
 class AIterationExpression(Expression):
     pass
 
+class AReflexiveClosureExpression(Expression):
+    pass
+
 class ADomainRestrictionExpression(Expression):
     pass
 
