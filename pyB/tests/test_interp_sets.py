@@ -504,3 +504,15 @@ class TestInterpSets():
         env.set_value("U", set([frozenset(["a","b"]),frozenset(["c","b"]),frozenset(["a","b"])]))
         env.set_value("u", set(["b"]))
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_string(self):
+        # Build AST
+        string_to_file("#PREDICATE s=\"HalloWelt\"", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("s", "HalloWelt")
+        assert interpret(root.children[0],env)

@@ -319,6 +319,10 @@ class ADisjunctPredicate(Predicate):
 class AImplicationPredicate(Predicate):
     pass
 
+class AStringExpression(Expression):
+    def __init__(self, string):
+        self.string = string
+
 class AIdentifierExpression(Expression):
     def __init__(self, idName):
         self.idName = idName

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType
+from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType, StringType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -620,3 +620,15 @@ class TestTypesSets():
         assert isinstance(env.get_type("U").data.data, SetType)
         assert isinstance(env.get_type("u"), PowerSetType)
         assert isinstance(env.get_type("u").data, SetType)
+
+
+    def test_types_string(self):
+        # Build AST
+        string_to_file("#PREDICATE s=\"HalloWelt\"", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["s"])
+        assert isinstance(env.get_type("s"), StringType)

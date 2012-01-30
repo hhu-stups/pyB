@@ -1,1 +1,1 @@
-#PREDICATE U:POW(POW(S)) & u=inter(U)
+#PREDICATE s="HalloWelt"

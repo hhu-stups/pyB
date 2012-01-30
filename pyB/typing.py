@@ -10,6 +10,8 @@ class BTypeException(Exception):
 class BType: # Baseclass used to repr. concrete type
     pass
 
+class StringType(BType):
+    pass
 
 class IntegerType(BType):
     def __init__(self, number_or_None):
@@ -224,7 +226,7 @@ def resolve_type(env):
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
     #print tree
-    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType):
+    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType) or isinstance(tree, StringType):
         return tree
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
@@ -331,6 +333,8 @@ def _test_typeit(root, env, known_types_list, idNames):
 def typeit(node, env, type_env):
     if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression):
         return PowerSetType(IntegerType(None))
+    elif isinstance(node, AStringExpression):
+        return StringType()
     elif isinstance(node, AEmptySetExpression):
         return EmptySetType()
     elif isinstance(node, ACoupleExpression):

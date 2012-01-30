@@ -35,6 +35,15 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAStringExpression(AStringExpression node)
+    {
+        // FIXME:  missing spaces
+        out += "id"+ (idCounter++) +"=";
+        out += "AStringExpression(\"";
+        out += node.getContent().toString()+ "\")\n";;
+    }
+
+
     public void outAEmptySetExpression(AEmptySetExpression node)
     {
         out += "id"+ (idCounter++) +"=";

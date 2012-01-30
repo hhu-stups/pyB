@@ -257,6 +257,8 @@ def interpret(node, env):
         return not expr
     elif isinstance(node, AIntegerExpression):
         return node.intValue
+    elif isinstance(node, AStringExpression):
+        return node.string
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
