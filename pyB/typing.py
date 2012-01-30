@@ -480,6 +480,18 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         type_env.pop_frame(env)
         return IntegerType(None)
+    elif isinstance(node, ALambdaExpression):
+        ids = []
+        for n in node.children[:-2]:
+            assert isinstance(n.idName, str)
+            ids.append(n.idName)
+        type_env.push_frame(ids)
+        for child in node.children[:-1]:
+            typeit(child, env, type_env)
+        pre_img_type = typeit(node.children[0], env, type_env)
+        img_type = typeit(node.children[-1], env, type_env)
+        type_env.pop_frame(env)
+        return PowerSetType(CartType(pre_img_type, img_type))
     elif isinstance(node, ACardExpression):
         typeit(node.children[0], env, type_env)
         return IntegerType(None)

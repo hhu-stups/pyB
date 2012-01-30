@@ -2,6 +2,7 @@
 from ast_nodes import *
 from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
+from typing import _test_typeit
 
 file_name = "input.txt"
 
@@ -236,6 +237,18 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_lambda(self):
+        # Build AST
+        string_to_file("#PREDICATE f="+"%"+"x.(x>0 & x<4|x*x)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        _test_typeit(root, env, [], ["f","x"])
+        env.set_value("f", set([(1,1),(2,4),(3,9)]))
         assert interpret(root.children[0],env)
 
 

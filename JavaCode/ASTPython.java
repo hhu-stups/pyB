@@ -29,6 +29,7 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void outAIdentifierExpression(AIdentifierExpression node)
     {
+        // FIXME: some bug with a space at the end
         out += "id"+ (idCounter++) +"=";
         out += "AIdentifierExpression(\"";
         out += node.getIdentifier().toString().replace("[","").replace("]","") + "\")\n";
@@ -37,10 +38,9 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAStringExpression(AStringExpression node)
     {
-        // FIXME:  missing spaces
         out += "id"+ (idCounter++) +"=";
         out += "AStringExpression(\"";
-        out += node.getContent().toString()+ "\")\n";;
+        out += node.getContent().getText()+ "\")\n";;
     }
 
 
@@ -131,6 +131,41 @@ public class ASTPython extends DepthFirstAdapter{
             out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
     }
 
+
+    public void caseALambdaExpression(ALambdaExpression node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+        String[] ids = new String[copy.size()+2];
+        int i=0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getPredicate() != null)
+        {
+            node.getPredicate().apply(this);
+            ids[copy.size()] = ""+(idCounter-1);
+        }
+        if(node.getExpression() != null)
+        {
+            node.getExpression().apply(this);
+            ids[copy.size()+1] = ""+(idCounter-1);
+        }
+
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<ids.length-2; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        if(node.getPredicate() != null)
+            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
+        if(node.getExpression() != null)
+            out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
+    }
 
     public void caseAGeneralProductExpression(AGeneralProductExpression node)
     {

@@ -677,6 +677,25 @@ def interpret(node, env):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
         return set(range(left, right+1))
+    elif isinstance(node, ALambdaExpression):
+        func_list = []
+        # new scope
+        env.push_new_frame(node.children[:-2])
+        pred = node.children[-2]
+        expr = node.children[-1]
+        # TODO: this code (maybe) dont checks all possibilities!
+        # gen. all values:
+        for child in node.children[:-2]:
+            # enumeration
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
+                if interpret(pred, env):
+                    image = interpret(expr, env)
+                    tup = tuple([i, image])
+                    func_list.append(tup)
+        # done
+        env.pop_frame()
+        return set(func_list)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope

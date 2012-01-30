@@ -70,6 +70,22 @@ class TestTypesFunctions():
         assert env.get_type("y").data=="Y"
 
 
+    def test_types_lambda(self):
+        # Build AST
+        string_to_file("#PREDICATE f="+"%"+"x.(x>0 & x<10|x*x)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["f","x"])
+        assert isinstance(env.get_type("f"), PowerSetType)
+        assert isinstance(env.get_type("f").data, CartType)
+        assert isinstance(env.get_type("f").data.data[0], IntegerType)
+        assert isinstance(env.get_type("f").data.data[1], IntegerType)
+        assert isinstance(env.get_type("x"), IntegerType)
+
+
     def test_types_seq(self):
         # Build AST
         string_to_file("#PREDICATE s:seq(S)", file_name)

@@ -259,6 +259,9 @@ class ANaturalSetExpression(Expression):
 class ANat1SetExpression(Expression):
     pass
 
+class ALambdaExpression(Expression):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
