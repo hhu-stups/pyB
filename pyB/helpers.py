@@ -21,7 +21,18 @@ def file_to_AST_str(file_name_str):
     r.close()
     w.close()
     e.close()
-    return out.replace(" ","")
+    return del_spaces(out)
+
+
+# del all space except that into b-strings
+def del_spaces(string):
+    out = ""
+    for line in string.split("\n"):
+        if "AStringExpression" in line:
+            out += line + "\n"
+        else:
+            out += line.replace(" ","") + "\n"
+    return out
 
 
 def string_to_file(string, file_name):

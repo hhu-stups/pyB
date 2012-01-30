@@ -508,11 +508,11 @@ class TestInterpSets():
 
     def test_genAST_string(self):
         # Build AST
-        string_to_file("#PREDICATE s=\"HalloWelt\"", file_name)
+        string_to_file("#PREDICATE s=\"Hallo Welt\"", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
         # Test
         env = Environment()
-        env.set_value("s", "HalloWelt")
+        env.set_value("s", "Hallo Welt")
         assert interpret(root.children[0],env)
