@@ -201,7 +201,7 @@ public class ASTPython extends DepthFirstAdapter{
             out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
     }
 
-    // TODO: implement me
+
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
     {
         List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
