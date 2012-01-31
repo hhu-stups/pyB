@@ -15,7 +15,7 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.set_value("S", set(["Huey", "Dewey", "Louie"]))
+        env.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
         lst = [("S", SetType("X"))]
         _test_typeit(root, env, lst, [])
 
@@ -30,7 +30,7 @@ class TestTypesSets():
         env = Environment()
         env.set_value("aa", "aa")
         env.set_value("bb", "bb")
-        env.set_value("ID", set(["aa", "bb"]))
+        env.set_value("ID", frozenset(["aa", "bb"]))
         lst = [("aa", SetType("X")),("bb", SetType("X"))]
         _test_typeit(root, env, lst, ["ID"])
         assert isinstance(env.get_type("ID"), PowerSetType)

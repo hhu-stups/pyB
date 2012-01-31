@@ -1,67 +1,77 @@
-31.08.2011 - 12.10.2011
-by John Witulski 
+PyB
+31.08.2011 - 31.01.2012 
+by John Witulski: www.stups.uni-duesseldorf.de
 
-Config:
-    copy ASTPython.java to .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
-    overwrite BParser.java  CliBParser.java  ConsoleOptions.java  ParsingBehaviour.java inside the correct src folder
-    generate the jar by typing "./gradlew jar" in the project-root-dir
-    the jar files must be in the correct dir. see pyB.py Line 7-13
-    This hard-codes path must be set manually at the moment
+1. Config:
+    1.1. copy ASTPython.java to
+     .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
+    1.2. overwrite BParser.java  CliBParser.java  ConsoleOptions.java
+     ParsingBehaviour.java inside the correct src folder
+    1.3. generate the jar by typing "./gradlew jar" in the project-root-dir
+    1.4. the jar files must be in the correct dir. see pyB.py Line 7-13
+     This hard-codes path must be set manually at the moment
 
 
-Run pyB:
+2. Run pyB:
     python pyB.py <FileName>
     e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" 
 
 
-Run Tests:
+3. Run Tests:
     py.test
     the tests/ are in the tests folder
 
 
-Features:
+4. Features:
     - Evals arith. Preds like:   1+1=2
     - Evals set Preds like:   x:ID 
     - Evals set extentions like:  {a,b,c}
     - Evals quantified preds like: #(z).(z<4 & z>0) 
     - Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} 
     - Evals realtions, functions and sequences
+    - Evals interval sum and pi
+    - Evals itrations and closure
+    - generalized conc and strings
     - Typechecking of the most preds
 
 
-MISSING FEATURES:
+5. MISSING FEATURES:
     - infinite sets/sequences/relations
-    - substitutions
-    - singleton sets
-    - sp. union/inter buildins
-    - min/max an the natural numbers - not ProB
-    - interval sum and pi
-    - itrations and closure
-    - lambda abstractions
-    - generalized cinc and strings
     - NAT and NAT1 is not infinite!
+    - substitutions
+    - sp. UNION / INTER buildins
+    - min/max an the natural numbers - not ProB
+    - lambda abstractions with more vars
     - and maybe more...;-)
 
 
-How it works:
-    1. A AST visitor "ASTPython.java" gens a String with pythoncode.
+6. How it works:
+    6.1.PARSING:
+     PyB uses the same java-parser like ProB with one exception: 
+     A AST-visitor "ASTPython.java" gens. a String with pythoncode.
      This string is executed with "exec" in "pyB.py".
      (This needs to be changed for RPython to Jit it. e.g. through XML-parsing)
-     The string is mapped to the ASTNodes in "ast_nodes.py"
-    2. This AST is eval. via "interp.py"
-    3. A map ASTNode-> Type is created via the typeit method.
-     It uses a unify method to handle unknown types like "S=V\/T T:POW(X)"
-     The typing is necessery to eval. quantified preds
+     The string is mapped via "exec" to the ASTNodes (python-classes) in
+     "ast_nodes.py"
+
+    6.2.TYPECHECKING: 
+     A map ASTNode-> Type is created via the typeit method.
+     It uses a unify method to handle unknown types like "S=V\/T T:POW(X)".
+     This method is not fully implemented.
+     The typing is necessery to eval. quantified preds:
      assumes that both sides of ops like (\/ or /=) have the same type.
      The TypeEnv(!=map) is filled with the unknown vars before a run.
      This assumes that an var which is not introduced in the vars section or
      the parameters of an opp is an quantified var or an error. This
-     is handled in the get_type method of the env.
-     Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
+     is handled in the get_type method of the env. The typin uses a stack of
+     environments. Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
      and are added to a frame before typing if they are not quantified.
 
+    6.3.INTERPRETATION:
+     This AST is eval. via an AST-interpreter "interp.py"
 
-DONE:
+
+7. FIXED BUGS:
     - replace depricated set module
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
@@ -72,36 +82,43 @@ DONE:
     - Maybe a BUG: there are no local vars. all vars are global
     - TODO: quantiefed vars must be added to the frame
     - Typing maybe fails if vars have the same name (unify)
-    - TODO: Typing must throw "Typing-error" if after "one run" a var has an "unknown-type"
+    - TODO: Typing must throw "Typing-error" if after "one run" a var has an 
+    "unknown-type"
+    - sets and frozensets are mixed (e.g in POW)..fix that
+    - not tested: sequences of sequences
+    - BUG: mising String spaces (maybe a parser bug- java code) 
 
-TODO:
+
+8. TODO-LIST:
     - TODO: throw better Typeexceptions
     - TODO: write prop. python module (e.g for min max int)
     - FIXME: maybe BUG: eval of preds changes value_stack
     - FIXME: Typeerrors are scattered through the whole code via asserts
-    - TODO: move namelearning of sets in typing from AUnequal/EqualPredicate to unify
+    - TODO: move namelearning of sets in typing from AUnequal/EqualPredicate to 
+    unify
     - TODO: remove fix value/type from tests if possible
     - TODO: write more scoping tests
     - assumes that all functions are 2-tuple: otherwise crash
     - TODO: write more AST-Gen tests
     - TODO: write a build-script
-    - sets and frozensets are mixed (e.g in POW)..fix that
     - Maybe the implemenation has to be fixed if infinite sets are introduced
     - enable function applications (4.1.9) with many args
-    - not tested: sequences of sequences
     - not tested: append/preprend more than one element - possible?
     - FIXME: Vars are added to a Frame at the wrong position!
     - Tests ignore Frames and Scopes. Fix that
-    - BUG: a. typechecking the settype contains data, this data is not valid e.g. after set union, inters. diff.
-    - typechecker and interpreter has undefined behavior if there is a error in the java-Bparser
+    - BUG: a. typechecking the settype contains data, this data is not valid 
+     e.g. after set union, inters. diff.
+    - typechecker and interpreter has undefined behavior if there is a error in 
+     the java-Bparser
     - check if all astnodes return types (if they have to)
     - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
     - TODO: implement deferredSets
     - TODO: set mch-para to good values
     - TODO: enum set which have no expl. elements
-    - TODO: Maybe all asserts inside the typechecker must be replaced by unify_equal()
-    - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a type-tree
+    - TODO: Maybe all asserts inside the typechecker must be replaced by 
+     unify_equal()
+    - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a 
+     type-tree
     - TODO: Dont create new instances of IntegerType if not nec.
     - BUG: unknownnodes like NaturalSetExpression create atype == atype.data
     - Think of unifications like: "it is A or B" e.g. perm(s)
-    - BUG: mising String spaces (maybe a parser bug- java code) 

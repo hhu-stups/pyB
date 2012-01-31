@@ -16,10 +16,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("x", "x")
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
         assert not interpret(root.children[0], env)
 
 
@@ -32,10 +32,10 @@ class TestInterpSets():
         # Test
         env = Environment()
         env.set_value("x", "x")
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
         assert interpret(root.children[0], env)
 
 
@@ -47,12 +47,12 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("T", set(["x","y"]))
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("T", frozenset(["x","y"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("T", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("T", frozenset(["a","b","c"]))
         assert interpret(root.children[0], env)
 
 
@@ -75,12 +75,12 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("T", set(["x","y"]))
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("T", frozenset(["x","y"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("T", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("T", frozenset(["a","b","c"]))
         assert not interpret(root.children[0], env)
 
 
@@ -92,16 +92,16 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("T", set(["x","y"]))
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("T", frozenset(["x","y"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("T", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("T", frozenset(["a","b","c"]))
         assert not interpret(root.children[0], env)
 
-        env.set_value("S", set(["x","y"]))
-        env.set_value("T", set(["x","y","z"]))
+        env.set_value("S", frozenset(["x","y"]))
+        env.set_value("T", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
 
 
@@ -113,16 +113,16 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("T", set(["x","y"]))
-        env.set_value("S", set(["x","y","z"]))
+        env.set_value("T", frozenset(["x","y"]))
+        env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
 
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("T", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("T", frozenset(["a","b","c"]))
         assert interpret(root.children[0], env)
 
-        env.set_value("S", set(["x","y"]))
-        env.set_value("T", set(["x","y","z"]))
+        env.set_value("S", frozenset(["x","y"]))
+        env.set_value("T", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
 
 
@@ -134,8 +134,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b"]))
-        env.set_value("T", set(["x","y"]))
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("T", frozenset(["x","y"]))
         env.set_value("u", ("a","x"))
         assert interpret(root.children[0],env)
 
@@ -149,9 +149,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("A", set([1,2,3,4,5]))
-        env.set_value("B", set([3,4,5,6,7]))
-        env.set_value("C", set([1,2,3,4,5,6,7]))
+        env.set_value("A", frozenset([1,2,3,4,5]))
+        env.set_value("B", frozenset([3,4,5,6,7]))
+        env.set_value("C", frozenset([1,2,3,4,5,6,7]))
         assert interpret(root.children[0],env)
 
 
@@ -163,9 +163,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("A", set([1,2,3,4,5]))
-        env.set_value("B", set([3,4,5,6,7]))
-        env.set_value("C", set([3,4,5]))
+        env.set_value("A", frozenset([1,2,3,4,5]))
+        env.set_value("B", frozenset([3,4,5,6,7]))
+        env.set_value("C", frozenset([3,4,5]))
         assert interpret(root.children[0],env)
 
 
@@ -177,9 +177,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("A", set([1,2,3,4,5]))
-        env.set_value("B", set([3,4,5,6,7]))
-        env.set_value("C", set([1,2]))
+        env.set_value("A", frozenset([1,2,3,4,5]))
+        env.set_value("B", frozenset([3,4,5,6,7]))
+        env.set_value("C", frozenset([1,2]))
         assert interpret(root.children[0],env)
 
 
@@ -191,20 +191,20 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b"]))
-        env.set_value("X", set([]))
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("X", frozenset([]))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set(["a","b"]))
+        env.set_value("X", frozenset(["a","b"]))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set(["a","c"]))
+        env.set_value("X", frozenset(["a","c"]))
         assert not interpret(root.children[0],env)
 
-        env.set_value("X", set(["a"]))
+        env.set_value("X", frozenset(["a"]))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set(["b"]))
+        env.set_value("X", frozenset(["b"]))
         assert interpret(root.children[0],env)
 
 
@@ -216,14 +216,14 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b"]))
-        env.set_value("X", set([]))
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("X", frozenset([]))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set([frozenset([])]))
+        env.set_value("X", frozenset([frozenset([])]))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set([frozenset(["a","b"])]))
+        env.set_value("X", frozenset([frozenset(["a","b"])]))
         assert interpret(root.children[0],env)
 
 
@@ -235,17 +235,17 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b"]))
-        env.set_value("X", set(frozenset([])))
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("X", frozenset(frozenset([])))
         assert not interpret(root.children[0],env)
 
-        env.set_value("X", set(frozenset(["a"])))
+        env.set_value("X", frozenset(frozenset(["a"])))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set(frozenset(["b"])))
+        env.set_value("X", frozenset(frozenset(["b"])))
         assert interpret(root.children[0],env)
 
-        env.set_value("X", set(frozenset(["a","b"])))
+        env.set_value("X", frozenset(frozenset(["a","b"])))
         assert interpret(root.children[0],env)
 
 
@@ -419,9 +419,9 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("ID", set(["a","b"]))
-        env.set_value("S", set(["a","b"]))
-        env.set_value("T", set(["a"]))
+        env.set_value("ID", frozenset(["a","b"]))
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("T", frozenset(["a"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
         _test_typeit(root.children[0], env, lst, ["T","S"])
         assert interpret(root.children[0],env)
@@ -435,8 +435,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("ID", set(["a","b"]))
-        env.set_value("S", set(["a","b"]))
+        env.set_value("ID", frozenset(["a","b"]))
+        env.set_value("S", frozenset(["a","b"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
         _test_typeit(root.children[0], env, lst, ["S"])
         assert not interpret(root.children[0],env)
@@ -450,8 +450,8 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("ID", set(["a","b"]))
-        env.set_value("T", set([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
+        env.set_value("ID", frozenset(["a","b"]))
+        env.set_value("T", frozenset([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
         lst = [("ID", PowerSetType(SetType("ID")))]
         _test_typeit(root.children[0], env, lst, ["T"])
         assert interpret(root.children[0],env)
@@ -465,18 +465,18 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("U", set([frozenset(["a","b","c"])]))
-        env.set_value("u", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("U", frozenset([frozenset(["a","b","c"])]))
+        env.set_value("u", frozenset(["a","b","c"]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b","c"]),frozenset([])]))
-        env.set_value("u", set(["a","b","c"]))
+        env.set_value("U", frozenset([frozenset(["a","b","c"]),frozenset([])]))
+        env.set_value("u", frozenset(["a","b","c"]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"])]))
-        env.set_value("u", set(["a","b","c"]))
+        env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["c"])]))
+        env.set_value("u", frozenset(["a","b","c"]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b"]),frozenset(["a","c"])]))
-        env.set_value("u", set(["a","b","c"]))
+        env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["a","c"])]))
+        env.set_value("u", frozenset(["a","b","c"]))
         assert interpret(root.children[0],env)
 
 
@@ -488,21 +488,21 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["a","b","c"]))
-        env.set_value("U", set([frozenset(["a","b","c"])]))
-        env.set_value("u", set(["a","b","c"]))
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("U", frozenset([frozenset(["a","b","c"])]))
+        env.set_value("u", frozenset(["a","b","c"]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b","c"]),frozenset(["a"])]))
-        env.set_value("u", set(["a"]))
+        env.set_value("U", frozenset([frozenset(["a","b","c"]),frozenset(["a"])]))
+        env.set_value("u", frozenset(["a"]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"])]))
-        env.set_value("u", set([]))
+        env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["c"])]))
+        env.set_value("u", frozenset([]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c"]),frozenset(["a"])]))
+        env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["c"]),frozenset(["a"])]))
         env.set_value("u", set([]))
         assert interpret(root.children[0],env)
         env.set_value("U", set([frozenset(["a","b"]),frozenset(["c","b"]),frozenset(["a","b"])]))
-        env.set_value("u", set(["b"]))
+        env.set_value("u", frozenset(["b"]))
         assert interpret(root.children[0],env)
 
 

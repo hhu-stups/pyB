@@ -180,7 +180,7 @@ def interpret(node, env):
                 for elm in child.children:
                     assert isinstance(elm, AIdentifierExpression)
                     elm_lst.append(elm.idName)
-                env.set_value(child.idName, set(elm_lst))
+                env.set_value(child.idName, frozenset(elm_lst))
             else:
                 assert isinstance(child, ADeferredSet)
     elif isinstance(node, AConstraintsMachineClause):
@@ -270,8 +270,8 @@ def interpret(node, env):
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
-        if isinstance(expr1, set) and isinstance(expr2, set):
-            return set(((x,y) for x in expr1 for y in expr2))
+        if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
+            return frozenset(((x,y) for x in expr1 for y in expr2))
         else:
             return expr1 * expr2
     elif isinstance(node, ADivExpression):
@@ -298,7 +298,7 @@ def interpret(node, env):
         for child in node.children:
             elm = interpret(child, env)
             lst.append(elm)
-        return set(lst)
+        return frozenset(lst)
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return len(aSet)
@@ -309,7 +309,7 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         return max(list(aSet))
     elif isinstance(node, AEmptySetExpression):
-        return set()
+        return frozenset()
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -365,7 +365,7 @@ def interpret(node, env):
         for i in lst:
             result.append(tuple(flatten(i,[])))
         env.pop_frame()
-        return set(result)
+        return frozenset(result)
     elif isinstance(node, ACoupleExpression):
         lst = []
         for child in node.children:
@@ -377,14 +377,14 @@ def interpret(node, env):
         res = powerset(aSet)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
-        return set(lst)
+        return frozenset(lst)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
         res = powerset(aSet)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
         lst.remove(frozenset([]))
-        return set(lst)
+        return frozenset(lst)
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -394,21 +394,21 @@ def interpret(node, env):
         # FIXME: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
         dom = [e[0] for e in list(aSet)]
-        return set(dom)
+        return frozenset(dom)
     elif isinstance(node, ARangeExpression):
         # FIXME: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
         ran = [e[1] for e in list(aSet)]
-        return set(ran)
+        return frozenset(ran)
     elif isinstance(node, ACompositionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)
         id_r = [(x,x) for x in aSet]
-        return set(id_r)
+        return frozenset(id_r)
     elif isinstance(node, AIterationExpression):
         arel = interpret(node.children[0], env)
         n = interpret(node.children[1], env)
@@ -417,74 +417,74 @@ def interpret(node, env):
         rel = [(x[0],x[0]) for x in rel]
         for i in range(n):
             rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-        return set(rel)
+        return frozenset(rel)
     elif isinstance(node, AReflexiveClosureExpression):
         arel = interpret(node.children[0], env)
         rel = list(arel)
         rel = [(x[0],x[0]) for x in rel]
         while True: # fixpoint-search (do-while-loop)
             new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-            if set(new_rel).union(set(rel))==set(rel):
-                return set(rel)
-            rel =list(set(new_rel).union(set(rel)))
+            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
+                return frozenset(rel)
+            rel =list(frozenset(new_rel).union(frozenset(rel)))
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
         new_rel = [x for x in rel if x[0] in aSet]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
         new_rel = [x for x in rel if not x[0] in aSet]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, ARangeRestrictionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
         new_rel = [x for x in rel if x[1] in aSet]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, ARangeSubtractionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
         new_rel = [x for x in rel if not x[1] in aSet]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
         new_rel = [(x[1],x[0]) for x in rel]
-        return set(new_rel)
+        return frozenset(new_rel)
     elif isinstance(node, AImageExpression):
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         image = [x[1] for x in rel if x[0] in aSet ]
-        return set(image)
+        return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
         dom_r2 = [x[0] for x in r2]
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]
-        return set(r2_list + new_r)
+        return frozenset(r2_list + new_r)
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        cart = set(((x,y) for x in S for y in T))
+        cart = frozenset(((x,y) for x in S for y in T))
         proj = [(x,x[0]) for x in cart]
-        return set(proj)
+        return frozenset(proj)
     elif isinstance(node, ASecondProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        cart = set(((x,y) for x in S for y in T))
+        cart = frozenset(((x,y) for x in S for y in T))
         proj = [(x,x[1]) for x in cart]
-        return set(proj)
+        return frozenset(proj)
     elif isinstance(node, ADirectProductExpression):
         p = interpret(node.children[0], env)
         q = interpret(node.children[1], env)
         d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
-        return set(d_prod)
+        return frozenset(d_prod)
     elif isinstance(node, AParallelProductExpression):
         p = interpret(node.children[0], env)
         q = interpret(node.children[1], env)
         p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
-        return set(p_prod)
+        return frozenset(p_prod)
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
@@ -545,7 +545,7 @@ def interpret(node, env):
             args.append(arg)
         return get_image(function, args[0])
     elif isinstance(node,AEmptySequenceExpression):
-        return set([])
+        return frozenset([])
     elif isinstance(node,ASeqExpression):
         S = interpret(node.children[0], env)
         sequence_list = [frozenset([])]
@@ -553,7 +553,7 @@ def interpret(node, env):
         # find all seq. from 1..max_int
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
-        return set(sequence_list)
+        return frozenset(sequence_list)
     elif isinstance(node,ASeq1Expression):
         S = interpret(node.children[0], env)
         sequence_list = []
@@ -561,7 +561,7 @@ def interpret(node, env):
         # find all seq. from 1..max_int
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
-        return set(sequence_list)
+        return frozenset(sequence_list)
     elif isinstance(node,AIseqExpression):
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
@@ -571,7 +571,7 @@ def interpret(node, env):
         for i in range(1,max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
-        return set(inj_sequence_list)
+        return frozenset(inj_sequence_list)
     elif isinstance(node,APermExpression): 
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
@@ -583,14 +583,14 @@ def interpret(node, env):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
-        return set(perm_sequence_list)
+        return frozenset(perm_sequence_list)
     elif isinstance(node, AConcatExpression):
         s = interpret(node.children[0], env)
         t = interpret(node.children[1], env)
         new_t = []
         for tup in t: # FIXME: maybe wrong order
             new_t.append(tuple([tup[0]+len(s),tup[1]]))
-        return set(list(s)+new_t)
+        return frozenset(list(s)+new_t)
     elif isinstance(node, AGeneralConcatExpression):
         s = interpret(node.children[0], env)
         t = []
@@ -599,18 +599,18 @@ def interpret(node, env):
             for val in dict(squ).values():
                 index = index +1
                 t.append(tuple([index, val]))
-        return set(t)
+        return frozenset(t)
     elif isinstance(node, AInsertFrontExpression):
         E = interpret(node.children[0], env)
         s = interpret(node.children[1], env)
         new_s = [(1,E)]
         for tup in s:
             new_s.append(tuple([tup[0]+1,tup[1]]))
-        return set(new_s)
+        return frozenset(new_s)
     elif isinstance(node, AInsertTailExpression):
         s = interpret(node.children[0], env)
         E = interpret(node.children[1], env)
-        return set(list(s)+[tuple([len(s)+1,E])])
+        return frozenset(list(s)+[tuple([len(s)+1,E])])
     elif isinstance(node, ASequenceExtensionExpression):
         sequence = []
         i = 0
@@ -618,7 +618,7 @@ def interpret(node, env):
             i = i+1
             e = interpret(child, env)
             sequence.append(tuple([i,e]))
-        return set(sequence)
+        return frozenset(sequence)
     elif isinstance(node, ASizeExpression):
         sequence = interpret(node.children[0], env)
         return len(sequence)
@@ -629,14 +629,14 @@ def interpret(node, env):
         for tup in sequence:
             new_sequence.append(tuple([i,tup[1]]))
             i = i-1
-        return set(new_sequence)
+        return frozenset(new_sequence)
     elif isinstance(node, ARestrictFrontExpression):
         sequence = interpret(node.children[0], env)
         take = interpret(node.children[1], env)
         assert take>0
         lst = list(sequence)
         lst.sort()
-        return set(lst[:-take])
+        return frozenset(lst[:-take])
     elif isinstance(node, ARestrictTailExpression):
         sequence = interpret(node.children[0], env)
         drop = interpret(node.children[1], env)
@@ -648,7 +648,7 @@ def interpret(node, env):
         for tup in lst[drop:]:
             i = i+1
             new_list.append(tuple([i,tup[1]]))
-        return set(new_list)
+        return frozenset(new_list)
     elif isinstance(node, AFirstExpression):
         sequence = interpret(node.children[0], env)
         lst = list(sequence)
@@ -666,17 +666,17 @@ def interpret(node, env):
         lst = list(sequence)
         lst.sort()
         assert lst[0][0]==1
-        return set(lst[1:])
+        return frozenset(lst[1:])
     elif isinstance(node, AFrontExpression):
         sequence = interpret(node.children[0], env)
         lst = list(sequence)
         lst.sort()
         lst.pop()
-        return set(lst)
+        return frozenset(lst)
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
-        return set(range(left, right+1))
+        return frozenset(range(left, right+1))
     elif isinstance(node, ALambdaExpression):
         func_list = []
         # new scope
@@ -695,7 +695,7 @@ def interpret(node, env):
                     func_list.append(tup)
         # done
         env.pop_frame()
-        return set(func_list)
+        return frozenset(func_list)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
@@ -730,9 +730,9 @@ def interpret(node, env):
         env.pop_frame()
         return prod
     elif isinstance(node, ANatSetExpression):
-        return set(range(0,max_int+1))
+        return frozenset(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
-        return set(range(1,max_int+1))
+        return frozenset(range(1,max_int+1))
     elif isinstance(node, AGeneralUnionExpression):
         set_of_sets = interpret(node.children[0], env)
         elem_lst = list(set_of_sets)
@@ -805,7 +805,7 @@ def filter_not_injective(functions):
         image = [x[1] for x in fun]
         if not double_element_check(image):
             injective_funs.append(fun)
-    return set(injective_funs)
+    return frozenset(injective_funs)
 
 
 # filters out every function which is not surjective
@@ -814,7 +814,7 @@ def filter_not_surjective(functions, T):
     for fun in functions:
         if is_a_surj_function(fun, T):
             surj_funs.append(fun)
-    return set(surj_funs)
+    return frozenset(surj_funs)
 
 
 # filters out every function which is not total
@@ -823,20 +823,20 @@ def filter_not_total(functions, S):
     for fun in functions:
         if is_a_total_function(fun, S):
             total_funs.append(fun)
-    return set(total_funs)
+    return frozenset(total_funs)
 
 
 # checks if the function it total 
 def is_a_total_function(function, preimage_set):
     preimage = [x[0] for x in function]
-    preimage_set2 =  set(preimage)
+    preimage_set2 =  frozenset(preimage)
     return preimage_set == preimage_set2
 
 
 # checks if the function it surjective
 def is_a_surj_function(function, image_set):
     image = [x[1] for x in function]
-    image_set2= set(image) # remove duplicate items
+    image_set2= frozenset(image) # remove duplicate items
     return image_set == image_set2
 
 
@@ -846,7 +846,7 @@ def filter_no_function(relations):
     for r in relations:
         if is_a_function(r):
             functions.append(r)
-    return set(functions)
+    return frozenset(functions)
 
 
 # checks if a relation is a function
@@ -860,11 +860,11 @@ def is_a_function(relation):
 
 # returns S<-->T
 def make_set_of_realtions(S,T):
-    cartSet = set(((x,y) for x in S for y in T))
+    cartSet = frozenset(((x,y) for x in S for y in T))
     res = powerset(cartSet)
     powerlist = list(res)
     lst = [frozenset(e) for e in powerlist]
-    return set(lst)
+    return frozenset(lst)
 
 
 # from http://docs.python.org/library/itertools.html
@@ -949,7 +949,7 @@ def all_values_by_type(atype, env):
         return range(min_int, max_int+1)
     elif isinstance(atype, SetType):
         type_name =  atype.data
-        assert isinstance(env.get_value(type_name), set)
+        assert isinstance(env.get_value(type_name), frozenset)
         return env.get_value(type_name)
     elif isinstance(atype, PowerSetType):
         val_list = all_values_by_type(atype.data, env)
@@ -960,7 +960,7 @@ def all_values_by_type(atype, env):
     elif isinstance(atype, CartType):
         val_pi = all_values_by_type(atype.data[0], env)
         val_i = all_values_by_type(atype.data[1], env)
-        lst = set(((x,y) for x in val_pi for y in val_i))
+        lst = frozenset(((x,y) for x in val_pi for y in val_i))
         return lst
     string = "Unknown Type / Not Implemented: %s", atype
     raise Exception(string)

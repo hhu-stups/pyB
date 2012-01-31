@@ -21,6 +21,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert not interpret(eqPred, env)
 
+
     def test_simple_expr_add2(self):
         # Build AST: 1+1=2
         intExp = AIntegerExpression(1)
@@ -36,6 +37,7 @@ class TestInterp_fixedAST():
         # Test
         env = Environment()
         assert interpret(eqPred, env)
+
 
     def test_simple_expr_sub(self):
         # Build AST: 4-3=1
@@ -53,6 +55,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert interpret(eqPred, env)
 
+
     def test_simple_expr_mul(self):
         # Build AST: 4*0=0
         intExp = AIntegerExpression(4)
@@ -68,6 +71,7 @@ class TestInterp_fixedAST():
         # Test
         env = Environment()
         assert interpret(eqPred, env)
+
 
     def test_simple_expr_div(self):
         # Build AST: 8/2=4
@@ -85,6 +89,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert interpret(eqPred, env)
 
+
     def test_simple_expr_mod(self):
         # Build AST: 8 mod 3=2
         intExp = AIntegerExpression(8)
@@ -101,6 +106,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert interpret(eqPred, env)
 
+
     def test_simple_expr_neq(self):
         # Build AST: 0 /= 1
         intExp = AIntegerExpression(0)
@@ -112,6 +118,7 @@ class TestInterp_fixedAST():
         # Test
         env = Environment()
         assert interpret(ueqPred, env)
+
 
     def test_simple_pred_gt(self):
         # Build AST: 6>x
@@ -132,6 +139,7 @@ class TestInterp_fixedAST():
         env.set_value("x", 6)
         assert not interpret(gtPred, env)
 
+
     def test_simple_pred_eq(self):
         # Build AST: x=6
         idExp = AIdentifierExpression("x")
@@ -151,6 +159,7 @@ class TestInterp_fixedAST():
         env.set_value("x", 6)
         assert interpret(eqPred, env)
 
+
     def test_simple_pred_ls(self):
         # Build AST: x<6
         idExp = AIdentifierExpression("x")
@@ -169,6 +178,7 @@ class TestInterp_fixedAST():
 
         env.set_value("x", 6)
         assert not interpret(lsPred, env)
+
 
     def test_simple_pred_and(self):
         # Build AST: x>=6 & y=6
@@ -206,6 +216,7 @@ class TestInterp_fixedAST():
         env.set_value("y", 6)
         assert interpret(conPred, env)
 
+
     def test_simple_pred_or(self):
         # Build AST: x<=4 or y=1
         idExp = AIdentifierExpression("x")
@@ -242,6 +253,7 @@ class TestInterp_fixedAST():
         env.set_value("y", 6)
         assert interpret(dsjPred, env)
 
+
     def test_simple_pred_impl(self):
         # Build AST: z>=42 => z>41
         idExp = AIdentifierExpression("z")
@@ -272,6 +284,7 @@ class TestInterp_fixedAST():
         env = Environment() # False=>False is True
         env.set_value("z", 41)
         assert interpret(implPred, env)
+
 
     def test_simple_pred_impl2(self):
         # Build AST: z=42 => 1+1=3
@@ -304,6 +317,7 @@ class TestInterp_fixedAST():
         env.set_value("z", 41)
         assert interpret(implPred, env)
 
+
     def test_simple_pred_impl3(self):
         # Build AST: z=42 => 1+1=2
         intExp4 = AIntegerExpression(42)
@@ -335,6 +349,7 @@ class TestInterp_fixedAST():
         env.set_value("z", 41)
         assert interpret(implPred, env)
 
+
     def test_simple_pred_aequ(self):
         # Build AST: 7<8 <=> 6+1<8
         intExp = AIntegerExpression(7)
@@ -361,6 +376,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert interpret(eqaPred, env)
 
+
     def test_simple_pred_not(self):
         # Build AST: not (42<23)
         intExp = AIntegerExpression(42)
@@ -375,6 +391,7 @@ class TestInterp_fixedAST():
         env = Environment()
         assert interpret(negPred, env)
 
+
     def test_simple_set_pred_member(self):
         # Build AST: yy:ID
         idExp = AIdentifierExpression("yy")
@@ -386,11 +403,12 @@ class TestInterp_fixedAST():
         #Test
         env = Environment()
         env.set_value("yy", "aa")
-        env.set_value("ID", set(["aa","bb"]))
+        env.set_value("ID", frozenset(["aa","bb"]))
         assert interpret(belPred, env)
 
         env.set_value("yy", "cc")
         assert not interpret(belPred, env)
+
 
     def test_simple_set_pred_not_member(self):
         # Build AST: yy/:ID
@@ -403,8 +421,9 @@ class TestInterp_fixedAST():
         #Test
         env = Environment()
         env.set_value("yy", "aa")
-        env.set_value("ID", set(["aa","bb"]))
+        env.set_value("ID", frozenset(["aa","bb"]))
         assert not interpret(notbelPred, env)
+
 
     def test_simple_set_pred_setex(self):
         # Build AST: yy:{aa,bb,cc}
@@ -431,6 +450,7 @@ class TestInterp_fixedAST():
         env.set_value("yy", "yy")
         assert not interpret(belPred, env)
 
+
     def test_simple_set_pred_subset(self):
         # Build AST: A<:B
         idExp = AIdentifierExpression("A")
@@ -441,21 +461,22 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("A", set(["aa"]))
-        env.set_value("B", set(["aa","bb"]))
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
 
-        env.set_value("B", set(["aa"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclPred, env)
 
-        env.set_value("B", set())
-        env.set_value("A", set())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert interpret(inclPred, env)
 
-        env.set_value("B", set(["aa","bb"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
+
 
     def test_simple_set_pred_not_subset(self):
         # Build AST: A/<:B
@@ -467,16 +488,16 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("A", set(["aa"]))
-        env.set_value("B", set(["aa","bb"]))
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclPred, env)
 
-        env.set_value("B", set(["aa"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclPred, env)
 
-        env.set_value("B", set())
-        env.set_value("A", set())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert not interpret(notinclPred, env)
 
     def test_simple_set_pred_str_subset(self):
@@ -489,20 +510,20 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("A", set(["aa"]))
-        env.set_value("B", set(["aa","bb"]))
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclstrPred, env)
 
-        env.set_value("B", set(["aa"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclstrPred, env)
 
-        env.set_value("B", set())
-        env.set_value("A", set())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert not interpret(inclstrPred, env)
 
-        env.set_value("B", set(["aa","bb"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclstrPred, env)
 
     def test_simple_set_pred_not_str_subset(self):
@@ -515,20 +536,20 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("A", set(["aa"]))
-        env.set_value("B", set(["aa","bb"]))
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclstrPred, env)
 
-        env.set_value("B", set(["aa"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclstrPred, env)
 
-        env.set_value("B", set())
-        env.set_value("A", set())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert interpret(notinclstrPred, env)
 
-        env.set_value("B", set(["aa","bb"]))
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclstrPred, env)
 
     def test_simple_set_pred_empt_set(self):
@@ -541,8 +562,9 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("A", set(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
+
 
     def test_simple_set_pred_card(self):
         # Build AST: card(S)>0
@@ -556,8 +578,9 @@ class TestInterp_fixedAST():
 
         #TestInterp
         env = Environment()
-        env.set_value("S", set(["aa","bb"]))
+        env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(gtPred, env)
+
 
     def test_simple_set_pred_union(self):
         # Build AST: S <: S \/ T
@@ -573,8 +596,8 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["bb","cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert interpret(inclPred, env)
 
     def test_simple_set_pred_inters(self):
@@ -591,16 +614,16 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["bb","cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
 
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["aa","bb","cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["aa","bb","cc","dd"]))
         assert interpret(inclPred, env)
 
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["cc","dd"]))
         assert not interpret(inclPred, env)
 
     def test_simple_set_pred_dif(self):
@@ -617,12 +640,12 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["bb","cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
 
-        env.set_value("S", set(["aa","bb"]))
-        env.set_value("T", set(["cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["cc","dd"]))
         assert interpret(inclPred, env)
 
     def test_simple_set_pred_cat_prod(self):
@@ -639,11 +662,11 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.set_value("S", set(["aa"]))
-        env.set_value("T", set(["bb","cc"]))
+        env.set_value("S", frozenset(["aa"]))
+        env.set_value("T", frozenset(["bb","cc"]))
         assert not interpret(inclPred, env)
 
-        result = set([("aa","bb"),("aa","cc")])
+        result = frozenset([("aa","bb"),("aa","cc")])
         assert interpret(mulExp, env)==result
 
     def test_simple_set_expr_card(self):
@@ -654,6 +677,6 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.set_value("S", set(["aa","bb"]))
+        env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(cardExp, env)==2
 

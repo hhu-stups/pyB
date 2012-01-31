@@ -213,7 +213,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         _test_typeit(root.children[0], env, [], ["S"])
-        env.set_value("S", set([1,2,3,4,5]))
+        env.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
 
@@ -226,7 +226,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         _test_typeit(root.children[0], env, [], ["S"])
-        env.set_value("S", set([1,2,3,4,5]))
+        env.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
 
@@ -323,6 +323,6 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         lst = [("ID", PowerSetType(SetType("ID")))]
-        env.set_value("ID", set(["a","b"]))
+        env.set_value("ID", frozenset(["a","b"]))
         _test_typeit(root.children[0], env, lst, "")
         assert interpret(root.children[0],env)
