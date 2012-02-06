@@ -230,6 +230,30 @@ class TestInterpFunctions():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_fun_app3(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={((1,1),42),((2,2),777)} & zz=f(1,1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.set_value("f", frozenset([((1,1),42),((2,2),777)]))
+        env.set_value("zz", 42)
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_fun_app4(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={((1,1,1),42),((2,2,2),777)} & zz=f(2,2,2)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.set_value("f", frozenset([((1,1,1),42),((2,2,2),777)]))
+        env.set_value("zz", 777)
+        assert interpret(root.children[0],env)
+
+
     def test_genAST_pred_seq_empty(self):
         # Build AST:
         string_to_file("#PREDICATE []={}", file_name)

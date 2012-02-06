@@ -543,7 +543,10 @@ def interpret(node, env):
         for child in node.children[1:]:
             arg = interpret(child, env)
             args.append(arg)
-        return get_image(function, args[0])
+        if len(args) > 1:
+            return get_image(function, tuple(args))
+        else:
+            return get_image(function, args[0])
     elif isinstance(node,AEmptySequenceExpression):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
