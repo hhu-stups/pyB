@@ -86,7 +86,15 @@ class Environment():
 
 # sideeffect:
 # evals pred and sets var to values
+# main interpreter-switch (sorted/grouped like b-toolkit list)
 def interpret(node, env):
+
+
+# ******************************
+#
+#        0. Interpretation-mode
+#
+# ******************************
     if isinstance(node,APredicateParseUnit):
         idNames = []
         find_var_names(node.children[0], idNames) #sideef: fill list
@@ -200,6 +208,13 @@ def interpret(node, env):
             for child in node.children:
                 print "\t", interpret(child, env)
             print "checking done."
+
+
+# *********************
+#
+#        1. Predicates
+#
+# *********************
     elif isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -219,6 +234,29 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 == expr2 # FIXME: maybe this is wrong...
+    elif isinstance(node, ANegationPredicate):
+        expr = interpret(node.children[0], env)
+        return not expr
+    elif isinstance(node, AUniversalQuantificationPredicate):
+        # new scope 
+        env.push_new_frame(node.children[:-1])
+        max_depth = len(node.children) -2 # (two preds)
+        if not forall_recursive_helper(0, max_depth, node, env):
+            env.pop_frame()
+            return False
+        else:
+            env.pop_frame()
+            return True
+    elif isinstance(node, AExistentialQuantificationPredicate):
+        # new scope
+        env.push_new_frame(node.children[:-1])
+        max_depth = len(node.children) -2 # (two preds)
+        if exist_recursive_helper(0, max_depth, node, env):
+            env.pop_frame()
+            return True
+        else:
+            env.pop_frame()
+            return False
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -236,29 +274,125 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 != expr2
-    elif isinstance(node, AGreaterPredicate):
-        expr1 = interpret(node.children[0], env)
-        expr2 = interpret(node.children[1], env)
-        return expr1 > expr2
-    elif isinstance(node, AGreaterEqualPredicate):
-        expr1 = interpret(node.children[0], env)
-        expr2 = interpret(node.children[1], env)
-        return expr1 >= expr2
-    elif isinstance(node, ALessPredicate):
-        expr1 = interpret(node.children[0], env)
-        expr2 = interpret(node.children[1], env)
-        return expr1 < expr2
-    elif isinstance(node, ALessEqualPredicate):
-        expr1 = interpret(node.children[0], env)
-        expr2 = interpret(node.children[1], env)
-        return expr1 <= expr2
-    elif isinstance(node, ANegationPredicate):
-        expr = interpret(node.children[0], env)
-        return not expr
-    elif isinstance(node, AIntegerExpression):
-        return node.intValue
-    elif isinstance(node, AStringExpression):
-        return node.string
+
+
+# **************
+#
+#       2. Sets
+#
+# **************
+    elif isinstance(node, ASetExtensionExpression):
+        lst = []
+        for child in node.children:
+            elm = interpret(child, env)
+            lst.append(elm)
+        return frozenset(lst)
+    elif isinstance(node, AEmptySetExpression):
+        return frozenset()
+    elif isinstance(node, AComprehensionSetExpression):
+        # new scope
+        env.push_new_frame(node.children[:-1])
+        max_depth = len(node.children) -2
+        lst = set_comprehension_recursive_helper(0, max_depth, node, env)
+        # FIXME: maybe wrong:
+        # [[x1,y1],[x2,y2]..] => [(x1,y2),(x2,y2)...]
+        result = []
+        for i in lst:
+            result.append(tuple(flatten(i,[])))
+        env.pop_frame()
+        return frozenset(result)
+    elif isinstance(node, AUnionExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return aSet1.union(aSet2)
+    elif isinstance(node, AIntersectionExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return aSet1.intersection(aSet2)
+    elif isinstance(node, ACoupleExpression):
+        lst = []
+        for child in node.children:
+            elm = interpret(child, env)
+            lst.append(elm)
+        return tuple(lst)
+    elif isinstance(node, APowSubsetExpression):
+        aSet = interpret(node.children[0], env)
+        res = powerset(aSet)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        return frozenset(lst)
+    elif isinstance(node, APow1SubsetExpression):
+        aSet = interpret(node.children[0], env)
+        res = powerset(aSet)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        lst.remove(frozenset([]))
+        return frozenset(lst)
+    elif isinstance(node, ACardExpression):
+        aSet = interpret(node.children[0], env)
+        return len(aSet)
+    elif isinstance(node, AGeneralUnionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.union(aset)
+        return acc
+    elif isinstance(node, AGeneralIntersectionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.intersection(aset)
+        return acc
+
+
+# *************************
+#
+#       2.1 Set predicates
+#
+# *************************
+    elif isinstance(node, ABelongPredicate):
+        elm = interpret(node.children[0], env)
+        aSet = interpret(node.children[1], env)
+        return elm in aSet
+    elif isinstance(node, ANotBelongPredicate):
+        elm = interpret(node.children[0], env)
+        aSet = interpret(node.children[1], env)
+        return not elm in aSet
+    elif isinstance(node, AIncludePredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return aSet1.issubset(aSet2)
+    elif isinstance(node, ANotIncludePredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return not aSet1.issubset(aSet2)
+    elif isinstance(node, AIncludeStrictlyPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return aSet1.issubset(aSet2) and aSet1 != aSet2
+    elif isinstance(node, ANotIncludeStrictlyPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
+
+
+# *****************
+#
+#       3. Numbers
+#
+# *****************
+    elif isinstance(node, ANatSetExpression):
+        return frozenset(range(0,max_int+1))
+    elif isinstance(node, ANat1SetExpression):
+        return frozenset(range(1,max_int+1))
+    elif isinstance(node, AMinExpression):
+        aSet = interpret(node.children[0], env)
+        return min(list(aSet))
+    elif isinstance(node, AMaxExpression):
+        aSet = interpret(node.children[0], env)
+        return max(list(aSet))
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -283,108 +417,73 @@ def interpret(node, env):
         expr2 = interpret(node.children[1], env)
         assert expr2 > 0
         return expr1 % expr2
-    elif isinstance(node, AIdentifierExpression):
-        return env.get_value(node.idName)
-    elif isinstance(node, ABelongPredicate):
-        elm = interpret(node.children[0], env)
-        aSet = interpret(node.children[1], env)
-        return elm in aSet
-    elif isinstance(node, ANotBelongPredicate):
-        elm = interpret(node.children[0], env)
-        aSet = interpret(node.children[1], env)
-        return not elm in aSet
-    elif isinstance(node, ASetExtensionExpression):
-        lst = []
-        for child in node.children:
-            elm = interpret(child, env)
-            lst.append(elm)
-        return frozenset(lst)
-    elif isinstance(node, ACardExpression):
-        aSet = interpret(node.children[0], env)
-        return len(aSet)
-    elif isinstance(node, AMinExpression):
-        aSet = interpret(node.children[0], env)
-        return min(list(aSet))
-    elif isinstance(node, AMaxExpression):
-        aSet = interpret(node.children[0], env)
-        return max(list(aSet))
-    elif isinstance(node, AEmptySetExpression):
-        return frozenset()
-    elif isinstance(node, AUnionExpression):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return aSet1.union(aSet2)
-    elif isinstance(node, AIntersectionExpression):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return aSet1.intersection(aSet2)
-    elif isinstance(node, AIncludePredicate):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return aSet1.issubset(aSet2)
-    elif isinstance(node, ANotIncludePredicate):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return not aSet1.issubset(aSet2)
-    elif isinstance(node, AIncludeStrictlyPredicate):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return aSet1.issubset(aSet2) and aSet1 != aSet2
-    elif isinstance(node, ANotIncludeStrictlyPredicate):
-        aSet1 = interpret(node.children[0], env)
-        aSet2 = interpret(node.children[1], env)
-        return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
-    elif isinstance(node, AUniversalQuantificationPredicate):
-        # new scope 
-        env.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2 # (two preds)
-        if not forall_recursive_helper(0, max_depth, node, env):
-            env.pop_frame()
-            return False
-        else:
-            env.pop_frame()
-            return True
-    elif isinstance(node, AExistentialQuantificationPredicate):
+    elif isinstance(node, AIntervalExpression):
+        left = interpret(node.children[0], env)
+        right = interpret(node.children[1], env)
+        return frozenset(range(left, right+1))
+    elif isinstance(node, AGeneralSumExpression):
+        sum_ = 0
         # new scope
-        env.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2 # (two preds)
-        if exist_recursive_helper(0, max_depth, node, env):
-            env.pop_frame()
-            return True
-        else:
-            env.pop_frame()
-            return False
-    elif isinstance(node, AComprehensionSetExpression):
-        # new scope
-        env.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2
-        lst = set_comprehension_recursive_helper(0, max_depth, node, env)
-        # FIXME: maybe wrong:
-        # [[x1,y1],[x2,y2]..] => [(x1,y2),(x2,y2)...]
-        result = []
-        for i in lst:
-            result.append(tuple(flatten(i,[])))
+        env.push_new_frame(node.children[:-2])
+        preds = node.children[-2]
+        expr = node.children[-1]
+        # TODO: this code (maybe) dont checks all possibilities!
+        # gen. all values:
+        for child in node.children[:-2]:
+            # enumeration
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
+                if interpret(preds, env):
+                    sum_ += interpret(expr, env)
+        # done
         env.pop_frame()
-        return frozenset(result)
-    elif isinstance(node, ACoupleExpression):
-        lst = []
-        for child in node.children:
-            elm = interpret(child, env)
-            lst.append(elm)
-        return tuple(lst)
-    elif isinstance(node, APowSubsetExpression):
-        aSet = interpret(node.children[0], env)
-        res = powerset(aSet)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        return frozenset(lst)
-    elif isinstance(node, APow1SubsetExpression):
-        aSet = interpret(node.children[0], env)
-        res = powerset(aSet)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        lst.remove(frozenset([]))
-        return frozenset(lst)
+        return sum_
+    elif isinstance(node, AGeneralProductExpression):
+        prod = 1
+        # new scope
+        env.push_new_frame(node.children[:-2])
+        preds = node.children[-2]
+        expr = node.children[-1]
+        # gen. all values:
+        # TODO: this code (maybe) dont checks all possibilities!
+        for child in node.children[:-2]:
+            # enumeration
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
+                if interpret(preds, env):
+                    prod *= interpret(expr, env)
+        env.pop_frame()
+        return prod
+
+
+# ***************************
+#
+#       3.1 Number predicates
+#
+# ***************************
+    elif isinstance(node, AGreaterPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        return expr1 > expr2
+    elif isinstance(node, ALessPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        return expr1 < expr2
+    elif isinstance(node, AGreaterEqualPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        return expr1 >= expr2
+    elif isinstance(node, ALessEqualPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        return expr1 <= expr2
+
+
+# ******************
+#
+#       4. Relations
+#
+# ******************
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -409,24 +508,6 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         id_r = [(x,x) for x in aSet]
         return frozenset(id_r)
-    elif isinstance(node, AIterationExpression):
-        arel = interpret(node.children[0], env)
-        n = interpret(node.children[1], env)
-        assert n>=0
-        rel = list(arel)
-        rel = [(x[0],x[0]) for x in rel]
-        for i in range(n):
-            rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-        return frozenset(rel)
-    elif isinstance(node, AReflexiveClosureExpression):
-        arel = interpret(node.children[0], env)
-        rel = list(arel)
-        rel = [(x[0],x[0]) for x in rel]
-        while True: # fixpoint-search (do-while-loop)
-            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
-                return frozenset(rel)
-            rel =list(frozenset(new_rel).union(frozenset(rel)))
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
@@ -463,6 +544,34 @@ def interpret(node, env):
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]
         return frozenset(r2_list + new_r)
+    elif isinstance(node, ADirectProductExpression):
+        p = interpret(node.children[0], env)
+        q = interpret(node.children[1], env)
+        d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
+        return frozenset(d_prod)
+    elif isinstance(node, AParallelProductExpression):
+        p = interpret(node.children[0], env)
+        q = interpret(node.children[1], env)
+        p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+        return frozenset(p_prod)
+    elif isinstance(node, AIterationExpression):
+        arel = interpret(node.children[0], env)
+        n = interpret(node.children[1], env)
+        assert n>=0
+        rel = list(arel)
+        rel = [(x[0],x[0]) for x in rel]
+        for i in range(n):
+            rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+        return frozenset(rel)
+    elif isinstance(node, AReflexiveClosureExpression):
+        arel = interpret(node.children[0], env)
+        rel = list(arel)
+        rel = [(x[0],x[0]) for x in rel]
+        while True: # fixpoint-search (do-while-loop)
+            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
+                return frozenset(rel)
+            rel =list(frozenset(new_rel).union(frozenset(rel)))
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
@@ -475,16 +584,14 @@ def interpret(node, env):
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(x,x[1]) for x in cart]
         return frozenset(proj)
-    elif isinstance(node, ADirectProductExpression):
-        p = interpret(node.children[0], env)
-        q = interpret(node.children[1], env)
-        d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
-        return frozenset(d_prod)
-    elif isinstance(node, AParallelProductExpression):
-        p = interpret(node.children[0], env)
-        q = interpret(node.children[1], env)
-        p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
-        return frozenset(p_prod)
+
+
+
+# *******************
+#
+#       4.1 FUnctions
+#
+# *******************
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
@@ -537,9 +644,28 @@ def interpret(node, env):
         total_inj_fun = filter_not_total(inj_fun, S) # S>->T
         bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
         return bij_fun
+    elif isinstance(node, ALambdaExpression):
+        func_list = []
+        # new scope
+        env.push_new_frame(node.children[:-2])
+        pred = node.children[-2]
+        expr = node.children[-1]
+        # TODO: this code (maybe) dont checks all possibilities!
+        # gen. all values:
+        for child in node.children[:-2]:
+            # enumeration
+            for i in all_values(child, env):
+                env.set_value(child.idName, i)
+                if interpret(pred, env):
+                    image = interpret(expr, env)
+                    tup = tuple([i, image])
+                    func_list.append(tup)
+        # done
+        env.pop_frame()
+        return frozenset(func_list)
     elif isinstance(node, AFunctionExpression):
         function = interpret(node.children[0], env)
-        args = [] # TODO: enamble many args
+        args = [] 
         for child in node.children[1:]:
             arg = interpret(child, env)
             args.append(arg)
@@ -547,6 +673,13 @@ def interpret(node, env):
             return get_image(function, tuple(args))
         else:
             return get_image(function, args[0])
+
+
+# ********************
+#
+#       4.2 Sequences
+#
+# *******************
     elif isinstance(node,AEmptySequenceExpression):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
@@ -594,15 +727,6 @@ def interpret(node, env):
         for tup in t: # FIXME: maybe wrong order
             new_t.append(tuple([tup[0]+len(s),tup[1]]))
         return frozenset(list(s)+new_t)
-    elif isinstance(node, AGeneralConcatExpression):
-        s = interpret(node.children[0], env)
-        t = []
-        index = 0
-        for squ in dict(s).values():
-            for val in dict(squ).values():
-                index = index +1
-                t.append(tuple([index, val]))
-        return frozenset(t)
     elif isinstance(node, AInsertFrontExpression):
         E = interpret(node.children[0], env)
         s = interpret(node.children[1], env)
@@ -676,80 +800,26 @@ def interpret(node, env):
         lst.sort()
         lst.pop()
         return frozenset(lst)
-    elif isinstance(node, AIntervalExpression):
-        left = interpret(node.children[0], env)
-        right = interpret(node.children[1], env)
-        return frozenset(range(left, right+1))
-    elif isinstance(node, ALambdaExpression):
-        func_list = []
-        # new scope
-        env.push_new_frame(node.children[:-2])
-        pred = node.children[-2]
-        expr = node.children[-1]
-        # TODO: this code (maybe) dont checks all possibilities!
-        # gen. all values:
-        for child in node.children[:-2]:
-            # enumeration
-            for i in all_values(child, env):
-                env.set_value(child.idName, i)
-                if interpret(pred, env):
-                    image = interpret(expr, env)
-                    tup = tuple([i, image])
-                    func_list.append(tup)
-        # done
-        env.pop_frame()
-        return frozenset(func_list)
-    elif isinstance(node, AGeneralSumExpression):
-        sum_ = 0
-        # new scope
-        env.push_new_frame(node.children[:-2])
-        preds = node.children[-2]
-        expr = node.children[-1]
-        # TODO: this code (maybe) dont checks all possibilities!
-        # gen. all values:
-        for child in node.children[:-2]:
-            # enumeration
-            for i in all_values(child, env):
-                env.set_value(child.idName, i)
-                if interpret(preds, env):
-                    sum_ += interpret(expr, env)
-        # done
-        env.pop_frame()
-        return sum_
-    elif isinstance(node, AGeneralProductExpression):
-        prod = 1
-        # new scope
-        env.push_new_frame(node.children[:-2])
-        preds = node.children[-2]
-        expr = node.children[-1]
-        # gen. all values:
-        # TODO: this code (maybe) dont checks all possibilities!
-        for child in node.children[:-2]:
-            # enumeration
-            for i in all_values(child, env):
-                env.set_value(child.idName, i)
-                if interpret(preds, env):
-                    prod *= interpret(expr, env)
-        env.pop_frame()
-        return prod
-    elif isinstance(node, ANatSetExpression):
-        return frozenset(range(0,max_int+1))
-    elif isinstance(node, ANat1SetExpression):
-        return frozenset(range(1,max_int+1))
-    elif isinstance(node, AGeneralUnionExpression):
-        set_of_sets = interpret(node.children[0], env)
-        elem_lst = list(set_of_sets)
-        acc = elem_lst[0]
-        for aset in elem_lst[1:]:
-            acc = acc.union(aset)
-        return acc
-    elif isinstance(node, AGeneralIntersectionExpression):
-        set_of_sets = interpret(node.children[0], env)
-        elem_lst = list(set_of_sets)
-        acc = elem_lst[0]
-        for aset in elem_lst[1:]:
-            acc = acc.intersection(aset)
-        return acc
+    elif isinstance(node, AGeneralConcatExpression):
+        s = interpret(node.children[0], env)
+        t = []
+        index = 0
+        for squ in dict(s).values():
+            for val in dict(squ).values():
+                index = index +1
+                t.append(tuple([index, val]))
+        return frozenset(t)
+    elif isinstance(node, AStringExpression):
+        return node.string
+
+
+# ****************
+# 6. Miscellaneous
+# ****************
+    elif isinstance(node, AIntegerExpression):
+        return node.intValue
+    elif isinstance(node, AIdentifierExpression):
+        return env.get_value(node.idName)
     else:
         raise Exception("Unknown Node: %s",node)
 
