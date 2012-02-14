@@ -274,6 +274,11 @@ class TestInterpRelations():
         env.set_value("r", frozenset([("a","1"),("a","42"),("c","777")]))
         assert interpret(root.children[0],env)
 
+        env.set_value("r", frozenset([(3,5), (3,9), (6,3), (9,2)]))
+        env.set_value("S", frozenset([1, 2, 3]))
+        env.set_value("f", frozenset([5,9]))
+        assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_rel_overriding(self):
         # Build AST:
@@ -291,6 +296,11 @@ class TestInterpRelations():
         env.set_value("f", frozenset([("a","1"),("b","41"),("c","777"),("d","17")]))
         env.set_value("r2", frozenset([("d","17"),("b","41")]))
         env.set_value("r1", frozenset([("a","1"),("b","42"),("c","777")]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("r1", frozenset([(2,7), (3,4), (5,1), (9,5)]))
+        env.set_value("r2", frozenset([(3,5), (3,9), (6,3), (9,2)]))
+        env.set_value("f", frozenset([(3,5), (3,9), (6,3), (9,2), (2,7), (5,1)]))
         assert interpret(root.children[0],env)
 
 
@@ -312,6 +322,11 @@ class TestInterpRelations():
         env.set_value("T", frozenset(["x","y"]))
         assert interpret(root.children[0],env)
 
+        env.set_value("S", frozenset([1,4]))
+        env.set_value("T", frozenset([2,3]))
+        env.set_value("f", frozenset([((1,2),1),((1,3),1),((4,2),4),((4,3),4)]))
+        assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_rel_proj2(self):
         # Build AST:
@@ -330,6 +345,13 @@ class TestInterpRelations():
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         assert interpret(root.children[0],env)
+
+        env.set_value("S", frozenset([1,4]))
+        env.set_value("T", frozenset([2,3]))
+        env.set_value("f", frozenset([((1,2),2),((1,3),3),((4,2),2),((4,3),3)]))
+        assert interpret(root.children[0],env)
+
+
 
     def test_genAST_pred_rel_direct_prod(self):
         # Build AST:
@@ -354,6 +376,11 @@ class TestInterpRelations():
         env.set_value("q", frozenset([("x","3"),("b","4")]))
         assert interpret(root.children[0],env)
 
+        env.set_value("f", frozenset([(7,(11,20)), (2,(11,21))]))
+        env.set_value("p", frozenset([(8,10), (7,11), (2,11), (6,12)]))
+        env.set_value("q", frozenset([(1,20), (7,20), (2,21), (1,22)]))
+        assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_rel_parallel_prod(self):
         # Build AST:
@@ -371,6 +398,11 @@ class TestInterpRelations():
         env.set_value("f", frozenset([(("x","a"),("1","3")),(("x","b"),("1","4"))]))
         env.set_value("p", frozenset([("x","1")]))
         env.set_value("q", frozenset([("a","3"),("b","4")]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("p", frozenset([(1,11), (4,12)]))
+        env.set_value("q", frozenset([(2,21), (7,22)]))
+        env.set_value("f", frozenset([((1,2),(11,21)), ((1,7),(11,22)),((4,2),(12,21)), ((4,7),(12,22))]))
         assert interpret(root.children[0],env)
 
 

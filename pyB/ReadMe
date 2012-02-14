@@ -1,5 +1,5 @@
 PyB
-31.08.2011 - 31.01.2012 
+31.08.2011 - 14.02.2012 
 by John Witulski: www.stups.uni-duesseldorf.de
 
 1. Config:
@@ -43,6 +43,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - min/max an the natural numbers - not ProB
     - lambda abstractions with more vars
     - and maybe more...;-)
+    - NO IMPLEMENTATION: LTL and Event-B
 
 
 6. How it works:
@@ -94,34 +95,33 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - TODO: write prop. python module (e.g for min max int)
     - FIXME: maybe BUG: eval of preds changes value_stack
     - FIXME: Typeerrors are scattered through the whole code via asserts
-    - TODO: move namelearning of sets in typing from AUnequal/EqualPredicate to 
-    unify
+    - TODO: move name-learning of sets in typing from AUnequal/EqualPredicate to unify
     - TODO: remove fix value/type from tests if possible
     - TODO: write more scoping tests
-    - assumes that all functions are 2-tuple: otherwise crash
     - TODO: write more AST-Gen tests
+    - TODO: Dont assume that all functions are 2-tuple: otherwise crash
     - TODO: write a build-script
     - Maybe the implemenation has to be fixed if infinite sets are introduced
     - enable function applications (4.1.9) with many args
     - not tested: append/preprend more than one element - possible?
     - FIXME: Vars are added to a Frame at the wrong position!
     - Tests ignore Frames and Scopes. Fix that
-    - BUG: a. typechecking the settype contains data, this data is not valid 
+    - FIXME: a. typechecking the settype contains data, this data is not valid 
      e.g. after set union, inters. diff.
     - typechecker and interpreter has undefined behavior if there is a error in 
      the java-Bparser
-    - check if all astnodes return types (if they have to)
+    - TODO: check if all astnodes return types (if they have to)
     - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
     - TODO: implement deferredSets
-    - TODO: set mch-para to good values
+    - TODO: set mch-para to "good" values
     - TODO: enum set which have no expl. elements
     - TODO: Maybe all asserts inside the typechecker must be replaced by 
      unify_equal()
     - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a 
      type-tree
     - TODO: Dont create new instances of IntegerType if not nec.
-    - BUG: unknownnodes like NaturalSetExpression create atype == atype.data
-    - Think of unifications like: "it is A or B" e.g. perm(s)
+    - FIXME: unknown-nodes like NaturalSetExpression create atype == atype.data
+    - TODO: Think of unifications like: "it is A or B" e.g. perm(s)
 
 
 9. AST-Node Checklist

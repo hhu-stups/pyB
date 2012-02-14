@@ -578,7 +578,7 @@ class TestTypesSets():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y"])
         assert isinstance(env.get_type("x"), CartType)

@@ -52,7 +52,7 @@ class Environment():
         # linear search for ID with the name string
         for node in self.node_to_type_map:
             assert isinstance(node, AIdentifierExpression)
-            # FIXME: if there is more than one "string"
+            # FIXME: scoping: if there is more than one "string"
             # e.g x:Nat & !x.(x:S=>card(x)=3)...
             if node.idName==string:
                 return self.node_to_type_map[node]
@@ -83,6 +83,7 @@ class Environment():
     # leave scope: throw all values of local vars away
     def pop_frame(self):
         self.value_stack.pop()
+
 
 # sideeffect:
 # evals pred and sets var to values
