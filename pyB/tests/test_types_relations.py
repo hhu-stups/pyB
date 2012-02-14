@@ -24,6 +24,21 @@ class TestTypesRelations():
         assert isinstance(env.get_type("r").data.data.data[1], SetType)
 
 
+    def test_types_relation_set_enum(self):
+        # Build AST
+        string_to_file("#PREDICATE r = {8|->10, 7|->11, 2|->11, 6|->12}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["r"])
+        assert isinstance(env.get_type("r"), PowerSetType)
+        assert isinstance(env.get_type("r").data, CartType)
+        assert isinstance(env.get_type("r").data.data[0], IntegerType)
+        assert isinstance(env.get_type("r").data.data[1], IntegerType)
+
+
     def test_types_domain(self):
         # Build AST
         string_to_file("#PREDICATE r:S<->T & x:dom(r)", file_name)
@@ -255,6 +270,17 @@ class TestTypesRelations():
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
+
+
+    def test_types_simple_dirprod2(self):
+        # Build AST
+        string_to_file("#PREDICATE f = {7|->11} & g = {7|->20} & f >< g = {(7|->(11|->20))}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["f","g"])
 
 
     def test_types_simple_proj1(self):

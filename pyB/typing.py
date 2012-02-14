@@ -589,10 +589,10 @@ def typeit(node, env, type_env):
         assert isinstance(rel_type0.data, CartType)
         assert isinstance(rel_type1, PowerSetType)
         assert isinstance(rel_type1.data, CartType)
-        x = SetType(rel_type0.data.data[0].data)
-        m = SetType(rel_type0.data.data[1].data)
-        y = SetType(rel_type1.data.data[0].data)
-        n = SetType(rel_type1.data.data[1].data)
+        x = rel_type0.data.data[0]
+        m = rel_type0.data.data[1]
+        y = rel_type1.data.data[0]
+        n = rel_type1.data.data[1]
         return PowerSetType(CartType(CartType(x,y),CartType(m,n)))
     elif isinstance(node, ADirectProductExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
@@ -601,29 +601,27 @@ def typeit(node, env, type_env):
         assert isinstance(rel_type0.data, CartType)
         assert isinstance(rel_type1, PowerSetType)
         assert isinstance(rel_type1.data, CartType)
-        x = SetType(rel_type0.data.data[0].data)
-        y = SetType(rel_type0.data.data[1].data)
-        x2 = SetType(rel_type1.data.data[0].data)
-        z = SetType(rel_type1.data.data[1].data)
-        #print x.data
-        #print x2.data
-        assert x.data == x2.data
+        x = rel_type0.data.data[0]
+        y = rel_type0.data.data[1]
+        x2 = rel_type1.data.data[0]
+        z = rel_type1.data.data[1]
+        assert x.__class__ == x2.__class__
         return PowerSetType(CartType(x,CartType(y,z)))
     elif isinstance(node, AFirstProjectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
-        assert isinstance(type0.data, SetType)
+        assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
-        assert isinstance(type1.data, SetType)
+        assert isinstance(type1.data, SetType) or isinstance(type1.data, IntegerType)
         return PowerSetType(CartType(CartType(type0.data,type1.data),type0.data))
     elif isinstance(node, ASecondProjectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
-        assert isinstance(type0.data, SetType)
+        assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
-        assert isinstance(type1.data, SetType)
+        assert isinstance(type1.data, SetType)  or isinstance(type1.data, IntegerType)
         return PowerSetType(CartType(CartType(type0.data,type1.data),type1.data))
     elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression):
         type0 = typeit(node.children[0], env, type_env)
