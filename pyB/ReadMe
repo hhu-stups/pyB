@@ -88,40 +88,51 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - sets and frozensets are mixed (e.g in POW)..fix that
     - not tested: sequences of sequences
     - BUG: mising String spaces (maybe a parser bug- java code) 
+    - enable function applications (4.1.9) with many args
 
 
 8. TODO-LIST:
-    - TODO: throw better Typeexceptions
-    - TODO: write prop. python module (e.g for min max int)
-    - FIXME: maybe BUG: eval of preds changes value_stack
-    - FIXME: Typeerrors are scattered through the whole code via asserts
-    - TODO: move name-learning of sets in typing from AUnequal/EqualPredicate to unify
-    - TODO: remove fix value/type from tests if possible
-    - TODO: write more scoping tests
-    - TODO: write more AST-Gen tests
-    - TODO: Dont assume that all functions are 2-tuple: otherwise crash
-    - TODO: write a build-script
+8.1 Features
+    - write a build-script
+    - enable infinite sets
+    - Implement UNION and INTER
+    - Implement B-mch-Operations
+    - Implement Rodin interface
+    - Implement Definitions
+    - set mch-para to "good" values
+    - enum set which have no expl. elements
+    - Maybe all asserts inside the typechecker must be replaced by 
+      unify_equal()
+8.2 Refactoring / small fixes
+    - throw better Typeexceptions
+    - write prop. python module (e.g for min max int)
+    - Typeerrors are scattered through the whole code via asserts
+    - move name-learning of sets in typing from AUnequal/EqualPredicate to
+      unify
+    - remove fix value/type from tests if possible
+    - write more scoping tests
+    - write more AST-Gen tests
     - Maybe the implemenation has to be fixed if infinite sets are introduced
-    - enable function applications (4.1.9) with many args
-    - not tested: append/preprend more than one element - possible?
-    - FIXME: Vars are added to a Frame at the wrong position!
-    - Tests ignore Frames and Scopes. Fix that
-    - FIXME: a. typechecking the settype contains data, this data is not valid 
-     e.g. after set union, inters. diff.
+    - S=NAT Type(S)=Pow(NAT) (lose of info)
+    - MAYBE implement deferredSets
+    - check if all astnodes return types (if they have to)
+    - Think of unifications like: "it is A or B" e.g. perm(s)
+    - Dont create new instances of IntegerType if not nec.
+8.3 minor problems
+    - Dont assume that all functions are 2-tuple: otherwise crash
     - typechecker and interpreter has undefined behavior if there is a error in 
-     the java-Bparser
-    - TODO: check if all astnodes return types (if they have to)
-    - FIXME: S=NAT Type(S)=Pow(NAT) (lose of info)
-    - TODO: implement deferredSets
-    - TODO: set mch-para to "good" values
-    - TODO: enum set which have no expl. elements
-    - TODO: Maybe all asserts inside the typechecker must be replaced by 
-     unify_equal()
-    - FIXME: maybe there is a unify Bug. unify unifies with the first POW in a 
-     type-tree
-    - TODO: Dont create new instances of IntegerType if not nec.
-    - FIXME: unknown-nodes like NaturalSetExpression create atype == atype.data
-    - TODO: Think of unifications like: "it is A or B" e.g. perm(s)
+      the java-Bparser
+    - Tests ignore Frames and Scopes.
+    - not tested: append/preprend more than one element - possible?
+8.4 Bugs:
+    - MAYBE BUG: eval of preds changes value_stack
+    - Vars are added to a Frame at the wrong position!
+    - typechecking the settype contains data, this data is not valid 
+      e.g. after set union, inters. diff.
+    - unknown-nodes like NaturalSetExpression create atype == atype.data
+    - maybe there is a unify Bug. unify unifies with the first POW in a 
+      type-tree
+
 
 
 9. AST-Node Checklist
@@ -232,7 +243,10 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARestrictTailExpression
     caseAGeneralConcatExpression
     caseAFunctionExpression
-    
+    caseABoolSetExpression
+    caseATrueExpression
+    caseAFalseExpression
+
 
  9.2 NOT IMPLEMENTED:
     caseAExpressionParseUnit
@@ -284,14 +298,11 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPartitionPredicate
     caseADefinitionPredicate
     caseAPrimedIdentifierExpression
-    caseATrueExpression
-    caseAFalseExpression
     caseAMaxIntExpression (no test)
     caseAMinIntExpression (no test)
     caseAIntegerSetExpression
     caseANatural1SetExpression
     caseAIntSetExpression
-    caseABoolSetExpression
     caseAStringSetExpression
     caseAConvertBoolExpression
     caseAMinusExpression

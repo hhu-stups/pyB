@@ -58,6 +58,15 @@ class ASetsMachineClause(Clause):
 #class AMaxIntExpression(Expression):
 #    pass
 
+class ABoolSetExpression(Expression):
+    pass
+
+class ATrueExpression(Expression):
+    pass
+
+class AFalseExpression(Expression):
+    pass
+
 class AMinExpression(Expression):
     pass
 

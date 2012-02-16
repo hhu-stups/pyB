@@ -138,3 +138,54 @@ class TestMCHAssert():
         assert interpret(root.children[2].children[3], env)
         assert interpret(root.children[2].children[4], env)
         assert interpret(root.children[2].children[5], env)
+
+
+    def test_abrial_book_page83_fail(self):
+        # added some 42 in the assertions clause
+        string = '''
+        MACHINE BBook_Page83
+        /* Translation of example from page 83 of Abrial's B-Book */
+        CONSTANTS p,w,q,f,g,s,t,h,k
+        PROPERTIES
+        p = {3|->5, 3|->9, 6|->3, 9|->2} &
+        w = {1, 2, 3} &
+        p[w] = {5,9} &
+        q = {2|->7, 3|->4, 5|->1, 9|->5} &
+        q <+ p = {3|->5, 3|->9, 6|->3, 9|->2, 2|->7, 5|->1} &
+        f = {8|->10, 7|->11, 2|->11, 6|->12} &
+        g = {1|->20, 7|->20, 2|->21, 1|->22} &
+        f >< g = {(7|->(11|->20)), (2|->(11|->21))} &
+        s = {1,4} &
+        t = {2,3} &
+        prj1(s,t) = {((1|->2)|->1),((1|->3)|->1),((4|->2)|->4),((4|->3)|->4)} &
+        prj2(s,t) = {((1|->2)|->2),((1|->3)|->3),((4|->2)|->2),((4|->3)|->3)} &
+        h = {1|->11, 4|->12} &
+        k = {2|->21, 7|->22} &
+        (h||k) = { (1,2) |-> (11,21), (1,7) |-> (11,22),
+                    (4,2) |-> (12,21), (4,7) |-> (12,22) }
+        ASSERTIONS
+        p[w] = {5,42};
+        q <+ p = {(3|->5),(3|->9),(6|->3),(9|->2),(2|->7),(5|->42)};
+        f >< g = {(7|->(11|->20)), (2|->(11|->42))};
+        prj1(s,t) = {((1|->2)|->1),((1|->3)|->1),((4|->2)|->4),((4|->3)|->42)};
+        prj2(s,t) = {((1|->2)|->2),((1|->3)|->3),((4|->2)|->2),((4|->3)|->42)};
+        (h||k) = { (1,2) |-> (11,21), (1,7) |-> (11,22),
+                    (4,2) |-> (12,21), (4,7) |-> (12,42) }
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        # eval ASSERTIONS (again)
+        assert isinstance(root.children[2], AAssertionsMachineClause)
+        assert not interpret(root.children[2].children[0], env)
+        assert not interpret(root.children[2].children[1], env)
+        assert not interpret(root.children[2].children[2], env)
+        assert not interpret(root.children[2].children[3], env)
+        assert not interpret(root.children[2].children[4], env)
+        assert not interpret(root.children[2].children[5], env)

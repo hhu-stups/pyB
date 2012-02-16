@@ -1,1 +1,1 @@
-#PREDICATE s="HalloWelt"
+#PREDICATE A:BOOL & B:BOOL & C:BOOL & (A=TRUE <=> (B=FALSE or C=FALSE)) & (B=TRUE <=> A=TRUE)

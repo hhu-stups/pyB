@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from interp import Environment
-from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType, StringType
+from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType, StringType, BoolType
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -632,3 +632,17 @@ class TestTypesSets():
         env = Environment()
         _test_typeit(root, env, [], ["s"])
         assert isinstance(env.get_type("s"), StringType)
+
+
+    def test_types_bool(self):
+        # Build AST
+        string_to_file("#PREDICATE A:BOOL & B:BOOL & C:BOOL & (A=TRUE <=> (B=FALSE or C=FALSE)) & (B=TRUE <=> A=TRUE)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["A","B","C"])
+        assert isinstance(env.get_type("A"), BoolType)
+        assert isinstance(env.get_type("B"), BoolType)
+        assert isinstance(env.get_type("C"), BoolType)

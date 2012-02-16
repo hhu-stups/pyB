@@ -13,6 +13,9 @@ class BType: # Baseclass used to repr. concrete type
 class StringType(BType):
     pass
 
+class BoolType(BType):
+    pass
+
 class IntegerType(BType):
     def __init__(self, number_or_None):
         # maybe this data is useless for typechecking
@@ -226,7 +229,7 @@ def resolve_type(env):
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
     #print tree
-    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType) or isinstance(tree, StringType):
+    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
         return tree
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
@@ -335,8 +338,12 @@ def typeit(node, env, type_env):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AStringExpression):
         return StringType()
+    elif isinstance(node, ABoolSetExpression):
+        return PowerSetType(BoolType())
     elif isinstance(node, AEmptySetExpression):
         return EmptySetType()
+    elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
+        return BoolType()
     elif isinstance(node, ACoupleExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
@@ -781,7 +788,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 else:
                     assert maybe_type1.data == maybe_type0.data
             else:
-                assert isinstance(maybe_type0, IntegerType)
+                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType)
             return maybe_type0
         else:
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
