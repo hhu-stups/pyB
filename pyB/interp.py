@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, _test_typeit
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, _test_typeit
 from helpers import find_var_names
 
 min_int = -1
@@ -821,6 +821,12 @@ def interpret(node, env):
         return node.intValue
     elif isinstance(node, AIdentifierExpression):
         return env.get_value(node.idName)
+    elif isinstance(node, ABoolSetExpression):
+        return frozenset([True,False])
+    elif isinstance(node, ATrueExpression):
+        return True
+    elif isinstance(node, AFalseExpression):
+        return False
     else:
         raise Exception("Unknown Node: %s",node)
 
@@ -1018,9 +1024,10 @@ def all_values(node, env):
 
 
 def all_values_by_type(atype, env):
-    # TODO: support cart prod
     if isinstance(atype, IntegerType):
         return range(min_int, max_int+1)
+    elif isinstance(atype, BoolType):
+        return [True, False]
     elif isinstance(atype, SetType):
         type_name =  atype.data
         assert isinstance(env.get_value(type_name), frozenset)

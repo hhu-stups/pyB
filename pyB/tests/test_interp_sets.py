@@ -516,3 +516,22 @@ class TestInterpSets():
         env = Environment()
         env.set_value("s", "Hallo Welt")
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_bool(self):
+        # Build AST
+        string_to_file("#PREDICATE A:BOOL & B:BOOL & C:BOOL & (A=TRUE <=> (B=FALSE or C=FALSE)) & (B=TRUE <=> A=TRUE)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.set_value("A", True)
+        env.set_value("B", True)
+        env.set_value("C", False)
+        assert interpret(root.children[0],env)
+
+        env.set_value("A", False)
+        env.set_value("B", False)
+        env.set_value("C", False)
+        assert not interpret(root.children[0],env)
