@@ -186,3 +186,38 @@ class TestMCHLaod():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
+
+
+
+    def test_examples_knights_knaves(self):
+        string ='''
+        MACHINE KnightsKnaves
+        /* Puzzle from Smullyan:
+        Knights: always tell the truth
+        Knaves: always lie
+
+        1: A says: “B is a knave or C is a knave”
+        2: B says “A is a knight”
+
+        What are A & B & C?
+        */
+        CONSTANTS A,B,C
+        PROPERTIES
+        A:BOOL & B:BOOL & C:BOOL /* TRUE if they are a Knight */
+        &
+        (A=TRUE <=> (B=FALSE or C=FALSE)) &
+        (B=TRUE <=> A=TRUE)
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+
+        # Test
+        env = Environment() # search for CONSTANTS which make PROPERTIES True
+        interpret(root, env)
+        assert env.get_value("A") == True
+        assert env.get_value("B") == True
+        assert env.get_value("C") == False

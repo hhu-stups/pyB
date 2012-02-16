@@ -120,12 +120,6 @@ def interpret(node, env):
             idNames.append(name) # add machine-parameters
         _test_typeit(node, env, [], idNames) ## FIXME: replace
 
-        # FIXME: dummy-init of mch-parameters
-        for name in node.para:
-            atype = env.get_type(name) # XXX
-            values = all_values_by_type(atype, env)
-            env.set_value(name, values[0]) #XXX
-
         aConstantsMachineClause = None
         aConstraintsMachineClause = None
         aSetsMachineClause = None
@@ -156,20 +150,48 @@ def interpret(node, env):
                 raise Exception("Unknown clause:",child )
 
         # TODO: Check with B spec
-        if aConstantsMachineClause:
-            interpret(aConstantsMachineClause, env)
-        if aConstraintsMachineClause:
+        # Schneider Book page 62-64:
+        # The parameters p make the constraints c True
+        # #p.C
+        # FIXME: dummy-init of mch-parameters
+        for name in node.para:
+            atype = env.get_type(name) # XXX
+            values = all_values_by_type(atype, env)
+            env.set_value(name, values[0]) #XXX
+        if aConstraintsMachineClause: # C
             interpret(aConstraintsMachineClause, env)
-        if aSetsMachineClause:
+
+        # Sets St and constants k which meet the constraints c make the properties B True
+        # C => #St,k.B
+        if aSetsMachineClause: # St
             interpret(aSetsMachineClause, env)
+        if aConstantsMachineClause: # k
+            interpret(aConstantsMachineClause, env)
+        if aPropertiesMachineClause: # B
+            # set up constants
+            #TODO: Sets
+            # Some Constants are set via Prop. Preds
+            # FIXME: This is a hack! Introduce fresh envs!
+            res = interpret(aPropertiesMachineClause, env)
+            # Now set that constants which still dont have a value
+            if aConstantsMachineClause:
+                const_names = []
+                for idNode in aConstantsMachineClause.children:
+                    assert isinstance(idNode, AIdentifierExpression)
+                    const_names.append(idNode.idName)
+                if not res:
+                    assert try_all_values(aPropertiesMachineClause, env,const_names)
+
+        # If C and B is True there should be Variables v which make the Invaraiant I True
+        # TODO: B & C => #v.I
         if aVariablesMachineClause:
             interpret(aVariablesMachineClause, env)
         if aInitialisationMachineClause:
             interpret(aInitialisationMachineClause, env)
-        if aPropertiesMachineClause:
-            interpret(aPropertiesMachineClause, env)
         if aInvariantMachineClause:
             interpret(aInvariantMachineClause, env)
+
+        # Not in schneiders book:
         if aAssertionsMachineClause:
             interpret(aAssertionsMachineClause, env)
     elif isinstance(node, AConstantsMachineClause):
@@ -196,8 +218,8 @@ def interpret(node, env):
         for child in node.children:
             interpret(child, env)
     elif isinstance(node, APropertiesMachineClause):
-        for child in node.children:
-            interpret(child, env)
+        assert len(node.children)==1
+        return interpret(node.children[0], env)
     elif isinstance(node, AInitialisationMachineClause):
         for child in node.children:
             interpret(child, env)
@@ -1050,7 +1072,6 @@ def all_values_by_type(atype, env):
 def try_all_values(root, env, idNames):
     name = idNames[0]
     atype = env.get_type(name)
-    print atype
     all_values = all_values_by_type(atype, env)
     if len(idNames)<=1:
         for val in all_values:
