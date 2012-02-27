@@ -868,6 +868,9 @@ def interpret(node, env):
     elif isinstance(node, AParallelSubstitution):
         for child in node.children:
             interpret(child, env)
+    elif isinstance(node, AConvertBoolExpression):
+        return interpret(node.children[0], env)
+
 
 # ****************
 #

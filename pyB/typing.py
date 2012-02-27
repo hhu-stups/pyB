@@ -415,6 +415,11 @@ def typeit(node, env, type_env):
 #        1. Predicates
 #
 # *********************
+    elif isinstance(node, AConjunctPredicate) or isinstance(node, ADisjunctPredicate) or isinstance(node, AImplicationPredicate) or isinstance(node, AEquivalencePredicate) or isinstance(node, ANegationPredicate):
+        for child in node.children:
+            atype = typeit(child, env, type_env)
+            #unify_equal(atype, BoolType(), type_env)
+        return BoolType()
     elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
         ids = []
         for n in node.children[:-1]:
@@ -425,10 +430,11 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         type_env.pop_frame(env)
         return
-    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate) or isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
+    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
-        return unify_equal(expr1_type, expr2_type, type_env)
+        unify_equal(expr1_type, expr2_type, type_env)
+        return BoolType()
 
 
 # **************
@@ -545,6 +551,10 @@ def typeit(node, env, type_env):
         set_type = typeit(node.children[1], env, type_env)
         unify_element_of(elm_type, set_type, type_env)
         return
+    elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
+        expr1_type = typeit(node.children[0], env,type_env)
+        expr2_type = typeit(node.children[1], env,type_env)
+        return unify_equal(expr1_type, expr2_type, type_env)
 
 
 # *****************
@@ -589,7 +599,7 @@ def typeit(node, env, type_env):
         expr2_type = typeit(node.children[1], env, type_env)
         unify_equal(expr1_type, IntegerType(None), type_env)
         unify_equal(expr2_type, IntegerType(None), type_env)
-        return None
+        return BoolType()
 
 
 # ******************
@@ -860,6 +870,11 @@ def typeit(node, env, type_env):
             assert isinstance(idnode,AIdentifierExpression)
             atype1 = typeit(idnode,env, type_env)
             unify_equal(atype0, atype1, type_env)
+    elif isinstance(node, AConvertBoolExpression):
+        atype = typeit(node.children[0], env, type_env)
+        unify_equal(atype, BoolType(), type_env)
+        return atype
+
 
 
 # ****************

@@ -646,3 +646,16 @@ class TestTypesSets():
         assert isinstance(env.get_type("A"), BoolType)
         assert isinstance(env.get_type("B"), BoolType)
         assert isinstance(env.get_type("C"), BoolType)
+
+
+    def test_types_bool2(self):
+        # Build AST
+        string_to_file("#PREDICATE A=bool(1<2)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        print ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["A"])
+        assert isinstance(env.get_type("A"), BoolType)

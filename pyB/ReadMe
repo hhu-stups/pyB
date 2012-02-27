@@ -246,6 +246,12 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseABoolSetExpression
     caseATrueExpression
     caseAFalseExpression
+    caseAExpressionDefinition
+    caseADefinitionsMachineClause
+    caseADefinitionExpression
+    caseAAssignSubstitution
+    caseAParallelSubstitution
+    caseAConvertBoolExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -272,7 +278,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAJoinArgtype
     caseATheoremsModelClause
     caseAVariantModelClause
-    caseADefinitionsMachineClause
     caseASeesMachineClause
     caseAPromotesMachineClause
     caseAUsesMachineClause
@@ -287,7 +292,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAMachineReference
     caseAPredicateDefinition
     caseASubstitutionDefinition
-    caseAExpressionDefinition
     caseAFileDefinition
     caseAValuesEntry
     caseAOperation
@@ -304,7 +308,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseANatural1SetExpression
     caseAIntSetExpression
     caseAStringSetExpression
-    caseAConvertBoolExpression
     caseAMinusExpression
     caseAUnaryExpression
     caseAMultiplicationExpression
@@ -325,7 +328,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATransFunctionExpression
     caseATransRelationExpression
     caseAIseq1Expression
-    caseADefinitionExpression
     caseATreeExpression
     caseABtreeExpression
     caseAConstExpression
@@ -350,7 +352,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecEntry
     caseABlockSubstitution
     caseASkipSubstitution
-    caseAAssignSubstitution
     caseAPreconditionSubstitution
     caseAAssertionSubstitution
     caseAChoiceSubstitution
@@ -371,7 +372,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAOpSubstitution
     caseAOpWithReturnSubstitution
     caseAWhileSubstitution
-    caseAParallelSubstitution
     caseADefinitionSubstitution
 
 

@@ -75,3 +75,24 @@ class TestInterpSubstitutions():
         assert env.get_value("yy")==2
         assert isinstance(env.get_type("xx"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
+
+
+    def test_genAST_sub_bool(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:BOOL
+        INITIALISATION xx := bool(1<2)
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==True
+        assert isinstance(env.get_type("xx"), BoolType)
