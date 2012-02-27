@@ -13,6 +13,9 @@ class Expression(Node):
 class Clause(Node):
     pass
 
+class Substitution(Node):
+    pass
+
 class AMachineHeader(Node):
     pass
 
@@ -338,6 +341,13 @@ class ADisjunctPredicate(Predicate):
     pass
 
 class AImplicationPredicate(Predicate):
+    pass
+
+
+class AAssignSubstitution(Substitution):
+    pass
+
+class AParallelSubstitution(Substitution):
     pass
 
 class AStringExpression(Expression):

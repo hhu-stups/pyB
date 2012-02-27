@@ -87,7 +87,7 @@ class TestMCHLaod():
         VARIABLES x,y
         INVARIANT
         x:NAT & y:NAT
-        INITIALISATION x:=70 || y:=40
+        INITIALISATION x:=3 || y:=4
         END'''
 
         # Build AST

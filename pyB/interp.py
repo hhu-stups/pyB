@@ -51,7 +51,7 @@ class Environment():
     # TODO: (maybe) lookup + Throw Typeerror:
     # TODO: (maybe) set-lookup tests
     # TODO: (maybe) check if value has the correct type
-    # used by tests and emumaration
+    # used by tests and emumaration and substitutipn
     def set_value(self, id_Name, value):
         top_map = self.value_stack[-1]
         top_map[id_Name] = value
@@ -102,7 +102,6 @@ class Environment():
 # main interpreter-switch (sorted/grouped like b-toolkit list)
 def interpret(node, env):
 
-
 # ******************************
 #
 #        0. Interpretation-mode
@@ -140,6 +139,7 @@ def interpret(node, env):
         aAssertionsMachineClause = None
         aInvariantMachineClause = None
         aInitialisationMachineClause = None
+        aDefinitionsMachineClause = None
 
         for child in node.children:
             if isinstance(child, AConstantsMachineClause):
@@ -158,10 +158,13 @@ def interpret(node, env):
                 aInitialisationMachineClause = child
             elif isinstance(child, AInvariantMachineClause):
                 aInvariantMachineClause = child
+            elif isinstance(child, ADefinitionsMachineClause):
+                aDefinitionsMachineClause = child
             else:
                 raise Exception("Unknown clause:",child )
 
         # TODO: Check with B spec
+        # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:
         # The parameters p make the constraints c True
         # #p.C
@@ -236,7 +239,7 @@ def interpret(node, env):
         for child in node.children:
             interpret(child, env)
     elif isinstance(node, AInvariantMachineClause):
-        return node.children[0]
+        return interpret(node.children[0], env)
     elif isinstance(node, AAssertionsMachineClause):
         if enable_assertions:
             print "checking assertions"
@@ -418,7 +421,7 @@ def interpret(node, env):
 #       3. Numbers
 #
 # *****************
-    elif isinstance(node, ANatSetExpression):
+    elif isinstance(node, ANatSetExpression) or isinstance(node, ANaturalSetExpression):
         return frozenset(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return frozenset(range(1,max_int+1))
@@ -850,6 +853,24 @@ def interpret(node, env):
 
 # ****************
 #
+# 5. Substitutions
+#
+# ****************
+
+    elif isinstance(node, AAssignSubstitution):
+        assert int(node.lhs_size) == int(node.rhs_size)
+        for i in range(int(node.lhs_size)):
+            idnode = node.children[i]
+            rhs = node.children[i+int(node.rhs_size)]
+            value = interpret(rhs, env)
+            assert isinstance(idnode,AIdentifierExpression)
+            env.set_value(idnode.idName, value)
+    elif isinstance(node, AParallelSubstitution):
+        for child in node.children:
+            interpret(child, env)
+
+# ****************
+#
 # 6. Miscellaneous
 #
 # ****************
@@ -863,6 +884,11 @@ def interpret(node, env):
         return True
     elif isinstance(node, AFalseExpression):
         return False
+    elif isinstance(node, ADefinitionExpression):
+        ast = env.get_ast_by_definition(node.idName)
+        assert isinstance(ast, AExpressionDefinition)
+        # TODO: parameters
+        return interpret(ast.children[0], env)
     else:
         raise Exception("Unknown Node: %s",node)
 

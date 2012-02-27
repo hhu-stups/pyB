@@ -526,7 +526,7 @@ def typeit(node, env, type_env):
         return PowerSetType(atype)
     elif isinstance(node, ACardExpression):
         atype = typeit(node.children[0], env, type_env)
-        assert isinstance(atype, PowerSetType)
+        assert isinstance(atype, PowerSetType) or isinstance(atype, EmptySetType)
         return IntegerType(None)
     elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
         atype = typeit(node.children[0], env, type_env)
@@ -845,6 +845,23 @@ def typeit(node, env, type_env):
         return type0
 
 
+
+# ****************
+#
+# 5. Substitutions
+#
+# ****************
+    elif isinstance(node, AAssignSubstitution):
+        assert int(node.lhs_size) == int(node.rhs_size)
+        for i in range(int(node.lhs_size)):
+            idnode = node.children[i]
+            rhs = node.children[i+int(node.rhs_size)]
+            atype0 = typeit(rhs, env, type_env)
+            assert isinstance(idnode,AIdentifierExpression)
+            atype1 = typeit(idnode,env, type_env)
+            unify_equal(atype0, atype1, type_env)
+
+
 # ****************
 #
 # 6. Miscellaneous
@@ -921,7 +938,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 else:
                     assert maybe_type1.data == maybe_type0.data
             else:
-                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType)
+                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, EmptySetType)
             return maybe_type0
         else:
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
