@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from btypes import *
 from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import py.test
 from ast_nodes import *
+from btypes import *
 from interp import Environment
-from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, BTypeException
+from typing import _test_typeit, BTypeException
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"

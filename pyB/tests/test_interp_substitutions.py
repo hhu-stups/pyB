@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # also typchecking-tests
 from ast_nodes import *
+from btypes import *
 from interp import Environment
-from typing import _test_typeit, IntegerType, PowerSetType, SetType, CartType, EmptySetType, StringType, BoolType
+from typing import _test_typeit
 from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
 

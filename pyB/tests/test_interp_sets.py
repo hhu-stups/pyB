@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from btypes import *
 from interp import interpret, Environment
 from helpers import file_to_AST_str, string_to_file
-from typing import IntegerType, PowerSetType, SetType, _test_typeit
+from typing import _test_typeit
 
 file_name = "input.txt"
 
