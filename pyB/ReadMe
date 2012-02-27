@@ -3,12 +3,20 @@ PyB
 by John Witulski: www.stups.uni-duesseldorf.de
 
 1. Config:
-    1.1. copy ASTPython.java to
+    WAY A: Build jars 
+    1.0: Checkout the Bparser from https://github.com/bendisposto/probparsers.git
+    1.1: copy ASTPython.java to
      .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
-    1.2. overwrite BParser.java  CliBParser.java  ConsoleOptions.java
+    1.2: overwrite BParser.java  CliBParser.java  ConsoleOptions.java
      ParsingBehaviour.java inside the correct src folder
-    1.3. generate the jar by typing "./gradlew jar" in the project-root-dir
-    1.4. the jar files must be in the correct dir. see pyB.py Line 7-13
+    1.3: generate the jar by typing "./gradlew jar" in the project-root-dir
+    1.4: the jar files must be in the correct dir. see helpers.py Line 7-10
+     This hard-codes path must be set manually at the moment
+
+    WAY B: Copy jars 
+    1.0: Checkout the Bparser from https://github.com/bendisposto/probparsers.git
+    1.1: Checkout bparser-2.0.67.jar, prologlib-2.0.1.jar, parserbase-2.0.1.jar, cliparser-2.0.67.jar
+    1.2: the jar files must be in the correct dir. see helpers.py Line 7-10
      This hard-codes path must be set manually at the moment
 
 
@@ -252,6 +260,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAAssignSubstitution
     caseAParallelSubstitution
     caseAConvertBoolExpression
+    caseABecomesSuchSubstitution
 
 
  9.2 NOT IMPLEMENTED:
@@ -365,7 +374,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAAnySubstitution
     caseALetSubstitution
     caseABecomesElementOfSubstitution
-    caseABecomesSuchSubstitution
     caseAVarSubstitution
     caseASequenceSubstitution
     caseAFuncOpSubstitution

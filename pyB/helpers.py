@@ -5,8 +5,8 @@ from ast_nodes import *
 
 command_str = "java -cp "
 command_str += "../bparser/build/libs/bparser-2.0.67.jar"
-command_str += ":../prologlib/build/libs/prologlib-2.0.1.jar"
-command_str += ":../parserbase/build/libs/parserbase-2.0.1.jar"
+command_str += ":../prologlib/build/libs/prologlib-2.0.67.jar"
+command_str += ":../parserbase/build/libs/parserbase-2.0.67.jar"
 command_str += ":../cliparser/build/libs/cliparser-2.0.67.jar"
 command_str += ":../cliparser/build/libs/"
 command_str += ":. de.prob.cliparser.CliBParser %s %s"

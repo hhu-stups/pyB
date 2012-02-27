@@ -870,6 +870,13 @@ def interpret(node, env):
             interpret(child, env)
     elif isinstance(node, AConvertBoolExpression):
         return interpret(node.children[0], env)
+    elif isinstance(node, ABecomesSuchSubstitution):
+        # TODO: more than on ID
+        ids = []
+        for child in node.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            ids.append(child.idName)
+        try_all_values(node.children[-1], env, ids) # sideeffect: set values
 
 
 # ****************

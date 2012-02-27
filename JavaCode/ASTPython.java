@@ -756,6 +756,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAConvertBoolExpression(AConvertBoolExpression node)
+    {
+        printStdOut_oneChild(node, node.getPredicate());
+    }
+
+
     public void caseAGeneralConcatExpression(AGeneralConcatExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());

@@ -353,6 +353,9 @@ class AAssignSubstitution(Substitution):
 class AParallelSubstitution(Substitution):
     pass
 
+class ABecomesSuchSubstitution(Substitution):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string
