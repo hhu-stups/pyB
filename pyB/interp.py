@@ -15,7 +15,19 @@ class Environment():
         # Types of AST-ID-Nodes: Node->type.
         # This map is used by the enumeration
         # and was created and filled by typeit of the module typing.
-        self.node_to_type_map = {} 
+        self.node_to_type_map = {}
+        # AST-SubTrees: ID(String)->AST
+        self.definition_id_to_ast = {}
+
+
+    def set_definition(self, id_Name, ast):
+        assert isinstance(id_Name, str)
+        self.definition_id_to_ast[id_Name] = ast
+
+
+    def get_ast_by_definition(self, id_Name):
+        assert isinstance(id_Name, str)
+        return self.definition_id_to_ast[id_Name]
 
 
     def get_value(self, id_Name):

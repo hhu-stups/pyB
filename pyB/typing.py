@@ -379,6 +379,12 @@ def typeit(node, env, type_env):
                 raise Exception("Unknown clause:",child )
 
         # type
+        if aDefinitionsMachineClause:
+            for defi in aDefinitionsMachineClause.children:
+                assert isinstance(defi, AExpressionDefinition)
+                env.set_definition(defi.idName, defi)
+        if aConstraintsMachineClause: # C
+            typeit(aConstraintsMachineClause, env, type_env)
         if aSetsMachineClause: # St
             for child in aSetsMachineClause.children:
                 set_name = child.idName
@@ -402,8 +408,6 @@ def typeit(node, env, type_env):
             typeit(aInvariantMachineClause, env, type_env)
         if aAssertionsMachineClause:
             typeit(aAssertionsMachineClause, env, type_env)
-        if aDefinitionsMachineClause:
-            pass # TODO
 
 
 # *********************
@@ -856,6 +860,11 @@ def typeit(node, env, type_env):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
         return idtype
+    elif isinstance(node, ADefinitionExpression):
+        ast = env.get_ast_by_definition(node.idName)
+        assert isinstance(ast, AExpressionDefinition)
+        # TODO: parameters
+        return typeit(ast.children[0], env, type_env)
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"

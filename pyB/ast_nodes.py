@@ -61,6 +61,12 @@ class ADefinitionsMachineClause(Clause):
 #class AMaxIntExpression(Expression):
 #    pass
 
+class AExpressionDefinition(Expression):
+    pass
+
+class ADefinitionExpression(Expression):
+    pass
+
 class ABoolSetExpression(Expression):
     pass
 
