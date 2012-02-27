@@ -612,7 +612,7 @@ def interpret(node, env):
 
 # *******************
 #
-#       4.1 FUnctions
+#       4.1 Functions
 #
 # *******************
     elif isinstance(node, APartialFunctionExpression):
@@ -702,7 +702,7 @@ def interpret(node, env):
 #
 #       4.2 Sequences
 #
-# *******************
+# ********************
     elif isinstance(node,AEmptySequenceExpression):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
@@ -837,7 +837,9 @@ def interpret(node, env):
 
 
 # ****************
+#
 # 6. Miscellaneous
+#
 # ****************
     elif isinstance(node, AIntegerExpression):
         return node.intValue

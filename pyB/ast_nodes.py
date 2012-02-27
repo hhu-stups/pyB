@@ -52,6 +52,9 @@ class AAssertionsMachineClause(Clause):
 class ASetsMachineClause(Clause):
     pass
 
+class ADefinitionsMachineClause(Clause):
+    pass
+
 #class AMinIntExpression(Expression):
 #    pass
 

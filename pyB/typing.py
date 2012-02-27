@@ -334,59 +334,104 @@ def _test_typeit(root, env, known_types_list, idNames):
 # different scopes but (maybe) the same names
 # e.g. !x.(x:S =>...) & x:Nat ...
 def typeit(node, env, type_env):
-    if isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression):
-        return PowerSetType(IntegerType(None))
-    elif isinstance(node, AStringExpression):
-        return StringType()
-    elif isinstance(node, ABoolSetExpression):
-        return PowerSetType(BoolType())
-    elif isinstance(node, AEmptySetExpression):
-        return EmptySetType()
-    elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
-        return BoolType()
-    elif isinstance(node, ACoupleExpression):
-        atype0 = typeit(node.children[0], env, type_env)
-        atype1 = typeit(node.children[1], env, type_env)
-        atype = CartType(atype0, atype1)
-        for index in range(len(node.children)-2):
-            atype = CartType(atype, typeit(node.children[index+2], env, type_env))
-        return atype
-    elif isinstance(node, ASetsMachineClause):
+
+
+# ******************************
+#
+#        0. Typechecking-mode
+#
+# ******************************
+    if isinstance (node, APredicateParseUnit):
         for child in node.children:
-            set_name = child.idName
-            utype = type_env.get_current_type(set_name)
-            atype = SetType(set_name)
-            unify_equal(utype, PowerSetType(atype), type_env)
-            if isinstance(child, AEnumeratedSet):
-                # all elements have the type set_name
-                for elm in child.children:
-                    elm_type = typeit(elm, env, type_env)
-                    unify_equal(atype, elm_type, type_env)
-    elif isinstance(node, AComprehensionSetExpression):
+            typeit(child, env, type_env)
+    elif isinstance(node, AAbstractMachineParseUnit):
+        # TODO: mch-parameters
+        aConstantsMachineClause = None
+        aConstraintsMachineClause = None
+        aSetsMachineClause = None
+        aVariablesMachineClause = None
+        aPropertiesMachineClause = None
+        aAssertionsMachineClause = None
+        aInvariantMachineClause = None
+        aInitialisationMachineClause = None
+        aDefinitionsMachineClause = None
+
+        for child in node.children:
+            if isinstance(child, AConstantsMachineClause):
+                aConstantsMachineClause = child
+            elif isinstance(child, AConstraintsMachineClause):
+                aConstraintsMachineClause = child
+            elif isinstance(child, ASetsMachineClause):
+                aSetsMachineClause = child
+            elif isinstance(child, AVariablesMachineClause):
+                aVariablesMachineClause = child
+            elif isinstance(child, APropertiesMachineClause):
+                aPropertiesMachineClause = child
+            elif isinstance(child, AAssertionsMachineClause):
+                aAssertionsMachineClause = child
+            elif isinstance(child, AInitialisationMachineClause):
+                aInitialisationMachineClause = child
+            elif isinstance(child, AInvariantMachineClause):
+                aInvariantMachineClause = child
+            elif isinstance(child, ADefinitionsMachineClause):
+                aDefinitionsMachineClause = child
+            else:
+                raise Exception("Unknown clause:",child )
+
+        # type
+        if aSetsMachineClause: # St
+            for child in aSetsMachineClause.children:
+                set_name = child.idName
+                utype = type_env.get_current_type(set_name)
+                atype = SetType(set_name)
+                unify_equal(utype, PowerSetType(atype), type_env)
+                if isinstance(child, AEnumeratedSet):
+                    # all elements have the type set_name
+                    for elm in child.children:
+                        elm_type = typeit(elm, env, type_env)
+                        unify_equal(atype, elm_type, type_env)
+        if aConstantsMachineClause: # k
+            typeit(aConstantsMachineClause, env, type_env)
+        if aPropertiesMachineClause: # B
+            typeit(aPropertiesMachineClause, env, type_env)
+        if aVariablesMachineClause:
+            typeit(aVariablesMachineClause, env, type_env)
+        if aInitialisationMachineClause:
+            typeit(aInitialisationMachineClause, env, type_env)
+        if aInvariantMachineClause:
+            typeit(aInvariantMachineClause, env, type_env)
+        if aAssertionsMachineClause:
+            typeit(aAssertionsMachineClause, env, type_env)
+        if aDefinitionsMachineClause:
+            pass # TODO
+
+
+# *********************
+#
+#        1. Predicates
+#
+# *********************
+    elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
         ids = []
         for n in node.children[:-1]:
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
-        assert len(node.children)>=1
         for child in node.children:
             typeit(child, env, type_env)
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            assert not type_env.get_current_type(child.idName)==None
-        atype = type_env.get_current_type(ids[0])
-        if len(ids)>1:
-            atype = CartType(atype, type_env.get_current_type(ids[1]))
-            for i in ids[2:]:
-                atype = CartType(atype, type_env.get_current_type(i))
         type_env.pop_frame(env)
-        return PowerSetType(atype) #name unknown
-    elif isinstance(node, AIntegerExpression):
-        return IntegerType(node.intValue)
-    elif isinstance(node, AIdentifierExpression):
-        type_env.add_node_by_id(node)
-        idtype = type_env.get_current_type(node.idName)
-        return idtype
+        return
+    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate) or isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
+        expr1_type = typeit(node.children[0], env,type_env)
+        expr2_type = typeit(node.children[1], env,type_env)
+        return unify_equal(expr1_type, expr2_type, type_env)
+
+
+# **************
+#
+#       2. Sets
+#
+# **************
     elif isinstance(node, ASetExtensionExpression):
         # FIXME: This code don't works inside a SET-Section
         # no Vars are declared!
@@ -407,32 +452,49 @@ def typeit(node, env, type_env):
                 atype = typeit(child, env, type_env)
                 reftype = unify_equal(atype, reftype, type_env)
             return PowerSetType(reftype)
-    elif isinstance(node, ABelongPredicate):
-        elm_type = typeit(node.children[0], env, type_env)
-        set_type = typeit(node.children[1], env, type_env)
-        unify_element_of(elm_type, set_type, type_env)
-        return
-    elif isinstance(node, AMinExpression) or isinstance(node, AMaxExpression):
-        set_type = typeit(node.children[0], env, type_env)
-        assert isinstance(set_type, PowerSetType)
-        assert isinstance(set_type.data, IntegerType)
-        return set_type.data
-    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate) or isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate) or isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
-        expr1_type = typeit(node.children[0], env,type_env)
-        expr2_type = typeit(node.children[1], env,type_env)
-        return unify_equal(expr1_type, expr2_type, type_env)
-    elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
+    elif isinstance(node, AEmptySetExpression):
+        return EmptySetType()
+    elif isinstance(node, AComprehensionSetExpression):
+        ids = []
+        for n in node.children[:-1]:
+            assert isinstance(n.idName, str)
+            ids.append(n.idName)
+        type_env.push_frame(ids)
+        assert len(node.children)>=1
+        for child in node.children:
+            typeit(child, env, type_env)
+        for child in node.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            assert not type_env.get_current_type(child.idName)==None
+        atype = type_env.get_current_type(ids[0])
+        if len(ids)>1:
+            atype = CartType(atype, type_env.get_current_type(ids[1]))
+            for i in ids[2:]:
+                atype = CartType(atype, type_env.get_current_type(i))
+        type_env.pop_frame(env)
+        return PowerSetType(atype) #name unknown
+    elif isinstance(node, AMinusOrSetSubtractExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        unify_equal(expr1_type, IntegerType(None), type_env)
-        unify_equal(expr2_type, IntegerType(None), type_env)
-        return IntegerType(None)
-    elif isinstance(node, ALessEqualPredicate) or isinstance(node, ALessPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AGreaterPredicate):
-        expr1_type = typeit(node.children[0], env, type_env)
-        expr2_type = typeit(node.children[1], env, type_env)
-        unify_equal(expr1_type, IntegerType(None), type_env)
-        unify_equal(expr2_type, IntegerType(None), type_env)
-        return None
+        unify_equal(expr1_type, expr2_type, type_env)
+        expr1_type = unknown_closure(expr1_type)
+        expr2_type = unknown_closure(expr2_type)
+
+        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Integer-Minus
+            return IntegerType(None)
+        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # SetSubtract
+            return expr1_type
+        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
+            return PowORIntegerType(expr1_type, expr2_type)
+        else:
+            raise Exception("Unimplemented case: %s",node)
+    elif isinstance(node, ACoupleExpression):
+        atype0 = typeit(node.children[0], env, type_env)
+        atype1 = typeit(node.children[1], env, type_env)
+        atype = CartType(atype0, atype1)
+        for index in range(len(node.children)-2):
+            atype = CartType(atype, typeit(node.children[index+2], env, type_env))
+        return atype
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
@@ -452,31 +514,55 @@ def typeit(node, env, type_env):
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
             raise Exception("Unimplemented case: %s %s", expr1_type, expr2_type)
-    elif isinstance(node, AMinusOrSetSubtractExpression):
+    elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
+        atype = typeit(node.children[0], env, type_env)
+        # TODO: atype must be PowersetType of something.
+        # This info is not used
+        #assert isinstance(atype, PowerSetType)
+        return PowerSetType(atype)
+    elif isinstance(node, ACardExpression):
+        atype = typeit(node.children[0], env, type_env)
+        assert isinstance(atype, PowerSetType)
+        return IntegerType(None)
+    elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
+        atype = typeit(node.children[0], env, type_env)
+        unify_equal(atype, PowerSetType(PowerSetType(UnknownType(None,None))),type_env)
+        return atype.data
+
+
+# *************************
+#
+#       2.1 Set predicates
+#
+# *************************
+    # TODO: notBelong
+    elif isinstance(node, ABelongPredicate):
+        elm_type = typeit(node.children[0], env, type_env)
+        set_type = typeit(node.children[1], env, type_env)
+        unify_element_of(elm_type, set_type, type_env)
+        return
+
+
+# *****************
+#
+#       3. Numbers
+#
+# *****************
+    elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression):
+        return PowerSetType(IntegerType(None))
+    elif isinstance(node, AIntegerExpression):
+        return IntegerType(node.intValue)
+    elif isinstance(node, AMinExpression) or isinstance(node, AMaxExpression):
+        set_type = typeit(node.children[0], env, type_env)
+        assert isinstance(set_type, PowerSetType)
+        assert isinstance(set_type.data, IntegerType)
+        return set_type.data
+    elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
-        unify_equal(expr1_type, expr2_type, type_env)
-        expr1_type = unknown_closure(expr1_type)
-        expr2_type = unknown_closure(expr2_type)
-
-        if isinstance(expr1_type, IntegerType) or isinstance(expr2_type, IntegerType):  # Integer-Minus
-            return IntegerType(None)
-        elif isinstance(expr1_type, PowerSetType) or isinstance(expr2_type, PowerSetType): # SetSubtract
-            return expr1_type
-        elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
-            return PowORIntegerType(expr1_type, expr2_type)
-        else:
-            raise Exception("Unimplemented case: %s",node)
-    elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
-        ids = []
-        for n in node.children[:-1]:
-            assert isinstance(n.idName, str)
-            ids.append(n.idName)
-        type_env.push_frame(ids)
-        for child in node.children:
-            typeit(child, env, type_env)
-        type_env.pop_frame(env)
-        return
+        unify_equal(expr1_type, IntegerType(None), type_env)
+        unify_equal(expr2_type, IntegerType(None), type_env)
+        return IntegerType(None)
     elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
         ids = []
         for n in node.children[:-2]:
@@ -487,31 +573,26 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         type_env.pop_frame(env)
         return IntegerType(None)
-    elif isinstance(node, ALambdaExpression):
-        ids = []
-        for n in node.children[:-2]:
-            assert isinstance(n.idName, str)
-            ids.append(n.idName)
-        type_env.push_frame(ids)
-        for child in node.children[:-1]:
-            typeit(child, env, type_env)
-        pre_img_type = typeit(node.children[0], env, type_env)
-        img_type = typeit(node.children[-1], env, type_env)
-        type_env.pop_frame(env)
-        return PowerSetType(CartType(pre_img_type, img_type))
-    elif isinstance(node, ACardExpression):
-        typeit(node.children[0], env, type_env)
-        return IntegerType(None)
-    elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
-        atype = typeit(node.children[0], env, type_env)
-        unify_equal(atype, PowerSetType(PowerSetType(UnknownType(None,None))),type_env)
-        return atype.data
-    elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
-        atype = typeit(node.children[0], env, type_env)
-        # TODO: atype must be PowersetType of something.
-        # This info is not used
-        #assert isinstance(atype, PowerSetType)
-        return PowerSetType(atype)
+
+
+# ***************************
+#
+#       3.1 Number predicates
+#
+# ***************************
+    elif isinstance(node, ALessEqualPredicate) or isinstance(node, ALessPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AGreaterPredicate):
+        expr1_type = typeit(node.children[0], env, type_env)
+        expr2_type = typeit(node.children[1], env, type_env)
+        unify_equal(expr1_type, IntegerType(None), type_env)
+        unify_equal(expr2_type, IntegerType(None), type_env)
+        return None
+
+
+# ******************
+#
+#       4. Relations
+#
+# ******************
     elif isinstance(node, ARelationsExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
@@ -630,6 +711,13 @@ def typeit(node, env, type_env):
         assert isinstance(type1, PowerSetType)
         assert isinstance(type1.data, SetType)  or isinstance(type1.data, IntegerType)
         return PowerSetType(CartType(CartType(type0.data,type1.data),type1.data))
+
+
+# *******************
+#
+#       4.1 Functions
+#
+# *******************
     elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
@@ -644,6 +732,25 @@ def typeit(node, env, type_env):
         assert isinstance(type0.data, CartType)
         assert isinstance(type0.data.data[1], SetType)
         return type0.data.data[1]
+    elif isinstance(node, ALambdaExpression):
+        ids = []
+        for n in node.children[:-2]:
+            assert isinstance(n.idName, str)
+            ids.append(n.idName)
+        type_env.push_frame(ids)
+        for child in node.children[:-1]:
+            typeit(child, env, type_env)
+        pre_img_type = typeit(node.children[0], env, type_env)
+        img_type = typeit(node.children[-1], env, type_env)
+        type_env.pop_frame(env)
+        return PowerSetType(CartType(pre_img_type, img_type))
+
+
+# ********************
+#
+#       4.2 Sequences
+#
+# ********************
     elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
@@ -732,6 +839,23 @@ def typeit(node, env, type_env):
         assert isinstance(type0.data.data[0], IntegerType)
         assert isinstance(type0.data.data[1], SetType)
         return type0
+
+
+# ****************
+#
+# 6. Miscellaneous
+#
+# ****************
+    elif isinstance(node, AStringExpression):
+        return StringType()
+    elif isinstance(node, ABoolSetExpression):
+        return PowerSetType(BoolType())
+    elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
+        return BoolType()
+    elif isinstance(node, AIdentifierExpression):
+        type_env.add_node_by_id(node)
+        idtype = type_env.get_current_type(node.idName)
+        return idtype
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"

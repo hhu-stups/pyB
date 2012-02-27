@@ -216,8 +216,8 @@ class TestMCHLaod():
 
 
         # Test
-        env = Environment() # search for CONSTANTS which make PROPERTIES True
-        interpret(root, env)
+        env = Environment()
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
         assert env.get_value("A") == True
         assert env.get_value("B") == True
         assert env.get_value("C") == False

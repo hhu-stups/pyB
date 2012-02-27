@@ -16,7 +16,7 @@ class TestTypesSets():
         # Type
         env = Environment()
         env.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
-        lst = [("S", SetType("X"))]
+        lst = [("S", PowerSetType(SetType("X")))]
         _test_typeit(root, env, lst, [])
 
 
