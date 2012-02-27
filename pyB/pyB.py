@@ -5,7 +5,7 @@ from helpers import file_to_AST_str
 from ast_nodes import *
 
 
-if len(sys.argv)>=1:
+if len(sys.argv)>1:
     file_name_str = sys.argv[1]
 else:
     file_name_str = "input.txt"

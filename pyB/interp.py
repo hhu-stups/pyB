@@ -112,7 +112,9 @@ def interpret(node, env):
         find_var_names(node.children[0], idNames) #sideef: fill list
         _test_typeit(node.children[0], env, [], idNames) ## FIXME: replace this call someday
         if idNames ==[]:
-            return interpret(node.children[0], env)
+            result = interpret(node.children[0], env)
+            print result
+            return
         else:
             print "enum. vars:",idNames
             if try_all_values(node.children[0], env, idNames):
@@ -204,7 +206,8 @@ def interpret(node, env):
         if aInitialisationMachineClause:
             interpret(aInitialisationMachineClause, env)
         if aInvariantMachineClause:
-            interpret(aInvariantMachineClause, env)
+            res = interpret(aInvariantMachineClause, env)
+            print "Invariant:",res
 
         # Not in schneiders book:
         if aAssertionsMachineClause:
