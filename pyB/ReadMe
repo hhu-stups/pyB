@@ -264,6 +264,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAParallelSubstitution
     caseAConvertBoolExpression
     caseABecomesSuchSubstitution
+    caseADefinitionPredicate
+    caseAPredicateDefinition
 
 
  9.2 NOT IMPLEMENTED:
@@ -302,7 +304,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALocalOperationsMachineClause
     caseAOperationsMachineClause
     caseAMachineReference
-    caseAPredicateDefinition
     caseASubstitutionDefinition
     caseAFileDefinition
     caseAValuesEntry
@@ -312,7 +313,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAFalsePredicate
     caseAFinitePredicate
     caseAPartitionPredicate
-    caseADefinitionPredicate
     caseAPrimedIdentifierExpression
     caseAMaxIntExpression (no test)
     caseAMinIntExpression (no test)

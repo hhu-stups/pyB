@@ -322,7 +322,7 @@ def typeit(node, env, type_env):
         # type
         if aDefinitionsMachineClause:
             for defi in aDefinitionsMachineClause.children:
-                assert isinstance(defi, AExpressionDefinition)
+                assert isinstance(defi, AExpressionDefinition) or isinstance(defi, APredicateDefinition)
                 env.set_definition(defi.idName, defi)
         if aConstraintsMachineClause: # C
             typeit(aConstraintsMachineClause, env, type_env)
@@ -833,9 +833,9 @@ def typeit(node, env, type_env):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
         return idtype
-    elif isinstance(node, ADefinitionExpression):
+    elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
         ast = env.get_ast_by_definition(node.idName)
-        assert isinstance(ast, AExpressionDefinition)
+        assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
         # The Type of the definition depends on
         # the type of the parameters
         ids = []

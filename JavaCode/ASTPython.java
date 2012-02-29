@@ -345,6 +345,48 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAPredicateDefinition(APredicateDefinition node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getParameters());
+        String[] ids = new String[copy.size()+1]; // +1 rhs
+        String idName = "";
+        int i=0;
+
+
+        if(node.getName() != null)
+        {
+            idName = node.getName().toString();
+        }
+
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        if(node.getRhs() != null)
+        {
+            node.getRhs().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i = 0 ; i<ids.length-1; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        if(node.getRhs() != null)
+            out += "id"+nodeid+".children.append(id"+ids[ids.length-1]+")\n";
+        out += "id"+nodeid+".idName = \""+idName+"\"\n";
+        if (copy!=null)
+            out += "id"+nodeid+".paraNum = "+copy.size()+"\n";
+        else
+            out += "id"+nodeid+".paraNum = 0";
+    }
+
+
     public void caseAExpressionDefinition(AExpressionDefinition node)
     {
         List<PExpression> copy = new ArrayList<PExpression>(node.getParameters());
@@ -388,6 +430,35 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseADefinitionExpression(ADefinitionExpression node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getParameters());
+        String[] ids = new String[copy.size()]; 
+        String idName = "";
+        int i=0;
+
+        if(node.getDefLiteral() != null)
+        {
+            idName = node.getDefLiteral().toString();
+        }
+
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i = 0 ; i<ids.length; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        out += "id"+nodeid+".idName = \""+idName+"\"\n";
+    }
+
+
+    public void caseADefinitionPredicate(ADefinitionPredicate node)
     {
         List<PExpression> copy = new ArrayList<PExpression>(node.getParameters());
         String[] ids = new String[copy.size()]; 

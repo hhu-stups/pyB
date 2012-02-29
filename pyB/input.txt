@@ -1,7 +1,1 @@
-
-        MACHINE Test
-        VARIABLES z
-        INVARIANT z:MyDef(NAT,{0})
-        INITIALISATION z:= MyDef(5,1)
-        DEFINITIONS MyDef(X,Y) == X-Y;
-        END
+#PREDICATE A=bool(1<2)

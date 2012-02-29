@@ -897,12 +897,11 @@ def interpret(node, env):
         return True
     elif isinstance(node, AFalseExpression):
         return False
-    elif isinstance(node, ADefinitionExpression):
+    elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
         ast = env.get_ast_by_definition(node.idName)
-        assert isinstance(ast, AExpressionDefinition)
+        assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
         # The Value of the definition depends on
         # the Value of the parameters
-        # TODO: implement parameter expression
         nodes = []
         for i in range(ast.paraNum):
             if isinstance(ast.children[i], AIdentifierExpression):

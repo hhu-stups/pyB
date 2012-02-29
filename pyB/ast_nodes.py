@@ -286,6 +286,12 @@ class ANat1SetExpression(Expression):
 class ALambdaExpression(Expression):
     pass
 
+class ADefinitionPredicate(Predicate):
+    pass
+
+class APredicateDefinition(Predicate):
+    pass
+
 class AComprehensionSetExpression(Predicate):
     pass
 
