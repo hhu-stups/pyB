@@ -380,6 +380,10 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getRhs() != null)
             out += "id"+nodeid+".children.append(id"+ids[ids.length-1]+")\n";
         out += "id"+nodeid+".idName = \""+idName+"\"\n";
+        if (copy!=null)
+            out += "id"+nodeid+".paraNum = "+copy.size()+"\n";
+        else
+            out += "id"+nodeid+".paraNum = 0";
     }
 
 
@@ -478,6 +482,12 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAComprehensionSetExpression(AComprehensionSetExpression node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicates());
+    }
+
+
+    public void caseABecomesSuchSubstitution(ABecomesSuchSubstitution node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
     }
 
 

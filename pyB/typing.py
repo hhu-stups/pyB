@@ -836,8 +836,24 @@ def typeit(node, env, type_env):
     elif isinstance(node, ADefinitionExpression):
         ast = env.get_ast_by_definition(node.idName)
         assert isinstance(ast, AExpressionDefinition)
-        # TODO: parameters
-        return typeit(ast.children[0], env, type_env)
+        # The Type of the definition depends on
+        # the type of the parameters
+        ids = []
+        for i in range(ast.paraNum):
+            if isinstance(ast.children[i], AIdentifierExpression):
+                ids.append(ast.children[i].idName)
+            else:
+                # TODO: implement parameter expression
+                raise Exception("Parametes can only be Ids at the moment!")
+        type_env.push_frame(ids)
+        # map paraNames to types
+        for i in range(ast.paraNum):
+            atype = typeit(node.children[i], env, type_env)
+            idtype = typeit(ast.children[i], env, type_env)
+            unify_equal(idtype, atype, type_env)
+        deftype = typeit(ast.children[-1], env, type_env)
+        type_env.pop_frame(env)
+        return deftype
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"

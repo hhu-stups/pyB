@@ -900,8 +900,25 @@ def interpret(node, env):
     elif isinstance(node, ADefinitionExpression):
         ast = env.get_ast_by_definition(node.idName)
         assert isinstance(ast, AExpressionDefinition)
-        # TODO: parameters
-        return interpret(ast.children[0], env)
+        # The Value of the definition depends on
+        # the Value of the parameters
+        # TODO: implement parameter expression
+        nodes = []
+        for i in range(ast.paraNum):
+            if isinstance(ast.children[i], AIdentifierExpression):
+                nodes.append(ast.children[i])
+            else:
+                raise Exception("Parametes can only be Ids at the moment!")
+        env.push_new_frame(nodes)
+        # set nodes(variables) to values
+        for i in range(ast.paraNum):
+            value = interpret(node.children[i], env)
+            nothing = interpret(ast.children[i], env)
+            assert nothing==ast.children[i].idName # no value
+            env.set_value(ast.children[i].idName, value)
+        result = interpret(ast.children[-1], env)
+        env.pop_frame()
+        return result
     else:
         raise Exception("Unknown Node: %s",node)
 

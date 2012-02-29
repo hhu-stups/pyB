@@ -26,3 +26,23 @@ class TestTypesDefinitions():
         lst = []
         _test_typeit(root, env, lst, ["z"])
         assert isinstance(env.get_type("z"), IntegerType)
+
+
+    def test_types_two_para_def(self):
+        # Build AST
+        string='''
+        MACHINE Test
+        VARIABLES z
+        INVARIANT z:MyDef(NAT,{0})
+        INITIALISATION z:= MyDef(5,1)
+        DEFINITIONS MyDef(X,Y) == X-Y;
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        lst = []
+        _test_typeit(root, env, lst, ["z"])
+        assert isinstance(env.get_type("z"), IntegerType)

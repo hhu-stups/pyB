@@ -49,7 +49,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
 5. MISSING FEATURES:
     - infinite sets/sequences/relations
     - NAT and NAT1 is not infinite!
-    - substitutions
+    - (some) substitutions
     - sp. UNION / INTER buildins
     - min/max an the natural numbers - not ProB
     - lambda abstractions with more vars
