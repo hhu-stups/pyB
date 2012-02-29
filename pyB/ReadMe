@@ -268,6 +268,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPredicateDefinition
     caseASubstitutionDefinition
     caseADefinitionSubstitution
+    caseASequenceSubstitution
 
 
  9.2 NOT IMPLEMENTED:
@@ -379,7 +380,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALetSubstitution
     caseABecomesElementOfSubstitution
     caseAVarSubstitution
-    caseASequenceSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution
     caseAOpWithReturnSubstitution

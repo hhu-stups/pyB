@@ -356,6 +356,9 @@ class AImplicationPredicate(Predicate):
 class AAssignSubstitution(Substitution):
     pass
 
+class ASequenceSubstitution(Substitution):
+    pass
+
 class AParallelSubstitution(Substitution):
     pass
 

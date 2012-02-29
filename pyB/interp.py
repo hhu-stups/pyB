@@ -868,7 +868,7 @@ def interpret(node, env):
             value = interpret(rhs, env)
             assert isinstance(idnode,AIdentifierExpression)
             env.set_value(idnode.idName, value)
-    elif isinstance(node, AParallelSubstitution):
+    elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
     elif isinstance(node, AConvertBoolExpression):

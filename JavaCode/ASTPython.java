@@ -593,7 +593,29 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAParallelSubstitution(AParallelSubstitution node)
     {
+        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
+        String[] ids = new String[copy.size()]; 
+        String idName = "";
+        int i=0;
 
+        for(PSubstitution e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i = 0 ; i<ids.length; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
+    public void caseASequenceSubstitution(ASequenceSubstitution node)
+    {
         List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
         String[] ids = new String[copy.size()]; 
         String idName = "";
