@@ -898,6 +898,7 @@ def interpret(node, env):
     elif isinstance(node, AFalseExpression):
         return False
     elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
+        # i hope this is faster than rebuilding asts...
         ast = env.get_ast_by_definition(node.idName)
         assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
         # The Value of the definition depends on
@@ -918,8 +919,48 @@ def interpret(node, env):
         result = interpret(ast.children[-1], env)
         env.pop_frame()
         return result
+    elif isinstance(node, ADefinitionSubstitution):
+        import copy
+        ast = env.get_ast_by_definition(node.idName)
+        new_ast = copy.deepcopy(ast)
+        #_print_ast(ast)
+        assert isinstance(ast, ASubstitutionDefinition)
+        for i in range(ast.paraNum):
+            idNode = ast.children[i]
+            isinstance(idNode, AIdentifierExpression)
+            replaceNode = node.children[i]
+            new_ast = replace_node(new_ast, idNode, replaceNode)
+        #_print_ast(new_ast)
+        return interpret(new_ast.children[-1], env)
     else:
         raise Exception("Unknown Node: %s",node)
+
+
+def replace_node(ast, idNode, replaceNode):
+    if isinstance(ast, AIdentifierExpression) or isinstance(ast, AStringExpression) or isinstance(ast, AIntegerExpression):
+        return ast
+    for i in range(len(ast.children)):
+        child = ast.children[i]
+        if isinstance(child, AIdentifierExpression):
+            if child.idName == idNode.idName:
+                ast.children[i] = replaceNode
+        else:
+            replace_node(child, idNode, replaceNode)
+    return ast
+
+
+def _print_ast(root):
+    print root
+    __print_ast(root, 1)
+    print
+
+
+def __print_ast(node, num):
+    if isinstance(node, AIdentifierExpression) or isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression):
+        return
+    for child in node.children:
+        print "\t"*num,"|-",child
+        __print_ast(child, num+1)
 
 
 # WARNING: this could take some time...

@@ -266,6 +266,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseABecomesSuchSubstitution
     caseADefinitionPredicate
     caseAPredicateDefinition
+    caseASubstitutionDefinition
+    caseADefinitionSubstitution
 
 
  9.2 NOT IMPLEMENTED:
@@ -304,7 +306,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALocalOperationsMachineClause
     caseAOperationsMachineClause
     caseAMachineReference
-    caseASubstitutionDefinition
     caseAFileDefinition
     caseAValuesEntry
     caseAOperation
@@ -383,7 +384,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAOpSubstitution
     caseAOpWithReturnSubstitution
     caseAWhileSubstitution
-    caseADefinitionSubstitution
 
 
  9.3 NO IMPLEMENTATION PLANED:
