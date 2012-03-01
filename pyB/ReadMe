@@ -1,5 +1,5 @@
 PyB
-31.08.2011 - 27.02.2012 
+31.08.2011 - 1.03.2012 
 by John Witulski: www.stups.uni-duesseldorf.de
 
 
@@ -104,7 +104,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
 
 8. TODO-LIST:
 8.1 Features
-    - write a build-script
+    - write a better build-script
     - enable infinite sets
     - Implement UNION and INTER
     - Implement B-mch-Operations
@@ -136,6 +136,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - Tests ignore Frames and Scopes.
     - not tested: append/preprend more than one element - possible?
 8.4 Bugs:
+    - "=" is used as ":=" inside the interpreter
     - MAYBE BUG: eval of preds changes value_stack
     - Vars are added to a Frame at the wrong position!
     - typechecking the settype contains data, this data is not valid 

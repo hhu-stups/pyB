@@ -866,7 +866,7 @@ def interpret(node, env):
             idnode = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
             value = interpret(rhs, env)
-            assert isinstance(idnode,AIdentifierExpression)
+            assert isinstance(idnode,AIdentifierExpression) #TODO function
             env.set_value(idnode.idName, value)
     elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
@@ -880,6 +880,12 @@ def interpret(node, env):
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
         try_all_values(node.children[-1], env, ids) # sideeffect: set values
+    elif isinstance(node, ABecomesElementOfSubstitution):
+        values = interpret(node.children[-1], env)
+        value = list(values)[0] # XXX
+        for child in node.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            env.set_value(child.idName, value)
 
 
 # ****************

@@ -371,6 +371,9 @@ class ADefinitionSubstitution(Substitution):
 class ASubstitutionDefinition(Substitution):
     pass
 
+class ABecomesElementOfSubstitution(Substitution):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

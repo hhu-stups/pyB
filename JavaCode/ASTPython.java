@@ -804,6 +804,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseABecomesElementOfSubstitution(ABecomesElementOfSubstitution node)
+    {
+        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getSet());
+    }
+
+
     public void caseAFunctionExpression(AFunctionExpression node)
     {
         printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());

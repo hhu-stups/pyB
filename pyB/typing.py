@@ -815,6 +815,11 @@ def typeit(node, env, type_env):
         atype = typeit(node.children[0], env, type_env)
         unify_equal(atype, BoolType(), type_env)
         return atype
+    elif isinstance(node, ABecomesElementOfSubstitution):
+        atype = typeit(node.children[-1], env, type_env)
+        for child in node.children[:-1]:
+            idtype = typeit(child, env, type_env)
+            unify_element_of(idtype, atype, type_env)
 
 
 
