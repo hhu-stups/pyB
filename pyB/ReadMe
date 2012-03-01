@@ -23,6 +23,10 @@ by John Witulski: www.stups.uni-duesseldorf.de
      This hard-codes path must be set manually at the moment
 
 
+    WAY C: auto
+    Checkout and run build.sh (Testet on Unbuntu and Kubuntu Linux)
+
+
 2. Run pyB:
     python pyB.py <FileName>
     e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" 
@@ -81,6 +85,11 @@ by John Witulski: www.stups.uni-duesseldorf.de
 
     6.3.INTERPRETATION:
      This AST is eval. via an AST-interpreter "interp.py"
+
+    6.4 DEFINITIONS:
+     Inside the Typechecking phase all Definition-ASTS are save inside
+     a map(String->AST) inside the environment. A new AST is generate
+     while interpretation of a parameterized definition (only assignment def)
 
 
 7. FIXED BUGS:
@@ -270,6 +279,12 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASubstitutionDefinition
     caseADefinitionSubstitution
     caseASequenceSubstitution
+    caseABecomesElementOfSubstitution
+    caseAUnaryExpression
+    caseABlockSubstitution
+    caseAIfSubstitution
+    caseAIfElsifSubstitution
+    caseAPreconditionSubstitution
 
 
  9.2 NOT IMPLEMENTED:
@@ -324,7 +339,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAIntSetExpression
     caseAStringSetExpression
     caseAMinusExpression
-    caseAUnaryExpression
     caseAMultiplicationExpression
     caseACartesianProductExpression
     caseAPowerOfExpression
@@ -365,21 +379,16 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecExpression
     caseARecordFieldExpression
     caseARecEntry
-    caseABlockSubstitution
     caseASkipSubstitution
-    caseAPreconditionSubstitution
     caseAAssertionSubstitution
     caseAChoiceSubstitution
     caseAChoiceOrSubstitution
-    caseAIfSubstitution
-    caseAIfElsifSubstitution
     caseASelectSubstitution
     caseASelectWhenSubstitution
     caseACaseSubstitution
     caseACaseOrSubstitution
     caseAAnySubstitution
     caseALetSubstitution
-    caseABecomesElementOfSubstitution
     caseAVarSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution

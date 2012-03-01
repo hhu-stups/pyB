@@ -208,7 +208,6 @@ class TestMCHLaod():
         (A=TRUE <=> (B=FALSE or C=FALSE)) &
         (B=TRUE <=> A=TRUE)
         END'''
-
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)

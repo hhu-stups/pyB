@@ -4,6 +4,8 @@ class Node():
     def __init__(self):
         self.children = []
 
+# Baseclasses Predicate and Substitution are used for assertions
+# inside the interpreter.
 class Predicate(Node):
     pass
 
@@ -63,6 +65,8 @@ class ADefinitionsMachineClause(Clause):
 
 #class AMaxIntExpression(Expression):
 #    pass
+class AUnaryExpression(Expression):
+    pass
 
 class AConvertBoolExpression(Expression):
     pass
@@ -373,6 +377,19 @@ class ASubstitutionDefinition(Substitution):
 
 class ABecomesElementOfSubstitution(Substitution):
     pass
+
+class ABlockSubstitution(Substitution):
+    pass
+
+class AIfSubstitution(Substitution):
+    pass
+
+class AIfElsifSubstitution(Substitution):
+    pass
+
+class APreconditionSubstitution(Substitution):
+    pass
+
 
 class AStringExpression(Expression):
     def __init__(self, string):

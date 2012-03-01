@@ -41,6 +41,19 @@ class TestInterpNumbers():
         assert interpret(root.children[0], env)
 
 
+
+    def test_genAST_expr_sub2(self):
+        # Build AST
+        string_to_file("#PREDICATE 4--3=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not interpret(root.children[0], env)
+
+
+
     def test_genAST_expr_mul(self):
         # Build AST
         string_to_file("#PREDICATE 4*0=0", file_name)

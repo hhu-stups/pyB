@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, _test_typeit
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, _test_typeit
 from helpers import find_var_names
 
 min_int = -1
@@ -859,7 +859,6 @@ def interpret(node, env):
 # 5. Substitutions
 #
 # ****************
-
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
         for i in range(int(node.lhs_size)):
@@ -890,11 +889,14 @@ def interpret(node, env):
                 new_func = frozenset(lst)
                 # write to env
                 env.set_value(func_name, new_func)
-    elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
-        for child in node.children:
-            interpret(child, env)
     elif isinstance(node, AConvertBoolExpression):
         return interpret(node.children[0], env)
+    elif isinstance(node, ABecomesElementOfSubstitution):
+        values = interpret(node.children[-1], env)
+        value = list(values)[0] # XXX
+        for child in node.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            env.set_value(child.idName, value)
     elif isinstance(node, ABecomesSuchSubstitution):
         # TODO: more than on ID
         ids = []
@@ -902,12 +904,47 @@ def interpret(node, env):
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
         try_all_values(node.children[-1], env, ids) # sideeffect: set values
-    elif isinstance(node, ABecomesElementOfSubstitution):
-        values = interpret(node.children[-1], env)
-        value = list(values)[0] # XXX
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            env.set_value(child.idName, value)
+    elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
+        for child in node.children:
+            interpret(child, env)
+
+
+# **********************
+#
+# 5.1. Alternative Syntax
+#
+# ***********************
+    elif isinstance(node, ABlockSubstitution):
+        for child in node.children:
+            interpret(child, env)
+    elif isinstance(node, APreconditionSubstitution):
+        assert isinstance(node.children[0], Predicate)
+        assert isinstance(node.children[1], Substitution)
+        condition = interpret(node.children[0], env)
+        if condition:
+            interpret(node.children[1], env)
+            return
+    elif isinstance(node, AIfSubstitution):
+        assert isinstance(node.children[0], Predicate)
+        assert isinstance(node.children[1], Substitution)
+        condition = interpret(node.children[0], env)
+        if condition:
+            interpret(node.children[1], env)
+            return
+        for child in node.children[2:]:
+            if isinstance(child, AIfElsifSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                condition = interpret(child.children[0], env)
+                if condition:
+                    interpret(child.children[1], env)
+                    return
+            else:
+                # ELSE (B Level)
+                assert isinstance(child, Substitution)
+                assert child==node.children[-1] # last child
+                interpret(child, env)
+                return
 
 
 # ****************
@@ -915,6 +952,9 @@ def interpret(node, env):
 # 6. Miscellaneous
 #
 # ****************
+    elif isinstance(node,AUnaryExpression):
+        result = interpret(node.children[0], env)
+        return result*(-1)
     elif isinstance(node, AIntegerExpression):
         return node.intValue
     elif isinstance(node, AIdentifierExpression):
