@@ -140,3 +140,44 @@ class TestInterpSubstitutions():
         assert env.get_value("xx")>0
         assert env.get_value("xx")<6
         assert isinstance(env.get_type("xx"), IntegerType)
+
+
+    def test_genAST_sub_func_overw(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES f
+        INVARIANT f:POW({1,2,3}*{1,2,3})
+        INITIALISATION f:={(1,2),(3,4)} ; f(3) := 1+2
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("f")==frozenset([(1,2),(3,3)])
+
+
+    def test_genAST_sub_func_overw_many_args(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES f
+        INVARIANT f:POW(({1,2}*{1,2})*{1,2})
+        INITIALISATION f:={((1,1),2),((2,2),4)} ; f(2,2) := 0+1
+        END
+        '''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("f")==frozenset([((1,1),2),((2,2),1)])

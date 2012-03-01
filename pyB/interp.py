@@ -863,11 +863,33 @@ def interpret(node, env):
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
         for i in range(int(node.lhs_size)):
-            idnode = node.children[i]
+            lhs_node = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
             value = interpret(rhs, env)
-            assert isinstance(idnode,AIdentifierExpression) #TODO function
-            env.set_value(idnode.idName, value)
+            if isinstance(lhs_node, AIdentifierExpression): 
+                env.set_value(lhs_node.idName, value)
+            else:
+                assert isinstance(lhs_node, AFunctionExpression)
+                assert isinstance(lhs_node.children[0], AIdentifierExpression)
+                func_name = lhs_node.children[0].idName
+                # get args
+                args = []
+                for child in lhs_node.children[1:]:
+                    arg = interpret(child, env)
+                    args.append(arg)
+                func = dict(env.get_value(func_name))
+                # change
+                if len(args)==1:
+                    func[args[0]] = value
+                else:
+                    func[tuple(args)] = value
+                # convert back
+                lst = []
+                for key in func:
+                    lst.append(tuple([key,func[key]]))
+                new_func = frozenset(lst)
+                # write to env
+                env.set_value(func_name, new_func)
     elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)

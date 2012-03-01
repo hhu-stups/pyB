@@ -805,12 +805,18 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
         for i in range(int(node.lhs_size)):
-            idnode = node.children[i]
+            lhs_node = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
             atype0 = typeit(rhs, env, type_env)
-            assert isinstance(idnode,AIdentifierExpression)
-            atype1 = typeit(idnode,env, type_env)
-            unify_equal(atype0, atype1, type_env)
+            if isinstance(lhs_node, AIdentifierExpression):
+                atype1 = typeit(lhs_node, env, type_env)
+                unify_equal(atype0, atype1, type_env)
+            else:
+                assert isinstance(lhs_node, AFunctionExpression)
+                assert isinstance(lhs_node.children[0], AIdentifierExpression)
+                func_type = typeit(lhs_node.children[0], env, type_env)
+                atype2 = PowerSetType(CartType(UnknownType(None,None), atype0))
+                unify_equal(func_type, atype2, type_env)
     elif isinstance(node, AConvertBoolExpression):
         atype = typeit(node.children[0], env, type_env)
         unify_equal(atype, BoolType(), type_env)
