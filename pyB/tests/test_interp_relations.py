@@ -15,6 +15,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T","f"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("f", frozenset([("a","x")]))
@@ -38,6 +39,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","f"])
         env.set_value("S", frozenset(["a"]))
         env.set_value("f", frozenset([("a","x")]))
         assert interpret(root.children[0],env)
@@ -66,6 +68,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","p","q"])
         env.set_value("S", frozenset([("1","x")]))
         env.set_value("p", frozenset([("1","a")]))
         env.set_value("q", frozenset([("a","x")]))
@@ -90,6 +93,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","r"])
         env.set_value("S", frozenset(["a","b","c"]))
         env.set_value("r", frozenset([("a","a"),("b","b"),("c","c")]))
         assert interpret(root.children[0],env)
@@ -103,6 +107,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["r","f"])
         env.set_value("f", frozenset([(1,3),(3,1),(1,1),(3,3)]))
         env.set_value("r", frozenset([(1,3),(3,1)]))
         assert interpret(root.children[0],env)
@@ -123,6 +128,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["r","n","f"])
         env.set_value("f", frozenset([(1,1),(6,6),(8,8)])) # XXX
         env.set_value("r", frozenset([(1,7),(6,2),(8,4)]))
         env.set_value("n",0)
@@ -167,6 +173,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","r","f"])
         env.set_value("S", frozenset(["a"]))
         env.set_value("f", frozenset([("a","1")]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -185,6 +192,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","r","f"])
         env.set_value("S", frozenset(["a"]))
         env.set_value("f", frozenset([("b","42"),("c","777")]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -203,6 +211,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["f","T","r"])
         env.set_value("T", frozenset(["1"]))
         env.set_value("f", frozenset([("a","1")]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -221,6 +230,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["r","T","f"])
         env.set_value("T", frozenset(["1"]))
         env.set_value("f", frozenset([("b","42"),("c","777")]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -239,6 +249,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["r","f"])
         env.set_value("f", frozenset([("1","a"),("42","b"),("777","c")]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
         assert interpret(root.children[0],env)
@@ -256,6 +267,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","r","f"])
         env.set_value("S", frozenset(["a"]))
         env.set_value("f", frozenset(["1"]))
         env.set_value("r", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -289,6 +301,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["r1","r2","f"])
         env.set_value("f", frozenset([("a","1"),("b","42"),("c","777"),("d","17")]))
         env.set_value("r1", frozenset([("d","17")]))
         env.set_value("r2", frozenset([("a","1"),("b","42"),("c","777")]))
@@ -313,6 +326,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S","f"])
         env.set_value("f", frozenset([]))
         env.set_value("S", frozenset([]))
         env.set_value("T", frozenset([]))
@@ -337,6 +351,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S","f"])
         env.set_value("f", frozenset([]))
         env.set_value("S", frozenset([]))
         env.set_value("T", frozenset([]))
@@ -362,6 +377,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["q","p","f"])
         env.set_value("f", frozenset([]))
         env.set_value("p", frozenset([]))
         env.set_value("q", frozenset([]))
@@ -391,6 +407,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["q","p","f"])
         env.set_value("f", frozenset([]))
         env.set_value("p", frozenset([]))
         env.set_value("q", frozenset([]))
@@ -415,6 +432,7 @@ class TestInterpRelations():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["bb","aa","f","ID"])
         env.set_value("aa","aa") # XXX
         env.set_value("bb","bb") # XXX
         env.set_value("ID", frozenset(["aa","bb"]))

@@ -130,6 +130,7 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", 1)
         assert interpret(gtPred, env)
 
@@ -150,6 +151,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", 1)
         assert not interpret(eqPred, env)
 
@@ -170,6 +172,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", 1)
         assert interpret(lsPred, env)
 
@@ -200,6 +203,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["x","y"])
         env.set_value("x", 1)
         env.set_value("y", 7)
         assert not interpret(conPred, env)
@@ -237,6 +241,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["x","y"])
         env.set_value("x", 1)
         env.set_value("y", 7)
         assert interpret(dsjPred, env)
@@ -274,14 +279,17 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>True is True
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 42)
         assert interpret(implPred, env)
 
         env = Environment()
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 43)
         assert interpret(implPred, env)
 
         env = Environment() # False=>False is True
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 41)
         assert interpret(implPred, env)
 
@@ -310,10 +318,12 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>False is False
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 42)
         assert not interpret(implPred, env)
 
         env = Environment() # False=>False is False
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 41)
         assert interpret(implPred, env)
 
@@ -342,6 +352,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>True is True
+        env.add_ids_to_frame(["z"])
         env.set_value("z", 42)
         assert interpret(implPred, env)
 
@@ -402,6 +413,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["ID","yy"])
         env.set_value("yy", "aa")
         env.set_value("ID", frozenset(["aa","bb"]))
         assert interpret(belPred, env)
@@ -420,6 +432,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["ID","yy"])
         env.set_value("yy", "aa")
         env.set_value("ID", frozenset(["aa","bb"]))
         assert not interpret(notbelPred, env)
@@ -441,6 +454,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["yy","aa","bb","cc"])
         env.set_value("yy", "aa")
         env.set_value("aa", "aa") #FIXME: maybe this is a Bug..
         env.set_value("bb", "bb") #
@@ -461,6 +475,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["A","B"])
         env.set_value("A", frozenset(["aa"]))
         env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
@@ -488,6 +503,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["A","B"])
         env.set_value("A", frozenset(["aa"]))
         env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclPred, env)
@@ -510,6 +526,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["A","B"])
         env.set_value("A", frozenset(["aa"]))
         env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclstrPred, env)
@@ -536,6 +553,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["A","B"])
         env.set_value("A", frozenset(["aa"]))
         env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclstrPred, env)
@@ -562,6 +580,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["A"])
         env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
 
@@ -578,6 +597,7 @@ class TestInterp_fixedAST():
 
         #TestInterp
         env = Environment()
+        env.add_ids_to_frame(["S"])
         env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(gtPred, env)
 
@@ -596,9 +616,11 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T"])
         env.set_value("S", frozenset(["aa","bb"]))
         env.set_value("T", frozenset(["bb","cc","dd"]))
         assert interpret(inclPred, env)
+
 
     def test_simple_set_pred_inters(self):
         # Build AST: S <: S /\ T
@@ -614,6 +636,7 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T"])
         env.set_value("S", frozenset(["aa","bb"]))
         env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
@@ -625,6 +648,7 @@ class TestInterp_fixedAST():
         env.set_value("S", frozenset(["aa","bb"]))
         env.set_value("T", frozenset(["cc","dd"]))
         assert not interpret(inclPred, env)
+
 
     def test_simple_set_pred_dif(self):
         # Build AST: S <: S - T
@@ -640,6 +664,7 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T"])
         env.set_value("S", frozenset(["aa","bb"]))
         env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
@@ -647,6 +672,7 @@ class TestInterp_fixedAST():
         env.set_value("S", frozenset(["aa","bb"]))
         env.set_value("T", frozenset(["cc","dd"]))
         assert interpret(inclPred, env)
+
 
     def test_simple_set_pred_cat_prod(self):
         # Build AST: S <: S * T
@@ -662,12 +688,14 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T"])
         env.set_value("S", frozenset(["aa"]))
         env.set_value("T", frozenset(["bb","cc"]))
         assert not interpret(inclPred, env)
 
         result = frozenset([("aa","bb"),("aa","cc")])
         assert interpret(mulExp, env)==result
+
 
     def test_simple_set_expr_card(self):
         # Build AST: card(S)
@@ -677,6 +705,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["S"])
         env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(cardExp, env)==2
 

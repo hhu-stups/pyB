@@ -16,6 +16,7 @@ class TestTypesSets():
 
         # Type
         env = Environment()
+        env.add_ids_to_frame(["S"])
         env.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
         lst = [("S", PowerSetType(SetType("X")))]
         _test_typeit(root, env, lst, [])
@@ -29,6 +30,7 @@ class TestTypesSets():
 
         # Type
         env = Environment()
+        env.add_ids_to_frame(["aa","bb","ID"])
         env.set_value("aa", "aa")
         env.set_value("bb", "bb")
         env.set_value("ID", frozenset(["aa", "bb"]))

@@ -16,6 +16,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x","S"])
         env.set_value("x", "x")
         env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
@@ -32,6 +33,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x","S"])
         env.set_value("x", "x")
         env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
@@ -48,6 +50,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S"])
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
@@ -76,6 +79,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S"])
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
@@ -93,6 +97,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S"])
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("S", frozenset(["x","y","z"]))
         assert not interpret(root.children[0], env)
@@ -114,6 +119,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S"])
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("S", frozenset(["x","y","z"]))
         assert interpret(root.children[0], env)
@@ -135,6 +141,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["T","S","u"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("u", ("a","x"))
@@ -150,6 +157,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["A","B","C"])
         env.set_value("A", frozenset([1,2,3,4,5]))
         env.set_value("B", frozenset([3,4,5,6,7]))
         env.set_value("C", frozenset([1,2,3,4,5,6,7]))
@@ -164,6 +172,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["A","B","C"])
         env.set_value("A", frozenset([1,2,3,4,5]))
         env.set_value("B", frozenset([3,4,5,6,7]))
         env.set_value("C", frozenset([3,4,5]))
@@ -178,6 +187,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["A","B","C"])
         env.set_value("A", frozenset([1,2,3,4,5]))
         env.set_value("B", frozenset([3,4,5,6,7]))
         env.set_value("C", frozenset([1,2]))
@@ -192,6 +202,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["X","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("X", frozenset([]))
         assert interpret(root.children[0],env)
@@ -217,6 +228,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","X"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("X", frozenset([]))
         assert interpret(root.children[0],env)
@@ -236,6 +248,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","X"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("X", frozenset(frozenset([])))
         assert not interpret(root.children[0],env)
@@ -280,6 +293,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", "x")
         assert interpret(root.children[0],env)
 
@@ -292,6 +306,7 @@ class TestInterpSets():
 
         #Test
         env = Environment()
+        env.add_ids_to_frame(["yy","aa","bb","cc"])
         env.set_value("yy", "aa")
         env.set_value("aa", "aa") #FIXME: maybe this is a Bug..
         env.set_value("bb", "bb") #
@@ -310,6 +325,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x","y"])
         env.set_value("x", "x")
         env.set_value("y", "y")
         assert interpret(root.children[0],env)
@@ -323,6 +339,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["zz"])
         env.set_value("zz", 4)
         assert interpret(root.children[0],env)
 
@@ -344,6 +361,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", 2)
         assert interpret(root.children[0],env)
 
@@ -359,6 +377,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["x"])
         env.set_value("x", 2)
         assert interpret(root.children[0],env)
 
@@ -420,6 +439,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","T","ID"])
         env.set_value("ID", frozenset(["a","b"]))
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["a"]))
@@ -436,6 +456,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","ID"])
         env.set_value("ID", frozenset(["a","b"]))
         env.set_value("S", frozenset(["a","b"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
@@ -451,6 +472,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["ID","T"])
         env.set_value("ID", frozenset(["a","b"]))
         env.set_value("T", frozenset([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
         lst = [("ID", PowerSetType(SetType("ID")))]
@@ -466,6 +488,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","U","u"])
         env.set_value("S", frozenset(["a","b","c"]))
         env.set_value("U", frozenset([frozenset(["a","b","c"])]))
         env.set_value("u", frozenset(["a","b","c"]))
@@ -489,6 +512,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["S","U","u"])
         env.set_value("S", frozenset(["a","b","c"]))
         env.set_value("U", frozenset([frozenset(["a","b","c"])]))
         env.set_value("u", frozenset(["a","b","c"]))
@@ -515,6 +539,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["s"])
         env.set_value("s", "Hallo Welt")
         assert interpret(root.children[0],env)
 
@@ -527,6 +552,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
+        env.add_ids_to_frame(["A","B","C"])
         env.set_value("A", True)
         env.set_value("B", True)
         env.set_value("C", False)

@@ -488,3 +488,107 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)
         assert env.get_value("xx")==3
+
+
+    def test_genAST_sub_case(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION 
+            BEGIN xx:=1; 
+                CASE 1+1 OF 
+                EITHER 1,2,3 THEN xx:=2 
+                OR 4,5,6 THEN xx:=3 END 
+                END
+            END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2
+
+
+    def test_genAST_sub_case2(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION 
+            BEGIN xx:=1; 
+                CASE 1+1 OF 
+                EITHER 4,5,6 THEN xx:=2 
+                OR 1,2,3 THEN xx:=3 END 
+                END
+            END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==3
+
+
+    def test_genAST_sub_case3(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION 
+            BEGIN xx:=1; 
+                CASE 1+1 OF 
+                EITHER 4,5,6 THEN xx:=2 
+                OR 7,8,9 THEN xx:=3
+                ELSE xx:=4 END 
+                END
+            END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==4
+
+
+    def test_genAST_sub_var(self):
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; 
+                        VAR varLoc1, varLoc2 IN
+                        varLoc1 := xx + 1 ;
+                        varLoc2 := 2 * varLoc1 ;
+                        xx := varLoc2
+                        END
+                    END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==4

@@ -25,6 +25,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -53,6 +54,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -81,6 +83,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -106,6 +109,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -122,6 +126,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -147,6 +152,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","x"),("b","y")]))
         l.append(frozenset([("a","y"),("b","x")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["x","y"]))
         env.set_value("F", frozenset(l))
@@ -174,6 +180,7 @@ class TestInterpFunctions():
         l.append(frozenset([("a","y"),("b","z"),("c","x")]))
         l.append(frozenset([("a","z"),("b","x"),("c","y")]))
         env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
         env.set_value("S", frozenset(["a","b","c"]))
         env.set_value("T", frozenset(["x","y","z"]))
         env.set_value("F", frozenset(l))
@@ -193,6 +200,7 @@ class TestInterpFunctions():
 
         l = [frozenset([(frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z1'), (frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z2')]), frozenset([(frozenset([('x1', 'y1'), ('x2', 'y2')]), 'z1'), (frozenset([('x2', 'y1'), ('x1', 'y2')]), 'z2')])]
         env = Environment()
+        env.add_ids_to_frame(["S","T","F","U"])
         env.set_value("S", frozenset(["x1","x2"]))
         env.set_value("T", frozenset(["y1","y2"]))
         env.set_value("U", frozenset(["z1","z2"]))
@@ -207,6 +215,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","x","y","f"])
         env.set_value("a", "a")
         env.set_value("b", "b")
         env.set_value("x", "x")
@@ -222,6 +231,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["S","T","f","V","x","y"])
         env.set_value("S", frozenset(["x1","x2"]))
         env.set_value("T", frozenset(["y1","y2"]))
         env.set_value("V", frozenset(["z1","z2","z3","z4"]))
@@ -238,6 +248,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["zz","f"])
         env.set_value("f", frozenset([((1,1),42),((2,2),777)]))
         env.set_value("zz", 42)
         assert interpret(root.children[0],env)
@@ -250,6 +261,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["zz","f"])
         env.set_value("f", frozenset([((1,1,1),42),((2,2,2),777)]))
         env.set_value("zz", 777)
         assert interpret(root.children[0],env)
@@ -272,6 +284,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["f"])
         _test_typeit(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(1,1),(2,4),(3,9)]))
         assert interpret(root.children[0],env)
@@ -284,6 +297,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([]))
         assert interpret(root.children[0],env)
@@ -302,6 +316,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([]))
         assert not interpret(root.children[0],env)
@@ -323,6 +338,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])]))
         assert interpret(root.children[0],env)
@@ -335,6 +351,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])]))
         assert interpret(root.children[0],env)
@@ -350,6 +367,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S","t"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("t", frozenset([(1, 'a'), (2, 'b')]))
@@ -363,6 +381,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S","a"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("a", "a")
@@ -376,6 +395,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["s","S","a"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, 'a'), (1, 'b')]))
         env.set_value("a", "a")
@@ -389,6 +409,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","s"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -402,6 +423,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","s"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -415,6 +437,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -431,6 +454,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s"])
         env.set_value("s", frozenset([(1, 'd'), (2, 'e')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -447,6 +471,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -463,6 +488,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
@@ -479,6 +505,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s","t"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
         env.set_value("t", frozenset([ (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
         env.set_value("a", "a")
@@ -496,6 +523,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["a","b","c","d","e","s","t"])
         env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
         env.set_value("t", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd')])) 
         env.set_value("a", "a")
@@ -513,6 +541,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["S","s"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
         assert interpret(root.children[0],env)
@@ -525,6 +554,7 @@ class TestInterpFunctions():
         exec ast_string
 
         env = Environment()
+        env.add_ids_to_frame(["t","s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
         env.set_value("t", frozenset([(1, 'b'),(2, 'a'),(3, 'a'),(4, 'b')]))

@@ -751,6 +751,119 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseACaseSubstitution(ACaseSubstitution node)
+    {
+        List<PExpression> copy0 = new ArrayList<PExpression>(node.getEitherExpr());
+        List<PSubstitution> copy1 = new ArrayList<PSubstitution>(node.getOrSubstitutions());
+        String[] ids = new String[copy0.size()+copy1.size()+3]; 
+        String idName = "";
+        int i = 0;
+        if(node.getExpression() != null)
+        {
+            node.getExpression().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        for(PExpression e : copy0)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getEitherSubst() != null)
+        {
+            node.getEitherSubst().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        for(PSubstitution e : copy1)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getElse() != null)
+        {
+            node.getElse().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        if(node.getExpression() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        for(int k = 0 ; k<copy0.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getEitherSubst() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        for(int k = 0 ; k<copy1.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getElse() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".expNum = "+copy0.size()+"\n";
+    }
+
+
+    public void caseACaseOrSubstitution(ACaseOrSubstitution node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getExpressions());
+        String[] ids = new String[copy.size()+1]; 
+        String idName = "";
+        int i = 0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getSubstitution() != null)
+        {
+            node.getSubstitution().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getSubstitution() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".expNum = "+copy.size()+"\n";
+    }
+
+
+    public void caseAVarSubstitution(AVarSubstitution node)
+    {
+
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+        String[] ids = new String[copy.size()+1]; 
+        String idName = "";
+        int i = 0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getSubstitution() != null)
+        {
+            node.getSubstitution().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getSubstitution() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+    }
+
+
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());

@@ -48,13 +48,24 @@ class Environment():
         raise KeyError
 
 
-    # TODO: (maybe) lookup + Throw Typeerror:
-    # TODO: (maybe) set-lookup tests
+
     # TODO: (maybe) check if value has the correct type
     # used by tests and emumaration and substitutipn
     def set_value(self, id_Name, value):
+        for i in range(len(self.value_stack)):
+            top_map = self.value_stack[-(i+1)]
+            if id_Name in top_map:
+                top_map[id_Name] = value
+                return
+        print "LookupErr:", id_Name
+        raise KeyError
+
+
+    def add_ids_to_frame(self, ids):
         top_map = self.value_stack[-1]
-        top_map[id_Name] = value
+        for i in ids:
+            assert isinstance(i,str)
+            top_map[i] = None
 
 
     # This method is used only(!) by the typechecking-tests.
@@ -171,6 +182,7 @@ def interpret(node, env):
         # The parameters p make the constraints c True
         # #p.C
         # FIXME: dummy-init of mch-parameters
+        env.add_ids_to_frame(node.para)
         for name in node.para:
             atype = env.get_type(name) # XXX
             values = all_values_by_type(atype, env)
@@ -213,15 +225,19 @@ def interpret(node, env):
         if aAssertionsMachineClause:
             interpret(aAssertionsMachineClause, env)
     elif isinstance(node, AConstantsMachineClause):
-        for child in node.children:
-            #atype = env.get_type_by_node(child)
-            env.set_value(child.idName, None)
-            interpret(child, env)
+        const_names = []
+        for idNode in node.children:
+            assert isinstance(idNode, AIdentifierExpression)
+            const_names.append(idNode.idName)
+            #atype = env.get_type_by_node(idNode)
+        env.add_ids_to_frame(const_names)
     elif isinstance(node, AVariablesMachineClause):
-        for child in node.children:
-            #atype = env.get_type_by_node(child)
-            env.set_value(child.idName, None)
-            interpret(child, env)
+        var_names = []
+        for idNode in node.children:
+            assert isinstance(idNode, AIdentifierExpression)
+            var_names.append(idNode.idName)
+            #atype = env.get_type_by_node(idNode)
+        env.add_ids_to_frame(var_names)
     elif isinstance(node, ASetsMachineClause):
         for child in node.children:
             if isinstance(child, AEnumeratedSet):
@@ -229,6 +245,7 @@ def interpret(node, env):
                 for elm in child.children:
                     assert isinstance(elm, AIdentifierExpression)
                     elm_lst.append(elm.idName)
+                env.add_ids_to_frame([child.idName])
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
                 assert isinstance(child, ADeferredSet)
@@ -971,6 +988,38 @@ def interpret(node, env):
             interpret(nodes[0], env)
         elif not isinstance(node.children[-1], ASelectSubstitution):
             interpret(node.children[-1], env)
+    elif isinstance(node, ACaseSubstitution):
+        assert isinstance(node.children[0], Expression)
+        elem = interpret(node.children[0], env)
+        for child in node.children[1:1+node.expNum]:
+            assert isinstance(child, Expression)
+            value = interpret(child, env)
+            if elem == value:
+                assert isinstance(node.children[node.expNum+1], Substitution)
+                interpret(node.children[node.expNum+1], env)
+                return
+        for child in node.children[2+node.expNum:]:
+            if isinstance(child, ACaseOrSubstitution):
+                for expNode in child.children[:child.expNum]:
+                    assert isinstance(expNode, Expression)
+                    value = interpret(expNode, env)
+                    if elem == value:
+                        assert isinstance(child.children[-1], Substitution)
+                        interpret(child.children[-1], env)
+                        return
+            else:
+                assert isinstance(child, Substitution)
+                assert child==node.children[-1]
+                interpret(child, env)
+                return
+    elif isinstance(node, AVarSubstitution):
+        nodes = []
+        for idNode in node.children[:-1]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+        env.push_new_frame(nodes)
+        interpret(node.children[-1], env)
+        env.pop_frame()
 
 
 # ****************

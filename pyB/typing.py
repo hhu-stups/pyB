@@ -826,7 +826,14 @@ def typeit(node, env, type_env):
         for child in node.children[:-1]:
             idtype = typeit(child, env, type_env)
             unify_element_of(idtype, atype, type_env)
-
+    elif isinstance(node, AVarSubstitution):
+        ids = []
+        for idNode in node.children[:-1]:
+            assert isinstance(idNode, AIdentifierExpression)
+            ids.append(idNode.idName)
+        type_env.push_frame(ids)
+        typeit(node.children[-1], env, type_env)
+        type_env.pop_frame(env)
 
 
 # ****************
