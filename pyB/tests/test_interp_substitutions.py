@@ -358,3 +358,133 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)
         assert env.get_value("xx")==1
+
+
+    def test_genAST_sub_choice(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; CHOICE xx:=2 OR xx:=3 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2 or env.get_value("xx")==3
+
+
+    def test_genAST_sub_choice2(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; CHOICE xx:=2 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2
+
+
+    def test_genAST_sub_choice3(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; CHOICE xx:=2 OR xx:=3 OR xx:=4 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
+
+
+    def test_genAST_sub_select(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; 
+            SELECT 1+1=2 THEN xx:=2 
+            WHEN 1+1=3 THEN xx:=3
+            ELSE xx:=4 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2
+
+
+    def test_genAST_sub_select2(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; 
+            SELECT 1+1=0 THEN xx:=2 
+            WHEN 1+1=3 THEN xx:=3
+            ELSE xx:=4 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==4
+
+
+
+    def test_genAST_sub_select3(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; 
+            SELECT 1+1=3 THEN xx:=2 
+            WHEN 1+1=2 THEN xx:=3
+            ELSE xx:=4 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==3

@@ -390,6 +390,19 @@ class AIfElsifSubstitution(Substitution):
 class APreconditionSubstitution(Substitution):
     pass
 
+class AChoiceOrSubstitution(Substitution):
+    pass
+
+class AChoiceSubstitution(Substitution):
+    pass
+
+class ASelectWhenSubstitution(Substitution):
+    pass
+
+class ASelectSubstitution(Substitution):
+    pass
+
+
 
 class AStringExpression(Expression):
     def __init__(self, string):

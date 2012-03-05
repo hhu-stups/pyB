@@ -945,6 +945,32 @@ def interpret(node, env):
                 assert child==node.children[-1] # last child
                 interpret(child, env)
                 return
+    elif isinstance(node, AChoiceSubstitution):
+        assert isinstance(node.children[0], Substitution)
+        for child in node.children[1:]:
+            assert isinstance(child, AChoiceOrSubstitution)
+        # TODO: random choice
+        return interpret(node.children[0], env)
+    elif isinstance(node, ASelectSubstitution):
+        nodes = []
+        assert isinstance(node.children[0], Predicate)
+        assert isinstance(node.children[1], Substitution)
+        if interpret(node.children[0], env):
+            nodes.append(node.children[1])
+        for child in node.children[2:]:
+            if isinstance(child, ASelectWhenSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                if interpret(child.children[0], env):
+                    nodes.append(child.children[1])
+            else:
+                assert isinstance(child, Substitution)
+                assert child==node.children[-1]
+        if not nodes == []:
+            # TODO: random choice
+            interpret(nodes[0], env)
+        elif not isinstance(node.children[-1], ASelectSubstitution):
+            interpret(node.children[-1], env)
 
 
 # ****************

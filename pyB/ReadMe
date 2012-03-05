@@ -144,6 +144,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
       the java-Bparser
     - Tests ignore Frames and Scopes.
     - not tested: append/preprend more than one element - possible?
+    - no random choice in CHOICE and SELECT
 8.4 Bugs:
     - "=" is used as ":=" inside the interpreter
     - MAYBE BUG: eval of preds changes value_stack

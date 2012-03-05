@@ -637,6 +637,29 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAChoiceSubstitution(AChoiceSubstitution node)
+    {
+        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
+        String[] ids = new String[copy.size()]; 
+        String idName = "";
+        int i=0;
+
+        for(PSubstitution e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i = 0 ; i<ids.length; i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
     public void caseAIfSubstitution(AIfSubstitution node)
     {
         List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getElsifSubstitutions());
@@ -680,6 +703,53 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getElse() != null)
             out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
     }
+
+
+    public void caseASelectSubstitution(ASelectSubstitution node)
+    {
+        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getWhenSubstitutions());
+        String[] ids = new String[copy.size()+3]; 
+        String idName = "";
+        int i = 0;
+        if(node.getCondition() != null)
+        {
+            node.getCondition().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getThen() != null)
+        {
+            node.getThen().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        for(PSubstitution e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        if(node.getElse() != null)
+        {
+            node.getElse().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        if(node.getCondition() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getThen() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getElse() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+
+    }
+
 
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
@@ -871,6 +941,13 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_twoChildren(node,  node.getCondition(),  node.getThenSubstitution());
     }
 
+
+    public void caseASelectWhenSubstitution(ASelectWhenSubstitution node)
+    {
+        printStdOut_twoChildren(node,  node.getCondition(),  node.getSubstitution());
+    }
+
+
     public void caseAIntervalExpression(AIntervalExpression node)
     {
         printStdOut_twoChildren(node,  node.getLeftBorder(),  node.getRightBorder());
@@ -995,6 +1072,13 @@ public class ASTPython extends DepthFirstAdapter{
     {
         printStdOut_oneChild(node, node.getSubstitution());
     }
+
+
+    public void caseAChoiceOrSubstitution(AChoiceOrSubstitution node)
+    {
+        printStdOut_oneChild(node, node.getSubstitution());
+    }
+
 
     public void caseAUnaryExpression(AUnaryExpression node)
     {
