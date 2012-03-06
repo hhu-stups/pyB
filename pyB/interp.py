@@ -1020,7 +1020,7 @@ def interpret(node, env):
         env.push_new_frame(nodes)
         interpret(node.children[-1], env)
         env.pop_frame()
-    elif isinstance(node, AAnySubstitution):
+    elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
         nodes = []
         idNames = []
         for idNode in node.children[:node.idNum]:

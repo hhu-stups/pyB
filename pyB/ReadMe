@@ -1,5 +1,5 @@
 PyB
-31.08.2011 - 1.03.2012 
+31.08.2011 - 06.03.2012 
 by John Witulski: www.stups.uni-duesseldorf.de
 
 
@@ -146,6 +146,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - not tested: append/preprend more than one element - possible?
     - no random choice in CHOICE and SELECT
 8.4 Bugs:
+    - (2 + 3) / 2 == 2
     - "=" is used as ":=" inside the interpreter
     - MAYBE BUG: eval of preds changes value_stack
     - Vars are added to a Frame at the wrong position!
@@ -286,6 +287,15 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAIfSubstitution
     caseAIfElsifSubstitution
     caseAPreconditionSubstitution
+    caseAChoiceSubstitution
+    caseAChoiceOrSubstitution
+    caseASelectSubstitution
+    caseASelectWhenSubstitution
+    caseACaseSubstitution
+    caseACaseOrSubstitution
+    caseAAnySubstitution
+    caseALetSubstitution
+    caseAVarSubstitution
 
 
  9.2 NOT IMPLEMENTED:
@@ -382,15 +392,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecEntry
     caseASkipSubstitution
     caseAAssertionSubstitution
-    caseAChoiceSubstitution
-    caseAChoiceOrSubstitution
-    caseASelectSubstitution
-    caseASelectWhenSubstitution
-    caseACaseSubstitution
-    caseACaseOrSubstitution
-    caseAAnySubstitution
-    caseALetSubstitution
-    caseAVarSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution
     caseAOpWithReturnSubstitution

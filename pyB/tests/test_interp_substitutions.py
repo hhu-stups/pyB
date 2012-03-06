@@ -620,3 +620,35 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)
         assert env.get_value("xx")==5 or env.get_value("xx")==7 # 3+4 or 5+0
+
+
+
+    def test_genAST_sub_let(self):
+        string = '''
+        MACHINE Test
+        VARIABLES SumR, DifferenceR, Var1, Var2
+        INVARIANT SumR:NAT & DifferenceR:NAT & Var1:NAT & Var2:NAT
+        INITIALISATION BEGIN Var1:=2; Var2:=3;
+                        LET r1, r2 BE
+                        r1 = (Var1 + Var2) / 2 &
+                        r2 = (Var1 - Var2) / 2
+                        IN
+                        SumR := r1 + r2 ||
+                        DifferenceR := r1 - r2
+                        END
+
+                    END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("SumR")==1
+        assert env.get_value("DifferenceR")==3
+        assert env.get_value("Var1")==2
+        assert env.get_value("Var2")==3

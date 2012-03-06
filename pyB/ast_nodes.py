@@ -414,6 +414,9 @@ class AVarSubstitution(Substitution):
 class AAnySubstitution(Substitution):
     pass
 
+class ALetSubstitution(Substitution):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string
