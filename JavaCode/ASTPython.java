@@ -95,7 +95,15 @@ public class ASTPython extends DepthFirstAdapter{
         out += "id"+ (idCounter++) +"=";
         out += "AFalseExpression()\n";
     }
-    /* XXXnot testes XXX
+
+
+    public void caseASkipSubstitution(ASkipSubstitution node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "ASkipSubstitution()\n";
+    }
+
+
     public void caseAMinIntExpression(AMinIntExpression node)
     {
         out += "id"+ (idCounter++) +"=";
@@ -107,7 +115,7 @@ public class ASTPython extends DepthFirstAdapter{
     {
         out += "id"+ (idCounter++) +"=";
         out += "AMaxIntExpression()\n";
-    }*/
+    }
 
 
     public void outStart(Start node)

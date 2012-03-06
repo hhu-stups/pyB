@@ -876,6 +876,8 @@ def interpret(node, env):
 # 5. Substitutions
 #
 # ****************
+    elif isinstance(node, ASkipSubstitution):
+        pass
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
         for i in range(int(node.lhs_size)):
@@ -1046,6 +1048,10 @@ def interpret(node, env):
         return result*(-1)
     elif isinstance(node, AIntegerExpression):
         return node.intValue
+    elif isinstance(node, AMinIntExpression):
+        return min_int
+    elif isinstance(node, AMaxIntExpression):
+        return max_int
     elif isinstance(node, AIdentifierExpression):
         return env.get_value(node.idName)
     elif isinstance(node, ABoolSetExpression):

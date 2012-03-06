@@ -652,3 +652,22 @@ class TestInterpSubstitutions():
         assert env.get_value("DifferenceR")==3
         assert env.get_value("Var1")==2
         assert env.get_value("Var2")==3
+
+
+    def test_genAST_sub_skip(self):
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=3; BEGIN skip END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==3

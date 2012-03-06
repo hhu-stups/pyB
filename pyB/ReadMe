@@ -296,6 +296,9 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAAnySubstitution
     caseALetSubstitution
     caseAVarSubstitution
+    caseASkipSubstitution
+    caseAMaxIntExpression 
+    caseAMinIntExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -343,8 +346,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAFinitePredicate
     caseAPartitionPredicate
     caseAPrimedIdentifierExpression
-    caseAMaxIntExpression (no test)
-    caseAMinIntExpression (no test)
     caseAIntegerSetExpression
     caseANatural1SetExpression
     caseAIntSetExpression
@@ -390,7 +391,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecExpression
     caseARecordFieldExpression
     caseARecEntry
-    caseASkipSubstitution
     caseAAssertionSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution

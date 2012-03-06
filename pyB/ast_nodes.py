@@ -290,6 +290,12 @@ class ANat1SetExpression(Expression):
 class ALambdaExpression(Expression):
     pass
 
+class AMinIntExpression(Expression):
+    pass
+
+class AMaxIntExpression(Expression):
+    pass
+
 class ADefinitionPredicate(Predicate):
     pass
 
@@ -415,6 +421,9 @@ class AAnySubstitution(Substitution):
     pass
 
 class ALetSubstitution(Substitution):
+    pass
+
+class ASkipSubstitution(Substitution):
     pass
 
 class AStringExpression(Expression):

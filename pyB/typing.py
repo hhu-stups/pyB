@@ -851,6 +851,8 @@ def typeit(node, env, type_env):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
         return idtype
+    elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression):
+        return IntegerType(None)
     elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate) or isinstance(node, ADefinitionSubstitution):
         ast = env.get_ast_by_definition(node.idName)
         assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition) or isinstance(ast, ASubstitutionDefinition) #  XXX: substitution!

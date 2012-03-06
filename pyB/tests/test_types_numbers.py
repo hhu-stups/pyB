@@ -332,26 +332,26 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("x").data, IntegerType)
 
 
-    def test_genAST_expr_equ(self):
+    def test_types_expr_equ(self):
         # Build AST
         string_to_file("#PREDICATE x=y & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
 
 
-    def test_genAST_expr_equ2(self):
+    def test_types_expr_equ2(self):
         # Build AST
         string_to_file("#PREDICATE z=x & x=y & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -359,13 +359,13 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
-    def test_genAST_expr_equ3(self):
+    def test_types_expr_equ3(self):
         # Build AST
         string_to_file("#PREDICATE z=x & x=y & y=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -373,13 +373,13 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
-    def test_genAST_expr_equ4(self):
+    def test_types_expr_equ4(self):
         # Build AST
         string_to_file("#PREDICATE z=x & z=1 & x=y", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -387,13 +387,13 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
-    def test_genAST_expr_equ5(self):
+    def test_types_expr_equ5(self):
         # Build AST
         string_to_file("#PREDICATE x=42 & z=x  & x=y", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -401,13 +401,13 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
-    def test_genAST_expr_equ6(self):
+    def test_types_expr_equ6(self):
         # Build AST
         string_to_file("#PREDICATE y=42 & z=x & y=x", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -415,13 +415,13 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("z"), IntegerType)
 
 
-    def test_genAST_expr_equ7(self):
+    def test_types_expr_equ7(self):
         # Build AST
         string_to_file("#PREDICATE z=x & z=y & z=w & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y","z","w"])
         assert isinstance(env.get_type("x"), IntegerType)
@@ -430,16 +430,38 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("w"), IntegerType)
 
 
-    def test_genAST_expr_leq(self):
+    def test_types_expr_leq(self):
         # Build AST
         string_to_file("#PREDICATE x<y & y=1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-        # Test
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["x","y"])
         assert isinstance(env.get_type("x"), IntegerType)
         assert isinstance(env.get_type("y"), IntegerType)
 
 
+    def test_types_expr_maxint(self):
+        # Build AST
+        string_to_file("#PREDICATE x<MAXINT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x"])
+        assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_expr_minint(self):
+        # Build AST
+        string_to_file("#PREDICATE x>MININT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x"])
+        assert isinstance(env.get_type("x"), IntegerType)

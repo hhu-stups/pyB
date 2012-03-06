@@ -346,3 +346,31 @@ class TestInterpNumbers():
         env.set_value("ID", frozenset(["a","b"]))
         _test_typeit(root.children[0], env, lst, "")
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_maxint(self):
+        # Build AST
+        string_to_file("#PREDICATE x<MAXINT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["x"])
+        env.set_value("x", 2)
+        _test_typeit(root.children[0], env, [], "x")
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_minint(self):
+        # Build AST
+        string_to_file("#PREDICATE x>MININT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["x"])
+        env.set_value("x", 2)
+        _test_typeit(root.children[0], env, [], "x")
+        assert interpret(root.children[0],env)
