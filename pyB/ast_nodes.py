@@ -411,6 +411,9 @@ class ACaseOrSubstitution(Substitution):
 class AVarSubstitution(Substitution):
     pass
 
+class AAnySubstitution(Substitution):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

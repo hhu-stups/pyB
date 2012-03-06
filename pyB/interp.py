@@ -1020,6 +1020,20 @@ def interpret(node, env):
         env.push_new_frame(nodes)
         interpret(node.children[-1], env)
         env.pop_frame()
+    elif isinstance(node, AAnySubstitution):
+        nodes = []
+        idNames = []
+        for idNode in node.children[:node.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+            idNames.append(idNode.idName)
+        pred = node.children[-2]
+        assert isinstance(pred, Predicate)
+        assert isinstance(node.children[-1], Substitution)
+        env.push_new_frame(nodes)
+        if try_all_values(pred, env, idNames):
+            interpret(node.children[-1], env)
+        env.pop_frame()
 
 
 # ****************

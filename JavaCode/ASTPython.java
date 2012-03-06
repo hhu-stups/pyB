@@ -864,6 +864,42 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAAnySubstitution(AAnySubstitution node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+        String[] ids = new String[copy.size()+2]; 
+        String idName = "";
+        int i = 0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getWhere() != null)
+        {
+            node.getWhere().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getThen() != null)
+        {
+            node.getThen().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getWhere() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getThen() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+    }
+ 
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());

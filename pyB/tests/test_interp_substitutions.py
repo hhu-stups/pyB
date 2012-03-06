@@ -570,6 +570,7 @@ class TestInterpSubstitutions():
 
 
     def test_genAST_sub_var(self):
+        # Build AST
         string = '''
         MACHINE Test
         VARIABLES xx
@@ -592,3 +593,30 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[1], AInvariantMachineClause)
         assert interpret(root.children[1], env)
         assert env.get_value("xx")==4
+
+
+    def test_genAST_sub_any(self):
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1;
+                        ANY r1, r2 WHERE
+                        r1 : NAT &
+                        r2 : NAT &
+                        r1*r1 + r2*r2 = 25
+                        THEN
+                        xx := r1 + r2
+                        END
+                    END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==5 or env.get_value("xx")==7 # 3+4 or 5+0
