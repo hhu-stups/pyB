@@ -118,6 +118,20 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseASuccessorExpression(ASuccessorExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "ASuccessorExpression()\n";
+    }
+
+
+    public void caseAPredecessorExpression(APredecessorExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "APredecessorExpression()\n";
+    }
+
+
     public void outStart(Start node)
     {
         // dont add a start node now

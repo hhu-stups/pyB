@@ -683,6 +683,9 @@ def typeit(node, env, type_env):
         return PowerSetType(PowerSetType(CartType(type0.data,type1.data)))
     elif isinstance(node, AFunctionExpression):
         type0 = typeit(node.children[0], env, type_env)
+        if isinstance(type0, IntegerType):
+            assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
+            return type0
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
         assert isinstance(type0.data.data[1], SetType)
@@ -851,7 +854,7 @@ def typeit(node, env, type_env):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
         return idtype
-    elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression):
+    elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression) or isinstance(node, ASuccessorExpression) or isinstance(node, APredecessorExpression):
         return IntegerType(None)
     elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate) or isinstance(node, ADefinitionSubstitution):
         ast = env.get_ast_by_definition(node.idName)

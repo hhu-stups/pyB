@@ -296,6 +296,12 @@ class AMinIntExpression(Expression):
 class AMaxIntExpression(Expression):
     pass
 
+class APredecessorExpression(Expression):
+    pass
+
+class ASuccessorExpression(Expression):
+    pass
+
 class ADefinitionPredicate(Predicate):
     pass
 

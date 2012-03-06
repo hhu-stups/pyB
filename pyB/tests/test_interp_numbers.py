@@ -374,3 +374,25 @@ class TestInterpNumbers():
         env.set_value("x", 2)
         _test_typeit(root.children[0], env, [], "x")
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_succ(self):
+        # Build AST
+        string_to_file("#PREDICATE 2=succ(1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_pred(self):
+        # Build AST
+        string_to_file("#PREDICATE 2=pred(3)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)
