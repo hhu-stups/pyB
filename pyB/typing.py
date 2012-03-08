@@ -181,6 +181,8 @@ def throw_away_unknown(tree):
         return tree
     elif isinstance(tree, CartType): #TODO: implement me
         return tree
+    elif isinstance(tree, StructType):#TODO: implement me
+        return tree
     elif isinstance(tree, PowCartORIntegerType):
         data = tree.data
         arg1 = unknown_closure(data[0])
@@ -881,6 +883,34 @@ def typeit(node, env, type_env):
         deftype = typeit(ast.children[-1], env, type_env)
         type_env.pop_frame(env)
         return deftype
+    elif isinstance(node, AStructExpression):
+        dictionary = {}
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            atype = typeit(rec_entry.children[-1], env, type_env)
+            dictionary[name] = atype.data # remove powerset
+        return PowerSetType(StructType(dictionary))
+    elif isinstance(node, ARecExpression):
+        dictionary = {}
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            atype = typeit(rec_entry.children[-1], env, type_env)
+            dictionary[name] = atype
+        return StructType(dictionary)
+    elif isinstance(node, ARecordFieldExpression):
+        atype = typeit(node.children[0], env, type_env)
+        assert isinstance(atype, StructType)
+        assert isinstance(node.children[1], AIdentifierExpression)
+        entry_type = atype.data[node.children[1].idName]
+        return entry_type
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"
@@ -910,6 +940,16 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
             # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):
                 unify_equal(maybe_type0.data, maybe_type1.data, type_env)
+            elif isinstance(maybe_type0, StructType):
+                dictionary0 = maybe_type0.data
+                dictionary1 = maybe_type1.data
+                assert isinstance(dictionary0, dict)
+                assert isinstance(dictionary1, dict)
+                lst0 = list(dictionary0.values())
+                lst1 = list(dictionary1.values())
+                assert len(lst0)==len(lst1)
+                for index in range(len(lst0)):
+                    unify_equal(lst0[index], lst1[index], type_env)
             elif isinstance(maybe_type0, CartType):
                 t00 = unknown_closure(maybe_type0.data[0])
                 t10 = unknown_closure(maybe_type1.data[0])

@@ -1034,6 +1034,51 @@ public class ASTPython extends DepthFirstAdapter{
         out += "id"+nodeid+".idNum = "+copy.size()+"\n";
     }
 
+
+    public void caseAStructExpression(AStructExpression node)
+    {
+        List<PRecEntry> copy = new ArrayList<PRecEntry>(node.getEntries());
+        String[] ids = new String[copy.size()]; 
+        String idName = "";
+        int i = 0;
+        for(PRecEntry e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+    }
+
+
+    public void caseARecExpression(ARecExpression node)
+    {
+        List<PRecEntry> copy = new ArrayList<PRecEntry>(node.getEntries());
+        String[] ids = new String[copy.size()]; 
+        String idName = "";
+        int i = 0;
+        for(PRecEntry e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+    }
+
+
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
@@ -1213,6 +1258,17 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());
     }
 
+
+    public void caseARecordFieldExpression(ARecordFieldExpression node)
+    {
+        printStdOut_twoChildren(node, node.getRecord(), node.getIdentifier());
+    }
+
+
+    public void caseARecEntry(ARecEntry node)
+    {
+        printStdOut_twoChildren(node, node.getIdentifier(),  node.getValue());
+    }
 
     public void caseAPreconditionSubstitution(APreconditionSubstitution node)
     {

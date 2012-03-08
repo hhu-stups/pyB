@@ -1142,6 +1142,42 @@ def interpret(node, env):
             new_ast = replace_node(new_ast, idNode, replaceNode)
         #_print_ast(new_ast)
         return interpret(new_ast.children[-1], env)
+    elif isinstance(node, AStructExpression):
+        dictionary = {}
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            value = interpret(rec_entry.children[-1], env)
+            dictionary[name] = value
+        res = []
+        all_records(dictionary, res, {}, 0)
+        result = []
+        for dic in res:
+            for entry in dic:
+                result.append(tuple([entry,dic[entry]]))
+        return frozenset(result)
+    elif isinstance(node, ARecExpression):
+        result = []
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            value = interpret(rec_entry.children[-1], env)
+            result.append(tuple([name,value]))
+        return frozenset(result)
+    elif isinstance(node, ARecordFieldExpression):
+        record = interpret(node.children[0], env)
+        assert isinstance(node.children[1], AIdentifierExpression)
+        name = node.children[1].idName
+        for entry in record:
+            if entry[0]==name:
+                return entry[1]
+        raise Exception("wrong entry:", name)
     else:
         raise Exception("Unknown Node: %s",node)
 
@@ -1171,6 +1207,19 @@ def __print_ast(node, num):
     for child in node.children:
         print "\t"*num,"|-",child
         __print_ast(child, num+1)
+
+
+# WARNING: this could take some time...
+def all_records(value_dict, result, acc, index):
+    if len(value_dict)==index:
+        import copy
+        result.append(copy.deepcopy(acc))
+    else:
+        name = list(value_dict.keys())[index]
+        values = list(value_dict.values())[index]
+        for v in values:
+            acc[name] = v
+            all_records(value_dict, result, acc, index+1)
 
 
 # WARNING: this could take some time...

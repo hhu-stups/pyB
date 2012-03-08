@@ -438,6 +438,18 @@ class ALetSubstitution(Substitution):
 class ASkipSubstitution(Substitution):
     pass
 
+class ARecEntry(Node):
+    pass
+
+class AStructExpression(Expression):
+    pass
+
+class ARecExpression(Expression):
+    pass
+
+class ARecordFieldExpression(Expression):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

@@ -213,10 +213,61 @@ class TestMCHLaod():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-
         # Test
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
         assert env.get_value("A") == True
         assert env.get_value("B") == True
         assert env.get_value("C") == False
+
+
+    def test_structs(self):
+        string = '''
+        MACHINE Test
+        VARIABLES RES_SET
+        INVARIANT RES_SET:POW(struct(Mark:NAT, Good_enough:BOOL))
+        INITIALISATION RES_SET := struct(Mark : 0..5, Good_enough : BOOL) 
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+
+
+    def test_structs2(self):
+        string = '''
+        MACHINE Test
+        VARIABLES RES
+        INVARIANT RES:struct(Mark:NAT, Good_enough:BOOL)
+        INITIALISATION RES := rec(Mark : 14, Good_enough : TRUE) 
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+
+
+    def test_structs3(self):
+        string = '''
+        MACHINE Test
+        VARIABLES RES, xx
+        INVARIANT RES:struct(Mark:NAT, Good_enough:BOOL) & xx:NAT
+        INITIALISATION RES := rec(Mark:4, Good_enough:TRUE); xx:=RES'Mark
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        assert env.get_value("xx") == 4

@@ -299,7 +299,10 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASkipSubstitution
     caseAMaxIntExpression 
     caseAMinIntExpression
-
+    caseAQuantifiedUnionExpression
+    caseAQuantifiedIntersectionExpression
+    caseAStructExpression
+    caseARecExpression
 
  9.2 NOT IMPLEMENTED:
     caseAExpressionParseUnit
@@ -358,8 +361,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
     caseASetSubtractionExpression
-    caseAQuantifiedUnionExpression
-    caseAQuantifiedIntersectionExpression
     caseARingExpression
     caseAClosureExpression
     caseAPartialBijectionExpression
@@ -387,8 +388,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALeftExpression
     caseARightExpression
     caseAInfixExpression
-    caseAStructExpression
-    caseARecExpression
     caseARecordFieldExpression
     caseARecEntry
     caseAAssertionSubstitution

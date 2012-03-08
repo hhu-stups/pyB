@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+#
+# B Language Reference Manual - Version 1.8.6 
+# Page 14: 3.2. B-Types
+#
+# Type ::= Basic_type
+#        | “P” “(“ Type “)”
+#        | Type x Type
+#        | “struct” “(“ (Ident “:” Type)+”,” “)”
+#        | “(“ Type “)”
+# Basic_type ::= “Z”
+#        | “BOOL”
+#        | “STRING”
+#        | Ident
+
+
+
 
 class BType: # Baseclass used to repr. concrete type
     pass
@@ -30,10 +46,16 @@ class EmptySetType(BType):
         pass
 
 
-# pairtype
+# pairtype: Type x Type
 class CartType(BType):
     def __init__(self, setA, setB):
         self.data = (setA, setB)
+
+
+# “struct” “(“ (Ident “:” Type)+”,” “)”
+class StructType(BType):
+    def __init__(self, dictionary):
+        self.data = dictionary
 
 
 class UnknownType(): # no BType: used later to throw Exceptions
