@@ -531,6 +531,47 @@ class TestInterpSets():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_set_GEN_UNION2(self):
+        string = '''
+        MACHINE Test
+        VARIABLES xx, E2
+        INVARIANT xx:NAT & E2:POW(NAT)
+        INITIALISATION E2:={2,4} ; 
+            xx:: UNION (x1).(x1 : E2 | {y1 | y1 : NAT & y1 <= x1}) 
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==0 or env.get_value("xx")==1 or env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
+
+
+    def test_genAST_set_GEN_INTER2(self):
+        string = '''
+        MACHINE Test
+        VARIABLES xx, E2
+        INVARIANT xx:NAT & E2:POW(NAT)
+        INITIALISATION E2:={2,4} ; 
+            xx:: INTER (x1).(x1 : E2 | {y1 | y1 : NAT & y1 <= x1}) 
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==0 or env.get_value("xx")==1 or env.get_value("xx")==2 
+
+
+
     def test_genAST_string(self):
         # Build AST
         string_to_file("#PREDICATE s=\"Hallo Welt\"", file_name)

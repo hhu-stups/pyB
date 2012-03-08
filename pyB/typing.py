@@ -479,6 +479,10 @@ def typeit(node, env, type_env):
         atype = typeit(node.children[0], env, type_env)
         unify_equal(atype, PowerSetType(PowerSetType(UnknownType(None,None))),type_env)
         return atype.data
+    elif isinstance(node, AQuantifiedIntersectionExpression) or isinstance(node, AQuantifiedUnionExpression):
+        for child in node.children[:-1]:
+            typeit(child, env, type_env)
+        return typeit(node.children[-1], env, type_env)
 
 
 # *************************

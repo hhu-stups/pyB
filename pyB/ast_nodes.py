@@ -302,6 +302,12 @@ class APredecessorExpression(Expression):
 class ASuccessorExpression(Expression):
     pass
 
+class AQuantifiedIntersectionExpression(Expression):
+    pass
+
+class AQuantifiedUnionExpression(Expression):
+    pass
+
 class ADefinitionPredicate(Predicate):
     pass
 

@@ -961,6 +961,79 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAQuantifiedUnionExpression(AQuantifiedUnionExpression node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+        String[] ids = new String[copy.size()+2]; 
+        String idName = "";
+        int i = 0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getPredicates() != null)
+        {
+            node.getPredicates().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getExpression() != null)
+        {
+            node.getExpression().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getPredicates() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getExpression() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+    }
+
+
+    public void caseAQuantifiedIntersectionExpression(AQuantifiedIntersectionExpression node)
+    {
+        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
+        String[] ids = new String[copy.size()+2]; 
+        String idName = "";
+        int i = 0;
+        for(PExpression e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getPredicates() != null)
+        {
+            node.getPredicates().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getExpression() != null)
+        {
+            node.getExpression().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        i = 0;
+        for(int k = 0 ; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getPredicates() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getExpression() != null)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+    }
+
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
@@ -1126,6 +1199,7 @@ public class ASTPython extends DepthFirstAdapter{
         for(i=0; i<copy.size(); i++)
             out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
     }
+
 
 
     public void caseABecomesElementOfSubstitution(ABecomesElementOfSubstitution node)

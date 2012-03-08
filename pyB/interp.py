@@ -128,7 +128,8 @@ def interpret(node, env):
             return
         else:
             print "enum. vars:",idNames
-            if try_all_values(node.children[0], env, idNames):
+            gen = try_all_values(node.children[0], env, idNames)
+            if gen.next():
                 for i in idNames:
                     print i,":", env.get_value(i)
             else:
@@ -209,7 +210,8 @@ def interpret(node, env):
                     assert isinstance(idNode, AIdentifierExpression)
                     const_names.append(idNode.idName)
                 if not res:
-                    assert try_all_values(aPropertiesMachineClause, env,const_names)
+                    gen = try_all_values(aPropertiesMachineClause, env,const_names)
+                    assert gen.next()
 
         # If C and B is True there should be Variables v which make the Invaraiant I True
         # TODO: B & C => #v.I
@@ -355,8 +357,11 @@ def interpret(node, env):
         # FIXME: maybe wrong:
         # [[x1,y1],[x2,y2]..] => [(x1,y2),(x2,y2)...]
         result = []
-        for i in lst:
-            result.append(tuple(flatten(i,[])))
+        if is_flat(lst):
+            result = lst
+        else:
+            for i in lst:
+                result.append(tuple(flatten(i,[])))
         env.pop_frame()
         return frozenset(result)
     elif isinstance(node, AUnionExpression):
@@ -403,6 +408,40 @@ def interpret(node, env):
         for aset in elem_lst[1:]:
             acc = acc.intersection(aset)
         return acc
+    elif isinstance(node, AQuantifiedUnionExpression):
+        nodes = []
+        idNames = []
+        result = frozenset([])
+        for idNode in node.children[:node.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+            idNames.append(idNode.idName)
+        env.push_new_frame(nodes)
+        pred = node.children[-2]
+        assert isinstance(pred, Predicate)
+        gen = try_all_values(pred, env, idNames)
+        while gen.next():
+            result |= interpret(node.children[-1], env)
+        env.pop_frame()
+        return result
+    elif isinstance(node, AQuantifiedIntersectionExpression):
+        nodes = []
+        idNames = []
+        result = frozenset([])
+        for idNode in node.children[:node.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+            idNames.append(idNode.idName)
+        env.push_new_frame(nodes)
+        pred = node.children[-2]
+        assert isinstance(pred, Predicate)
+        gen = try_all_values(pred, env, idNames)
+        if gen.next():
+            result = interpret(node.children[-1], env)
+        while gen.next():
+            result &= interpret(node.children[-1], env)
+        env.pop_frame()
+        return result
 
 
 # *************************
@@ -928,7 +967,8 @@ def interpret(node, env):
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
-        try_all_values(node.children[-1], env, ids) # sideeffect: set values
+        gen = try_all_values(node.children[-1], env, ids) 
+        gen.next() # sideeffect: set values
     elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
@@ -1039,7 +1079,8 @@ def interpret(node, env):
         assert isinstance(pred, Predicate)
         assert isinstance(node.children[-1], Substitution)
         env.push_new_frame(nodes)
-        if try_all_values(pred, env, idNames):
+        gen = try_all_values(pred, env, idNames)
+        if gen.next():
             interpret(node.children[-1], env)
         env.pop_frame()
 
@@ -1164,6 +1205,11 @@ def flatten(lst, res):
     return res
 
 
+def is_flat(lst):
+    for e in lst:
+        if isinstance(e, list):
+            return False
+    return True
 def get_image(function, preimage):
     for atuple in function:
         if atuple[0] == preimage:
@@ -1354,12 +1400,13 @@ def try_all_values(root, env, idNames):
     all_values = all_values_by_type(atype, env)
     if len(idNames)<=1:
         for val in all_values:
-            env.set_value(name,val)
+            env.set_value(name, val)
             if interpret(root, env):
-                return True
+                yield True
     else:
         for val in all_values:
-            env.set_value(name,val)
-            if try_all_values(root, env, idNames[1:]):
-                return True
-    return False
+            env.set_value(name, val)
+            gen = try_all_values(root, env, idNames[1:])
+            if gen.next():
+                yield True
+    yield False
