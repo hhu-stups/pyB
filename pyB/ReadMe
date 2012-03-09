@@ -306,6 +306,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecordFieldExpression
     caseARecEntry
     caseAIseq1Expression
+    caseAPowerOfExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -360,7 +361,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAMinusExpression
     caseAMultiplicationExpression
     caseACartesianProductExpression
-    caseAPowerOfExpression
     caseASuccessorExpression
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression

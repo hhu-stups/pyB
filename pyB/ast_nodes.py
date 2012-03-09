@@ -60,11 +60,10 @@ class ASetsMachineClause(Clause):
 class ADefinitionsMachineClause(Clause):
     pass
 
-#class AMinIntExpression(Expression):
-#    pass
 
-#class AMaxIntExpression(Expression):
-#    pass
+class APowerOfExpression(Expression):
+    pass
+
 class AUnaryExpression(Expression):
     pass
 

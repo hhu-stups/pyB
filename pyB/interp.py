@@ -514,6 +514,10 @@ def interpret(node, env):
         expr2 = interpret(node.children[1], env)
         assert expr2 > 0
         return expr1 % expr2
+    elif isinstance(node, APowerOfExpression):
+        basis = interpret(node.children[0], env)
+        exp = interpret(node.children[1], env)
+        return basis ** exp
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)

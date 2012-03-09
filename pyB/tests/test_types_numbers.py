@@ -224,6 +224,17 @@ class TestTypesNumbers():
         _test_typeit(root, env, [], [])
 
 
+    def test_types_simple_equal5(self):
+        # Build AST
+        string_to_file("#PREDICATE 2 ** 4 = 16", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], [])
+
+
     def test_types_sigma(self):
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)

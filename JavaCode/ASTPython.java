@@ -1259,6 +1259,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAPowerOfExpression(APowerOfExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseARecordFieldExpression(ARecordFieldExpression node)
     {
         printStdOut_twoChildren(node, node.getRecord(), node.getIdentifier());
