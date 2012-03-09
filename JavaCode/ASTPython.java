@@ -1450,6 +1450,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAClosureExpression(AClosureExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
     public void caseAGeneralUnionExpression(AGeneralUnionExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());

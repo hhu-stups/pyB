@@ -112,13 +112,40 @@ class TestInterpRelations():
         env.set_value("r", frozenset([(1,3),(3,1)]))
         assert interpret(root.children[0],env)
 
-        env.set_value("f", frozenset([(1,7),(6,2),(8,4),(1,1),(6,6),(8,8)]))
+        env.set_value("f", frozenset([(1,7),(6,2),(8,4),(1,1),(6,6),(8,8),(2,2),(4,4),(7,7)]))
         env.set_value("r", frozenset([(1,7),(6,2),(8,4)]))
         assert interpret(root.children[0],env)
 
-        env.set_value("f", frozenset([(1,7),(6,4),(8,4),(1,1),(6,6),(8,8)]))
+        env.set_value("f", frozenset([(1,7),(6,4),(8,4),(1,1),(6,6),(8,8),(4,4),(7,7)]))
         env.set_value("r", frozenset([(1,7),(6,4),(8,4)]))
         assert interpret(root.children[0],env)
+
+        env.set_value("f", frozenset([(3,1),(1,1),(3,3)]))
+        env.set_value("r", frozenset([(3,1),(1,1)]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("f", frozenset([(1,3),(1,1),(3,3)]))
+        env.set_value("r", frozenset([(1,3),(1,1)]))
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_simple_closure1(self):
+        # Build AST
+        string_to_file("#PREDICATE f=closure1(r)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["r","f"])
+        env.set_value("f", frozenset([(1,3),(3,1),(1,1),(3,3)]))
+        env.set_value("r", frozenset([(1,3),(3,1)]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("f", frozenset([(3,1),(1,1)]))
+        env.set_value("r", frozenset([(3,1),(1,1)]))
+        assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_simple_iterate(self):
         # Build AST

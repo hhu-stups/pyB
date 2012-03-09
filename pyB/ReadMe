@@ -307,6 +307,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseARecEntry
     caseAIseq1Expression
     caseAPowerOfExpression
+    caseAClosureExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -366,7 +367,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAProverComprehensionSetExpression
     caseASetSubtractionExpression
     caseARingExpression
-    caseAClosureExpression
     caseAPartialBijectionExpression
     caseATotalRelationExpression
     caseASurjectionRelationExpression

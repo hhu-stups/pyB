@@ -157,6 +157,9 @@ class AIterationExpression(Expression):
 class AReflexiveClosureExpression(Expression):
     pass
 
+class AClosureExpression(Expression):
+    pass
+
 class ADomainRestrictionExpression(Expression):
     pass
 

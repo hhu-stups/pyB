@@ -667,7 +667,18 @@ def interpret(node, env):
     elif isinstance(node, AReflexiveClosureExpression):
         arel = interpret(node.children[0], env)
         rel = list(arel)
+        temp = [(x[1],x[1]) for x in rel] # also image
         rel = [(x[0],x[0]) for x in rel]
+        rel += temp
+        rel = list(frozenset(rel)) # throw away doubles
+        while True: # fixpoint-search (do-while-loop)
+            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
+                return frozenset(rel)
+            rel =list(frozenset(new_rel).union(frozenset(rel)))
+    elif isinstance(node, AClosureExpression):
+        arel = interpret(node.children[0], env)
+        rel = list(arel)
         while True: # fixpoint-search (do-while-loop)
             new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
             if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
