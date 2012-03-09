@@ -811,6 +811,16 @@ def interpret(node, env):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         return frozenset(inj_sequence_list)
+    elif isinstance(node, AIseq1Expression):
+        # TODO: this can be impl. much better
+        S = interpret(node.children[0], env)
+        sequence_list = [frozenset([])]
+        max_len = 1
+        # find all seq from 1..max_int
+        for i in range(1,max_int+1):
+            sequence_list += create_all_seq_w_fixlen(list(S),i)
+        inj_sequence_list = filter_not_injective(sequence_list)
+        return frozenset(inj_sequence_list)
     elif isinstance(node,APermExpression): 
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)

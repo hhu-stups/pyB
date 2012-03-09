@@ -1528,6 +1528,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAIseq1Expression(AIseq1Expression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
     public void caseAPermExpression(APermExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());

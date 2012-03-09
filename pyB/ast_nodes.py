@@ -227,6 +227,9 @@ class ASeq1Expression(Expression):
 class AIseqExpression(Expression):
     pass
 
+class AIseq1Expression(Expression):
+    pass
+
 class APermExpression(Expression):
     pass
 

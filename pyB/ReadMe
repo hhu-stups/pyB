@@ -303,6 +303,10 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAQuantifiedIntersectionExpression
     caseAStructExpression
     caseARecExpression
+    caseARecordFieldExpression
+    caseARecEntry
+    caseAIseq1Expression
+
 
  9.2 NOT IMPLEMENTED:
     caseAExpressionParseUnit
@@ -369,7 +373,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATotalSurjectionRelationExpression
     caseATransFunctionExpression
     caseATransRelationExpression
-    caseAIseq1Expression
     caseATreeExpression
     caseABtreeExpression
     caseAConstExpression
@@ -388,8 +391,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALeftExpression
     caseARightExpression
     caseAInfixExpression
-    caseARecordFieldExpression
-    caseARecEntry
     caseAAssertionSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution

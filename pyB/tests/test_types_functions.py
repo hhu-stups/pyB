@@ -108,6 +108,13 @@ class TestTypesFunctions():
         self.type_check_sequence(ast_string)
 
 
+    def test_types_iseq1(self):
+        # Build AST
+        string_to_file("#PREDICATE s:iseq1(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        self.type_check_sequence(ast_string)
+
+
     def test_types_perm(self):
         # Build AST
         string_to_file("#PREDICATE s:perm(S)", file_name)

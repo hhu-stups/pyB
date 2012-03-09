@@ -715,7 +715,7 @@ def typeit(node, env, type_env):
 #       4.2 Sequences
 #
 # ********************
-    elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression):
+    elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression) or isinstance(node, AIseq1Expression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         #assert isinstance(type0.data, SetType)
