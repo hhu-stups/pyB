@@ -384,6 +384,26 @@ class TestInterpSubstitutions():
         assert env.get_value("xx")==2
 
 
+    def test_genAST_sub_assert(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=4 ; ASSERT (1+1=2) THEN xx:=2 END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")==2
+
+
     def test_genAST_sub_pre2(self):
         # Build AST
         string = '''

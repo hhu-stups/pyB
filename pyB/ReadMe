@@ -123,6 +123,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - enum set which have no expl. elements
     - Maybe all asserts inside the typechecker must be replaced by 
       unify_equal()
+    - renaming with '.' (e.g. INCLUDES)
 8.2 Refactoring / small fixes
     - throw better Typeexceptions
     - write prop. python module (e.g for min max int)
@@ -231,7 +232,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseADirectProductExpression
     caseAParallelProductExpression
     caseAIterationExpression
-    caseAReflexiveClosureExpression
+    caseAReflexiveClosureExpression # impl. like prob
     caseADomainExpression
     caseARangeExpression
     caseAImageExpression
@@ -311,6 +312,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATotalBijectionExpression
     caseAPartialBijectionExpression
     caseAPrimedIdentifierExpression
+    caseAAssertionSubstitution # fails if assertion is false
+    caseAStringSetExpression #via hack
 
 
  9.2 NOT IMPLEMENTED:
@@ -357,7 +360,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAFileDefinition
     caseAValuesEntry
     caseAOperation
-    caseAWitness
     
     caseATruePredicate
     caseAFalsePredicate
@@ -367,10 +369,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAIntegerSetExpression
     caseANatural1SetExpression
     caseAIntSetExpression
-    caseAStringSetExpression
-    caseAMinusExpression
-    caseAMultiplicationExpression
-    caseACartesianProductExpression
     caseASuccessorExpression
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
@@ -381,7 +379,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATransFunctionExpression
     caseATransRelationExpression
     
-    caseAAssertionSubstitution
     caseAFuncOpSubstitution
     caseAOpSubstitution
     caseAOpWithReturnSubstitution
@@ -424,4 +421,9 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAEventBFirstProjectionV2Expression
     caseAEventBSecondProjectionExpression
     caseAEventBSecondProjectionV2Expression
-    caseARingExpression
+    // only used by EventB translator: see BParser.scc comments
+    caseARingExpression 
+    caseAWitness
+    caseAMinusExpression
+    caseAMultiplicationExpression
+    caseACartesianProductExpression

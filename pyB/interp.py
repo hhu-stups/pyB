@@ -452,6 +452,8 @@ def interpret(node, env):
     elif isinstance(node, ABelongPredicate):
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
+        if isinstance(elm,str) and aSet=="":
+            return True # FIXME: hack
         return elm in aSet
     elif isinstance(node, ANotBelongPredicate):
         elm = interpret(node.children[0], env)
@@ -1006,10 +1008,13 @@ def interpret(node, env):
         env.push_new_frame(nodes)
         gen = try_all_values(node.children[-1], env, ids) 
         gen.next() # sideeffect: set values
-        result = env.get_value(ids[0]) # TODO: more Ids
+        results = []
+        for i in ids:
+            results.append(env.get_value(i))
         env.pop_frame()
         # write back
-        env.set_value(ids[0], result)
+        for i in range(len(ids)):
+            env.set_value(ids[i], results[i])
     elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
@@ -1030,6 +1035,11 @@ def interpret(node, env):
         if condition:
             interpret(node.children[1], env)
             return
+    elif isinstance(node, AAssertionSubstitution):
+        assert isinstance(node.children[0], Predicate)
+        assert isinstance(node.children[1], Substitution)
+        assert interpret(node.children[0], env)
+        interpret(node.children[1], env)
     elif isinstance(node, AIfSubstitution):
         assert isinstance(node.children[0], Predicate)
         assert isinstance(node.children[1], Substitution)
@@ -1239,6 +1249,8 @@ def interpret(node, env):
             if entry[0]==name:
                 return entry[1]
         raise Exception("wrong entry:", name)
+    elif isinstance(node, AStringSetExpression):
+        return "" # TODO: return set of "all" strings
     else:
         raise Exception("Unknown Node: %s",node)
 

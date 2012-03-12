@@ -852,6 +852,8 @@ def typeit(node, env, type_env):
 # ****************
     elif isinstance(node, AStringExpression):
         return StringType()
+    elif isinstance(node, AStringSetExpression):
+        return PowerSetType(StringType())
     elif isinstance(node, ABoolSetExpression):
         return PowerSetType(BoolType())
     elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
@@ -980,7 +982,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 else:
                     assert maybe_type1.data == maybe_type0.data
             else:
-                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, EmptySetType)
+                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, EmptySetType) or isinstance(maybe_type0, StringType)
             return maybe_type0
         else:
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1

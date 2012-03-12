@@ -271,3 +271,21 @@ class TestMCHLaod():
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 4
+
+
+    def test_string_set(self):
+        string = '''
+        MACHINE Test
+        VARIABLES s
+        INVARIANT s:STRING
+        INITIALISATION s:="Hallo Welt"
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        assert env.get_value("s") == "Hallo Welt"

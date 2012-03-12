@@ -418,6 +418,9 @@ class AIfElsifSubstitution(Substitution):
 class APreconditionSubstitution(Substitution):
     pass
 
+class AAssertionSubstitution(Substitution):
+    pass
+
 class AChoiceOrSubstitution(Substitution):
     pass
 
@@ -461,6 +464,9 @@ class ARecordFieldExpression(Expression):
     pass
 
 class APrimedIdentifierExpression(Expression):
+    pass
+
+class AStringSetExpression(Expression):
     pass
 
 class AStringExpression(Expression):

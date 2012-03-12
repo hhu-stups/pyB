@@ -44,6 +44,13 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAStringSetExpression(AStringSetExpression node)
+    {
+        out += "id"+ (idCounter++) +"=";
+        out += "AStringSetExpression()\n";
+    }
+
+
     public void outAEmptySetExpression(AEmptySetExpression node)
     {
         out += "id"+ (idCounter++) +"=";
@@ -1250,8 +1257,9 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAPrimedIdentifierExpression(APrimedIdentifierExpression node)
     {
         List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(node.getIdentifier());
-        String[] ids = new String[copy.size()];
+        String[] ids = new String[copy.size()+1];
         int i=0;
+        String grade="";
         for(TIdentifierLiteral e : copy)
         {
             e.apply(this);
@@ -1259,16 +1267,18 @@ public class ASTPython extends DepthFirstAdapter{
         }
         if(node.getGrade() != null)
         {
-            node.getGrade().apply(this);
-            ids[i++] = ""+(idCounter-1);
+            grade = node.getGrade().toString();
         }
         String nodeid = ""+ idCounter;
         out += "id" + nodeid + "=";
         out += getClassName(node) +"()\n";
         idCounter++;
 
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        i = 0;
+        for(int k=0; k<copy.size(); k++)
+            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        if(node.getGrade() != null)
+            out += "id"+nodeid+".grade = "+grade+"\n";
     }
 
 
@@ -1302,6 +1312,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
     public void caseAPreconditionSubstitution(APreconditionSubstitution node)
+    {
+        printStdOut_twoChildren(node, node.getPredicate(),  node.getSubstitution());
+    }
+
+
+    public void caseAAssertionSubstitution(AAssertionSubstitution node)
     {
         printStdOut_twoChildren(node, node.getPredicate(),  node.getSubstitution());
     }

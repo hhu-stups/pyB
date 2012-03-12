@@ -1,6 +1,1 @@
-
-        MACHINE Test
-        VARIABLES xx
-        INVARIANT xx:NAT
-        INITIALISATION xx:=3 ; xx: (xx+xx$0>=5)
-        END
+#PREDICATE A=bool(1<2)
