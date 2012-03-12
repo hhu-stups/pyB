@@ -496,7 +496,7 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 + expr2
-    elif isinstance(node, AMinusOrSetSubtractExpression):
+    elif isinstance(node, AMinusOrSetSubtractExpression) or isinstance(node, ASetSubtractionExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 - expr2

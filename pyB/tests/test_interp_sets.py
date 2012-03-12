@@ -194,6 +194,20 @@ class TestInterpSets():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_set_diff2(self):
+        # Build AST:
+        string_to_file("#PREDICATE A={1,2,3,4,5} & B={3,4,5,6,7} & C = A\B", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["A","B","C"])
+        env.set_value("A", frozenset([1,2,3,4,5]))
+        env.set_value("B", frozenset([3,4,5,6,7]))
+        env.set_value("C", frozenset([1,2]))
+        assert interpret(root.children[0],env)
+
     def test_genAST_pred_power_set(self):
         # Build AST:
         string_to_file("#PREDICATE X:POW(S)", file_name)

@@ -314,6 +314,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPrimedIdentifierExpression
     caseAAssertionSubstitution # fails if assertion is false
     caseAStringSetExpression #via hack
+    caseASetSubtractionExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -372,7 +373,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASuccessorExpression
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
-    caseASetSubtractionExpression
     caseATotalRelationExpression
     caseASurjectionRelationExpression
     caseATotalSurjectionRelationExpression

@@ -469,6 +469,9 @@ class APrimedIdentifierExpression(Expression):
 class AStringSetExpression(Expression):
     pass
 
+class ASetSubtractionExpression(Expression):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

@@ -441,6 +441,11 @@ def typeit(node, env, type_env):
             return PowORIntegerType(expr1_type, expr2_type)
         else:
             raise Exception("Unimplemented case: %s",node)
+    elif isinstance(node, ASetSubtractionExpression):
+        expr1_type = typeit(node.children[0], env, type_env)
+        expr2_type = typeit(node.children[1], env, type_env)
+        unify_equal(expr1_type, expr2_type, type_env)
+        return expr1_type
     elif isinstance(node, ACoupleExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
