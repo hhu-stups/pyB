@@ -997,11 +997,19 @@ def interpret(node, env):
     elif isinstance(node, ABecomesSuchSubstitution):
         # TODO: more than on ID
         ids = []
+        nodes = []
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             ids.append(child.idName)
+            nodes.append(child)
+        # new frame to enable primed-ids
+        env.push_new_frame(nodes)
         gen = try_all_values(node.children[-1], env, ids) 
         gen.next() # sideeffect: set values
+        result = env.get_value(ids[0]) # TODO: more Ids
+        env.pop_frame()
+        # write back
+        env.set_value(ids[0], result)
     elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
@@ -1134,6 +1142,26 @@ def interpret(node, env):
         return max_int
     elif isinstance(node, AIdentifierExpression):
         return env.get_value(node.idName)
+    elif isinstance(node, APrimedIdentifierExpression):
+        assert len(node.children)==1 # TODO x.y.z
+        assert node.grade==0 #TODO: fix for while loop
+        assert isinstance(node.children[0], AIdentifierExpression)
+        id_Name = node.children[0].idName
+        # copy paste :-)
+        assert isinstance(id_Name, str)
+        value_map_copy =  [x for x in env.value_stack] # no ref. copy
+        # pop frame to get old value (you are inside an enumeration):
+        value_map_copy.pop()
+        value_map_copy.reverse() # FIXME
+        stack_depth = len(value_map_copy)
+        # lookup:
+        for i in range(stack_depth):
+            try:
+                return value_map_copy[i][id_Name]
+            except KeyError:
+                continue
+        print "LookupErr:", id_Name
+        raise KeyError
     elif isinstance(node, ABoolSetExpression):
         return frozenset([True,False])
     elif isinstance(node, ATrueExpression):

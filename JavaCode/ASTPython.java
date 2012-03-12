@@ -1247,6 +1247,31 @@ public class ASTPython extends DepthFirstAdapter{
 
 
 
+    public void caseAPrimedIdentifierExpression(APrimedIdentifierExpression node)
+    {
+        List<TIdentifierLiteral> copy = new ArrayList<TIdentifierLiteral>(node.getIdentifier());
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(TIdentifierLiteral e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getGrade() != null)
+        {
+            node.getGrade().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
     public void caseABecomesElementOfSubstitution(ABecomesElementOfSubstitution node)
     {
         printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getSet());

@@ -54,9 +54,9 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - infinite sets/sequences/relations
     - NAT and NAT1 is not infinite!
     - (some) substitutions
-    - sp. UNION / INTER buildins
     - min/max an the natural numbers - not ProB
     - lambda abstractions with more vars
+    - tree/btree
     - and maybe more...;-)
     - NO IMPLEMENTATION: LTL and Event-B
 
@@ -310,6 +310,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAClosureExpression
     caseATotalBijectionExpression
     caseAPartialBijectionExpression
+    caseAPrimedIdentifierExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -363,7 +364,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAFinitePredicate
     caseAPartitionPredicate
     
-    caseAPrimedIdentifierExpression
     caseAIntegerSetExpression
     caseANatural1SetExpression
     caseAIntSetExpression

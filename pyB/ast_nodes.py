@@ -460,6 +460,9 @@ class ARecExpression(Expression):
 class ARecordFieldExpression(Expression):
     pass
 
+class APrimedIdentifierExpression(Expression):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

@@ -856,6 +856,9 @@ def typeit(node, env, type_env):
         return PowerSetType(BoolType())
     elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
         return BoolType()
+    elif isinstance(node, APrimedIdentifierExpression):
+        assert len(node.children)==1 # TODO: x.y.z
+        return typeit(node.children[0], env, type_env)
     elif isinstance(node, AIdentifierExpression):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)

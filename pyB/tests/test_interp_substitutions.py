@@ -98,10 +98,11 @@ class TestInterpSubstitutions():
         assert env.get_value("xx")==True
         assert isinstance(env.get_type("xx"), BoolType)
 
+
     def test_genAST_sub_choice_by(self):
         # Build AST
         string = '''
-        MACHINE Test3
+        MACHINE Test
         VARIABLES xx
         INVARIANT xx:NAT
         INITIALISATION xx : (xx>0 & xx<4)
@@ -120,7 +121,7 @@ class TestInterpSubstitutions():
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
-    def test_genAST_sub_choice_by(self):
+    def test_genAST_sub_choice_by2(self):
         # Build AST
         string = '''
         MACHINE Test4
@@ -139,6 +140,49 @@ class TestInterpSubstitutions():
         assert interpret(root.children[1], env)
         assert env.get_value("xx")>0
         assert env.get_value("xx")<6
+        assert isinstance(env.get_type("xx"), IntegerType)
+
+
+
+    def test_genAST_sub_choice_by3(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=3 ; xx: (xx+xx>=5)
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")>=3
+        assert isinstance(env.get_type("xx"), IntegerType)
+
+
+    def test_genAST_sub_choice_by_primed(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=3 ; xx: (xx+xx$0>=5)
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        assert env.get_value("xx")>=2
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
