@@ -679,7 +679,7 @@ def typeit(node, env, type_env):
 #       4.1 Functions
 #
 # *******************
-    elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression):
+    elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression) or isinstance(node, APartialBijectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)

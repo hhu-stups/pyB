@@ -308,6 +308,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAIseq1Expression
     caseAPowerOfExpression
     caseAClosureExpression
+    caseATotalBijectionExpression
+    caseAPartialBijectionExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -315,13 +317,17 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASubstitutionParseUnit
     caseAMachineClauseParseUnit
     caseAOppatternParseUnit
+
     caseAUndefArgpattern
     caseADefArgpattern
+    
     caseARefinementMachineParseUnit
     caseAImplementationMachineParseUnit
     caseADefinitionFileParseUnit
+    
     caseAInArgtype
     caseAOutArgtype
+    
     caseAExtendsContextClause
     caseASetsContextClause
     caseAConstantsContextClause
@@ -345,15 +351,18 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAValuesMachineClause
     caseALocalOperationsMachineClause
     caseAOperationsMachineClause
+    
     caseAMachineReference
     caseAFileDefinition
     caseAValuesEntry
     caseAOperation
     caseAWitness
+    
     caseATruePredicate
     caseAFalsePredicate
     caseAFinitePredicate
     caseAPartitionPredicate
+    
     caseAPrimedIdentifierExpression
     caseAIntegerSetExpression
     caseANatural1SetExpression
@@ -366,13 +375,20 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
     caseASetSubtractionExpression
-    caseARingExpression
-    caseAPartialBijectionExpression
     caseATotalRelationExpression
     caseASurjectionRelationExpression
     caseATotalSurjectionRelationExpression
     caseATransFunctionExpression
     caseATransRelationExpression
+    
+    caseAAssertionSubstitution
+    caseAFuncOpSubstitution
+    caseAOpSubstitution
+    caseAOpWithReturnSubstitution
+    caseAWhileSubstitution
+
+
+ 9.3 IMPLEMENTATION SOME DAY...(Tree Stuff)
     caseATreeExpression
     caseABtreeExpression
     caseAConstExpression
@@ -391,14 +407,9 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseALeftExpression
     caseARightExpression
     caseAInfixExpression
-    caseAAssertionSubstitution
-    caseAFuncOpSubstitution
-    caseAOpSubstitution
-    caseAOpWithReturnSubstitution
-    caseAWhileSubstitution
 
 
- 9.3 NO IMPLEMENTATION PLANED:
+ 9.4 NO IMPLEMENTATION PLANED (Event B, CSP):
     caseACsppattern
     caseAEventBContextParseUnit
     caseAEventBModelParseUnit
@@ -413,5 +424,4 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAEventBFirstProjectionV2Expression
     caseAEventBSecondProjectionExpression
     caseAEventBSecondProjectionV2Expression
-    caseATotalBijectionExpression
-    
+    caseARingExpression

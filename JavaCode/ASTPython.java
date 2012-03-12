@@ -1360,6 +1360,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAPartialBijectionExpression(APartialBijectionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseARelationsExpression(ARelationsExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());

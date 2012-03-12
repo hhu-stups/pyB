@@ -57,6 +57,13 @@ class TestTypesFunctions():
         self.type_check_function(ast_string)
 
 
+    def test_types_part_bij_function(self):
+        # Build AST
+        string_to_file("#PREDICATE r:S>+>>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        self.type_check_function(ast_string)
+
+
     def test_types_function_app(self):
         # Build AST
         string_to_file("#PREDICATE f:S+->T & y=f(x)", file_name)

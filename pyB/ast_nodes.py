@@ -214,6 +214,11 @@ class ATotalSurjectionExpression(Expression):
 class ATotalBijectionExpression(Expression):
     pass
 
+
+class APartialBijectionExpression(Expression):
+    pass
+
+
 class AFunctionExpression(Expression):
     pass
 

@@ -756,6 +756,14 @@ def interpret(node, env):
         total_inj_fun = filter_not_total(inj_fun, S) # S>->T
         bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
         return bij_fun
+    elif isinstance(node, APartialBijectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        relation_set = make_set_of_realtions(S,T) # S<-->T
+        fun = filter_no_function(relation_set) # S+->T
+        inj_fun = filter_not_injective(fun) # S>+>T
+        bij_fun = filter_not_surjective(inj_fun,T)
+        return bij_fun
     elif isinstance(node, ALambdaExpression):
         func_list = []
         # new scope

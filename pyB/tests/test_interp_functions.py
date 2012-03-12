@@ -166,6 +166,37 @@ class TestInterpFunctions():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_part_bij_fun(self):
+        # Build AST
+        string_to_file("#PREDICATE F=S>+>>T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.add_ids_to_frame(["S","T","F"])
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("T", frozenset(["x","y","z"]))
+        env.set_value("F", frozenset([]))
+        assert interpret(root.children[0],env)
+
+        env.set_value("S", frozenset(["a","b"]))
+        env.set_value("T", frozenset(["x","y"]))
+        l = [frozenset([("a","x"),("b","y")])]
+        l.append(frozenset([("a","y"),("b","x")]))
+        env.set_value("F", frozenset(l))
+        assert interpret(root.children[0],env)
+
+        env.set_value("S", frozenset(["a","b","c"]))
+        env.set_value("T", frozenset(["x","y"]))
+        l = [frozenset([("a","x"),("b","y")])]
+        l.append(frozenset([("a","x"),("c","y")]))
+        l.append(frozenset([("a","y"),("b","x")]))
+        l.append(frozenset([("a","y"),("c","x")]))
+        l.append(frozenset([("b","x"),("c","y")]))
+        l.append(frozenset([("b","y"),("c","x")]))
+        env.set_value("F", frozenset(l))
+        assert interpret(root.children[0],env)
+
     def test_genAST_pred_bij_fun(self):
         # Build AST:
         string_to_file("#PREDICATE F=S>->>T", file_name)
