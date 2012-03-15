@@ -1,1 +1,1 @@
-#PREDICATE A={1,2,3,4,5} & B={3,4,5,6,7} & C = A\B
+#PREDICATE A=bool(1<2)

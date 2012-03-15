@@ -315,6 +315,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAAssertionSubstitution # fails if assertion is false
     caseAStringSetExpression #via hack
     caseASetSubtractionExpression
+    caseATransFunctionExpression
+    caseATransRelationExpression
 
 
  9.2 NOT IMPLEMENTED:
@@ -373,11 +375,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASuccessorExpression
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
-    caseATotalRelationExpression
-    caseASurjectionRelationExpression
-    caseATotalSurjectionRelationExpression
-    caseATransFunctionExpression
-    caseATransRelationExpression
     
     caseAFuncOpSubstitution
     caseAOpSubstitution
@@ -427,3 +424,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAMinusExpression
     caseAMultiplicationExpression
     caseACartesianProductExpression
+    caseATotalRelationExpression
+    caseASurjectionRelationExpression
+    caseATotalSurjectionRelationExpression

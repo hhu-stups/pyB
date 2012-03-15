@@ -49,6 +49,8 @@ class EmptySetType(BType):
 # pairtype: Type x Type
 class CartType(BType):
     def __init__(self, setA, setB):
+        assert isinstance(setA, PowerSetType)
+        assert isinstance(setB, PowerSetType)
         self.data = (setA, setB)
 
 

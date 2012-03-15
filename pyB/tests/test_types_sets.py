@@ -587,8 +587,8 @@ class TestTypesSets():
         assert isinstance(env.get_type("x"), CartType)
         assert isinstance(env.get_type("y"), PowerSetType)
         assert isinstance(env.get_type("y").data, CartType)
-        assert isinstance(env.get_type("y").data.data[0], CartType)
-        assert isinstance(env.get_type("y").data.data[1], IntegerType)
+        assert isinstance(env.get_type("y").data.data[0].data, CartType)
+        assert isinstance(env.get_type("y").data.data[1].data, IntegerType)
 
 
     def test_types_set_gen_union(self):

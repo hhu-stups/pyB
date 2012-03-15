@@ -465,3 +465,16 @@ class TestInterpRelations():
         env.set_value("ID", frozenset(["aa","bb"]))
         env.set_value("f", frozenset([("aa","bb"),("aa","aa"),("bb","aa"),("bb","bb")]))
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_rel_expr(self):
+        # Build AST:
+        string_to_file("#PREDICATE f1 = {(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})} & r= rel(f1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["f1","r"])
+        assert interpret(root.children[0],env)
+        assert env.get_value("r") == frozenset([(-1,0),(-1,2),(1,6),(1,8),(3,3)])

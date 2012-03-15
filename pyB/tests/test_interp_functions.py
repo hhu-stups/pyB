@@ -590,3 +590,16 @@ class TestInterpFunctions():
         env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
         env.set_value("t", frozenset([(1, 'b'),(2, 'a'),(3, 'a'),(4, 'b')]))
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_pred_fnc_expr(self):
+        # Build AST
+        string_to_file("#PREDICATE R1 = {(0|->1), (0|->2), (1|->1), (1|->7), (2|->3)} & f= fnc(R1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["R1","f"])
+        assert interpret(root.children[0],env)
+        assert env.get_value("f") == frozenset([(0,frozenset([1,2])),(1,frozenset([1,7])),(2,frozenset([3]))])

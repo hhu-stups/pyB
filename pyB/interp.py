@@ -1251,6 +1251,25 @@ def interpret(node, env):
         raise Exception("wrong entry:", name)
     elif isinstance(node, AStringSetExpression):
         return "" # TODO: return set of "all" strings
+    elif isinstance(node, ATransRelationExpression):
+        function = interpret(node.children[0], env)
+        relation = []
+        for tup in function:
+            preimage = tup[0]
+            for image in tup[1]:
+                relation.append(tuple([preimage, image]))
+        return frozenset(relation)
+    elif isinstance(node, ATransFunctionExpression):
+        relation = interpret(node.children[0], env)
+        function = []
+        for tup in relation:
+            image = []
+            preimage = tup[0]
+            for tup2 in relation:
+                if tup2[0]==preimage:
+                    image.append(tup2[1])
+            function.append(tuple([preimage,frozenset(image)]))
+        return frozenset(function)
     else:
         raise Exception("Unknown Node: %s",node)
 

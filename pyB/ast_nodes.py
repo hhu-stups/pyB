@@ -472,6 +472,12 @@ class AStringSetExpression(Expression):
 class ASetSubtractionExpression(Expression):
     pass
 
+class ATransRelationExpression(Expression):
+    pass
+
+class ATransFunctionExpression(Expression):
+    pass
+
 class AStringExpression(Expression):
     def __init__(self, string):
         self.string = string

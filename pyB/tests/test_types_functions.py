@@ -89,8 +89,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, [], ["f","x"])
         assert isinstance(env.get_type("f"), PowerSetType)
         assert isinstance(env.get_type("f").data, CartType)
-        assert isinstance(env.get_type("f").data.data[0], IntegerType)
-        assert isinstance(env.get_type("f").data.data[1], IntegerType)
+        assert isinstance(env.get_type("f").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("f").data.data[1].data, IntegerType)
         assert isinstance(env.get_type("x"), IntegerType)
 
 
@@ -157,8 +157,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["E","s","t"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
 
 
     def test_types_seq_size(self):
@@ -186,8 +186,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["t","s"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
 
 
     def test_types_seq_take(self):
@@ -202,8 +202,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["t","s","n"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
         assert isinstance(env.get_type("n"), IntegerType)
 
 
@@ -219,8 +219,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["t","s","n"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
         assert isinstance(env.get_type("n"), IntegerType)
 
 
@@ -264,8 +264,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["s","t"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
 
 
     def test_types_seq_front(self):
@@ -280,8 +280,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["s","t"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
 
 
     def test_types_seq_conc(self):
@@ -312,8 +312,28 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["s","t","E"])
         assert isinstance(env.get_type("t"), PowerSetType)
         assert isinstance(env.get_type("t").data, CartType)
-        assert isinstance(env.get_type("t").data.data[0], IntegerType)
-        assert isinstance(env.get_type("t").data.data[1], SetType)
+        assert isinstance(env.get_type("t").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("t").data.data[1].data, SetType)
+
+
+    def test_types_fnc_expr(self):
+        # Build AST
+        string_to_file("#PREDICATE R1 = {(0|->1), (0|->2), (1|->1), (1|->7), (2|->3)} & f= fnc(R1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["R1","f"])
+        assert isinstance(env.get_type("f"), PowerSetType)
+        assert isinstance(env.get_type("f").data, CartType)
+        assert isinstance(env.get_type("f").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("f").data.data[1].data, PowerSetType)
+        assert isinstance(env.get_type("f").data.data[1].data.data, IntegerType)
+        assert isinstance(env.get_type("R1"), PowerSetType)
+        assert isinstance(env.get_type("R1").data, CartType)
+        assert isinstance(env.get_type("R1").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("R1").data.data[1].data, IntegerType)
 
 
     def type_check_sequence(self, ast_string):
@@ -325,8 +345,8 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["s"])
         assert isinstance(env.get_type("s"), PowerSetType)
         assert isinstance(env.get_type("s").data, CartType)
-        assert isinstance(env.get_type("s").data.data[0], IntegerType)
-        assert isinstance(env.get_type("s").data.data[1], SetType)
+        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("s").data.data[1].data, SetType)
 
 
     def type_check_function(self, ast_string):
@@ -338,7 +358,7 @@ class TestTypesFunctions():
         _test_typeit(root, env, lst, ["r"])
         assert isinstance(env.get_type("r"), PowerSetType)
         assert isinstance(env.get_type("r").data, CartType)
-        assert isinstance(env.get_type("r").data.data[0], SetType)
-        assert isinstance(env.get_type("r").data.data[1], SetType)
-        assert env.get_type("r").data.data[0].data == "X"
-        assert env.get_type("r").data.data[1].data == "Y"
+        assert isinstance(env.get_type("r").data.data[0].data, SetType)
+        assert isinstance(env.get_type("r").data.data[1].data, SetType)
+        assert env.get_type("r").data.data[0].data.data == "X"
+        assert env.get_type("r").data.data[1].data.data == "Y"

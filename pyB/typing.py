@@ -79,14 +79,12 @@ class TypeCheck_Environment():
                 assert isinstance(cart_type, CartType)
                 subset_type0 = unknown_closure(cart_type.data[0])
                 subset_type1 = unknown_closure(cart_type.data[1])
-                pow_type0 = PowerSetType(subset_type0)
-                pow_type1 = PowerSetType(subset_type1)
                 if isinstance(u0, UnknownType):
-                    self.set_concrete_type(u0, pow_type0)
+                    self.set_concrete_type(u0, subset_type0)
                 else:
                     assert isinstance(u0, PowerSetType)
                 if isinstance(u1, UnknownType):
-                    self.set_concrete_type(u1, pow_type1)
+                    self.set_concrete_type(u1, subset_type1)
                 else:
                     assert isinstance(u1, PowerSetType)
                 return PowerSetType(CartType(subset_type0, subset_type1))
@@ -179,8 +177,13 @@ def throw_away_unknown(tree):
             tree.data = atype
         throw_away_unknown(tree.data)
         return tree
-    elif isinstance(tree, CartType): #TODO: implement me
-        return tree
+    elif isinstance(tree, CartType): 
+        if not isinstance(tree.data[0], UnknownType) and not isinstance(tree.data[1], UnknownType):
+            throw_away_unknown(tree.data[0])
+            throw_away_unknown(tree.data[1])
+            return tree
+        else: #TODO: implement me
+            return tree
     elif isinstance(tree, StructType):#TODO: implement me
         return tree
     elif isinstance(tree, PowCartORIntegerType):
@@ -196,7 +199,7 @@ def throw_away_unknown(tree):
             raise BTypeException(string)
 
         if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
-            tree = PowerSetType(CartType(arg1.data, arg2.data))
+            tree = PowerSetType(CartType(arg1, arg2))
         elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
             tree = IntegerType(None)
         return tree
@@ -372,7 +375,7 @@ def typeit(node, env, type_env):
         for child in node.children:
             typeit(child, env, type_env)
         type_env.pop_frame(env)
-        return
+        return #TODO: return BoolType
     elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
@@ -409,6 +412,7 @@ def typeit(node, env, type_env):
         return EmptySetType()
     elif isinstance(node, AComprehensionSetExpression):
         ids = []
+        # get id names
         for n in node.children[:-1]:
             assert isinstance(n.idName, str)
             ids.append(n.idName)
@@ -421,9 +425,9 @@ def typeit(node, env, type_env):
             assert not type_env.get_current_type(child.idName)==None
         atype = type_env.get_current_type(ids[0])
         if len(ids)>1:
-            atype = CartType(atype, type_env.get_current_type(ids[1]))
+            atype = CartType(PowerSetType(atype), PowerSetType(type_env.get_current_type(ids[1])))
             for i in ids[2:]:
-                atype = CartType(atype, type_env.get_current_type(i))
+                atype = CartType(PowerSetType(atype), PowerSetType(type_env.get_current_type(i)))
         type_env.pop_frame(env)
         return PowerSetType(atype) #name unknown
     elif isinstance(node, AMinusOrSetSubtractExpression):
@@ -449,9 +453,9 @@ def typeit(node, env, type_env):
     elif isinstance(node, ACoupleExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
-        atype = CartType(atype0, atype1)
+        atype = CartType(PowerSetType(atype0), PowerSetType(atype1))
         for index in range(len(node.children)-2):
-            atype = CartType(atype, typeit(node.children[index+2], env, type_env))
+            atype = CartType(PowerSetType(atype), PowerSetType(typeit(node.children[index+2], env, type_env)))
         return atype
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
@@ -463,11 +467,11 @@ def typeit(node, env, type_env):
             unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType(None)
         elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType):  # CartExpression
-            return PowerSetType(CartType(expr1_type.data, expr2_type))
+            return PowerSetType(CartType(PowerSetType(expr1_type), PowerSetType(expr2_type)))
         elif isinstance(expr2_type, PowerSetType) and isinstance(expr1_type, UnknownType):  # CartExpression
-            return PowerSetType(CartType(expr1_type, expr2_type.data))
+            return PowerSetType(CartType(PowerSetType(expr1_type),PowerSetType( expr2_type)))
         elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, PowerSetType): # CartExpression
-            return PowerSetType(CartType(expr1_type.data, expr2_type.data))
+            return PowerSetType(CartType(expr1_type, expr2_type))
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
@@ -562,25 +566,25 @@ def typeit(node, env, type_env):
     elif isinstance(node, ARelationsExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
-        return PowerSetType(PowerSetType(CartType(atype0.data, atype1.data)))
+        return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, ADomainExpression):
         rel_type =  typeit(node.children[0], env, type_env)
         if isinstance(rel_type, UnknownType):
-            atype = PowerSetType(CartType(UnknownType(None,None), UnknownType(None,None)))
+            atype = PowerSetType(CartType(PowerSetType(UnknownType(None,None)), PowerSetType(UnknownType(None,None))))
             unify_equal(rel_type, atype, type_env)
-            return PowerSetType(atype.data.data[0])
+            return atype.data.data[0]
         else:
             assert isinstance(rel_type.data, CartType)
-            return PowerSetType(rel_type.data.data[0]) # pow of preimage settype
+            return rel_type.data.data[0] # preimage settype
     elif isinstance(node, ARangeExpression):
         rel_type =  typeit(node.children[0], env, type_env)
         if isinstance(rel_type, UnknownType):
-            atype = PowerSetType(CartType(UnknownType(None,None), UnknownType(None,None)))
+            atype = PowerSetType(CartType(PowerSetType(UnknownType(None,None)), PowerSetType(UnknownType(None,None))))
             unify_equal(rel_type, atype, type_env)
-            return PowerSetType(atype.data.data[1])
+            return atype.data.data[1]
         else:
             assert isinstance(rel_type.data, CartType)
-            return PowerSetType(rel_type.data.data[1]) # pow of image settype
+            return rel_type.data.data[1] # image settype
     elif isinstance(node, ACompositionExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
@@ -593,17 +597,18 @@ def typeit(node, env, type_env):
         atype0 = typeit(node.children[0], env, type_env)
         assert isinstance(atype0, PowerSetType)
         assert isinstance(atype0.data, SetType) or isinstance(atype0.data, IntegerType)
-        return PowerSetType(CartType(atype0.data, atype0.data))
+        return PowerSetType(CartType(atype0, atype0))
     elif isinstance(node, AIterationExpression):
         atype0 = typeit(node.children[0], env, type_env)
         atype1 = typeit(node.children[1], env, type_env)
-        ctype = PowerSetType(CartType(UnknownType(None,None),UnknownType(None,None)))
+        ctype = PowerSetType(CartType(PowerSetType(UnknownType(None,None)),PowerSetType(UnknownType(None,None))))
         unify_equal(atype0, ctype, type_env)
         unify_equal(atype1, IntegerType(None), type_env)
         return atype0
     elif isinstance(node, AReflexiveClosureExpression) or isinstance(node, AClosureExpression):
         atype0 = typeit(node.children[0], env, type_env)
-        ctype = PowerSetType(CartType(UnknownType(None,None),UnknownType(None,None)))
+        print atype0
+        ctype = PowerSetType(CartType(PowerSetType(UnknownType(None,None)),PowerSetType(UnknownType(None,None))))
         unify_equal(atype0, ctype, type_env)
         return atype0
     elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression):
@@ -627,7 +632,7 @@ def typeit(node, env, type_env):
         rel_type0 = typeit(node.children[0], env, type_env)
         assert isinstance(rel_type0, PowerSetType)
         assert isinstance(rel_type0.data, CartType)
-        return PowerSetType(rel_type0.data.data[1])
+        return rel_type0.data.data[1]
     elif isinstance(node, AOverwriteExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
@@ -647,7 +652,7 @@ def typeit(node, env, type_env):
         m = rel_type0.data.data[1]
         y = rel_type1.data.data[0]
         n = rel_type1.data.data[1]
-        return PowerSetType(CartType(CartType(x,y),CartType(m,n)))
+        return PowerSetType(CartType(PowerSetType(CartType(x,y)),PowerSetType(CartType(m,n))))
     elif isinstance(node, ADirectProductExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
@@ -660,7 +665,7 @@ def typeit(node, env, type_env):
         x2 = rel_type1.data.data[0]
         z = rel_type1.data.data[1]
         assert x.__class__ == x2.__class__
-        return PowerSetType(CartType(x,CartType(y,z)))
+        return PowerSetType(CartType(x,PowerSetType(CartType(y,z))))
     elif isinstance(node, AFirstProjectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
@@ -668,15 +673,15 @@ def typeit(node, env, type_env):
         assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
         assert isinstance(type1.data, SetType) or isinstance(type1.data, IntegerType)
-        return PowerSetType(CartType(CartType(type0.data,type1.data),type0.data))
+        return PowerSetType(CartType(PowerSetType(CartType(type0,type1)), type0))
     elif isinstance(node, ASecondProjectionExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
-        assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
+        #assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
-        assert isinstance(type1.data, SetType)  or isinstance(type1.data, IntegerType)
-        return PowerSetType(CartType(CartType(type0.data,type1.data),type1.data))
+        #assert isinstance(type1.data, SetType)  or isinstance(type1.data, IntegerType)
+        return PowerSetType(CartType(PowerSetType(CartType(type0, type1)), type1))
 
 
 # *******************
@@ -688,10 +693,10 @@ def typeit(node, env, type_env):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
-        assert isinstance(type0.data, SetType)
+        assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
-        assert isinstance(type1.data, SetType)
-        return PowerSetType(PowerSetType(CartType(type0.data,type1.data)))
+        assert isinstance(type1.data, SetType) or isinstance(type0.data, IntegerType)
+        return PowerSetType(PowerSetType(CartType(type0, type1)))
     elif isinstance(node, AFunctionExpression):
         type0 = typeit(node.children[0], env, type_env)
         if isinstance(type0, IntegerType):
@@ -699,8 +704,8 @@ def typeit(node, env, type_env):
             return type0
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[1], SetType)
-        return type0.data.data[1]
+        #assert isinstance(type0.data.data[1], SetType)
+        return type0.data.data[1].data
     elif isinstance(node, ALambdaExpression):
         ids = []
         for n in node.children[:-2]:
@@ -712,7 +717,7 @@ def typeit(node, env, type_env):
         pre_img_type = typeit(node.children[0], env, type_env)
         img_type = typeit(node.children[-1], env, type_env)
         type_env.pop_frame(env)
-        return PowerSetType(CartType(pre_img_type, img_type))
+        return PowerSetType(CartType(PowerSetType(pre_img_type), PowerSetType(img_type)))
 
 
 # ********************
@@ -724,10 +729,10 @@ def typeit(node, env, type_env):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         #assert isinstance(type0.data, SetType)
-        return PowerSetType(PowerSetType(CartType(IntegerType(None),type0.data)))
+        return PowerSetType(PowerSetType(CartType(PowerSetType(IntegerType(None)),type0)))
     elif isinstance(node, AGeneralConcatExpression):
         type0 = typeit(node.children[0], env, type_env)
-        type1 = PowerSetType(CartType(UnknownType(None,None),UnknownType(None,None)))
+        type1 = PowerSetType(CartType(PowerSetType(UnknownType(None,None)), PowerSetType(UnknownType(None,None))))
         unify_equal(type0, type1, type_env)
         return type1 # XXX
     elif isinstance(node, AConcatExpression):
@@ -735,31 +740,31 @@ def typeit(node, env, type_env):
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
         assert isinstance(type1, PowerSetType)
         assert isinstance(type1.data, CartType)
-        assert isinstance(type1.data.data[0], IntegerType)
+        assert isinstance(type1.data.data[0].data, IntegerType)
         assert type0.data.data[1].data == type1.data.data[1].data
-        return PowerSetType(CartType(IntegerType(None),type0.data.data[1]))
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)),type0.data.data[1]))
     elif isinstance(node, AInsertFrontExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type1, PowerSetType)
         assert isinstance(type1.data, CartType)
-        assert isinstance(type1.data.data[0], IntegerType)
-        assert isinstance(type1.data.data[1], SetType)
+        assert isinstance(type1.data.data[0].data, IntegerType)
+        assert isinstance(type1.data.data[1].data, SetType)
         assert isinstance(type0, SetType)
-        assert type0.data == type1.data.data[1].data
+        assert type0.data == type1.data.data[1].data.data # Setname
         return type1
     elif isinstance(node, AInsertTailExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
         assert isinstance(type1, SetType)
-        assert type1.data == type0.data.data[1].data
+        assert type1.data == type0.data.data[1].data.data # Setname
         return type0
     elif isinstance(node, ASequenceExtensionExpression):
         type_list = []
@@ -770,43 +775,43 @@ def typeit(node, env, type_env):
         for t in type_list[1:]:
             # TODO: learn types: all types must be equal!
             assert t.data == atype.data
-        return PowerSetType(CartType(IntegerType(None),atype))
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(atype)))
     elif isinstance(node, ASizeExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
         return IntegerType(None)
     elif isinstance(node, ARevExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
         return type0
     elif isinstance(node, ARestrictFrontExpression) or isinstance(node, ARestrictTailExpression):
         type0 = typeit(node.children[0], env, type_env)
         type1 = typeit(node.children[1], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
         assert isinstance(type1, IntegerType)
         return type0
     elif isinstance(node, AFirstExpression) or isinstance(node, ALastExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
-        return type0.data.data[1]
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
+        return type0.data.data[1].data
     elif isinstance(node, ATailExpression) or isinstance(node, AFrontExpression):
         type0 = typeit(node.children[0], env, type_env)
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, CartType)
-        assert isinstance(type0.data.data[0], IntegerType)
-        assert isinstance(type0.data.data[1], SetType)
+        assert isinstance(type0.data.data[0].data, IntegerType)
+        assert isinstance(type0.data.data[1].data, SetType)
         return type0
 
 
@@ -829,7 +834,7 @@ def typeit(node, env, type_env):
                 assert isinstance(lhs_node, AFunctionExpression)
                 assert isinstance(lhs_node.children[0], AIdentifierExpression)
                 func_type = typeit(lhs_node.children[0], env, type_env)
-                atype2 = PowerSetType(CartType(UnknownType(None,None), atype0))
+                atype2 = PowerSetType(CartType(PowerSetType(UnknownType(None,None)), PowerSetType(atype0)))
                 unify_equal(func_type, atype2, type_env)
     elif isinstance(node, AConvertBoolExpression):
         atype = typeit(node.children[0], env, type_env)
@@ -921,6 +926,24 @@ def typeit(node, env, type_env):
         assert isinstance(node.children[1], AIdentifierExpression)
         entry_type = atype.data[node.children[1].idName]
         return entry_type
+    elif isinstance(node, ATransRelationExpression):
+        atype = typeit(node.children[0], env, type_env)
+        range_type = UnknownType(None,None)
+        image_type = UnknownType(None,None)
+        func_type = PowerSetType(CartType(PowerSetType(range_type), PowerSetType(PowerSetType(image_type))))
+        unify_equal(func_type, atype, type_env)
+        return PowerSetType(CartType(PowerSetType(range_type), PowerSetType(image_type)))
+    elif isinstance(node, ATransFunctionExpression):
+        atype = typeit(node.children[0], env, type_env)
+        range_type = UnknownType(None,None)
+        image_type = UnknownType(None,None)
+        rel_type = PowerSetType(CartType(PowerSetType(range_type), PowerSetType(image_type)))
+        unify_equal(rel_type, atype, type_env)
+        return PowerSetType(CartType(PowerSetType(range_type), PowerSetType(PowerSetType(image_type))))
+    elif isinstance(node, AUnaryExpression):
+        atype = typeit(node.children[0], env, type_env)
+        unify_equal(IntegerType(None), atype, type_env)
+        return atype
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"
@@ -936,6 +959,7 @@ def typeit(node, env, type_env):
 # TODO: This function is not full implemented!
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
+    #print maybe_type0,maybe_type1
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
 
@@ -965,19 +989,13 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 t10 = unknown_closure(maybe_type1.data[0])
                 t01 = unknown_closure(maybe_type0.data[1])
                 t11 = unknown_closure(maybe_type1.data[1])
-                # FIXME: Carttypes contain not Pow(Type) but only Type
-                # (1) wrapp with PowerSettype,
-                if not isinstance(t00, UnknownType):
-                    t00 = PowerSetType(t00)
-                if not isinstance(t10, UnknownType):
-                    t10 = PowerSetType(t10)
-                if not isinstance(t01, UnknownType):
-                    t01 = PowerSetType(t01)
-                if not isinstance(t11, UnknownType):
-                    t11 = PowerSetType(t11)
+                assert isinstance(t00, PowerSetType)
+                assert isinstance(t10, PowerSetType)
+                assert isinstance(t01, PowerSetType)
+                assert isinstance(t11, PowerSetType)
                 # (2) unify
-                unify_equal(t00, t10, type_env)
-                unify_equal(t01, t11, type_env)
+                unify_equal(t00.data, t10.data, type_env)
+                unify_equal(t01.data, t11.data, type_env)
             elif isinstance(maybe_type0, SetType):
                 # learn/set name
                 if maybe_type0.data==None:

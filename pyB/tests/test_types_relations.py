@@ -21,8 +21,8 @@ class TestTypesRelations():
         assert isinstance(env.get_type("r"), PowerSetType)
         assert isinstance(env.get_type("r").data, PowerSetType)
         assert isinstance(env.get_type("r").data.data, CartType)
-        assert isinstance(env.get_type("r").data.data.data[0], SetType)
-        assert isinstance(env.get_type("r").data.data.data[1], SetType)
+        assert isinstance(env.get_type("r").data.data.data[0].data, SetType)
+        assert isinstance(env.get_type("r").data.data.data[1].data, SetType)
 
 
     def test_types_relation_set_enum(self):
@@ -36,8 +36,8 @@ class TestTypesRelations():
         _test_typeit(root, env, [], ["r"])
         assert isinstance(env.get_type("r"), PowerSetType)
         assert isinstance(env.get_type("r").data, CartType)
-        assert isinstance(env.get_type("r").data.data[0], IntegerType)
-        assert isinstance(env.get_type("r").data.data[1], IntegerType)
+        assert isinstance(env.get_type("r").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("r").data.data[1].data, IntegerType)
 
 
     def test_types_domain(self):
@@ -124,8 +124,8 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["S"])
         assert isinstance(env.get_type("S"), PowerSetType)
         assert isinstance(env.get_type("S").data, CartType)
-        assert isinstance(env.get_type("S").data.data[0], SetType)
-        assert isinstance(env.get_type("S").data.data[1], SetType)
+        assert isinstance(env.get_type("S").data.data[0].data, SetType)
+        assert isinstance(env.get_type("S").data.data[1].data, SetType)
 
 
     def test_types_simple_iterate(self):
@@ -136,7 +136,8 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["f","r","n"])
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        _test_typeit(root, env, l, ["f","n"])
         assert isinstance(env.get_type("f"), PowerSetType)
         assert isinstance(env.get_type("f").data, CartType)
         assert isinstance(env.get_type("r"), PowerSetType)
@@ -152,7 +153,8 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["f","r"])
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        _test_typeit(root, env, l, ["f"])
         assert isinstance(env.get_type("f"), PowerSetType)
         assert isinstance(env.get_type("f").data, CartType)
         assert isinstance(env.get_type("r"), PowerSetType)
@@ -167,7 +169,8 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["f","r"])
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        _test_typeit(root, env, l, ["f"])
         assert isinstance(env.get_type("f"), PowerSetType)
         assert isinstance(env.get_type("f").data, CartType)
         assert isinstance(env.get_type("r"), PowerSetType)
@@ -231,8 +234,8 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["r1","r2","r3"])
         assert isinstance(env.get_type("r3"), PowerSetType)
         assert isinstance(env.get_type("r3").data, CartType)
-        assert env.get_type("r3").data.data[0].data == "X"
-        assert env.get_type("r3").data.data[1].data == "Y"
+        assert env.get_type("r3").data.data[0].data.data == "X"
+        assert env.get_type("r3").data.data[1].data.data == "Y"
         assert not env.get_type("r1")=="r1"
         assert not env.get_type("r2")=="r2"
 
@@ -249,12 +252,12 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["r1","r2","r3"])
         assert isinstance(env.get_type("r3"), PowerSetType)
         assert isinstance(env.get_type("r3").data, CartType)
-        assert isinstance(env.get_type("r3").data.data[0], CartType)
-        assert isinstance(env.get_type("r3").data.data[1], CartType)
-        x = env.get_type("r3").data.data[0].data[0]
-        y = env.get_type("r3").data.data[0].data[1]
-        m = env.get_type("r3").data.data[1].data[0]
-        n = env.get_type("r3").data.data[1].data[1]
+        assert isinstance(env.get_type("r3").data.data[0].data, CartType)
+        assert isinstance(env.get_type("r3").data.data[1].data, CartType)
+        x = env.get_type("r3").data.data[0].data.data[0].data
+        y = env.get_type("r3").data.data[0].data.data[1].data
+        m = env.get_type("r3").data.data[1].data.data[0].data
+        n = env.get_type("r3").data.data[1].data.data[1].data
         assert isinstance(x, SetType)
         assert isinstance(m, SetType)
         assert isinstance(y, SetType)
@@ -277,9 +280,9 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["r1","r2","r3"])
         assert isinstance(env.get_type("r3"), PowerSetType)
         assert isinstance(env.get_type("r3").data, CartType)
-        x = env.get_type("r3").data.data[0]
-        y = env.get_type("r3").data.data[1].data[0]
-        z = env.get_type("r3").data.data[1].data[1]
+        x = env.get_type("r3").data.data[0].data
+        y = env.get_type("r3").data.data[1].data.data[0].data
+        z = env.get_type("r3").data.data[1].data.data[1].data
         assert x.data == "X"
         assert y.data == "Y"
         assert z.data == "Z"
@@ -311,9 +314,9 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["r"])
         assert isinstance(env.get_type("r"), PowerSetType)
         assert isinstance(env.get_type("r").data, CartType)
-        x = env.get_type("r").data.data[0].data[0]
-        y = env.get_type("r").data.data[0].data[1]
-        z = env.get_type("r").data.data[1]
+        x = env.get_type("r").data.data[0].data.data[0].data
+        y = env.get_type("r").data.data[0].data.data[1].data
+        z = env.get_type("r").data.data[1].data
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
@@ -334,9 +337,9 @@ class TestTypesRelations():
         _test_typeit(root, env, lst, ["r"])
         assert isinstance(env.get_type("r"), PowerSetType)
         assert isinstance(env.get_type("r").data, CartType)
-        x = env.get_type("r").data.data[0].data[0]
-        y = env.get_type("r").data.data[0].data[1]
-        z = env.get_type("r").data.data[1]
+        x = env.get_type("r").data.data[0].data.data[0].data
+        y = env.get_type("r").data.data[0].data.data[1].data
+        z = env.get_type("r").data.data[1].data
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
@@ -359,4 +362,23 @@ class TestTypesRelations():
         assert isinstance(env.get_type("g").data, CartType)
         assert isinstance(env.get_type("f"), PowerSetType)
         assert isinstance(env.get_type("f").data, CartType)
-        
+
+
+    def test_types_rel_expr(self):
+        # Build AST:
+        string_to_file("#PREDICATE f1 = {(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})} & r= rel(f1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], ["f1","r"])
+        assert isinstance(env.get_type("f1"), PowerSetType)
+        assert isinstance(env.get_type("f1").data, CartType)
+        assert isinstance(env.get_type("f1").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("f1").data.data[1].data, PowerSetType)
+        assert isinstance(env.get_type("f1").data.data[1].data.data, IntegerType)
+        assert isinstance(env.get_type("r"), PowerSetType)
+        assert isinstance(env.get_type("r").data, CartType)
+        assert isinstance(env.get_type("r").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("r").data.data[1].data, IntegerType)

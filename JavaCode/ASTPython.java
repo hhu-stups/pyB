@@ -1425,6 +1425,12 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseASetSubtractionExpression(ASetSubtractionExpression node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
     public void caseAMultOrCartExpression(AMultOrCartExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
@@ -1458,6 +1464,18 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAIterationExpression(AIterationExpression node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+
+
+    public void caseATransFunctionExpression(ATransFunctionExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+    }
+
+
+    public void caseATransRelationExpression(ATransRelationExpression node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
     }
 
 
