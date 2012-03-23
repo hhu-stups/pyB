@@ -1,5 +1,5 @@
 PyB
-31.08.2011 - 06.03.2012 
+31.08.2011 - 23.03.2012 
 by John Witulski: www.stups.uni-duesseldorf.de
 
 
@@ -49,12 +49,19 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - generalized conc and strings
     - Typechecking of the most preds
 
+    - Everything from "A concise summary of the b mathematical toolkit",
+      except the missing features in 5.
+    - And Also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
+      iseq1(S);X**Y;closure1(r);S>+>>T(part bij);XX$0(pimed IDs);
+      func(r);rel(f)
+      see: www.atelierb.eu/ressources/manrefb1.8.6.uk.pdf
+
 
 5. MISSING FEATURES:
     - infinite sets/sequences/relations
     - NAT and NAT1 is not infinite!
-    - (some) substitutions
-    - min/max an the natural numbers - not ProB
+    - while substitution
+    - min/max on infinite numbers - not ProB
     - lambda abstractions with more vars
     - tree/btree
     - and maybe more...;-)
@@ -124,6 +131,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - Maybe all asserts inside the typechecker must be replaced by 
       unify_equal()
     - renaming with '.' (e.g. INCLUDES)
+    - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
 8.2 Refactoring / small fixes
     - throw better Typeexceptions
     - write prop. python module (e.g for min max int)
@@ -139,6 +147,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - check if all astnodes return types (if they have to)
     - Think of unifications like: "it is A or B" e.g. perm(s)
     - Dont create new instances of IntegerType if not nec.
+    - seperate enumaertion from interpretation-module
+    - seperate inperp-mode from interpretation-module
 8.3 minor problems
     - Dont assume that all functions are 2-tuple: otherwise crash
     - typechecker and interpreter has undefined behavior if there is a error in 
@@ -367,7 +377,6 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATruePredicate
     caseAFalsePredicate
     caseAFinitePredicate
-    caseAPartitionPredicate
     
     caseAIntegerSetExpression
     caseANatural1SetExpression
@@ -427,3 +436,4 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseATotalRelationExpression
     caseASurjectionRelationExpression
     caseATotalSurjectionRelationExpression
+    caseAPartitionPredicate

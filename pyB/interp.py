@@ -128,6 +128,7 @@ def interpret(node, env):
             return
         else:
             print "enum. vars:",idNames
+            env.add_ids_to_frame(idNames)
             gen = try_all_values(node.children[0], env, idNames)
             if gen.next():
                 for i in idNames:
@@ -139,12 +140,7 @@ def interpret(node, env):
         print True
         return
     elif isinstance(node, AAbstractMachineParseUnit):
-        idNames = []
-        find_var_names(node, idNames) #sideef: fill list
-        for name in node.para:
-            idNames.append(name) # add machine-parameters
-        _test_typeit(node, env, [], idNames) ## FIXME: replace
-
+        # (1) Find Nodes
         aConstantsMachineClause = None
         aConstraintsMachineClause = None
         aSetsMachineClause = None
@@ -177,6 +173,12 @@ def interpret(node, env):
             else:
                 raise Exception("Unknown clause:",child )
 
+        # (2) Startup
+        idNames = []
+        find_var_names(node, idNames) #sideef: fill list
+        for name in node.para:
+            idNames.append(name) # add machine-parameters
+        _test_typeit(node, env, [], idNames) ## FIXME: replace
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:

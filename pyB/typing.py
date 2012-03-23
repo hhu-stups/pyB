@@ -607,7 +607,6 @@ def typeit(node, env, type_env):
         return atype0
     elif isinstance(node, AReflexiveClosureExpression) or isinstance(node, AClosureExpression):
         atype0 = typeit(node.children[0], env, type_env)
-        print atype0
         ctype = PowerSetType(CartType(PowerSetType(UnknownType(None,None)),PowerSetType(UnknownType(None,None))))
         unify_equal(atype0, ctype, type_env)
         return atype0
