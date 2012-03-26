@@ -2,6 +2,7 @@
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, _test_typeit
 from helpers import find_var_names
+from bmachine import BMachine
 
 min_int = -1
 max_int = 5
@@ -18,7 +19,21 @@ class Environment():
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
         self.definition_id_to_ast = {}
+        self.last_env = None # in Undo
 
+
+    def print_env(self):
+        for value_map in self.value_stack:
+            string = ""
+            for name in value_map:
+                string += name + ":" + str(value_map[name]) + " "
+            print string
+
+
+    # used in undo
+    def save_last_env(self):
+        import copy
+        self.last_env = copy.deepcopy(self)
 
     def set_definition(self, id_Name, ast):
         assert isinstance(id_Name, str)
@@ -140,40 +155,9 @@ def interpret(node, env):
         print True
         return
     elif isinstance(node, AAbstractMachineParseUnit):
-        # (1) Find Nodes
-        aConstantsMachineClause = None
-        aConstraintsMachineClause = None
-        aSetsMachineClause = None
-        aVariablesMachineClause = None
-        aPropertiesMachineClause = None
-        aAssertionsMachineClause = None
-        aInvariantMachineClause = None
-        aInitialisationMachineClause = None
-        aDefinitionsMachineClause = None
+        mch = BMachine(node, interpret)
 
-        for child in node.children:
-            if isinstance(child, AConstantsMachineClause):
-                aConstantsMachineClause = child
-            elif isinstance(child, AConstraintsMachineClause):
-                aConstraintsMachineClause = child
-            elif isinstance(child, ASetsMachineClause):
-                aSetsMachineClause = child
-            elif isinstance(child, AVariablesMachineClause):
-                aVariablesMachineClause = child
-            elif isinstance(child, APropertiesMachineClause):
-                aPropertiesMachineClause = child
-            elif isinstance(child, AAssertionsMachineClause):
-                aAssertionsMachineClause = child
-            elif isinstance(child, AInitialisationMachineClause):
-                aInitialisationMachineClause = child
-            elif isinstance(child, AInvariantMachineClause):
-                aInvariantMachineClause = child
-            elif isinstance(child, ADefinitionsMachineClause):
-                aDefinitionsMachineClause = child
-            else:
-                raise Exception("Unknown clause:",child )
-
-        # (2) Startup
+        # TODO: move this code to BMachine
         idNames = []
         find_var_names(node, idNames) #sideef: fill list
         for name in node.para:
@@ -190,44 +174,42 @@ def interpret(node, env):
             atype = env.get_type(name) # XXX
             values = all_values_by_type(atype, env)
             env.set_value(name, values[0]) #XXX
-        if aConstraintsMachineClause: # C
-            interpret(aConstraintsMachineClause, env)
+        if mch.aConstraintsMachineClause: # C
+            interpret(mch.aConstraintsMachineClause, env)
 
         # Sets St and constants k which meet the constraints c make the properties B True
         # C => #St,k.B
-        if aSetsMachineClause: # St
-            interpret(aSetsMachineClause, env)
-        if aConstantsMachineClause: # k
-            interpret(aConstantsMachineClause, env)
-        if aPropertiesMachineClause: # B
+        if mch.aSetsMachineClause: # St
+            interpret(mch.aSetsMachineClause, env)
+        if mch.aConstantsMachineClause: # k
+            interpret(mch.aConstantsMachineClause, env)
+        if mch.aPropertiesMachineClause: # B
             # set up constants
             #TODO: Sets
             # Some Constants are set via Prop. Preds
             # FIXME: This is a hack! Introduce fresh envs!
-            res = interpret(aPropertiesMachineClause, env)
+            res = interpret(mch.aPropertiesMachineClause, env)
             # Now set that constants which still dont have a value
-            if aConstantsMachineClause:
+            if mch.aConstantsMachineClause:
                 const_names = []
-                for idNode in aConstantsMachineClause.children:
+                for idNode in mch.aConstantsMachineClause.children:
                     assert isinstance(idNode, AIdentifierExpression)
                     const_names.append(idNode.idName)
                 if not res:
-                    gen = try_all_values(aPropertiesMachineClause, env,const_names)
+                    gen = try_all_values(mch.aPropertiesMachineClause, env,const_names)
                     assert gen.next()
 
         # If C and B is True there should be Variables v which make the Invaraiant I True
         # TODO: B & C => #v.I
-        if aVariablesMachineClause:
-            interpret(aVariablesMachineClause, env)
-        if aInitialisationMachineClause:
-            interpret(aInitialisationMachineClause, env)
-        if aInvariantMachineClause:
-            res = interpret(aInvariantMachineClause, env)
-            print "Invariant:",res
+        mch.eval_Variables(env)
+        mch.eval_Init(env)
+
+        res = mch.eval_Invariant(env)
+        print "Invariant:",res # None: no invariant
 
         # Not in schneiders book:
-        if aAssertionsMachineClause:
-            interpret(aAssertionsMachineClause, env)
+        mch.eval_Assertions(env)
+        return mch # return B-machine for further processing
     elif isinstance(node, AConstantsMachineClause):
         const_names = []
         for idNode in node.children:

@@ -327,6 +327,8 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseASetSubtractionExpression
     caseATransFunctionExpression
     caseATransRelationExpression
+    caseAOperationsMachineClause
+    caseAOperation
 
 
  9.2 NOT IMPLEMENTED:
@@ -367,12 +369,10 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAAbstractConstantsMachineClause
     caseAValuesMachineClause
     caseALocalOperationsMachineClause
-    caseAOperationsMachineClause
     
     caseAMachineReference
     caseAFileDefinition
     caseAValuesEntry
-    caseAOperation
     
     caseATruePredicate
     caseAFalsePredicate

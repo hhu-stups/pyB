@@ -1252,6 +1252,72 @@ public class ASTPython extends DepthFirstAdapter{
             out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
     }
 
+    public void caseAOperationsMachineClause(AOperationsMachineClause node)
+    {
+
+        List<POperation> copy = new ArrayList<POperation>(node.getOperations());
+        String[] ids = new String[copy.size()];
+        int i=0;
+        for(POperation e : copy)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        for(i=0; i<copy.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+    }
+
+
+    public void caseAOperation(AOperation node)
+    {
+        List<PExpression> copy1 = new ArrayList<PExpression>(node.getReturnValues());
+        List<TIdentifierLiteral> copy2 = new ArrayList<TIdentifierLiteral>(node.getOpName());
+        List<PExpression> copy3 = new ArrayList<PExpression>(node.getParameters());
+        String[] ids = new String[copy1.size()+copy3.size()+1];
+        int i=0;
+        for(PExpression e : copy1)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String idName = "";
+        for(TIdentifierLiteral e : copy2)
+        {
+            e.apply(this);
+            idName = idName + e.toString();
+        }
+        for(PExpression e : copy3)
+        {
+            e.apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        if(node.getOperationBody() != null)
+        {
+            node.getOperationBody().apply(this);
+            ids[i++] = ""+(idCounter-1);
+        }
+        String nodeid = ""+ idCounter;
+        out += "id" + nodeid + "=";
+        out += getClassName(node) +"()\n";
+        idCounter++;
+
+        int k = 0;
+        for(i=0; i<copy1.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[k++]+")\n";
+        for(i=0; i<copy3.size(); i++)
+            out += "id"+nodeid+".children.append(id"+ids[k++]+")\n";
+        if(node.getOperationBody() != null)
+            out += "id"+nodeid+".children.append(id"+ids[k++]+")\n";
+        out += "id"+nodeid+".opName = \""+idName+"\"\n";
+        out += "id"+nodeid+".return_Num = "+copy1.size()+"\n";
+        out += "id"+nodeid+".parameter_Num = "+copy3.size()+"\n";
+    }
 
 
     public void caseAPrimedIdentifierExpression(APrimedIdentifierExpression node)

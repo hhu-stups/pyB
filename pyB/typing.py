@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
+from bmachine import BMachine
 
 
 class BTypeException(Exception):
@@ -292,47 +293,17 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
-        aConstantsMachineClause = None
-        aConstraintsMachineClause = None
-        aSetsMachineClause = None
-        aVariablesMachineClause = None
-        aPropertiesMachineClause = None
-        aAssertionsMachineClause = None
-        aInvariantMachineClause = None
-        aInitialisationMachineClause = None
-        aDefinitionsMachineClause = None
-
-        for child in node.children:
-            if isinstance(child, AConstantsMachineClause):
-                aConstantsMachineClause = child
-            elif isinstance(child, AConstraintsMachineClause):
-                aConstraintsMachineClause = child
-            elif isinstance(child, ASetsMachineClause):
-                aSetsMachineClause = child
-            elif isinstance(child, AVariablesMachineClause):
-                aVariablesMachineClause = child
-            elif isinstance(child, APropertiesMachineClause):
-                aPropertiesMachineClause = child
-            elif isinstance(child, AAssertionsMachineClause):
-                aAssertionsMachineClause = child
-            elif isinstance(child, AInitialisationMachineClause):
-                aInitialisationMachineClause = child
-            elif isinstance(child, AInvariantMachineClause):
-                aInvariantMachineClause = child
-            elif isinstance(child, ADefinitionsMachineClause):
-                aDefinitionsMachineClause = child
-            else:
-                raise Exception("Unknown clause:",child )
+        mch = BMachine(node, None)
 
         # type
-        if aDefinitionsMachineClause:
-            for defi in aDefinitionsMachineClause.children:
+        if mch.aDefinitionsMachineClause:
+            for defi in mch.aDefinitionsMachineClause.children:
                 assert isinstance(defi, AExpressionDefinition) or isinstance(defi, APredicateDefinition) or isinstance(defi, ASubstitutionDefinition)
                 env.set_definition(defi.idName, defi)
-        if aConstraintsMachineClause: # C
-            typeit(aConstraintsMachineClause, env, type_env)
-        if aSetsMachineClause: # St
-            for child in aSetsMachineClause.children:
+        if mch.aConstraintsMachineClause: # C
+            typeit(mch.aConstraintsMachineClause, env, type_env)
+        if mch.aSetsMachineClause: # St
+            for child in mch.aSetsMachineClause.children:
                 set_name = child.idName
                 utype = type_env.get_current_type(set_name)
                 atype = SetType(set_name)
@@ -342,18 +313,18 @@ def typeit(node, env, type_env):
                     for elm in child.children:
                         elm_type = typeit(elm, env, type_env)
                         unify_equal(atype, elm_type, type_env)
-        if aConstantsMachineClause: # k
-            typeit(aConstantsMachineClause, env, type_env)
-        if aPropertiesMachineClause: # B
-            typeit(aPropertiesMachineClause, env, type_env)
-        if aVariablesMachineClause:
-            typeit(aVariablesMachineClause, env, type_env)
-        if aInitialisationMachineClause:
-            typeit(aInitialisationMachineClause, env, type_env)
-        if aInvariantMachineClause:
-            typeit(aInvariantMachineClause, env, type_env)
-        if aAssertionsMachineClause:
-            typeit(aAssertionsMachineClause, env, type_env)
+        if mch.aConstantsMachineClause: # k
+            typeit(mch.aConstantsMachineClause, env, type_env)
+        if mch.aPropertiesMachineClause: # B
+            typeit(mch.aPropertiesMachineClause, env, type_env)
+        if mch.aVariablesMachineClause:
+            typeit(mch.aVariablesMachineClause, env, type_env)
+        if mch.aInitialisationMachineClause:
+            typeit(mch.aInitialisationMachineClause, env, type_env)
+        if mch.aInvariantMachineClause:
+            typeit(mch.aInvariantMachineClause, env, type_env)
+        if mch.aAssertionsMachineClause:
+            typeit(mch.aAssertionsMachineClause, env, type_env)
 
 
 # *********************

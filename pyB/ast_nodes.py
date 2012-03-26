@@ -4,7 +4,7 @@ class Node():
     def __init__(self):
         self.children = []
 
-# Baseclasses Predicate, Expression and Substitution are used for assertions
+# Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
 # inside the interpreter.
 class Predicate(Node):
     pass
@@ -25,6 +25,9 @@ class AAbstractMachineParseUnit(Node):
     pass
 
 class APredicateParseUnit(Node):
+    pass
+
+class AOperation(Node):
     pass
 
 class AEnumeratedSet(Node):
@@ -60,6 +63,8 @@ class ASetsMachineClause(Clause):
 class ADefinitionsMachineClause(Clause):
     pass
 
+class AOperationsMachineClause(Clause):
+    pass
 
 class APowerOfExpression(Expression):
     pass
