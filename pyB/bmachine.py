@@ -70,16 +70,29 @@ class BMachine:
         if self.aOperationsMachineClause:
             for op in self.aOperationsMachineClause.children:
                 assert isinstance(op, AOperation)
-                if isinstance(op.children[0], APreconditionSubstitution):
-                    pre_sub = op.children[0]
+                if isinstance(op.children[-1], APreconditionSubstitution):
+                    pre_sub = op.children[-1]
                     assert isinstance(pre_sub.children[0], Predicate)
-                    if self.interpreter_method(pre_sub.children[0], env):
+                    ids = self.get_para_names(op)
+                    import copy
+                    new_env = copy.deepcopy(env)
+                    new_env.add_ids_to_frame(ids)
+                    # TODO: enumerate parameters
+                    if self.interpreter_method(pre_sub.children[0], new_env):
                         result.append(op)
-                elif isinstance(op.children[0],ABlockSubstitution):
+                elif isinstance(op.children[-1],ABlockSubstitution):
                     result.append(op) # no condition
                 else:
                     raise Exception("ERROR: Optype not implemented:")
         return result
+
+
+    def get_para_names(self, op):
+        names = []
+        for i in range(op.return_Num, op.parameter_Num):
+            assert isinstance(op.children[i], AIdentifierExpression)
+            names.append(op.children[i].idName)
+        return names
 
 
     def exec_op(self, env, number):

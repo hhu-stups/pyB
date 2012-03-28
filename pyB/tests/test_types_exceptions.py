@@ -2,7 +2,7 @@
 import py.test
 from ast_nodes import *
 from btypes import *
-from interp import Environment
+from environment import Environment
 from typing import _test_typeit, BTypeException
 from helpers import file_to_AST_str, string_to_file
 

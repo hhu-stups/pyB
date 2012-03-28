@@ -226,7 +226,8 @@ def throw_away_unknown(tree):
     else:
         # error!
         if isinstance(tree, UnknownType):
-            string = "TypeError: can not resolve a Type of %s", tree.name
+            string = "TypeError: can not resolve a Type of "+ tree.name
+            print tree
             print string
             raise BTypeException(string)
         else:
@@ -325,6 +326,8 @@ def typeit(node, env, type_env):
             typeit(mch.aInvariantMachineClause, env, type_env)
         if mch.aAssertionsMachineClause:
             typeit(mch.aAssertionsMachineClause, env, type_env)
+        if mch.aOperationsMachineClause:
+            typeit(mch.aOperationsMachineClause, env, type_env)
 
 
 # *********************
@@ -914,6 +917,15 @@ def typeit(node, env, type_env):
         atype = typeit(node.children[0], env, type_env)
         unify_equal(IntegerType(None), atype, type_env)
         return atype
+    elif isinstance(node, AOperation):
+        names = []
+        for i in range(node.return_Num, node.parameter_Num):
+            assert isinstance(node.children[i], AIdentifierExpression)
+            names.append(node.children[i].idName)
+        type_env.push_frame(names)
+        for child in node.children:
+            typeit(child, env, type_env)
+        type_env.pop_frame(env)
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"

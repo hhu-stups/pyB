@@ -1,6 +1,1 @@
-        MACHINE Lift
-        ABSTRACT_VARIABLES  floor
-        INVARIANT  floor : 0..99 /* NAT */
-        INITIALISATION floor := 4
-
-        END
+#PREDICATE A=bool(1<2)

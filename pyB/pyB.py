@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, Environment
+from interp import interpret
+from environment import Environment
 from helpers import file_to_AST_str
 from animation_clui import show_ui
 from ast_nodes import *

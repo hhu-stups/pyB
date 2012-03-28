@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from interp import interpret, Environment
+from environment import  Environment
+from interp import interpret
 
 
 class TestInterp_fixedAST():

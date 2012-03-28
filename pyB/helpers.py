@@ -54,3 +54,29 @@ def find_var_names(node, lst):
                 find_var_names(n, lst)
         except AttributeError:
             return #FIXME no children
+
+
+# [[1,2],[3,[[4]]]] -> [1,2,3,4]
+def flatten(lst, res):
+    for e in lst:
+        if not isinstance(e,list):
+            res.append(e)
+        else:
+            res = flatten(e, res)
+    return res
+
+
+def is_flat(lst):
+    for e in lst:
+        if isinstance(e, list):
+            return False
+    return True
+
+
+# checks if a list contains a duplicate element
+def double_element_check(lst):
+    for element in lst:
+        if lst.count(element)>1:
+            return True
+    return False
+
