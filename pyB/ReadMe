@@ -157,6 +157,7 @@ by John Witulski: www.stups.uni-duesseldorf.de
     - not tested: append/preprend more than one element - possible?
     - no random choice in CHOICE and SELECT
 8.4 Bugs:
+    - parallel substitution is not parallel
     - (2 + 3) / 2 == 2
     - "=" is used as ":=" inside the interpreter
     - MAYBE BUG: eval of preds changes value_stack

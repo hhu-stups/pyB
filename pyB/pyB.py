@@ -4,6 +4,7 @@ from interp import interpret
 from environment import Environment
 from helpers import file_to_AST_str
 from animation_clui import show_ui
+from animation import calc_succ_states, exec_op
 from ast_nodes import *
 
 
@@ -19,23 +20,36 @@ env = Environment()
 mch = interpret(root, env)
 
 if not mch==None: #otherwise #PREDICATE
-    if mch.find_possible_ops(env)==[]:
+    op_and_state_list = calc_succ_states(env, mch)
+    if op_and_state_list==[]:
         exit()
-    n = show_ui(env, mch)
+    n = show_ui(env, mch, op_and_state_list)
     input_str = "Input (0-"+str(n)+"):"
     number = raw_input(input_str)
     number = int(number)
-    mch.exec_op(env, number)
+    if number == n-1:
+        if not env.last_env==None:
+            env = env.last_env
+        else:
+            print "No undo possible"
+    elif number == n:
+        exit()
+    else:
+        env = exec_op(env, op_and_state_list, number)
     while not number==n:
             print "Invariant:", mch.eval_Invariant(env)
-            n = show_ui(env, mch)
+            op_and_state_list = calc_succ_states(env, mch)
+            n = show_ui(env, mch, op_and_state_list)
             input_str = "Input (0-"+str(n)+"):"
             number = raw_input(input_str)
             number = int(number)
-            if number == n-1 and not env.last_env==None:
-                env = env.last_env
+            if number == n-1:
+                if not env.last_env==None:
+                    env = env.last_env
+                else:
+                    print "No undo possible"
             elif number == n:
                 exit()
             else:
-                mch.exec_op(env, number)
+                env = exec_op(env, op_and_state_list, number)
 
