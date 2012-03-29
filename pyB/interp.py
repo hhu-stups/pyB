@@ -831,11 +831,16 @@ def interpret(node, env):
         pass
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
+        import copy
+        env_old = copy.deepcopy(env)
+        used_ids = []
         for i in range(int(node.lhs_size)):
             lhs_node = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
-            value = interpret(rhs, env)
-            if isinstance(lhs_node, AIdentifierExpression): 
+            env_copy = copy.deepcopy(env_old)
+            value = interpret(rhs, env_copy)
+            if isinstance(lhs_node, AIdentifierExpression):
+                used_ids.append(lhs_node.idName)
                 env.set_value(lhs_node.idName, value)
             else:
                 assert isinstance(lhs_node, AFunctionExpression)
@@ -847,6 +852,7 @@ def interpret(node, env):
                     arg = interpret(child, env)
                     args.append(arg)
                 func = dict(env.get_value(func_name))
+                used_ids.append(func_name)
                 # change
                 if len(args)==1:
                     func[args[0]] = value
@@ -859,6 +865,11 @@ def interpret(node, env):
                 new_func = frozenset(lst)
                 # write to env
                 env.set_value(func_name, new_func)
+        while not used_ids==[]:
+            name = used_ids.pop()
+            if name in used_ids:
+                string = name + " modified twice in multiple assign-substitution!"
+                raise Exception(string)
     elif isinstance(node, AConvertBoolExpression):
         return interpret(node.children[0], env)
     elif isinstance(node, ABecomesElementOfSubstitution):
