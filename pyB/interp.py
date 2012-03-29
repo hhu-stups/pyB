@@ -886,7 +886,37 @@ def interpret(node, env):
         # write back
         for i in range(len(ids)):
             env.set_value(ids[i], results[i])
-    elif isinstance(node, AParallelSubstitution) or isinstance(node, ASequenceSubstitution):
+    elif isinstance(node, AParallelSubstitution):
+        import copy
+        lst = []
+        used_ids = []
+        for child in node.children:
+            ids = []
+            find_var_names(child, ids)
+            used_ids += ids
+            env_copy = copy.deepcopy(env)
+            lst.append(env_copy)
+            interpret(child, env_copy)
+        # search for changes. no var can be modified twice (see page 108)
+        used_ids = list(set(used_ids)) # throw away double-entrys
+        new_values = []
+        for e in lst:
+            for i in used_ids:
+                new_val = e.get_value(i)
+                old_val = env.get_value(i)
+                if not new_val==old_val:
+                    new_values.append(tuple([i, new_val]))
+        # check for double entrys -> Error
+        id_names = [x[0] for x in new_values]
+        while not id_names==[]:
+            name = id_names.pop()
+            if name in id_names:
+                string = name + " modified twice in parallel substitution!"
+                raise Exception(string)
+        # write changes
+        for pair in new_values:
+            env.set_value(pair[0], pair[1])
+    elif isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
 
