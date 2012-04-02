@@ -57,6 +57,20 @@ def try_all_values(root, env, idNames):
     yield False
 
 
+# FIXME: dummy-init of mch-parameters
+# TODO: write enumerator
+def init_mch_param(root, env):
+    env.add_ids_to_frame(root.para)
+    for name in root.para:
+        atype = env.get_type(name)
+        if isinstance(atype, PowerSetType) and isinstance(atype.data, SetType): # XXX
+            env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+        else: # XXX
+            # page 126
+            assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+            values = all_values_by_type(atype, env)
+            env.set_value(name, values[0]) #XXX
+
 
 def get_image(function, preimage):
     for atuple in function:

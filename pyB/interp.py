@@ -55,12 +55,7 @@ def interpret(node, env):
         # Schneider Book page 62-64:
         # The parameters p make the constraints c True
         # #p.C
-        # FIXME: dummy-init of mch-parameters
-        env.add_ids_to_frame(node.para)
-        for name in node.para:
-            atype = env.get_type(name) # XXX
-            values = all_values_by_type(atype, env)
-            env.set_value(name, values[0]) #XXX
+        init_mch_param(node, env)
         if mch.aConstraintsMachineClause: # C
             interpret(mch.aConstraintsMachineClause, env)
 

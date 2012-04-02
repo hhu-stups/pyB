@@ -386,9 +386,9 @@ by John Witulski: www.stups.uni-duesseldorf.de
     caseAPredecessorExpression
     caseAProverComprehensionSetExpression
     
-    caseAFuncOpSubstitution
-    caseAOpSubstitution
-    caseAOpWithReturnSubstitution
+    caseAFuncOpSubstitution             - impl sees first
+    caseAOpSubstitution                 - impl sees first
+    caseAOpWithReturnSubstitution       - impl sees first
     caseAWhileSubstitution
 
 
