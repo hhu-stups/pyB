@@ -58,18 +58,24 @@ def try_all_values(root, env, idNames):
 
 
 # FIXME: dummy-init of mch-parameters
-# TODO: write enumerator
-def init_mch_param(root, env):
+def init_mch_param(root, env, mch):
     env.add_ids_to_frame(root.para)
-    for name in root.para:
+    # TODO: retry if no animation possible
+    for name in mch.set_params:
         atype = env.get_type(name)
-        if isinstance(atype, PowerSetType) and isinstance(atype.data, SetType): # XXX
-            env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
-        else: # XXX
-            # page 126
-            assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
-            values = all_values_by_type(atype, env)
-            env.set_value(name, values[0]) #XXX
+        assert isinstance(atype, PowerSetType)
+        assert isinstance(atype.data, SetType) 
+        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+    for name in mch.scalar_params:
+        # page 126
+        atype = env.get_type(name)
+        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+    if not mch.scalar_params==[]:
+        assert not mch.aConstraintsMachineClause==None
+        pred = mch.aConstraintsMachineClause
+        gen = try_all_values(pred, env, mch.scalar_params)
+        assert gen.next()
+
 
 
 def get_image(function, preimage):

@@ -148,107 +148,36 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAGeneralSumExpression(AGeneralSumExpression node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2];
-        int i=0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicates() != null)
-        {
-            node.getPredicates().apply(this);
-            ids[copy.size()] = ""+(idCounter-1);
-        }
+            children.add(node.getPredicates());
         if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[copy.size()+1] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<ids.length-2; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-        if(node.getPredicates() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
+            children.add(node.getExpression());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseALambdaExpression(ALambdaExpression node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2];
-        int i=0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicate() != null)
-        {
-            node.getPredicate().apply(this);
-            ids[copy.size()] = ""+(idCounter-1);
-        }
+            children.add(node.getPredicate());
         if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[copy.size()+1] = ""+(idCounter-1);
-        }
-
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<ids.length-2; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-        if(node.getPredicate() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
+            children.add(node.getExpression());
+        printStdOut_manyChildren(node, children);
     }
+
 
     public void caseAGeneralProductExpression(AGeneralProductExpression node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2];
-        int i=0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicates() != null)
-        {
-            node.getPredicates().apply(this);
-            ids[copy.size()] = ""+(idCounter-1);
-        }
+            children.add(node.getPredicates());
         if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[copy.size()+1] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<ids.length-2; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-        if(node.getPredicates() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()+1]+")\n";
+            children.add(node.getExpression());
+        printStdOut_manyChildren(node, children);
     }
+
 
     // TODO: implement me
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
@@ -318,6 +247,28 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseARefinementMachineParseUnit(ARefinementMachineParseUnit node)
+    {
+        inARefinementMachineParseUnit(node);
+        if(node.getHeader() != null)
+        {
+            node.getHeader().apply(this);
+        }
+        if(node.getRefMachine() != null)
+        {
+            node.getRefMachine().apply(this);
+        }
+        {
+            List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
+            for(PMachineClause e : copy)
+            {
+                e.apply(this);
+            }
+        }
+        outARefinementMachineParseUnit(node);
+    }
+
+
     public void caseAMachineHeader(AMachineHeader node)
     {
         List<TIdentifierLiteral> copy0 = new ArrayList<TIdentifierLiteral>(node.getName());
@@ -355,63 +306,26 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseADefinitionsMachineClause(ADefinitionsMachineClause node)
     {
-        List<PDefinition> copy = new ArrayList<PDefinition>(node.getDefinitions());
-        String[] ids = new String[copy.size()];
-        int i=0;
-        for(PDefinition e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getDefinitions());
+        printStdOut_manyChildren(node, children);
     }
-
 
 
     public void caseASubstitutionDefinition(ASubstitutionDefinition node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getParameters());
-        String[] ids = new String[copy.size()+1]; // +1 rhs
+        List<Node> children = new ArrayList<Node>(node.getParameters());
+        if(node.getRhs() != null)
+            children.add(node.getRhs());
+        printStdOut_manyChildren(node, children);
+
         String idName = "";
-        int i=0;
-
-
         if(node.getName() != null)
-        {
             idName = node.getName().toString();
-        }
 
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        if(node.getRhs() != null)
-        {
-            node.getRhs().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i = 0 ; i<ids.length-1; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-        if(node.getRhs() != null)
-            out += "id"+nodeid+".children.append(id"+ids[ids.length-1]+")\n";
+        int nodeid = idCounter-1;
         out += "id"+nodeid+".idName = \""+idName+"\"\n";
-        if (copy!=null)
-            out += "id"+nodeid+".paraNum = "+copy.size()+"\n";
+        if (node.getParameters()!=null)
+            out += "id"+nodeid+".paraNum = "+node.getParameters().size()+"\n";
         else
             out += "id"+nodeid+".paraNum = 0";
     }
@@ -622,515 +536,224 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAParallelSubstitution(AParallelSubstitution node)
     {
-        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
-        String[] ids = new String[copy.size()]; 
-        String idName = "";
-        int i=0;
-
-        for(PSubstitution e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i = 0 ; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getSubstitutions());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseASequenceSubstitution(ASequenceSubstitution node)
     {
-        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
-        String[] ids = new String[copy.size()]; 
-        String idName = "";
-        int i=0;
-
-        for(PSubstitution e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i = 0 ; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getSubstitutions());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAChoiceSubstitution(AChoiceSubstitution node)
     {
-        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getSubstitutions());
-        String[] ids = new String[copy.size()]; 
-        String idName = "";
-        int i=0;
-
-        for(PSubstitution e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i = 0 ; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getSubstitutions());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAIfSubstitution(AIfSubstitution node)
     {
-        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getElsifSubstitutions());
-        String[] ids = new String[copy.size()+3]; 
-        String idName = "";
-        int i = 0;
-        if(node.getCondition() != null)
-        {
-            node.getCondition().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getThen() != null)
-        {
-            node.getThen().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        for(PSubstitution e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        if(node.getElse() != null)
-        {
-            node.getElse().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        i = 0;
-        if(node.getCondition() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getThen() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getElse() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        List<Node> children = new ArrayList<Node>();
+        if(node.getCondition()!=null)
+            children.add(node.getCondition());
+        if(node.getThen()!=null)
+            children.add(node.getThen());
+        if(node.getElsifSubstitutions()!=null)
+            children.addAll(node.getElsifSubstitutions());
+        if(node.getElse()!=null)
+            children.add(node.getElse());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseASelectSubstitution(ASelectSubstitution node)
     {
-        List<PSubstitution> copy = new ArrayList<PSubstitution>(node.getWhenSubstitutions());
-        String[] ids = new String[copy.size()+3]; 
-        String idName = "";
-        int i = 0;
-        if(node.getCondition() != null)
-        {
-            node.getCondition().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getThen() != null)
-        {
-            node.getThen().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        for(PSubstitution e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        if(node.getElse() != null)
-        {
-            node.getElse().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        i = 0;
-        if(node.getCondition() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getThen() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getElse() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-
+        List<Node> children = new ArrayList<Node>();
+        if(node.getCondition()!=null)
+            children.add(node.getCondition());
+        if(node.getThen()!=null)
+            children.add(node.getThen());
+        if(node.getWhenSubstitutions()!=null)
+            children.addAll(node.getWhenSubstitutions());
+        if(node.getElse()!=null)
+            children.add(node.getElse());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseACaseSubstitution(ACaseSubstitution node)
     {
-        List<PExpression> copy0 = new ArrayList<PExpression>(node.getEitherExpr());
-        List<PSubstitution> copy1 = new ArrayList<PSubstitution>(node.getOrSubstitutions());
-        String[] ids = new String[copy0.size()+copy1.size()+3]; 
-        String idName = "";
-        int i = 0;
-        if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        for(PExpression e : copy0)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getEitherSubst() != null)
-        {
-            node.getEitherSubst().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        for(PSubstitution e : copy1)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getElse() != null)
-        {
-            node.getElse().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>();
+        if(node.getExpression()!=null)
+            children.add(node.getExpression());
+        if(node.getEitherExpr()!=null)
+            children.addAll(node.getEitherExpr());
+        if(node.getEitherSubst()!=null)
+            children.add(node.getEitherSubst());
+        if(node.getOrSubstitutions()!=null)
+            children.addAll(node.getOrSubstitutions());
+        if(node.getElse()!=null)
+            children.add(node.getElse());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        for(int k = 0 ; k<copy0.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getEitherSubst() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        for(int k = 0 ; k<copy1.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getElse() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".expNum = "+copy0.size()+"\n";
+        out += "id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n";
     }
 
 
     public void caseACaseOrSubstitution(ACaseOrSubstitution node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getExpressions());
-        String[] ids = new String[copy.size()+1]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getSubstitution() != null)
-        {
-            node.getSubstitution().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>(node.getExpressions());
+        if(node.getSubstitution()!=null)
+            children.add(node.getSubstitution());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getSubstitution() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".expNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".expNum = "+node.getExpressions().size()+"\n";
     }
 
 
     public void caseAVarSubstitution(AVarSubstitution node)
     {
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getSubstitution()!=null)
+            children.add(node.getSubstitution());
+        printStdOut_manyChildren(node, children);
 
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+1]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getSubstitution() != null)
-        {
-            node.getSubstitution().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getSubstitution() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
     }
 
 
     public void caseAAnySubstitution(AAnySubstitution node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getWhere() != null)
-        {
-            node.getWhere().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getThen() != null)
-        {
-            node.getThen().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getWhere()!=null)
+            children.add(node.getWhere());
+        if(node.getThen()!=null)
+            children.add(node.getThen());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getWhere() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getThen() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
     }
 
 
 
     public void caseALetSubstitution(ALetSubstitution node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getPredicate() != null)
-        {
-            node.getPredicate().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getSubstitution() != null)
-        {
-            node.getSubstitution().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getPredicate()!=null)
+            children.add(node.getPredicate());
+        if(node.getSubstitution()!=null)
+            children.add(node.getSubstitution());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getPredicate() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getSubstitution() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
     }
 
 
     public void caseAQuantifiedUnionExpression(AQuantifiedUnionExpression node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getPredicates() != null)
-        {
-            node.getPredicates().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getPredicates()!=null)
+            children.add(node.getPredicates());
+        if(node.getExpression()!=null)
+            children.add(node.getExpression());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getPredicates() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
     }
 
 
     public void caseAQuantifiedIntersectionExpression(AQuantifiedIntersectionExpression node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-        String[] ids = new String[copy.size()+2]; 
-        String idName = "";
-        int i = 0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getPredicates() != null)
-        {
-            node.getPredicates().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(node.getExpression() != null)
-        {
-            node.getExpression().apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getPredicates()!=null)
+            children.add(node.getPredicates());
+        if(node.getExpression()!=null)
+            children.add(node.getExpression());
+        printStdOut_manyChildren(node, children);
 
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getPredicates() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        if(node.getExpression() != null)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".idNum = "+copy.size()+"\n";
+        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
     }
 
 
     public void caseAStructExpression(AStructExpression node)
     {
-        List<PRecEntry> copy = new ArrayList<PRecEntry>(node.getEntries());
-        String[] ids = new String[copy.size()]; 
-        String idName = "";
-        int i = 0;
-        for(PRecEntry e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getEntries());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseARecExpression(ARecExpression node)
     {
-        List<PRecEntry> copy = new ArrayList<PRecEntry>(node.getEntries());
-        String[] ids = new String[copy.size()]; 
-        String idName = "";
-        int i = 0;
-        for(PRecEntry e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        i = 0;
-        for(int k = 0 ; k<copy.size(); k++)
-            out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getEntries());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getPredicate()!=null)
+            children.add(node.getPredicate());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAComprehensionSetExpression(AComprehensionSetExpression node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicates());
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if(node.getPredicates()!=null)
+            children.add(node.getPredicates());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseABecomesSuchSubstitution(ABecomesSuchSubstitution node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getPredicate());
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if (node.getPredicate()!=null)
+            children.add(node.getPredicate());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAUniversalQuantificationPredicate(AUniversalQuantificationPredicate node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getImplication());
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if (node.getImplication()!=null)
+            children.add(node.getImplication());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseASetExtensionExpression(ASetExtensionExpression node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getExpressions()),null);
+        List<Node> children = new ArrayList<Node>(node.getExpressions());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseACoupleExpression(ACoupleExpression node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getList()),null);
+        List<Node> children = new ArrayList<Node>(node.getList());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseASequenceExtensionExpression(ASequenceExtensionExpression node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getExpression()),null);
+        List<Node> children = new ArrayList<Node>(node.getExpression());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAConstantsMachineClause(AConstantsMachineClause node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()),null);
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
     }
 
 
@@ -1167,25 +790,10 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    // sp. case: PPredicate
     public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
     {
-        List<PPredicate> copy = new ArrayList<PPredicate>(node.getPredicates());
-        String[] ids = new String[copy.size()];
-        int i=0;
-        for(PPredicate e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getPredicates());
+        printStdOut_manyChildren(node, children);
     }
 
 
@@ -1211,66 +819,21 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAVariablesMachineClause(AVariablesMachineClause node)
     {
-        List<PExpression> copy = new ArrayList<PExpression>(node.getIdentifiers());
-
-        String[] ids = new String[copy.size()];
-        int i=0;
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseASetsMachineClause(ASetsMachineClause node)
     {
-        List<PSet> copy = new ArrayList<PSet>(node.getSetDefinitions());
-
-        String[] ids = new String[copy.size()];
-        int i=0;
-        for(PSet e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getSetDefinitions());
+        printStdOut_manyChildren(node, children);
     }
 
     public void caseAOperationsMachineClause(AOperationsMachineClause node)
     {
-
-        List<POperation> copy = new ArrayList<POperation>(node.getOperations());
-        String[] ids = new String[copy.size()];
-        int i=0;
-        for(POperation e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        for(i=0; i<copy.size(); i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+        List<Node> children = new ArrayList<Node>(node.getOperations());
+        printStdOut_manyChildren(node, children);
     }
 
 
@@ -1350,13 +913,20 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseABecomesElementOfSubstitution(ABecomesElementOfSubstitution node)
     {
-        printStdOut_manyChildren(node, new ArrayList<PExpression>(node.getIdentifiers()), node.getSet());
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        if (node.getSet()!=null)
+            children.add(node.getSet());
+        printStdOut_manyChildren(node, children);
     }
 
 
     public void caseAFunctionExpression(AFunctionExpression node)
     {
-        printStdOut_manyChildren2(node, new ArrayList<PExpression>(node.getParameters()), node.getIdentifier());
+        List<Node> children = new ArrayList<Node>();
+        children.add(node.getIdentifier());
+        if (node.getParameters()!=null)
+            children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
     }
 
 
@@ -1989,60 +1559,22 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     // visits and prints the node-List first
-    private void printStdOut_manyChildren(Node node, List<PExpression> copy, Node extra)
+    private void printStdOut_manyChildren(Node node, List<Node> children)
     {
-        String[] ids = new String[copy.size()+1];
+        String[] ids = new String[children.size()];
         int i=0;
-        for(PExpression e : copy)
+        for(Node n : children)
         {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        if(extra!=null)
-        {
-            extra.apply(this);
-            ids[copy.size()] = ""+(idCounter-1);
+            n.apply(this);
+            ids[i++] = "" + (idCounter-1);
         }
 
-        String nodeid = ""+ idCounter;
+        String nodeid = "" + idCounter;
         out += "id" + nodeid + "=";
         out += getClassName(node) +"()\n";
         idCounter++;
 
-        for(i=0; i<ids.length-1; i++)
+        for(i=0; i<ids.length; i++)
             out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-        if(extra!=null)
-            out += "id"+nodeid+".children.append(id"+ids[copy.size()]+")\n";
-    }
-
-
-    // visits and prints the extra-Node first
-    // TODO: refactor ids
-    private void printStdOut_manyChildren2(Node node, List<PExpression> copy, Node extra)
-    {
-        String[] ids = new String[copy.size()+1];
-        int i=0;
-        if(extra!=null)
-        {
-            extra.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-        for(PExpression e : copy)
-        {
-            e.apply(this);
-            ids[i++] = ""+(idCounter-1);
-        }
-
-
-        String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
-        idCounter++;
-
-        if(extra!=null)
-            out += "id"+nodeid+".children.append(id"+ids[0]+")\n";
-        for(i=1; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
-
     }
 }

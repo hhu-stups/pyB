@@ -55,9 +55,7 @@ def interpret(node, env):
         # Schneider Book page 62-64:
         # The parameters p make the constraints c True
         # #p.C
-        init_mch_param(node, env)
-        if mch.aConstraintsMachineClause: # C
-            interpret(mch.aConstraintsMachineClause, env)
+        init_mch_param(node, env, mch)
 
         # Sets St and constants k which meet the constraints c make the properties B True
         # C => #St,k.B
@@ -119,7 +117,9 @@ def interpret(node, env):
                 assert isinstance(child, ADeferredSet)
     elif isinstance(node, AConstraintsMachineClause):
         for child in node.children:
-            interpret(child, env)
+            if not interpret(child, env):
+                return False
+        return True
     elif isinstance(node, APropertiesMachineClause):
         assert len(node.children)==1
         return interpret(node.children[0], env)

@@ -186,6 +186,8 @@ class TestMCHLaod():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
+        assert isinstance(root.children[0], AConstraintsMachineClause)
+        assert interpret(root.children[0], env)
 
 
 

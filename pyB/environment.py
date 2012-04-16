@@ -74,7 +74,8 @@ class Environment():
         top_map = self.value_stack[-1]
         for i in ids:
             assert isinstance(i,str)
-            top_map[i] = None
+            if not top_map.has_key(i):
+                top_map[i] = None
 
 
     # This method is used only(!) by the typechecking-tests.

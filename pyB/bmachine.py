@@ -19,6 +19,7 @@ class BMachine:
         self.aInitialisationMachineClause = None
         self.aDefinitionsMachineClause = None
         self.aOperationsMachineClause = None
+        # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
             # 1. A clause may only appear at most once in an abstract machine
