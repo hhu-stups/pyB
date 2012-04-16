@@ -59,7 +59,7 @@ def try_all_values(root, env, idNames):
 
 # FIXME: dummy-init of mch-parameters
 def init_mch_param(root, env, mch):
-    env.add_ids_to_frame(root.para)
+    env.add_ids_to_frame(mch.scalar_params + mch.set_params)
     # TODO: retry if no animation possible
     for name in mch.set_params:
         atype = env.get_type(name)

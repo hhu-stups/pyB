@@ -561,8 +561,8 @@ class TestInterpSets():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==0 or env.get_value("xx")==1 or env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
 
 
@@ -581,8 +581,8 @@ class TestInterpSets():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==0 or env.get_value("xx")==1 or env.get_value("xx")==2 
 
 

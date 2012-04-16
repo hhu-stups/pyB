@@ -40,8 +40,8 @@ class TestMCHAssert():
         env = Environment()
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
-        assert isinstance(root.children[2], AAssertionsMachineClause)
-        for pred in root.children[2].children:
+        assert isinstance(root.children[3], AAssertionsMachineClause)
+        for pred in root.children[3].children:
             assert interpret(pred, env)
 
 
@@ -79,16 +79,16 @@ class TestMCHAssert():
         env = Environment()
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
-        assert isinstance(root.children[2], AAssertionsMachineClause)
-        assert not interpret(root.children[2].children[0], env)
-        assert not interpret(root.children[2].children[1], env)
-        assert interpret(root.children[2].children[2], env)
-        assert not interpret(root.children[2].children[3], env)
-        assert interpret(root.children[2].children[4], env)
-        assert not interpret(root.children[2].children[5], env)
-        assert interpret(root.children[2].children[6], env)
-        assert not interpret(root.children[2].children[7], env)
-        assert not interpret(root.children[2].children[8], env)
+        assert isinstance(root.children[3], AAssertionsMachineClause)
+        assert not interpret(root.children[3].children[0], env)
+        assert not interpret(root.children[3].children[1], env)
+        assert interpret(root.children[3].children[2], env)
+        assert not interpret(root.children[3].children[3], env)
+        assert interpret(root.children[3].children[4], env)
+        assert not interpret(root.children[3].children[5], env)
+        assert interpret(root.children[3].children[6], env)
+        assert not interpret(root.children[3].children[7], env)
+        assert not interpret(root.children[3].children[8], env)
 
 
     def test_abrial_book_page83(self):
@@ -132,13 +132,13 @@ class TestMCHAssert():
         env = Environment()
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
-        assert isinstance(root.children[2], AAssertionsMachineClause)
-        assert interpret(root.children[2].children[0], env)
-        assert interpret(root.children[2].children[1], env)
-        assert interpret(root.children[2].children[2], env)
-        assert interpret(root.children[2].children[3], env)
-        assert interpret(root.children[2].children[4], env)
-        assert interpret(root.children[2].children[5], env)
+        assert isinstance(root.children[3], AAssertionsMachineClause)
+        assert interpret(root.children[3].children[0], env)
+        assert interpret(root.children[3].children[1], env)
+        assert interpret(root.children[3].children[2], env)
+        assert interpret(root.children[3].children[3], env)
+        assert interpret(root.children[3].children[4], env)
+        assert interpret(root.children[3].children[5], env)
 
 
     def test_abrial_book_page83_fail(self):
@@ -183,10 +183,10 @@ class TestMCHAssert():
         env = Environment()
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
-        assert isinstance(root.children[2], AAssertionsMachineClause)
-        assert not interpret(root.children[2].children[0], env)
-        assert not interpret(root.children[2].children[1], env)
-        assert not interpret(root.children[2].children[2], env)
-        assert not interpret(root.children[2].children[3], env)
-        assert not interpret(root.children[2].children[4], env)
-        assert not interpret(root.children[2].children[5], env)
+        assert isinstance(root.children[3], AAssertionsMachineClause)
+        assert not interpret(root.children[3].children[0], env)
+        assert not interpret(root.children[3].children[1], env)
+        assert not interpret(root.children[3].children[2], env)
+        assert not interpret(root.children[3].children[3], env)
+        assert not interpret(root.children[3].children[4], env)
+        assert not interpret(root.children[3].children[5], env)

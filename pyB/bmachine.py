@@ -6,6 +6,7 @@ from ast_nodes import *
 class BMachine:
     def __init__(self, node, interpreter_method):
         self.root = node
+        self.aMachineHeader = None
         self.scalar_params = [] # scalar machine parameter
         self.set_params = []    # Set machine parameter
         self.interpreter_method = interpreter_method
@@ -25,7 +26,7 @@ class BMachine:
             # 1. A clause may only appear at most once in an abstract machine
             # B Language Reference Manual - Version 1.8.6 - Page 110
             # It must be None before assignment
-            assert isinstance(child, Clause)
+            assert isinstance(child, Clause) or isinstance(child, AMachineHeader)
             if isinstance(child, AConstantsMachineClause):
                 assert self.aConstantsMachineClause==None
                 self.aConstantsMachineClause = child
@@ -56,6 +57,9 @@ class BMachine:
             elif isinstance(child, AOperationsMachineClause):
                 assert self.aOperationsMachineClause==None
                 self.aOperationsMachineClause = child
+            elif isinstance(child, AMachineHeader):
+                assert self.aMachineHeader == None
+                self.aMachineHeader = child
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
@@ -63,7 +67,9 @@ class BMachine:
 
 
     def parse_parameters(self):
-        for param in self.root.para:
+        assert not self.aMachineHeader == None
+        for idNode in self.aMachineHeader.children:
+            param = idNode.idName
             if str.islower(param):
                 self.scalar_params.append(param)
             else:

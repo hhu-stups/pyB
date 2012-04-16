@@ -47,7 +47,7 @@ def interpret(node, env):
         # TODO: move this code to BMachine
         idNames = []
         find_var_names(node, idNames) #sideef: fill list
-        for name in node.para:
+        for name in mch.scalar_params + mch.set_params:
             idNames.append(name) # add machine-parameters
         _test_typeit(node, env, [], idNames) ## FIXME: replace
         # TODO: Check with B spec

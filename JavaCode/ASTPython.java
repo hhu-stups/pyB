@@ -158,7 +158,8 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)
     {
         List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
-        String[] ids = new String[copy.size()];
+        String[] ids = new String[copy.size()+1];
+        int i=0;
 
         String mtype="";
         if(node.getType() != null)
@@ -166,28 +167,12 @@ public class ASTPython extends DepthFirstAdapter{
             mtype = node.getType().toString();
         }
 
-        String mname="";
-        String[] param = null;
-        int para_num = 0;
         if(node.getHeader() != null)
         {
-            // TODO: catch classcast-Exception
-            if(node.getHeader() instanceof AMachineHeader)
-            {
-                AMachineHeader head = (AMachineHeader)node.getHeader();
-                mname = head.getName().toString().toString().replace("[","").replace("]","");
-                List<PExpression> para = head.getParameters();
-                param = new String[para.size()];
-                para_num = para.size();
-                int y = 0;
-                for(PExpression p : para)
-                {
-                    param[y++] = p.toString();
-                }
-            }
+            node.getHeader().apply(this);
+            ids[i++] = ""+(idCounter-1);
         }
 
-        int i=0;
         for(PMachineClause e : copy)
         {
             e.apply(this);
@@ -201,22 +186,9 @@ public class ASTPython extends DepthFirstAdapter{
         idCounter++;
 
         i = 0;
-        for(int k=i; k<copy.size(); k++)
+        for(int k=i; k<copy.size()+1; k++)
             out += "id"+nodeid+".children.append(id"+ids[i++]+")\n";
-        out += "id"+nodeid+".mtype = \""+mtype+"\"\n";
-        out += "id"+nodeid+".mname = \""+mname+"\"\n";
-
-        if(param!=null && para_num!=0)
-        {
-            out += "id"+nodeid+".para = [\""+param[0]+"\"";
-            for(int x=1; x<para_num; x++)
-                out += ",\""+param[x]+"\"";
-            out += "]\n";
-        }
-        else
-        {
-            out += "id"+nodeid+".para = []\n";
-        }
+        out += "id"+nodeid+".type = \""+mtype+"\"\n";
 
         out += "root = id"+(idCounter-1)+ "\n";
     }

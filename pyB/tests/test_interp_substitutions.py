@@ -25,8 +25,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
         assert isinstance(env.get_type("xx"), IntegerType)
 
@@ -47,8 +47,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
         assert env.get_value("yy")==2
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -70,8 +70,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
         assert env.get_value("yy")==1
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -113,8 +113,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
         assert env.get_value("yy")==2
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -137,8 +137,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
         assert env.get_value("yy")==1
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -199,8 +199,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==True
         assert isinstance(env.get_type("xx"), BoolType)
 
@@ -220,8 +220,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
         assert env.get_value("xx")<4
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -242,8 +242,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
         assert env.get_value("xx")<6
         assert isinstance(env.get_type("xx"), IntegerType)
@@ -265,8 +265,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")>=3
         assert isinstance(env.get_type("xx"), IntegerType)
 
@@ -286,8 +286,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")>=2
         assert isinstance(env.get_type("xx"), IntegerType)
 
@@ -307,8 +307,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("f")==frozenset([(1,2),(3,3)])
 
 
@@ -328,8 +328,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("f")==frozenset([((1,1),2),((2,2),1)])
 
 
@@ -348,8 +348,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -372,8 +372,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -396,8 +396,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -420,8 +420,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==0
 
 
@@ -443,8 +443,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==0
 
 
@@ -465,8 +465,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
 
 
@@ -485,8 +485,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -505,8 +505,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -525,8 +525,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
 
 
@@ -545,8 +545,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2 or env.get_value("xx")==3
 
 
@@ -565,8 +565,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -585,8 +585,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
 
 
@@ -608,8 +608,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -631,8 +631,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
 
 
@@ -655,8 +655,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
 
 
@@ -681,8 +681,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
 
 
@@ -707,8 +707,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
 
 
@@ -734,8 +734,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
 
 
@@ -760,8 +760,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
 
 
@@ -787,8 +787,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==5 or env.get_value("xx")==7 # 3+4 or 5+0
 
 
@@ -816,8 +816,8 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("SumR")==1
         assert env.get_value("DifferenceR")==3
         assert env.get_value("Var1")==2
@@ -838,6 +838,6 @@ class TestInterpSubstitutions():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
         assert env.get_value("xx")==3

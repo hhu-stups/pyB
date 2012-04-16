@@ -27,8 +27,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
 
 
     def test_examples_simple_bakery0(self):
@@ -51,8 +51,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
 
 
     def test_examples_simple_bakery1(self):
@@ -78,8 +78,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
 
 
     def test_examples_simple_gcd(self):
@@ -99,8 +99,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
 
 
     def test_examples_simple_lift(self):
@@ -122,8 +122,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[1], AInvariantMachineClause)
-        assert interpret(root.children[1], env)
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
 
 
     def test_examples_simple_testset(self):
@@ -149,8 +149,8 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[4], AInvariantMachineClause)
-        assert interpret(root.children[4], env)
+        assert isinstance(root.children[5], AInvariantMachineClause)
+        assert interpret(root.children[5], env)
 
 
     def test_examples_schneider_club(self):
@@ -184,10 +184,10 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[5], AInvariantMachineClause)
-        assert interpret(root.children[5], env)
-        assert isinstance(root.children[0], AConstraintsMachineClause)
-        assert interpret(root.children[0], env)
+        assert isinstance(root.children[6], AInvariantMachineClause)
+        assert interpret(root.children[6], env)
+        assert isinstance(root.children[1], AConstraintsMachineClause)
+        assert interpret(root.children[1], env)
 
 
 
