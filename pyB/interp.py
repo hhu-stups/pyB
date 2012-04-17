@@ -111,10 +111,13 @@ def interpret(node, env):
                 for elm in child.children:
                     assert isinstance(elm, AIdentifierExpression)
                     elm_lst.append(elm.idName)
+                    env.add_ids_to_frame([elm.idName])
+                    # The values of elements of enumerated sets are their names
+                    env.set_value(elm.idName, elm.idName)
                 env.add_ids_to_frame([child.idName])
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
-                assert isinstance(child, ADeferredSet)
+                init_deffered_set(child, env)
     elif isinstance(node, AConstraintsMachineClause):
         for child in node.children:
             if not interpret(child, env):
@@ -832,6 +835,7 @@ def interpret(node, env):
         for i in range(int(node.lhs_size)):
             lhs_node = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
+            # this copy is only used in this loop/ in this execution path
             env_copy = copy.deepcopy(env_old)
             value = interpret(rhs, env_copy)
             if isinstance(lhs_node, AIdentifierExpression):
@@ -844,9 +848,9 @@ def interpret(node, env):
                 # get args
                 args = []
                 for child in lhs_node.children[1:]:
-                    arg = interpret(child, env)
+                    arg = interpret(child, env_copy)
                     args.append(arg)
-                func = dict(env.get_value(func_name))
+                func = dict(env_copy.get_value(func_name))
                 used_ids.append(func_name)
                 # change
                 if len(args)==1:

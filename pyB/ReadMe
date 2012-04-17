@@ -137,6 +137,9 @@ by John Witulski:
     - renaming with '.' (e.g. INCLUDES)
     - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
 8.2 Refactoring / small fixes
+    - The values of elements of enumerated sets are their names
+    - Check Includes, Sees, Uses, Extends rules 
+    - find Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them. 
     - inconsistency in java parser part: some args are given as fields some as constructor args
     - throw better Typeexceptions
     - write prop. python module (e.g for min max int)

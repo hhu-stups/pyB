@@ -69,6 +69,7 @@ class BMachine:
     def parse_parameters(self):
         assert not self.aMachineHeader == None
         for idNode in self.aMachineHeader.children:
+            assert isinstance(idNode, AIdentifierExpression)
             param = idNode.idName
             if str.islower(param):
                 self.scalar_params.append(param)

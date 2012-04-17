@@ -77,6 +77,14 @@ def init_mch_param(root, env, mch):
         assert gen.next()
 
 
+# FIXME: dummy-init of deffered sets
+def init_deffered_set(def_set, env):
+    # TODO: retry if no animation possible
+    assert isinstance(def_set, ADeferredSet)
+    name = def_set.idName
+    env.add_ids_to_frame([name])
+    env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+
 
 def get_image(function, preimage):
     for atuple in function:
