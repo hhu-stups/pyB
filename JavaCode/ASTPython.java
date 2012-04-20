@@ -146,7 +146,6 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-
     public void caseAPredicateParseUnit(APredicateParseUnit node)
     {
         printStdOut_oneChild(node, node.getPredicate());
@@ -176,23 +175,21 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseARefinementMachineParseUnit(ARefinementMachineParseUnit node)
     {
-        inARefinementMachineParseUnit(node);
-        if(node.getHeader() != null)
-        {
-            node.getHeader().apply(this);
-        }
+        List<Node> children = new ArrayList<Node>();
+        if(node.getHeader()!=null)
+            children.add(node.getHeader());
+        if(node.getMachineClauses()!=null)
+            children.addAll(node.getMachineClauses());
+        printStdOut_manyChildren(node, children);
+
+        String refines="";
         if(node.getRefMachine() != null)
         {
-            node.getRefMachine().apply(this);
+            refines = node.getRefMachine().toString();
         }
-        {
-            List<PMachineClause> copy = new ArrayList<PMachineClause>(node.getMachineClauses());
-            for(PMachineClause e : copy)
-            {
-                e.apply(this);
-            }
-        }
-        outARefinementMachineParseUnit(node);
+        out += "id"+(idCounter-1)+".refines = \""+refines+"\"\n";
+
+        out += "root = id"+(idCounter-1)+ "\n";
     }
 
 
@@ -503,6 +500,41 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_manyChildren(node, children);
 
         out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+    }
+
+
+    public void caseAMachineReference(AMachineReference node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getParameters()!=null)
+            children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
+
+        String idName = "";
+        for(TIdentifierLiteral e : node.getMachineName())
+        {
+            // XXX
+            e.apply(this);
+            idName = idName + e.toString();
+        }
+        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+    }
+
+
+    public void caseAPromotesMachineClause(APromotesMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getMachineNames()!=null)
+            children.addAll(node.getMachineNames());
+        printStdOut_manyChildren(node, children);
+    }
+
+    public void caseAIncludesMachineClause(AIncludesMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getMachineReferences()!=null)
+            children.addAll(node.getMachineReferences());
+        printStdOut_manyChildren(node, children);
     }
 
 
