@@ -42,7 +42,8 @@ def interpret(node, env):
         print True
         return
     elif isinstance(node, AAbstractMachineParseUnit):
-        mch = BMachine(node, interpret)
+        mch = BMachine(node, interpret, env)
+        env.set_mch(mch)
 
         # TODO: move this code to BMachine
         idNames = []

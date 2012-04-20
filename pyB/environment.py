@@ -116,3 +116,8 @@ class Environment():
     # leave scope: throw all values of local vars away
     def pop_frame(self):
         self.value_stack.pop()
+
+
+    # reference to the owner-mch of this state/env
+    def set_mch(self, mch):
+        self.mch = mch

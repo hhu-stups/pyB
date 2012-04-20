@@ -1,6 +1,6 @@
-PyB
-31.08.2011 - 12.04.2012 
-by John Witulski: 
+PyB: 31.08.2011 - 19.04.2012 
+by John Witulski:
+ HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
  John.Witulski@uni-duesseldorf.de
 
@@ -338,6 +338,8 @@ by John Witulski:
     caseATransRelationExpression
     caseAOperationsMachineClause
     caseAOperation
+    caseAMachineReference
+    caseAIncludesMachineClause
 
 
  9.2 NOT IMPLEMENTED:
@@ -371,7 +373,6 @@ by John Witulski:
     caseASeesMachineClause
     caseAPromotesMachineClause
     caseAUsesMachineClause
-    caseAIncludesMachineClause
     caseAExtendsMachineClause
     caseAImportsMachineClause
     caseAConcreteVariablesMachineClause
@@ -379,7 +380,6 @@ by John Witulski:
     caseAValuesMachineClause
     caseALocalOperationsMachineClause
     
-    caseAMachineReference
     caseAFileDefinition
     caseAValuesEntry
     

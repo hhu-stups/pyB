@@ -294,7 +294,7 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
-        mch = BMachine(node, None)
+        mch = BMachine(node, None, None)
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p)
             unify_equal(unknown_type, PowerSetType(SetType(p)), type_env)

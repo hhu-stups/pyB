@@ -36,6 +36,12 @@ class AEnumeratedSet(Node):
 class ADeferredSet(Node):
     pass
 
+class AMachineReference(Node):
+    pass
+
+class AIncludesMachineClause(Clause):
+    pass
+
 class AConstraintsMachineClause(Clause):
     pass
 

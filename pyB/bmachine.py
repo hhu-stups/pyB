@@ -4,8 +4,9 @@ from ast_nodes import *
 # -*- coding: utf-8 -*-
 # abstract machine
 class BMachine:
-    def __init__(self, node, interpreter_method):
+    def __init__(self, node, interpreter_method, env):
         self.root = node
+        self.state = env
         self.aMachineHeader = None
         self.scalar_params = [] # scalar machine parameter
         self.set_params = []    # Set machine parameter
@@ -20,6 +21,7 @@ class BMachine:
         self.aInitialisationMachineClause = None
         self.aDefinitionsMachineClause = None
         self.aOperationsMachineClause = None
+        self.aIncludesMachineClause = None
         # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
@@ -57,6 +59,9 @@ class BMachine:
             elif isinstance(child, AOperationsMachineClause):
                 assert self.aOperationsMachineClause==None
                 self.aOperationsMachineClause = child
+            elif isinstance(child, AIncludesMachineClause):
+                assert self.aIncludesMachineClause==None
+                self.aIncludesMachineClause = child
             elif isinstance(child, AMachineHeader):
                 assert self.aMachineHeader == None
                 self.aMachineHeader = child
@@ -64,6 +69,15 @@ class BMachine:
                 raise Exception("Unknown clause:",child )
         self.self_check()
         self.parse_parameters()
+        #self.set_included()
+
+
+    def set_included(self, node):
+        if self.aIncludesMachineClause:
+            self.includes = []
+            for child in node.childern:
+                assert isinstance(child, AMachineReference)
+                self.includes.append(child.idName)
 
 
     def parse_parameters(self):
