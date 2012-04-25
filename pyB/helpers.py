@@ -4,11 +4,11 @@ from subprocess import Popen, PIPE
 from ast_nodes import *
 
 command_str = "java -cp "
-command_str += "../jars/bparser-2.0.67.jar"
-command_str += ":../jars/prologlib-2.0.67.jar"
-command_str += ":../jars/parserbase-2.0.67.jar"
-command_str += ":../jars/cliparser-2.0.67.jar"
-command_str += ":../jars/"
+command_str += "../bparser/build/libs/bparser-2.0.67.jar"
+command_str += ":../prologlib/build/libs/prologlib-2.0.67.jar"
+command_str += ":../parsebase/build/libs/parserbase-2.0.67.jar"
+command_str += ":../cliparser/build/libs/cliparser-2.0.67.jar"
+command_str += ":examples/"
 command_str += ":. de.prob.cliparser.CliBParser %s %s"
 #option_str = " -ast"
 option_str = " -python"
@@ -18,6 +18,7 @@ def file_to_AST_str(file_name_str):
     w, r, e = (p.stdin, p.stdout, p.stderr)
     out = r.read()
     err_out = e.read()
+    print err_out
     r.close()
     w.close()
     e.close()
@@ -42,16 +43,31 @@ def string_to_file(string, file_name):
     return f
 
 
-def find_var_names(node, lst):
+
+
+# added every id in the a to a list, except quantified ids
+# predicate: root
+# b-machines: mch-clauses
+def find_var_names(node):
+    lst = []
+    _find_var_names(node, lst) #side-effect: fills list
+    return lst
+
+
+# helper for find_var_names
+def _find_var_names(node, lst):
     if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
         return
     elif isinstance(node, AIdentifierExpression):
         if not node.idName in lst:
             lst.append(node.idName)
     else:
+        if isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
+            if not node.idName in lst:
+                lst.append(node.idName)
         try:
             for n in node.children:
-                find_var_names(n, lst)
+                _find_var_names(n, lst)
         except AttributeError:
             return #FIXME no children
 

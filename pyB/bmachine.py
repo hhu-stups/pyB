@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from helpers import file_to_AST_str
+from environment import Environment
 
 # -*- coding: utf-8 -*-
 # abstract machine
@@ -10,6 +12,7 @@ class BMachine:
         self.aMachineHeader = None
         self.scalar_params = [] # scalar machine parameter
         self.set_params = []    # Set machine parameter
+        self.included_nodes = []
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -22,6 +25,7 @@ class BMachine:
         self.aDefinitionsMachineClause = None
         self.aOperationsMachineClause = None
         self.aIncludesMachineClause = None
+        self.aPromotesMachineClause = None
         # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
@@ -65,19 +69,43 @@ class BMachine:
             elif isinstance(child, AMachineHeader):
                 assert self.aMachineHeader == None
                 self.aMachineHeader = child
+            elif isinstance(child, APromotesMachineClause):
+                assert self.aPromotesMachineClause == None
+                self.aPromotesMachineClause = child
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
         self.parse_parameters()
-        #self.set_included()
+        self.parse_included()
 
 
-    def set_included(self, node):
+    def parse_included(self):
         if self.aIncludesMachineClause:
-            self.includes = []
-            for child in node.childern:
+            for child in self.aIncludesMachineClause.children:
                 assert isinstance(child, AMachineReference)
-                self.includes.append(child.idName)
+                # FIXME: impl search strategy
+                file_name = "examples/"+ child.idName + ".mch"
+                ast_string = file_to_AST_str(file_name)
+                exec ast_string
+                self.included_nodes.append(tuple([root,child.idName]))
+
+
+    def type_included(self, type_check_bmch, root_type_env):
+        for tup in self.included_nodes:
+            node = tup[0]
+            env = Environment()
+            mch = BMachine(node, self.interpreter_method, env)
+            type_env = type_check_bmch(node, mch)
+            root_type_env.included_type_env.append(type_env)
+            #mch.state.print_env()
+
+
+    def init_include_mchs(self):
+        if self.includes_nodes:
+            self.includes_mch = []
+            for node in self.includes_nodes:
+                mch = self.interpreter_method(node, Environment())
+                self.includes_mch.append(mch)
 
 
     def parse_parameters(self):

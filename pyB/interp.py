@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from config import *
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, _test_typeit
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate
 from helpers import find_var_names, flatten, is_flat, double_element_check
 from bmachine import BMachine
 from environment import Environment
@@ -21,9 +21,8 @@ def interpret(node, env):
 #
 # ******************************
     if isinstance(node,APredicateParseUnit):
-        idNames = []
-        find_var_names(node.children[0], idNames) #sideef: fill list
-        _test_typeit(node.children[0], env, [], idNames) ## FIXME: replace this call someday
+        idNames = find_var_names(root.children[0]) 
+        type_check_predicate(node, env)
         if idNames ==[]:
             result = interpret(node.children[0], env)
             print result
@@ -45,12 +44,7 @@ def interpret(node, env):
         mch = BMachine(node, interpret, env)
         env.set_mch(mch)
 
-        # TODO: move this code to BMachine
-        idNames = []
-        find_var_names(node, idNames) #sideef: fill list
-        for name in mch.scalar_params + mch.set_params:
-            idNames.append(name) # add machine-parameters
-        _test_typeit(node, env, [], idNames) ## FIXME: replace
+        type_check_bmch(node, mch)
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:
@@ -902,8 +896,7 @@ def interpret(node, env):
         lst = []
         used_ids = []
         for child in node.children:
-            ids = []
-            find_var_names(child, ids)
+            ids = find_var_names(child)
             used_ids += ids
             env_copy = copy.deepcopy(env)
             lst.append(env_copy)

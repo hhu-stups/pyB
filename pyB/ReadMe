@@ -340,6 +340,7 @@ by John Witulski:
     caseAOperation
     caseAMachineReference
     caseAIncludesMachineClause
+    caseAPromotesMachineClause
 
 
  9.2 NOT IMPLEMENTED:
@@ -371,7 +372,6 @@ by John Witulski:
     caseATheoremsModelClause
     caseAVariantModelClause
     caseASeesMachineClause
-    caseAPromotesMachineClause
     caseAUsesMachineClause
     caseAExtendsMachineClause
     caseAImportsMachineClause

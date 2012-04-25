@@ -15,13 +15,18 @@ class Environment():
         self.definition_id_to_ast = {}
         self.last_env = None # in Undo
 
-
+    # only for debugging
     def print_env(self):
+        print "printing Environment..."
+        print "Values:"
         for value_map in self.value_stack:
             string = ""
             for name in value_map:
                 string += name + ":" + str(value_map[name]) + " "
             print string
+        print "Types:"
+        for node in self.node_to_type_map:
+            print node.idName,":", self.node_to_type_map[node]
 
 
     # used in undo

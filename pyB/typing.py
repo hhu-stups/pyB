@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
+from helpers import find_var_names
 from bmachine import BMachine
 
 
@@ -15,6 +16,22 @@ class TypeCheck_Environment():
         # is used to construct the env.node_to_type_map
         self.id_to_nodes_stack = []
         self.id_to_types_stack = []
+        self.included_type_env = []
+
+    def init_env(self, known_types_list, idNames):
+        id_to_nodes_map = {} # A: str->NODE
+        id_to_types_map = {} # T: str->Type
+        for atuple in known_types_list:
+            id_Name = atuple[0]
+            atype = atuple[1]
+            id_to_types_map[id_Name] = UnknownType(id_Name, atype)
+            id_to_nodes_map[id_Name] = []
+        # ids with unknown types
+        for id_Name in idNames:
+            id_to_nodes_map[id_Name] = [] # no Nodes at the moment
+            id_to_types_map[id_Name] = UnknownType(id_Name, None)
+        self.id_to_types_stack = [id_to_types_map]
+        self.id_to_nodes_stack = [id_to_nodes_map]
 
 
     # new scope
@@ -40,6 +57,7 @@ class TypeCheck_Environment():
             except KeyError:
                 continue
         string = "TypeError: %s not found while adding node: %s! Maybe %s is unkown. IdName not added to type_env (typing.py)?", node.idName, node, node.idName
+        print string
         raise BTypeException(string)
 
 
@@ -118,6 +136,11 @@ class TypeCheck_Environment():
         self.id_to_nodes_stack.pop()
         self.id_to_types_stack.pop()
         #assert isinstance(env, Environment)
+        self.write_to_env(env, type_top_map, node_top_map)
+
+
+
+    def write_to_env(self, env, type_top_map, node_top_map):
         for idName in type_top_map:
             utype = type_top_map[idName]
             atype = unknown_closure(utype)
@@ -146,9 +169,19 @@ class TypeCheck_Environment():
                     return atype
             except KeyError:
                 continue
+        # TODO: uses, extends...
+        if not self.included_type_env==[]:
+           for child_type_env in self.included_type_env:
+                try:
+                    atype = child_type_env.get_current_type(idName)
+                    return atype
+                except KeyError:
+                    continue
+        # error
         string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName
         print string
         raise BTypeException(string)
+
 
 
 # env.node_to_type_map should be a set of tree with 
@@ -256,24 +289,32 @@ def unknown_closure(atype):
         return atype
 
 
-# should only be called by tests
+# TODO: rename
 def _test_typeit(root, env, known_types_list, idNames):
     type_env = TypeCheck_Environment()
-    type_map = {}
-    node_map = {}
-    for atuple in known_types_list:
-        id_Name = atuple[0]
-        atype = atuple[1]
-        type_map[id_Name] = UnknownType(id_Name, atype)
-        node_map[id_Name] = []
-    type_env.id_to_types_stack = [type_map] # this is a implicit push
-    type_env.id_to_nodes_stack = [node_map]
-    type_env.push_frame(idNames)
+    type_env.init_env(known_types_list, idNames)
     typeit(root, env, type_env)
-    type_env.pop_frame(env)
-    type_env.pop_frame(env)
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types
+    return type_env # contains only knowladge about ids at global level
 
+
+def type_check_predicate(root, env, idNames):
+    ## FIXME: replace this call someday
+    type_env = _test_typeit(root.children[0], env, [], idNames)
+
+
+def type_check_bmch(root, mch):
+    # TODO: abstr const/vars
+    # TODO?: operations?
+    set_idNames = find_var_names(mch.aSetsMachineClause) 
+    const_idNames = find_var_names(mch.aConstantsMachineClause)
+    var_idNames = find_var_names(mch.aVariablesMachineClause)
+    idNames = set_idNames + const_idNames + var_idNames
+    for name in mch.scalar_params + mch.set_params:
+        idNames.append(name) # add machine-parameters
+    type_env = _test_typeit(root, mch.state, [], idNames) ## FIXME: replace
+    return type_env
 
 
 # returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
@@ -295,6 +336,9 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
         mch = BMachine(node, None, None)
+        env.set_mch(mch)
+        mch.type_included(type_check_bmch, type_env)
+
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p)
             unify_equal(unknown_type, PowerSetType(SetType(p)), type_env)
@@ -468,9 +512,16 @@ def typeit(node, env, type_env):
         unify_equal(atype, PowerSetType(PowerSetType(UnknownType(None,None))),type_env)
         return atype.data
     elif isinstance(node, AQuantifiedIntersectionExpression) or isinstance(node, AQuantifiedUnionExpression):
+        idNames = []
+        for idNode in node.children[:node.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            idNames.append(idNode.idName)
+        type_env.push_frame(idNames)
         for child in node.children[:-1]:
             typeit(child, env, type_env)
-        return typeit(node.children[-1], env, type_env)
+        atype = typeit(node.children[-1], env, type_env)
+        type_env.pop_frame(env)
+        return atype
 
 
 # *************************
@@ -829,7 +880,15 @@ def typeit(node, env, type_env):
         type_env.push_frame(ids)
         typeit(node.children[-1], env, type_env)
         type_env.pop_frame(env)
-
+    elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
+        idNames = []
+        for idNode in node.children[:node.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            idNames.append(idNode.idName)
+        type_env.push_frame(idNames)
+        for child in node.children:
+            typeit(child, env, type_env)
+        type_env.pop_frame(env)
 
 # ****************
 #
@@ -922,7 +981,7 @@ def typeit(node, env, type_env):
         return atype
     elif isinstance(node, AOperation):
         names = []
-        for i in range(node.return_Num, node.parameter_Num):
+        for i in range(0,node.return_Num+ node.parameter_Num):
             assert isinstance(node.children[i], AIdentifierExpression)
             names.append(node.children[i].idName)
         type_env.push_frame(names)

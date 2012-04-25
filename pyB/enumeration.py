@@ -38,6 +38,7 @@ def all_values_by_type(atype, env):
     raise Exception(string)
 
 
+# FIXME: uses get_type
 def try_all_values(root, env, idNames):
     from interp import interpret
     name = idNames[0]

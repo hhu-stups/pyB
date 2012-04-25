@@ -77,12 +77,14 @@ def get_para_names(op):
         names.append(op.children[i].idName)
     return names
 
+
 def get_return_names(op):
     names = []
     for i in range(op.return_Num):
         assert isinstance(op.children[i], AIdentifierExpression)
         names.append(op.children[i].idName)
     return names
+
 
 def add_return_values(env, rids):
     return_values = []
