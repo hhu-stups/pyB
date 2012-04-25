@@ -10,9 +10,10 @@ class BMachine:
         self.root = node
         self.state = env
         self.aMachineHeader = None
-        self.scalar_params = [] # scalar machine parameter
-        self.set_params = []    # Set machine parameter
-        self.included_nodes = []
+        self.scalar_params = []   # scalar machine parameter
+        self.set_params = []      # Set machine parameter
+        self.included_nodes = []  # nodes of mch roots
+        self.included_mch = []    # list of b-mchs
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -87,25 +88,30 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.included_nodes.append(tuple([root,child.idName]))
+                self.included_nodes.append({0:root,1:child.idName,2:Environment()})
 
 
     def type_included(self, type_check_bmch, root_type_env):
-        for tup in self.included_nodes:
-            node = tup[0]
-            env = Environment()
+        for d in self.included_nodes:
+            node = d[0]
+            name = d[1]
+            env = d[2]
             mch = BMachine(node, self.interpreter_method, env)
             type_env = type_check_bmch(node, mch)
-            root_type_env.included_type_env.append(type_env)
-            #mch.state.print_env()
+            id_2_t = type_env.id_to_types_stack[0]
+            root_type_env.add_known_types_of_child_env(id_2_t)
+
 
 
     def init_include_mchs(self):
-        if self.includes_nodes:
-            self.includes_mch = []
-            for node in self.includes_nodes:
-                mch = self.interpreter_method(node, Environment())
-                self.includes_mch.append(mch)
+        if self.included_nodes: # nodes of mch roots
+            for d in self.included_nodes:
+                node = d[0]
+                name = d[1]
+                env  = d[2]
+                # FIXME: performance: double typechecking
+                mch = self.interpreter_method(node, env)
+                self.included_mch.append(mch)
 
 
     def parse_parameters(self):

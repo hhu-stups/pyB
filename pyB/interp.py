@@ -42,9 +42,10 @@ def interpret(node, env):
         return
     elif isinstance(node, AAbstractMachineParseUnit):
         mch = BMachine(node, interpret, env)
-        env.set_mch(mch)
 
-        type_check_bmch(node, mch)
+        type_check_bmch(node, mch) # also checks all included
+        mch.init_include_mchs()
+        env.set_mch(mch)
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:

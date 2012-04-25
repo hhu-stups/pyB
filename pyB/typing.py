@@ -16,7 +16,7 @@ class TypeCheck_Environment():
         # is used to construct the env.node_to_type_map
         self.id_to_nodes_stack = []
         self.id_to_types_stack = []
-        self.included_type_env = []
+
 
     def init_env(self, known_types_list, idNames):
         id_to_nodes_map = {} # A: str->NODE
@@ -33,6 +33,15 @@ class TypeCheck_Environment():
         self.id_to_types_stack = [id_to_types_map]
         self.id_to_nodes_stack = [id_to_nodes_map]
 
+
+    def add_known_types_of_child_env(self, id_to_types_map):
+        type_map = self.id_to_types_stack.pop()
+        type_map.update(id_to_types_map)
+        self.id_to_types_stack.append(type_map)
+        node_map = self.id_to_nodes_stack.pop()
+        for name in id_to_types_map:
+            node_map[name] = [] # no Nodes at the moment
+        self.id_to_nodes_stack.append(node_map)
 
     # new scope
     def push_frame(self, id_Names):
@@ -169,14 +178,6 @@ class TypeCheck_Environment():
                     return atype
             except KeyError:
                 continue
-        # TODO: uses, extends...
-        if not self.included_type_env==[]:
-           for child_type_env in self.included_type_env:
-                try:
-                    atype = child_type_env.get_current_type(idName)
-                    return atype
-                except KeyError:
-                    continue
         # error
         string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName
         print string

@@ -14,6 +14,7 @@ class Environment():
         # AST-SubTrees: ID(String)->AST
         self.definition_id_to_ast = {}
         self.last_env = None # in Undo
+        self.mch = None
 
     # only for debugging
     def print_env(self):
@@ -49,12 +50,19 @@ class Environment():
         value_map_copy =  [x for x in self.value_stack] # no ref. copy
         value_map_copy.reverse()
         stack_depth = len(value_map_copy)
-        # lookup:
+        # lookup own mch:
         for i in range(stack_depth):
             try:
                 return value_map_copy[i][id_Name]
             except KeyError:
                 continue
+        # lookup included mch:
+        if not self.mch.included_mch == []:
+            for m in self.mch.included_mch:
+                try:
+                    return m.state.get_value(id_Name)
+                except KeyError:
+                    continue
         # No entry in the value_stack. The Variable with the name id_Name
         # is unknown. This is an Error found by the typechecker
         # TODO: raise custom exception. e.g lookuperror
