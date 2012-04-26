@@ -521,6 +521,22 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAOpSubstitution(AOpSubstitution node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getParameters()!=null)
+            children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
+
+        String idName="";
+        if(node.getName() != null)
+        {
+            idName = node.getName().toString();
+        }
+        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+    }
+
+
     public void caseAPromotesMachineClause(APromotesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>();

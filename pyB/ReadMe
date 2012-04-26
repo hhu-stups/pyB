@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 19.04.2012 
+PyB: 31.08.2011 - 26.04.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -341,7 +341,7 @@ by John Witulski:
     caseAMachineReference
     caseAIncludesMachineClause
     caseAPromotesMachineClause
-
+    caseAOpSubstitution
 
  9.2 NOT IMPLEMENTED:
     caseAExpressionParseUnit
@@ -395,7 +395,6 @@ by John Witulski:
     caseAProverComprehensionSetExpression
     
     caseAFuncOpSubstitution             - impl sees first
-    caseAOpSubstitution                 - impl sees first
     caseAOpWithReturnSubstitution       - impl sees first
     caseAWhileSubstitution
 

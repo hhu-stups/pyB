@@ -398,6 +398,8 @@ class ADisjunctPredicate(Predicate):
 class AImplicationPredicate(Predicate):
     pass
 
+class AOpSubstitution(Substitution):
+    pass
 
 class AAssignSubstitution(Substitution):
     pass

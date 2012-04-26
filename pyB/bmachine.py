@@ -7,6 +7,7 @@ from environment import Environment
 # abstract machine
 class BMachine:
     def __init__(self, node, interpreter_method, env):
+        self.name = None
         self.root = node
         self.state = env
         self.aMachineHeader = None
@@ -91,6 +92,18 @@ class BMachine:
                 self.included_nodes.append({0:root,1:child.idName,2:Environment()})
 
 
+    def get_includes_op_type(self, idName):
+        for d in self.included_nodes:
+            node = d[0]
+            name = d[1]
+            env = d[2]
+            for op in env.mch_operation_type:
+                name = op[2]
+                if idName == name:
+                    return op, env
+        raise Exception("unknown op",idName)
+
+
     def type_included(self, type_check_bmch, root_type_env):
         for d in self.included_nodes:
             node = d[0]
@@ -116,6 +129,7 @@ class BMachine:
 
     def parse_parameters(self):
         assert not self.aMachineHeader == None
+        self.name = self.aMachineHeader.idName
         for idNode in self.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
             param = idNode.idName

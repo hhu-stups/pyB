@@ -81,7 +81,7 @@ def interpret(node, env):
         mch.eval_Init(env)
 
         res = mch.eval_Invariant(env)
-        print "Invariant:",res # None: no invariant
+        print mch.name, "- Invariant:",res # None: no invariant
 
         # Not in schneiders book:
         mch.eval_Assertions(env)
@@ -1176,6 +1176,22 @@ def interpret(node, env):
                     image.append(tup2[1])
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
+    elif isinstance(node, AOpSubstitution):
+        # TODO: check promotes
+        op_type, incl_env = env.mch.get_includes_op_type(node.idName)
+        ret_types = op_type[0]
+        para_types = op_type[1]
+        id_nodes = [x[0] for x in ret_types] + [x[0] for x in para_types]
+        incl_env.push_new_frame(id_nodes)
+        op_node = op_type[3]
+        for i in range(len(para_types)):
+            value = interpret(node.children[i], env)
+            name = para_types[i][0].idName
+            incl_env.set_value(name, value)
+        assert isinstance(op_node, AOperation)
+        result = interpret(op_node.children[-1], incl_env)
+        incl_env.pop_frame()
+        return result
     else:
         raise Exception("Unknown Node: %s",node)
 

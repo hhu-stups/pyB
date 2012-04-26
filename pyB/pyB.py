@@ -37,7 +37,7 @@ if not mch==None: #otherwise #PREDICATE
     else:
         env = exec_op(env, op_and_state_list, number)
     while not number==n:
-            print "Invariant:", mch.eval_Invariant(env)
+            print mch.name," - Invariant:", mch.eval_Invariant(env)
             op_and_state_list = calc_succ_states(env, mch)
             n = show_ui(env, mch, op_and_state_list)
             input_str = "Input (0-"+str(n)+"):"

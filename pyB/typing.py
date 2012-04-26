@@ -988,7 +988,33 @@ def typeit(node, env, type_env):
         type_env.push_frame(names)
         for child in node.children:
             typeit(child, env, type_env)
+        ret_types = []
+        for child in node.children[0:node.return_Num]:
+            assert isinstance(child, AIdentifierExpression)
+            atype = type_env.get_current_type(child.idName)
+            assert not isinstance(atype, UnknownType)
+            ret_types.append(tuple([child, atype]))
+        para_types = []
+        for child in node.children[node.return_Num:node.parameter_Num]:
+            assert isinstance(child, AIdentifierExpression)
+            atype = type_env.get_current_type(child.idName)
+            assert not isinstance(atype, UnknownType)
+            para_types.append(tuple([child, atype]))
+        # FIXME: adding the node is not a task of type_checking 
+        operation_type = [ret_types, para_types, node.opName, node]
+        env.mch_operation_type.append(operation_type)
         type_env.pop_frame(env)
+    elif isinstance(node, AOpSubstitution):
+        op_type, incl_mch = env.mch.get_includes_op_type(node.idName)
+        para_types = op_type[1]
+        for i in range(len(node.children)):
+            atype = typeit(node.children[i], env, type_env)
+            p_type = para_types[i][1]
+            unify_equal(p_type, atype, type_env)
+        ret_type =  op_type[0]
+        if ret_type==[]:
+            return
+        return ret_type[1] # FIXME: more than one retval
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node"

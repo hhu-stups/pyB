@@ -13,21 +13,23 @@ class Environment():
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
         self.definition_id_to_ast = {}
-        self.last_env = None # in Undo
+        self.last_env = None # used in undo
         self.mch = None
+        self.mch_operation_type = [] # rettype, opname, paratype
 
-    # only for debugging
+    # used for debugging and cli-ui
     def print_env(self):
-        print "printing Environment..."
-        print "Values:"
+        print self.mch.name
         for value_map in self.value_stack:
             string = ""
             for name in value_map:
                 string += name + ":" + str(value_map[name]) + " "
             print string
-        print "Types:"
-        for node in self.node_to_type_map:
-            print node.idName,":", self.node_to_type_map[node]
+        for m in self.mch.included_mch:
+            m.state.print_env()
+        #print "Types:"
+        #for node in self.node_to_type_map:
+        #    print node.idName,":", self.node_to_type_map[node]
 
 
     # used in undo
