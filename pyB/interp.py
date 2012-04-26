@@ -1177,7 +1177,6 @@ def interpret(node, env):
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
     elif isinstance(node, AOpSubstitution):
-        # TODO: check promotes
         op_type, incl_env = env.mch.get_includes_op_type(node.idName)
         ret_types = op_type[0]
         para_types = op_type[1]

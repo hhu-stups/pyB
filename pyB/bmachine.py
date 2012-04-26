@@ -15,6 +15,7 @@ class BMachine:
         self.set_params = []      # Set machine parameter
         self.included_nodes = []  # nodes of mch roots
         self.included_mch = []    # list of b-mchs
+        self.promoted_ops = []    # list of strings
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -79,6 +80,14 @@ class BMachine:
         self.self_check()
         self.parse_parameters()
         self.parse_included()
+        self.parse_promoted()
+
+
+    def parse_promoted(self):
+        if self.aPromotesMachineClause:
+            for idNode in self.aPromotesMachineClause.children:
+                assert isinstance(idNode, AIdentifierExpression)
+                self.promoted_ops.append(idNode.idName)
 
 
     def parse_included(self):
