@@ -31,7 +31,7 @@ by John Witulski:
 
 2. Run pyB:
     python pyB.py <FileName>
-    e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" 
+    e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" or B-Abstr. Machine
 
 
 3. Run Tests:

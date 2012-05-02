@@ -81,6 +81,13 @@ class Environment():
             if id_Name in top_map:
                 top_map[id_Name] = value
                 return
+        # lookup included mch:
+        if not self.mch.included_mch == []:
+            for m in self.mch.included_mch:
+                try:
+                    return m.state.set_value(id_Name, value)
+                except KeyError:
+                    continue
         print "LookupErr:", id_Name
         raise KeyError
 

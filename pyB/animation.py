@@ -8,7 +8,8 @@ from ast_nodes import *
 def calc_succ_states(current_state, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
-        for op in bmachine.aOperationsMachineClause.children:
+    	operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops
+        for op in operations:
             # (1) create new Environment, parameter_list and return_values
             import copy
             next_state = copy.deepcopy(current_state)
@@ -58,7 +59,7 @@ def calc_succ_states(current_state, bmachine):
                 return_values = add_return_values(next_state, rids)
                 result.append([op, parameter_list, return_values, next_state])
             else:
-                raise Exception("ERROR: Optype not implemented:", op.children[-1])
+                raise Exception("ERROR: Optype not implemented:", op.children[-1]) 
     return result
 
 

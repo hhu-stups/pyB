@@ -175,3 +175,5 @@ class TestMCHAnimation():
         env = exec_op(env, op_and_state_list, 0)
         op_and_state_list = calc_succ_states(env, mch) #opening enabled
         env = exec_op(env, op_and_state_list, 0)
+        names = [op[0].opName for op in op_and_state_list]
+        assert  "closedoor" in names
