@@ -135,8 +135,40 @@ class TestMCHAnimation():
         assert interpret(root.children[3], env)
 
 
+    def test_ani_deferred_sets_2(self):
+        string = '''
+        MACHINE           Keys
+        SETS              KEY
+        VARIABLES         keys
+        INVARIANT         keys <: KEY
+        INITIALISATION    keys := {}
+        OPERATIONS
+           insertkey(kk) =
+           PRE kk : KEY THEN keys := keys \/ {kk} END;
+           
+           removekey(kk) =
+           PRE kk : KEY THEN keys := keys - {kk} END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = interpret(root, env)
+        assert isinstance(root.children[3], AInvariantMachineClause)
+        assert interpret(root.children[3], env)
+        empty = env.get_value("keys")
+        assert empty==frozenset([])
+        op_and_state_list = calc_succ_states(env, mch)
+        env = exec_op(env, op_and_state_list, 0)
+        keys = env.get_value("keys")
+        assert len(keys)==1
+
+
     def test_schneider_inclusion(self):
-        # side effect: loades examples/Doors.mch
+        # side effect: loads examples/Doors.mch
         string = '''
         MACHINE           Locks
         INCLUDES          Doors
@@ -175,5 +207,57 @@ class TestMCHAnimation():
         env = exec_op(env, op_and_state_list, 0)
         op_and_state_list = calc_succ_states(env, mch) #opening enabled
         env = exec_op(env, op_and_state_list, 0)
+        # test PROMOTES:
         names = [op[0].opName for op in op_and_state_list]
         assert  "closedoor" in names
+        # Vars in Locks: test if lookuperr.
+        env.get_value("DOOR")
+        env.get_value("POSITION")
+        env.get_value("position")
+        
+
+    def test_schneider_inclusion2(self):
+        # side effect: loades examples/Doors.mch  and Looks.mch and Keys.mch      
+        string = '''
+        MACHINE           Safes
+        INCLUDES          Locks, Keys
+        PROMOTES          opendoor, closedoor, lockdoor
+        CONSTANTS         unlocks
+        PROPERTIES        unlocks : KEY >->> DOOR
+        INVARIANT         status~[{unlocked}] <: unlocks[keys]
+        OPERATIONS
+            insert(kk,dd) =
+            PRE kk : KEY & dd : DOOR & unlocks(kk) = dd
+            THEN insertkey(kk)
+            END;
+  
+            extract(kk,dd) =
+            PRE kk : KEY & dd : DOOR & unlocks(kk) = dd & status(dd) = locked
+            THEN removekey(kk)
+            END;
+
+            unlock(dd) =
+            PRE dd : DOOR & unlocks~(dd) : keys
+            THEN unlockdoor(dd)
+            END;
+
+            quicklock(dd) =
+            PRE dd : DOOR & position(dd) = closed
+            THEN lockdoor(dd) || removekey(unlocks~(dd))
+            END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Config
+        #import enumeration
+        #enumeration.deferred_set_elements_num = 2
+        
+        # Test
+        env = Environment()
+        mch = interpret(root, env)
+        #assert isinstance(root.children[5], AInvariantMachineClause)
+        #assert interpret(root.children[5], env)
+        

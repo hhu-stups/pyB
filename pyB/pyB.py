@@ -14,13 +14,13 @@ else:
     file_name_str = "input.txt"
 
 ast_string = file_to_AST_str(file_name_str)
-#print ast_string
 exec ast_string
 env = Environment()
 mch = interpret(root, env)
 
 if not mch==None: #otherwise #PREDICATE
     op_and_state_list = calc_succ_states(env, mch)
+    print mch.name," - Invariant:", mch.eval_Invariant(env)
     if op_and_state_list==[]:
         exit()
     n = show_ui(env, mch, op_and_state_list)
@@ -36,6 +36,7 @@ if not mch==None: #otherwise #PREDICATE
         exit()
     else:
         env = exec_op(env, op_and_state_list, number)
+	# DO-WHILE python Problem
     while not number==n:
             print mch.name," - Invariant:", mch.eval_Invariant(env)
             op_and_state_list = calc_succ_states(env, mch)
@@ -52,4 +53,3 @@ if not mch==None: #otherwise #PREDICATE
                 exit()
             else:
                 env = exec_op(env, op_and_state_list, number)
-

@@ -62,14 +62,15 @@ class Environment():
         if not self.mch.included_mch == []:
             for m in self.mch.included_mch:
                 try:
-                    return m.state.get_value(id_Name)
+                    value = m.state.get_value(id_Name)
+                    return value
                 except KeyError:
                     continue
         # No entry in the value_stack. The Variable with the name id_Name
         # is unknown. This is an Error found by the typechecker
         # TODO: raise custom exception. e.g lookuperror
-        print "LookupErr:", id_Name
-        raise KeyError
+        string = "get LookupErr: %s" % (id_Name)
+        raise KeyError(string)
 
 
 
@@ -88,8 +89,8 @@ class Environment():
                     return m.state.set_value(id_Name, value)
                 except KeyError:
                     continue
-        print "LookupErr:", id_Name
-        raise KeyError
+        string = "set LookupErr: %s" % (id_Name)
+        raise KeyError(string)
 
 
     def add_ids_to_frame(self, ids):

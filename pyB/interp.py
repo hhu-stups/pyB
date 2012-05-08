@@ -20,6 +20,7 @@ def interpret(node, env):
 #        0. Interpretation-mode
 #
 # ******************************
+    #print node
     if isinstance(node,APredicateParseUnit):
         idNames = find_var_names(root.children[0]) 
         type_check_predicate(node, env)
@@ -42,9 +43,12 @@ def interpret(node, env):
         return
     elif isinstance(node, AAbstractMachineParseUnit):
         mch = BMachine(node, interpret, env)
+        #print mch.name
 
         type_check_bmch(node, mch) # also checks all included
+        #print "include"
         mch.init_include_mchs()
+        #print "end include"
         env.set_mch(mch)
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause
@@ -74,6 +78,8 @@ def interpret(node, env):
                 if not res:
                     gen = try_all_values(mch.aPropertiesMachineClause, env,const_names)
                     assert gen.next()
+                    
+
 
         # If C and B is True there should be Variables v which make the Invaraiant I True
         # TODO: B & C => #v.I
@@ -81,7 +87,6 @@ def interpret(node, env):
         mch.eval_Init(env)
 
         res = mch.eval_Invariant(env)
-        print mch.name, "- Invariant:",res # None: no invariant
 
         # Not in schneiders book:
         mch.eval_Assertions(env)

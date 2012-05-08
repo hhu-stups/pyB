@@ -21,8 +21,9 @@ def all_values_by_type(atype, env):
         return [True, False]
     elif isinstance(atype, SetType):
         type_name =  atype.data
-        assert isinstance(env.get_value(type_name), frozenset)
-        return env.get_value(type_name)
+        value = env.get_value(type_name)
+        assert isinstance(value, frozenset)
+        return value
     elif isinstance(atype, PowerSetType):
         val_list = all_values_by_type(atype.data, env)
         res = powerset(val_list)
@@ -30,9 +31,10 @@ def all_values_by_type(atype, env):
         lst = [frozenset(e) for e in powerlist]
         return lst
     elif isinstance(atype, CartType):
-        val_pi = all_values_by_type(atype.data[0], env)
-        val_i = all_values_by_type(atype.data[1], env)
-        lst = frozenset(((x,y) for x in val_pi for y in val_i))
+        val_pi = all_values_by_type(atype.data[0].data, env)
+        val_i = all_values_by_type(atype.data[1].data, env)
+        # TODO: test for realtions, seams incompleate
+        lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
     string = "Unknown Type / Not Implemented: %s", atype
     raise Exception(string)
@@ -84,7 +86,10 @@ def init_deffered_set(def_set, env):
     assert isinstance(def_set, ADeferredSet)
     name = def_set.idName
     env.add_ids_to_frame([name])
-    env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+    lst = []
+    for i in range(deferred_set_elements_num):
+    	lst.append(str(i)+"_"+name)
+    env.set_value(name, frozenset(lst))
 
 
 def get_image(function, preimage):
