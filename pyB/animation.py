@@ -74,7 +74,7 @@ def exec_op(current_state,  op_and_state_list, number):
 
 def get_para_names(op):
     names = []
-    for i in range(op.return_Num, op.parameter_Num):
+    for i in range(op.return_Num, op.return_Num+op.parameter_Num):
         assert isinstance(op.children[i], AIdentifierExpression)
         names.append(op.children[i].idName)
     return names

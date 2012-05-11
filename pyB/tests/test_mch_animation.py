@@ -301,3 +301,6 @@ class TestMCHAnimation():
         env = Environment()
         mch = interpret(root, env)      
         assert not env.get_value("GOODS")==None
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['setprice', 'pricequery'])
