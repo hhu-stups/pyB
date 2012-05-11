@@ -339,6 +339,7 @@ def typeit(node, env, type_env):
         mch = BMachine(node, None, None)
         env.set_mch(mch)
         mch.type_included(type_check_bmch, type_env)
+        mch.type_seen(type_check_bmch, type_env)
 
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p)
@@ -723,7 +724,7 @@ def typeit(node, env, type_env):
         assert isinstance(type0, PowerSetType)
         assert isinstance(type0.data, SetType) or isinstance(type0.data, IntegerType)
         assert isinstance(type1, PowerSetType)
-        assert isinstance(type1.data, SetType) or isinstance(type0.data, IntegerType)
+        assert isinstance(type1.data, SetType) or isinstance(type1.data, IntegerType)
         return PowerSetType(PowerSetType(CartType(type0, type1)))
     elif isinstance(node, AFunctionExpression):
         type0 = typeit(node.children[0], env, type_env)

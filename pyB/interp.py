@@ -46,9 +46,8 @@ def interpret(node, env):
         #print mch.name
 
         type_check_bmch(node, mch) # also checks all included
-        #print "include"
         mch.init_include_mchs()
-        #print "end include"
+        mch.init_seen_mchs()
         env.set_mch(mch)
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause

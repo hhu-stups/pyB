@@ -59,8 +59,8 @@ class Environment():
             except KeyError:
                 continue
         # lookup included mch:
-        if not self.mch.included_mch == []:
-            for m in self.mch.included_mch:
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch:
                 try:
                     value = m.state.get_value(id_Name)
                     return value
@@ -83,8 +83,8 @@ class Environment():
                 top_map[id_Name] = value
                 return
         # lookup included mch:
-        if not self.mch.included_mch == []:
-            for m in self.mch.included_mch:
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch:
                 try:
                     return m.state.set_value(id_Name, value)
                 except KeyError:

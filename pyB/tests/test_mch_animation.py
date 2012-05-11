@@ -258,6 +258,46 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = interpret(root, env)
-        #assert isinstance(root.children[5], AInvariantMachineClause)
-        #assert interpret(root.children[5], env)
+        assert isinstance(root.children[5], AInvariantMachineClause)
+        assert interpret(root.children[5], env)
+        op_and_state_list = calc_succ_states(env, mch) #opening enabled
         
+        # test PROMOTES:
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
+        empty = env.get_value("keys")
+        assert empty==frozenset([])
+        env = exec_op(env, op_and_state_list, 0) # insert
+        one = env.get_value("keys")
+        assert len(one)==1
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock', 'unlock'])
+        
+
+    def test_schneider_sees(self):
+        # side effect: loades examples/Goods.mch        
+        string = '''
+        MACHINE           Price
+        SEES              Goods
+        VARIABLES         price
+        INVARIANT         price : GOODS --> NAT1
+        INITIALISATION    price :: GOODS --> NAT1
+        OPERATIONS
+            setprice(gg,pp) =
+            PRE gg : GOODS & pp : NAT1
+            THEN price(gg) := pp
+            END;
+
+            pp <-- pricequery(gg) =
+            PRE gg : GOODS THEN pp := price(gg) END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = interpret(root, env)      
+        assert not env.get_value("GOODS")==None

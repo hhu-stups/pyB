@@ -38,6 +38,9 @@ class ADeferredSet(Node):
 
 class AMachineReference(Node):
     pass
+    
+class ASeesMachineClause(Clause):
+	pass
 
 class APromotesMachineClause(Clause):
     pass

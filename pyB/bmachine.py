@@ -14,7 +14,9 @@ class BMachine:
         self.scalar_params = []   # scalar machine parameter
         self.set_params = []      # Set machine parameter
         self.included_nodes = []  # nodes of mch roots
+        self.seen_nodes   = []    # nodes of mch roots
         self.included_mch = []    # list of b-mchs
+        self.seen_mch     = []    # list of b-mchs
         self.promoted_ops = []    # list of operation
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
@@ -29,6 +31,7 @@ class BMachine:
         self.aOperationsMachineClause = None
         self.aIncludesMachineClause = None
         self.aPromotesMachineClause = None
+        self.aSeesMachineClause = None
         # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
@@ -75,11 +78,15 @@ class BMachine:
             elif isinstance(child, APromotesMachineClause):
                 assert self.aPromotesMachineClause == None
                 self.aPromotesMachineClause = child
+            elif isinstance(child, ASeesMachineClause):
+                assert self.aSeesMachineClause == None
+                self.aSeesMachineClause = child
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
         self.parse_parameters()
         self.parse_included()
+        self.parse_seen()
 
 
     def add_promoted_ops(self):
@@ -88,10 +95,10 @@ class BMachine:
                 assert isinstance(idNode, AIdentifierExpression)
                 name = idNode.idName
                 for mch in self.included_mch:
-                	if mch.aOperationsMachineClause:
-                		for op in mch.aOperationsMachineClause.children:
-                			if op.opName==name:
-                				self.promoted_ops.append(op)
+                    if mch.aOperationsMachineClause:
+                        for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
+                            if op.opName==name:
+                                self.promoted_ops.append(op)
 
 
     def parse_included(self):
@@ -104,6 +111,16 @@ class BMachine:
                 exec ast_string
                 self.included_nodes.append({0:root,1:child.idName,2:Environment()})
 
+
+    def parse_seen(self):
+        if self.aSeesMachineClause:
+            for child in self.aSeesMachineClause.children:
+                assert isinstance(child, AIdentifierExpression)
+                file_name = "examples/"+ child.idName + ".mch"
+                ast_string = file_to_AST_str(file_name)
+                exec ast_string
+                self.seen_nodes.append({0:root,1:child.idName,2:Environment()})
+                
 
     def get_includes_op_type(self, idName):
         for d in self.included_nodes:
@@ -128,6 +145,16 @@ class BMachine:
             root_type_env.add_known_types_of_child_env(id_2_t)
 
 
+    def type_seen(self, type_check_bmch, root_type_env):
+        for d in self.seen_nodes:
+            node = d[0]
+            name = d[1]
+            env = d[2]
+            mch = BMachine(node, self.interpreter_method, env)
+            type_env = type_check_bmch(node, mch)
+            id_2_t = type_env.id_to_types_stack[0]
+            root_type_env.add_known_types_of_child_env(id_2_t)
+
 
     def init_include_mchs(self):
         if self.included_nodes: # nodes of mch roots
@@ -139,8 +166,18 @@ class BMachine:
                 mch = self.interpreter_method(node, env)
                 self.included_mch.append(mch)
         self.add_promoted_ops()
-    	
+        
 
+    def init_seen_mchs(self):
+        if self.seen_nodes: # nodes of mch roots
+            for d in self.seen_nodes:
+                node = d[0]
+                name = d[1]
+                env  = d[2]
+                # FIXME: performance: double typechecking
+                mch = self.interpreter_method(node, env)
+                self.seen_mch.append(mch)
+                	
 
     def parse_parameters(self):
         assert not self.aMachineHeader == None
