@@ -340,6 +340,7 @@ def typeit(node, env, type_env):
         env.set_mch(mch)
         mch.type_included(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
+        mch.type_used(type_check_bmch, type_env)
 
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p)
@@ -369,10 +370,10 @@ def typeit(node, env, type_env):
             typeit(mch.aPropertiesMachineClause, env, type_env)
         if mch.aVariablesMachineClause:
             typeit(mch.aVariablesMachineClause, env, type_env)
-        if mch.aInitialisationMachineClause:
-            typeit(mch.aInitialisationMachineClause, env, type_env)
         if mch.aInvariantMachineClause:
             typeit(mch.aInvariantMachineClause, env, type_env)
+        if mch.aInitialisationMachineClause:
+            typeit(mch.aInitialisationMachineClause, env, type_env)
         if mch.aAssertionsMachineClause:
             typeit(mch.aAssertionsMachineClause, env, type_env)
         if mch.aOperationsMachineClause:

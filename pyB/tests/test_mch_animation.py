@@ -334,3 +334,49 @@ class TestMCHAnimation():
         op_and_state_list = calc_succ_states(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
+        
+        
+    def test_schneider_uses(self):        
+        string = '''
+        MACHINE           Marriage
+        USES              Life
+        VARIABLES         marriage
+        INVARIANT         marriage : male >+> female
+        INITIALISATION    marriage := {}
+        OPERATIONS
+            wed(mm,ff) =
+            PRE mm : male & mm /: dom(marriage) & ff : female & ff /: ran(marriage)
+            THEN marriage(mm) := ff
+            END;
+
+            part(mm,ff) =
+            PRE mm : male & ff : female & mm |->ff : marriage
+            THEN marriage := marriage - {mm |-> ff}
+            END;
+
+            pp <-- partner(nn) =
+             PRE nn: PERSON & nn : dom(marriage) \/ ran(marriage)
+             THEN 
+              IF nn : dom(marriage)
+              THEN pp := marriage(nn)
+              ELSE pp := marriage~(nn)
+             END
+            END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = interpret(root, env)
+        value = env.get_value("marriage") 
+        assert value==frozenset([])
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['born'])
+        env = exec_op(env, op_and_state_list, 0) # born
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['born', 'die'])

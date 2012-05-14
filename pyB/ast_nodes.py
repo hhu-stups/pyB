@@ -41,6 +41,9 @@ class AMachineReference(Node):
     
 class ASeesMachineClause(Clause):
 	pass
+	
+class AUsesMachineClause(Clause):
+	pass
 
 class APromotesMachineClause(Clause):
     pass
