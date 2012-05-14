@@ -82,9 +82,10 @@ class Environment():
             if id_Name in top_map:
                 top_map[id_Name] = value
                 return
-        # lookup included mch, no seen mch!:
-        if not self.mch.included_mch == []:
-            for m in self.mch.included_mch:
+        # lookup included mch, no seen mch!
+        # if id_Name is a variable which is part of a seen mch M than self must be the state of M!
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch:
                 try:
                     return m.state.set_value(id_Name, value)
                 except KeyError:
@@ -101,8 +102,9 @@ class Environment():
                 top_map[i] = None
 
 
-    # This method is used only(!) by the typechecking-tests.
+    # This method should only(!) be used by the typechecking-tests.
     # It returns the type of the id "string"
+    # It is also used by the enumerator 
     def get_type(self, string):
         assert isinstance(string,str)
         # linear search for ID with the name string
@@ -112,6 +114,13 @@ class Environment():
             # e.g x:Nat & !x.(x:S=>card(x)=3)...
             if node.idName==string:
                 return self.node_to_type_map[node]
+        # lookup in other mch
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch:
+                atype = m.state.get_type(string)
+                if not atype==None:
+                	return atype
+        raise Exception("lookuperror: unknown type of %s" % string)
 
 
     # A KeyError or a false assert is a typechecking bug

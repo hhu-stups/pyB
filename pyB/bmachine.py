@@ -18,6 +18,7 @@ class BMachine:
         self.included_mch = []    # list of b-mchs
         self.seen_mch     = []    # list of b-mchs
         self.promoted_ops = []    # list of operation
+        self.seen_ops     = []    # list of operation
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -99,6 +100,15 @@ class BMachine:
                         for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
                             if op.opName==name:
                                 self.promoted_ops.append(op)
+    
+    def add_seen_ops(self):
+    	if self.aSeesMachineClause:
+    		for mch in self.seen_mch:
+    		    if mch.aOperationsMachineClause:
+    		        for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
+						self.seen_ops.append(op) 
+    		
+    			
 
 
     def parse_included(self):
@@ -177,6 +187,7 @@ class BMachine:
                 # FIXME: performance: double typechecking
                 mch = self.interpreter_method(node, env)
                 self.seen_mch.append(mch)
+        self.add_seen_ops()
                 	
 
     def parse_parameters(self):

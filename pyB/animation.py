@@ -9,7 +9,7 @@ def calc_succ_states(current_state, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
     	# assumes no vars/set with the same name in two mch
-    	operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops
+    	operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops
         for op in operations:
             # (1) create new Environment, parameter_list and return_values
             import copy
@@ -50,7 +50,7 @@ def calc_succ_states(current_state, bmachine):
                     bmachine.interpreter_method(op.children[-1], next_state)
                     return_values = add_return_values(next_state, rids)
                     result.append([op, parameter_list, return_values, next_state])
-            elif isinstance(op.children[-1], ABlockSubstitution):
+            elif isinstance(op.children[-1], ABlockSubstitution) or isinstance(op.children[-1], AAssignSubstitution):
                 bmachine.interpreter_method(op.children[-1], next_state)
                 return_values = add_return_values(next_state, rids)
                 result.append([op, parameter_list, return_values, next_state]) # no condition
