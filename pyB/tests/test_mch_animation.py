@@ -380,3 +380,25 @@ class TestMCHAnimation():
         op_and_state_list = calc_succ_states(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born', 'die'])
+
+
+    def test_extends(self):
+        string = '''
+	    MACHINE           Books2(B)
+        EXTENDS           Books(B)
+        OPERATIONS
+            rr <-- show = rr := read
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = interpret(root, env)
+        value = env.get_value("read") 
+        assert value==frozenset([])
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]
+        assert frozenset(names)==frozenset(['show','newbook'])

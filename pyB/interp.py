@@ -49,6 +49,7 @@ def interpret(node, env):
         mch.init_include_mchs()
         mch.init_seen_mchs()
         mch.init_used_mchs()
+        mch.init_extended_mchs()
         env.set_mch(mch)
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause

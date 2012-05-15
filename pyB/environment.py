@@ -59,8 +59,8 @@ class Environment():
             except KeyError:
                 continue
         # lookup included mch:
-        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[]:
-            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch:
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 try:
                     value = m.state.get_value(id_Name)
                     return value
@@ -84,8 +84,8 @@ class Environment():
                 return
         # lookup included mch, no seen mch!
         # if id_Name is a variable which is part of a seen mch M than self must be the state of M!
-        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == []:
-            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch:
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == [] or not self.mch.extended_mch==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 try:
                     return m.state.set_value(id_Name, value)
                 except KeyError:
@@ -115,8 +115,8 @@ class Environment():
             if node.idName==string:
                 return self.node_to_type_map[node]
         # lookup in other mch
-        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[]:
-            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch:
+        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]:
+            for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 atype = m.state.get_type(string)
                 if not atype==None:
                 	return atype

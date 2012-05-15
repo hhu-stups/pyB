@@ -9,7 +9,7 @@ def calc_succ_states(current_state, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
     	# assumes no vars/set with the same name in two mch
-    	operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops
+    	operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
         for op in operations:
             # (1) create new Environment, parameter_list and return_values
             import copy

@@ -45,6 +45,9 @@ class ASeesMachineClause(Clause):
 class AUsesMachineClause(Clause):
 	pass
 
+class AExtendsMachineClause(Clause):
+	pass
+	
 class APromotesMachineClause(Clause):
     pass
 

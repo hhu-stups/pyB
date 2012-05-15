@@ -16,12 +16,15 @@ class BMachine:
         self.included_nodes = []  # nodes of mch roots
         self.seen_nodes   = []    # nodes of mch roots
         self.used_nodes   = []    # nodes of mch roots 
+        self.extended_nodes = []  # nodes of mch roots 
         self.included_mch = []    # list of b-mchs
+        self.extended_mch = []    # list of b-mchs
         self.seen_mch     = []    # list of b-mchs
         self.used_mch     = []    # list of b-mchs
         self.promoted_ops = []    # list of operation
         self.seen_ops     = []    # list of operation
         self.used_ops     = []    # list of operation 
+        self.extended_ops = []    # list of operation
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -37,6 +40,7 @@ class BMachine:
         self.aPromotesMachineClause = None
         self.aSeesMachineClause = None
         self.aUsesMachineClause = None
+        self.aExtendsMachineClause = None
         # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
@@ -89,11 +93,15 @@ class BMachine:
             elif isinstance(child, AUsesMachineClause):
                 assert self.aUsesMachineClause == None
                 self.aUsesMachineClause = child
+            elif isinstance(child, AExtendsMachineClause):
+            	assert self.aExtendsMachineClause == None
+            	self.aExtendsMachineClause = child
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
         self.parse_parameters()
         self.parse_included()
+        self.parse_extended()
         self.parse_seen()
         self.parse_used()
 
@@ -108,7 +116,16 @@ class BMachine:
                         for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
                             if op.opName==name:
                                 self.promoted_ops.append(op)
-    
+
+
+    def add_extended_ops(self):
+        if self.aExtendsMachineClause:
+             for mch in self.extended_mch:
+                if mch.aOperationsMachineClause:
+                    for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
+                        self.extended_ops.append(op) 
+
+                                    
     def add_seen_ops(self):
         if self.aSeesMachineClause:
             for mch in self.seen_mch:
@@ -135,6 +152,16 @@ class BMachine:
                 exec ast_string
                 self.included_nodes.append({0:root,1:child.idName,2:Environment()})
 
+
+    def parse_extended(self):
+        if self.aExtendsMachineClause:
+            for child in self.aExtendsMachineClause.children:
+                assert isinstance(child, AMachineReference)
+                # FIXME: impl search strategy
+                file_name = "examples/"+ child.idName + ".mch"
+                ast_string = file_to_AST_str(file_name)
+                exec ast_string
+                self.extended_nodes.append({0:root,1:child.idName,2:Environment()})        
 
     def parse_seen(self):
         if self.aSeesMachineClause:
@@ -179,6 +206,17 @@ class BMachine:
             root_type_env.add_known_types_of_child_env(id_2_t)
 
 
+    def type_extended(self, type_check_bmch, root_type_env):
+        for d in self.extended_nodes:
+            node = d[0]
+            name = d[1]
+            env = d[2]
+            mch = BMachine(node, self.interpreter_method, env)
+            type_env = type_check_bmch(node, mch)
+            id_2_t = type_env.id_to_types_stack[0]
+            root_type_env.add_known_types_of_child_env(id_2_t)
+
+
     def type_seen(self, type_check_bmch, root_type_env):
         for d in self.seen_nodes:
             node = d[0]
@@ -211,7 +249,19 @@ class BMachine:
                 mch = self.interpreter_method(node, env)
                 self.included_mch.append(mch)
         self.add_promoted_ops()
-        
+ 
+ 
+    def init_extended_mchs(self):
+        if self.extended_nodes: # nodes of mch roots
+            for d in self.extended_nodes:
+                node = d[0]
+                name = d[1]
+                env  = d[2]
+                # FIXME: performance: double typechecking
+                mch = self.interpreter_method(node, env)
+                self.extended_mch.append(mch)
+        self.add_extended_ops()       
+
 
     def init_seen_mchs(self):
         if self.seen_nodes: # nodes of mch roots

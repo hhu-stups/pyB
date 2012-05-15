@@ -343,6 +343,7 @@ by John Witulski:
     caseAPromotesMachineClause
     caseAOpSubstitution
     caseASeesMachineClause
+    caseAUsesMachineClause
     
 
  9.2 NOT IMPLEMENTED:
@@ -360,20 +361,8 @@ by John Witulski:
     
     caseAInArgtype
     caseAOutArgtype
-    
-    caseAExtendsContextClause
-    caseASetsContextClause
-    caseAConstantsContextClause
-    caseAAxiomsContextClause
-    caseATheoremsContextClause
-    caseARefinesModelClause
-    caseASeesModelClause
-    caseAVariablesModelClause
-    caseAInvariantModelClause
+
     caseAJoinArgtype
-    caseATheoremsModelClause
-    caseAVariantModelClause
-    caseAUsesMachineClause
     caseAExtendsMachineClause
     caseAImportsMachineClause
     caseAConcreteVariablesMachineClause
@@ -446,3 +435,14 @@ by John Witulski:
     caseASurjectionRelationExpression
     caseATotalSurjectionRelationExpression
     caseAPartitionPredicate
+    caseARefinesModelClause
+    caseASeesModelClause
+    caseAVariablesModelClause
+    caseAInvariantModelClause
+    caseATheoremsModelClause
+    caseAVariantModelClause
+    caseAExtendsContextClause
+    caseASetsContextClause
+    caseAConstantsContextClause
+    caseAAxiomsContextClause
+    caseATheoremsContextClause

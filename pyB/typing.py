@@ -339,6 +339,7 @@ def typeit(node, env, type_env):
         mch = BMachine(node, None, None)
         env.set_mch(mch)
         mch.type_included(type_check_bmch, type_env)
+        mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
 
@@ -351,6 +352,10 @@ def typeit(node, env, type_env):
             for defi in mch.aDefinitionsMachineClause.children:
                 assert isinstance(defi, AExpressionDefinition) or isinstance(defi, APredicateDefinition) or isinstance(defi, ASubstitutionDefinition)
                 env.set_definition(defi.idName, defi)
+        if mch.aExtendsMachineClause:
+            typeit(mch.aExtendsMachineClause, env, type_env)
+        if mch.aIncludesMachineClause:
+            typeit(mch.aIncludesMachineClause, env, type_env)
         if mch.aConstraintsMachineClause: # C
             typeit(mch.aConstraintsMachineClause, env, type_env)
         if mch.aSetsMachineClause: # St

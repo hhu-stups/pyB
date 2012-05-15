@@ -553,13 +553,15 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_manyChildren(node, children);
     }
 
-    public void caseASeesModelClause(ASeesModelClause node)
+
+    public void caseAExtendsMachineClause(AExtendsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>();
-        if(node.getSees()!=null)
-            children.addAll(node.getSees());
+        if(node.getMachineReferences()!=null)
+            children.addAll(node.getMachineReferences());
         printStdOut_manyChildren(node, children);
     }
+
     
     public void caseASeesMachineClause(ASeesMachineClause node)
     {
