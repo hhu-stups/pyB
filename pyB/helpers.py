@@ -72,6 +72,30 @@ def _find_var_names(node, lst):
             return #FIXME no children
 
 
+def find_assignd_vars(node):
+    lst = []
+    _find_assignd_vars(node, lst)  #side-effect: fills list
+    return lst 
+
+
+def _find_assignd_vars(node, lst):
+    if isinstance(node, AAssignSubstitution):
+        for i in range(int(node.lhs_size)):
+            idNode = node.children[i]
+            if isinstance(idNode, AIdentifierExpression):
+                lst.append(idNode.idName)
+            else:
+                assert isinstance(idNode, AFunctionExpression)
+                assert isinstance(idNode.children[0], AIdentifierExpression)
+                lst.append(idNode.children[0].idName)
+    else:
+        try:
+            for n in node.children:
+                _find_assignd_vars(n, lst)
+        except AttributeError:
+            return #FIXME no children
+
+
 # [[1,2],[3,[[4]]]] -> [1,2,3,4]
 def flatten(lst, res):
     for e in lst:

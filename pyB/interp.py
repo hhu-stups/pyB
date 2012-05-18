@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate
-from helpers import find_var_names, flatten, is_flat, double_element_check
+from helpers import find_var_names, flatten, is_flat, double_element_check, find_assignd_vars
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -901,18 +901,18 @@ def interpret(node, env):
     elif isinstance(node, AParallelSubstitution):
         import copy
         lst = []
-        used_ids = []
+        assignd_ids = []
         for child in node.children:
-            ids = find_var_names(child)
-            used_ids += ids
+            ids = find_assignd_vars(child)
+            assignd_ids += ids
             env_copy = copy.deepcopy(env)
             lst.append(env_copy)
             interpret(child, env_copy)
         # search for changes. no var can be modified twice (see page 108)
-        used_ids = list(set(used_ids)) # throw away double-entrys
+        assignd_ids = list(set(assignd_ids)) # throw away double-entrys
         new_values = []
         for e in lst:
-            for i in used_ids:
+            for i in assignd_ids:
                 new_val = e.get_value(i)
                 old_val = env.get_value(i)
                 if not new_val==old_val:
@@ -997,7 +997,7 @@ def interpret(node, env):
         if not nodes == []:
             # TODO: random choice
             interpret(nodes[0], env)
-        elif not isinstance(node.children[-1], ASelectSubstitution):
+        elif node.hasElse: 
             interpret(node.children[-1], env)
     elif isinstance(node, ACaseSubstitution):
         assert isinstance(node.children[0], Expression)
