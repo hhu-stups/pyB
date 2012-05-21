@@ -120,3 +120,15 @@ def double_element_check(lst):
             return True
     return False
 
+def print_ast(root):
+    print root
+    __print_ast(root, 1)
+    print
+
+
+def __print_ast(node, num):
+    if isinstance(node, AIdentifierExpression) or isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression):
+        return
+    for child in node.children:
+        print "\t"*num,"|-",child
+        __print_ast(child, num+1)

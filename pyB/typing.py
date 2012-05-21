@@ -55,6 +55,7 @@ class TypeCheck_Environment():
 
 
     def add_node_by_id(self, node):
+        print node.idName
         assert isinstance(node, AIdentifierExpression)
         # lookup:
         for i in range(len(self.id_to_nodes_stack)):
@@ -348,10 +349,10 @@ def typeit(node, env, type_env):
             unify_equal(unknown_type, PowerSetType(SetType(p)), type_env)
 
         # type
-        if mch.aDefinitionsMachineClause:
-            for defi in mch.aDefinitionsMachineClause.children:
-                assert isinstance(defi, AExpressionDefinition) or isinstance(defi, APredicateDefinition) or isinstance(defi, ASubstitutionDefinition)
-                env.set_definition(defi.idName, defi)
+        #if mch.aDefinitionsMachineClause:
+        #    for defi in mch.aDefinitionsMachineClause.children:
+        #        assert isinstance(defi, AExpressionDefinition) or isinstance(defi, APredicateDefinition) or isinstance(defi, ASubstitutionDefinition)
+        #        env.set_definition(defi.idName, defi)
         if mch.aExtendsMachineClause:
             typeit(mch.aExtendsMachineClause, env, type_env)
         if mch.aIncludesMachineClause:
@@ -920,27 +921,27 @@ def typeit(node, env, type_env):
         return idtype
     elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression) or isinstance(node, ASuccessorExpression) or isinstance(node, APredecessorExpression) or isinstance(node, APowerOfExpression):
         return IntegerType(None)
-    elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate) or isinstance(node, ADefinitionSubstitution):
-        ast = env.get_ast_by_definition(node.idName)
-        assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition) or isinstance(ast, ASubstitutionDefinition) #  XXX: substitution!
-        # The Type of the definition depends on
-        # the type of the parameters
-        ids = []
-        for i in range(ast.paraNum):
-            if isinstance(ast.children[i], AIdentifierExpression):
-                ids.append(ast.children[i].idName)
-            else:
-                # TODO: implement parameter expression
-                raise Exception("Parametes can only be Ids at the moment!")
-        type_env.push_frame(ids)
-        # map paraNames to types
-        for i in range(ast.paraNum):
-            atype = typeit(node.children[i], env, type_env)
-            idtype = typeit(ast.children[i], env, type_env)
-            unify_equal(idtype, atype, type_env)
-        deftype = typeit(ast.children[-1], env, type_env)
-        type_env.pop_frame(env)
-        return deftype
+    #elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate) or isinstance(node, ADefinitionSubstitution):
+    #    ast = env.get_ast_by_definition(node.idName)
+    #    assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition) or isinstance(ast, ASubstitutionDefinition) #  XXX: substitution!
+    #    # The Type of the definition depends on
+    #    # the type of the parameters
+    #    ids = []
+    #    for i in range(ast.paraNum):
+    #        if isinstance(ast.children[i], AIdentifierExpression):
+    #            ids.append(ast.children[i].idName)
+    #        else:
+    #            # TODO: implement parameter expression
+    #            raise Exception("Parametes can only be Ids at the moment!")
+    #    type_env.push_frame(ids)
+    #    # map paraNames to types
+    #    for i in range(ast.paraNum):
+    #        atype = typeit(node.children[i], env, type_env)
+    #        idtype = typeit(ast.children[i], env, type_env)
+    #        unify_equal(idtype, atype, type_env)
+    #    deftype = typeit(ast.children[-1], env, type_env)
+    #    type_env.pop_frame(env)
+    #    return deftype
     elif isinstance(node, AStructExpression):
         dictionary = {}
         for rec_entry in node.children:

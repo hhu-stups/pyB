@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate
-from helpers import find_var_names, flatten, is_flat, double_element_check, find_assignd_vars
+from helpers import find_var_names, flatten, is_flat, double_element_check, find_assignd_vars, print_ast
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -1090,41 +1090,41 @@ def interpret(node, env):
         return True
     elif isinstance(node, AFalseExpression):
         return False
-    elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
-        # i hope this is faster than rebuilding asts...
-        ast = env.get_ast_by_definition(node.idName)
-        assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
-        # The Value of the definition depends on
-        # the Value of the parameters
-        nodes = []
-        for i in range(ast.paraNum):
-            if isinstance(ast.children[i], AIdentifierExpression):
-                nodes.append(ast.children[i])
-            else:
-                raise Exception("Parametes can only be Ids at the moment!")
-        env.push_new_frame(nodes)
-        # set nodes(variables) to values
-        for i in range(ast.paraNum):
-            value = interpret(node.children[i], env)
-            nothing = interpret(ast.children[i], env)
-            assert nothing==ast.children[i].idName # no value
-            env.set_value(ast.children[i].idName, value)
-        result = interpret(ast.children[-1], env)
-        env.pop_frame()
-        return result
-    elif isinstance(node, ADefinitionSubstitution):
-        import copy
-        ast = env.get_ast_by_definition(node.idName)
-        new_ast = copy.deepcopy(ast)
-        #_print_ast(ast)
-        assert isinstance(ast, ASubstitutionDefinition)
-        for i in range(ast.paraNum):
-            idNode = ast.children[i]
-            isinstance(idNode, AIdentifierExpression)
-            replaceNode = node.children[i]
-            new_ast = replace_node(new_ast, idNode, replaceNode)
-        #_print_ast(new_ast)
-        return interpret(new_ast.children[-1], env)
+    #elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
+    #    # i hope this is faster than rebuilding asts...
+    #    ast = env.get_ast_by_definition(node.idName)
+    #    assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
+    #    # The Value of the definition depends on
+    #    # the Value of the parameters
+    #    nodes = []
+    #    for i in range(ast.paraNum):
+    #        if isinstance(ast.children[i], AIdentifierExpression):
+    #            nodes.append(ast.children[i])
+    #        else:
+    #            raise Exception("Parametes can only be Ids at the moment!")
+    #    env.push_new_frame(nodes)
+    #    # set nodes(variables) to values
+    #    for i in range(ast.paraNum):
+    #        value = interpret(node.children[i], env)
+    #        nothing = interpret(ast.children[i], env)
+    #        assert nothing==ast.children[i].idName # no value
+    #        env.set_value(ast.children[i].idName, value)
+    #    result = interpret(ast.children[-1], env)
+    #    env.pop_frame()
+    #    return result
+    #elif isinstance(node, ADefinitionSubstitution):
+    #    import copy
+    #    ast = env.get_ast_by_definition(node.idName)
+    #    new_ast = copy.deepcopy(ast)
+    #    #print_ast(ast)
+    #    assert isinstance(ast, ASubstitutionDefinition)
+    #    for i in range(ast.paraNum):
+    #        idNode = ast.children[i]
+    #        isinstance(idNode, AIdentifierExpression)
+    #        replaceNode = node.children[i]
+    #        new_ast = replace_node(new_ast, idNode, replaceNode)
+    #    #print_ast(new_ast)
+    #    return interpret(new_ast.children[-1], env)
     elif isinstance(node, AStructExpression):
         dictionary = {}
         for rec_entry in node.children:
@@ -1214,15 +1214,4 @@ def replace_node(ast, idNode, replaceNode):
     return ast
 
 
-def _print_ast(root):
-    print root
-    __print_ast(root, 1)
-    print
 
-
-def __print_ast(node, num):
-    if isinstance(node, AIdentifierExpression) or isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression):
-        return
-    for child in node.children:
-        print "\t"*num,"|-",child
-        __print_ast(child, num+1)

@@ -6,6 +6,7 @@ from interp import interpret
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_succ_states, exec_op
+from definition_handler import DefinitionHandler
 
 file_name = "input.txt"
 
@@ -476,6 +477,8 @@ class TestMCHAnimation():
         exec ast_string
         
         # Test
+        dh = DefinitionHandler()
+        dh.repl_defs(root)
         env = Environment()
         mch = interpret(root, env)
         op_and_state_list = calc_succ_states(env, mch) 

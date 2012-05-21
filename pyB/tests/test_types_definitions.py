@@ -4,6 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
+from definition_handler import DefinitionHandler
 
 file_name = "input.txt"
 
@@ -22,6 +23,8 @@ class TestTypesDefinitions():
         exec ast_string
 
         # Type
+        dh = DefinitionHandler()
+        dh.repl_defs(root)
         env = Environment()
         lst = []
         _test_typeit(root, env, lst, ["z"])
@@ -42,6 +45,8 @@ class TestTypesDefinitions():
         exec ast_string
 
         # Type
+        dh = DefinitionHandler()
+        dh.repl_defs(root)
         env = Environment()
         lst = []
         _test_typeit(root, env, lst, ["z"])

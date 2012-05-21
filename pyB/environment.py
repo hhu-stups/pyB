@@ -12,7 +12,7 @@ class Environment():
         # and was created and filled by typeit of the module typing.
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
-        self.definition_id_to_ast = {}
+        #self.definition_id_to_ast = {}
         self.last_env = None # used in undo
         self.mch = None
         self.mch_operation_type = [] # rettype, opname, paratype
@@ -36,15 +36,15 @@ class Environment():
     def save_last_env(self):
         import copy
         self.last_env = copy.deepcopy(self)
-
-    def set_definition(self, id_Name, ast):
-        assert isinstance(id_Name, str)
-        self.definition_id_to_ast[id_Name] = ast
-
-
-    def get_ast_by_definition(self, id_Name):
-        assert isinstance(id_Name, str)
-        return self.definition_id_to_ast[id_Name]
+#
+#    def set_definition(self, id_Name, ast):
+#        assert isinstance(id_Name, str)
+#        self.definition_id_to_ast[id_Name] = ast
+#
+#
+#    def get_ast_by_definition(self, id_Name):
+#        assert isinstance(id_Name, str)
+#        return self.definition_id_to_ast[id_Name]
 
 
     def get_value(self, id_Name):

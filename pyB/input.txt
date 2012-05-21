@@ -1,7 +1,1 @@
-
-        MACHINE Test
-        VARIABLES z, b, x
-        INVARIANT x:NAT & z:NAT & b:BOOL
-        INITIALISATION x:=2 ; Assign(x+1, z) ; Assign(TRUE, b)
-        DEFINITIONS Assign(Expr, VarName) == VarName := Expr;
-        END
+#PREDICATE A=bool(1<2)
