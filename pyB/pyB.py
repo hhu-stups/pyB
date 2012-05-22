@@ -5,6 +5,7 @@ from environment import Environment
 from helpers import file_to_AST_str
 from animation_clui import show_ui
 from animation import calc_succ_states, exec_op
+from definition_handler import DefinitionHandler
 from ast_nodes import *
 
 
@@ -15,6 +16,8 @@ else:
 
 ast_string = file_to_AST_str(file_name_str)
 exec ast_string
+dh = DefinitionHandler()
+dh.repl_defs(root)
 env = Environment()
 mch = interpret(root, env)
 

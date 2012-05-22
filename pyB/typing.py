@@ -55,7 +55,7 @@ class TypeCheck_Environment():
 
 
     def add_node_by_id(self, node):
-        print node.idName
+        #print node.idName
         assert isinstance(node, AIdentifierExpression)
         # lookup:
         for i in range(len(self.id_to_nodes_stack)):
