@@ -612,6 +612,7 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void caseAIfSubstitution(AIfSubstitution node)
     {
+    	String hasElse = "False";
         List<Node> children = new ArrayList<Node>();
         if(node.getCondition()!=null)
             children.add(node.getCondition());
@@ -620,13 +621,18 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getElsifSubstitutions()!=null)
             children.addAll(node.getElsifSubstitutions());
         if(node.getElse()!=null)
+        {
             children.add(node.getElse());
+            hasElse = "True";
+        }
         printStdOut_manyChildren(node, children);
+        out += "id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n";
     }
 
 
     public void caseASelectSubstitution(ASelectSubstitution node)
     {
+    	String hasElse = "False";
         List<Node> children = new ArrayList<Node>();
         if(node.getCondition()!=null)
             children.add(node.getCondition());
@@ -635,8 +641,12 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getWhenSubstitutions()!=null)
             children.addAll(node.getWhenSubstitutions());
         if(node.getElse()!=null)
+        {
             children.add(node.getElse());
+            hasElse = "True";
+        }
         printStdOut_manyChildren(node, children);
+        out += "id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n";
     }
 
 

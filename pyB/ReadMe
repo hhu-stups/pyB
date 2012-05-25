@@ -1,9 +1,24 @@
-PyB: 31.08.2011 - 11.05.2012 
+PyB: 31.08.2011 - 22.05.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
  John.Witulski@uni-duesseldorf.de
 
+
+Index
+------------------------
+
+1. Config
+2. Run PyB
+3. Tests
+4. Features
+5. Missing Features
+6. How it Works
+7. Fixed Bugs
+8. Todo-List
+9. Nodes
+
+------------------------
 
 1. Config:
     WAY A: Build jars 
@@ -79,7 +94,12 @@ by John Witulski:
      The string is mapped via "exec" to the ASTNodes (python-classes) in
      "ast_nodes.py"
 
-    6.2.TYPECHECKING: 
+    6.2 DEFINITIONS:
+     A new "definition-free" AST is generate before execution or typechecking. All
+     definitions are replaced and the variables (def args) are substituted by
+     the definition_handler module
+     
+    6.3.TYPECHECKING: 
      A map ASTNode-> Type is created via the typeit method.
      It uses a unify method to handle unknown types like "S=V\/T T:POW(X)".
      This method is not fully implemented.
@@ -92,13 +112,9 @@ by John Witulski:
      environments. Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
      and are added to a frame before typing if they are not quantified.
 
-    6.3.INTERPRETATION:
+    6.4.INTERPRETATION:
      This AST is eval. via an AST-interpreter "interp.py"
 
-    6.4 DEFINITIONS:
-     Inside the Typechecking phase all Definition-ASTS are save inside
-     a map(String->AST) inside the environment. A new AST is generate
-     while interpretation of a parameterized definition (only assignment def)
 
 
 7. FIXED BUGS:
@@ -119,6 +135,7 @@ by John Witulski:
     - BUG: mising String spaces (maybe a parser bug- java code) 
     - enable function applications (4.1.9) with many args
     - Implement B-mch-Operations
+    - find D-Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them. 
 
 
 8. TODO-LIST:
@@ -139,7 +156,6 @@ by John Witulski:
 8.2 Refactoring / small fixes
     - The values of elements of enumerated sets are their names
     - Check Includes, Sees, Uses, Extends rules 
-    - find Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them. 
     - inconsistency in java parser part: some args are given as fields some as constructor args
     - throw better Typeexceptions
     - write prop. python module (e.g for min max int)
@@ -155,7 +171,7 @@ by John Witulski:
     - check if all astnodes return types (if they have to)
     - Think of unifications like: "it is A or B" e.g. perm(s)
     - Dont create new instances of IntegerType if not nec.
-    - seperate enumaertion from interpretation-module
+    - seperate enumeration from interpretation-module
     - seperate inperp-mode from interpretation-module
 8.3 minor problems
     - Dont assume that all functions are 2-tuple: otherwise crash
@@ -344,6 +360,7 @@ by John Witulski:
     caseAOpSubstitution
     caseASeesMachineClause
     caseAUsesMachineClause
+    caseAExtendsMachineClause
     
 
  9.2 NOT IMPLEMENTED:
@@ -363,8 +380,7 @@ by John Witulski:
     caseAOutArgtype
 
     caseAJoinArgtype
-    caseAExtendsMachineClause
-    caseAImportsMachineClause
+    caseAImportsMachineClause			- only in Implemenation
     caseAConcreteVariablesMachineClause
     caseAAbstractConstantsMachineClause
     caseAValuesMachineClause
@@ -382,7 +398,7 @@ by John Witulski:
     caseAIntSetExpression
     caseASuccessorExpression
     caseAPredecessorExpression
-    caseAProverComprehensionSetExpression
+    caseAProverComprehensionSetExpression (EventB ?)
     
     caseAFuncOpSubstitution             - impl sees first
     caseAOpWithReturnSubstitution       - impl sees first
@@ -446,3 +462,6 @@ by John Witulski:
     caseAConstantsContextClause
     caseAAxiomsContextClause
     caseATheoremsContextClause
+    
+java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
+export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    
