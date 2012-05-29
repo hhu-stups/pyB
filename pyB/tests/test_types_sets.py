@@ -43,14 +43,14 @@ class TestTypesSets():
 
     def test_types_simple_set_empty(self):
         # Build AST
-        string_to_file("#PREDICATE ID={}", file_name)
+        string_to_file("#PREDICATE ID={} & ID<:NAT", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
         # Type
         env = Environment()
         _test_typeit(root, env, [], ["ID"])
-        assert isinstance(env.get_type("ID"), EmptySetType)
+        assert isinstance(env.get_type("ID"), PowerSetType)
 
 
     def test_types_simple_set_com(self):

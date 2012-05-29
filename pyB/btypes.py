@@ -41,9 +41,9 @@ class SetType(BType):
         self.data = name # None when name unknown
 
 
-class EmptySetType(BType):
-    def __init__(self):
-        pass
+#class EmptySetType(BType):
+#    def __init__(self):
+#        pass
 
 
 # pairtype: Type x Type

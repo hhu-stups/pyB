@@ -207,7 +207,7 @@ def resolve_type(env):
 # It uses the data attr of BTypes as pointers
 def throw_away_unknown(tree):
     #print tree
-    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, EmptySetType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
+    if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
         return tree
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
@@ -446,7 +446,7 @@ def typeit(node, env, type_env):
                 reftype = unify_equal(atype, reftype, type_env)
             return PowerSetType(reftype)
     elif isinstance(node, AEmptySetExpression):
-        return EmptySetType()
+        return PowerSetType(UnknownType(None, None))
     elif isinstance(node, AComprehensionSetExpression):
         ids = []
         # get id names
@@ -521,7 +521,7 @@ def typeit(node, env, type_env):
         return PowerSetType(atype)
     elif isinstance(node, ACardExpression):
         atype = typeit(node.children[0], env, type_env)
-        assert isinstance(atype, PowerSetType) or isinstance(atype, EmptySetType)
+        assert isinstance(atype, PowerSetType) 
         return IntegerType(None)
     elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
         atype = typeit(node.children[0], env, type_env)
@@ -1053,11 +1053,11 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
 
     # case 1: BType, BType
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
-        if isinstance(maybe_type0, PowerSetType) and isinstance(maybe_type1, EmptySetType):
-            return maybe_type0
-        elif isinstance(maybe_type1, PowerSetType) and isinstance(maybe_type0, EmptySetType):
-            return maybe_type1
-        elif maybe_type0.__class__ == maybe_type1.__class__:
+        #if isinstance(maybe_type0, PowerSetType) and isinstance(maybe_type1, EmptySetType):
+        #    return maybe_type0
+        #elif isinstance(maybe_type1, PowerSetType) and isinstance(maybe_type0, EmptySetType):
+        #    return maybe_type1
+        if maybe_type0.__class__ == maybe_type1.__class__:
             # recursive unification-call
             # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):
@@ -1093,7 +1093,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 else:
                     assert maybe_type1.data == maybe_type0.data
             else:
-                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, EmptySetType) or isinstance(maybe_type0, StringType)
+                assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, StringType)
             return maybe_type0
         else:
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
