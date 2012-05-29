@@ -74,6 +74,8 @@ class TypeCheck_Environment():
     def set_unknown_type(self, id0_Name, id1_Name):
         assert isinstance(id0_Name, UnknownType)
         assert isinstance(id1_Name, UnknownType)
+        assert id0_Name.real_type==None
+        assert id1_Name.real_type==None
         assert not id1_Name == id0_Name # dont produce a cycle 
 
         if isinstance(id0_Name, PowORIntegerType):
@@ -277,11 +279,11 @@ def throw_away_unknown(tree):
 def unknown_closure(atype):
     if not isinstance(atype, UnknownType):
         return atype
-    #i = 0
+    i = 0
     while True:
-        #i = i +1
-        #if i==10:
-        #	assert 2==1
+        i = i +1
+        if i==10:
+        	assert 2==1
         if not isinstance(atype.real_type, UnknownType):
             break
         elif isinstance(atype.real_type, PowORIntegerType):
@@ -1046,6 +1048,8 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
     #print maybe_type0,maybe_type1
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
+    if maybe_type0==maybe_type1:
+        return maybe_type0
 
     # case 1: BType, BType
     if isinstance(maybe_type0, BType) and isinstance(maybe_type1, BType):
