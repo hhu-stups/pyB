@@ -74,6 +74,7 @@ class TypeCheck_Environment():
     def set_unknown_type(self, id0_Name, id1_Name):
         assert isinstance(id0_Name, UnknownType)
         assert isinstance(id1_Name, UnknownType)
+        assert not id1_Name == id0_Name # dont produce a cycle 
 
         if isinstance(id0_Name, PowORIntegerType):
             id1_Name.real_type = id0_Name
@@ -276,7 +277,11 @@ def throw_away_unknown(tree):
 def unknown_closure(atype):
     if not isinstance(atype, UnknownType):
         return atype
+    #i = 0
     while True:
+        #i = i +1
+        #if i==10:
+        #	assert 2==1
         if not isinstance(atype.real_type, UnknownType):
             break
         elif isinstance(atype.real_type, PowORIntegerType):
