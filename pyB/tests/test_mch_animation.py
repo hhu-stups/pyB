@@ -385,7 +385,7 @@ class TestMCHAnimation():
 
     def test_extends(self):
         string = '''
-	    MACHINE           Books2(B)
+        MACHINE           Books2(B)
         EXTENDS           Books(B)
         OPERATIONS
             rr <-- show = rr := read
@@ -408,70 +408,70 @@ class TestMCHAnimation():
     def test_scheduler(self):        
         string = '''
         MACHINE scheduler
-		SETS	PID 
-		VARIABLES active, ready, waiting
-		DEFINITIONS	scope_PID == 1..3
-		INVARIANT  active : POW(PID) & ready : POW(PID) & waiting: POW(PID) & /* the types */
-				   /* and now the rest of the invariant */
-				   active <: PID &
-				   ready <: PID   &
-				   waiting <: PID &
-				   (ready /\ waiting) = {} &
-				   active /\ (ready \/ waiting) = {} &
-				   card(active) <= 1 &
-				   ((active = {})  => (ready = {}))
-						  
-		INITIALISATION  active := {} || ready := {} || waiting := {}
-			
-		OPERATIONS
-		
-		rr <-- nr_ready = rr:= card(ready);
-		
-		new(pp) =
-			SELECT
-				pp : PID  &
-				pp /: active &
-				pp /: (ready \/ waiting) 
-			THEN
-				waiting := (waiting \/ { pp })
-			END;
-		
-		del(pp) =
-			SELECT
-				pp : waiting 
-			THEN
-				waiting := waiting - { pp }
-			END;
-			
-		ready(rr) =
-				SELECT
-						rr : waiting
-				THEN
-						waiting := (waiting - {rr}) ||
-						IF (active = {}) THEN
-						   active := {rr}
-						ELSE
-						   ready := ready \/ {rr} 
-						END
-				END; 
-					
-		swap =
-				SELECT
-						active /= {}
-				THEN
-						waiting := (waiting \/ active) ||
-						IF (ready = {}) THEN
-						   active := {}
-						ELSE
-						   ANY pp WHERE pp : ready
-						   THEN
-							   active := {pp} ||
-							   ready := ready - {pp} 
-						   END
-						END
-				END       
-		END'''
-		# Build AST
+        SETS    PID 
+        VARIABLES active, ready, waiting
+        DEFINITIONS scope_PID == 1..3
+        INVARIANT  active : POW(PID) & ready : POW(PID) & waiting: POW(PID) & /* the types */
+                   /* and now the rest of the invariant */
+                   active <: PID &
+                   ready <: PID   &
+                   waiting <: PID &
+                   (ready /\ waiting) = {} &
+                   active /\ (ready \/ waiting) = {} &
+                   card(active) <= 1 &
+                   ((active = {})  => (ready = {}))
+                          
+        INITIALISATION  active := {} || ready := {} || waiting := {}
+            
+        OPERATIONS
+        
+        rr <-- nr_ready = rr:= card(ready);
+        
+        new(pp) =
+            SELECT
+                pp : PID  &
+                pp /: active &
+                pp /: (ready \/ waiting) 
+            THEN
+                waiting := (waiting \/ { pp })
+            END;
+        
+        del(pp) =
+            SELECT
+                pp : waiting 
+            THEN
+                waiting := waiting - { pp }
+            END;
+            
+        ready(rr) =
+                SELECT
+                        rr : waiting
+                THEN
+                        waiting := (waiting - {rr}) ||
+                        IF (active = {}) THEN
+                           active := {rr}
+                        ELSE
+                           ready := ready \/ {rr} 
+                        END
+                END; 
+                    
+        swap =
+                SELECT
+                        active /= {}
+                THEN
+                        waiting := (waiting \/ active) ||
+                        IF (ready = {}) THEN
+                           active := {}
+                        ELSE
+                           ANY pp WHERE pp : ready
+                           THEN
+                               active := {pp} ||
+                               ready := ready - {pp} 
+                           END
+                        END
+                END       
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -484,3 +484,49 @@ class TestMCHAnimation():
         op_and_state_list = calc_succ_states(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['new','nr_ready'])
+
+
+    def test_Farmer(self):
+        string = '''
+        MACHINE Farmer
+        SETS
+         Obj={farmer,fox, chicken, grain}
+        DEFINITIONS
+          safe(s) == (!(x,y).(x:s & y:s => x|->y /: eats));
+          GOAL == (far=Obj)
+        CONSTANTS eats
+        PROPERTIES
+         eats: Obj +-> Obj &
+         eats = {fox |-> chicken, chicken |-> grain}
+        VARIABLES near,far
+        INVARIANT
+         near<:Obj & far<:Obj & near \/ far = Obj & near /\ far = {}
+        INITIALISATION near,far := Obj,{}
+        OPERATIONS
+          Move_far(x) = PRE farmer:near & x<: Obj-{farmer} & card(x)<2 & safe(far) THEN
+              near,far := (near - {farmer}) - x, far \/ {farmer} \/ x
+          END;
+          Move_near(x) = PRE farmer:far & x<: Obj-{farmer} & card(x)<2 & safe(near) THEN
+              far,near := (far - {farmer}) - x, near \/ {farmer} \/ x
+          END;
+          YouLoose = PRE (farmer:near & not(safe(far))) or
+                         (farmer:far  & not(safe(near))) THEN skip END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        dh = DefinitionHandler()
+        dh.repl_defs(root)
+        env = Environment()
+        mch = interpret(root, env)
+        assert isinstance(root.children[6], AInvariantMachineClause)
+        assert interpret(root.children[6], env)
+        near = env.get_value("near") 
+        far = env.get_value("far") 
+        assert near==frozenset(["farmer","fox","chicken","grain"]) 
+        assert far==frozenset([])
+        op_and_state_list = calc_succ_states(env, mch) 
+        names = [op[0].opName for op in op_and_state_list]

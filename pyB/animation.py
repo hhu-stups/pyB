@@ -22,7 +22,7 @@ def calc_succ_states(current_state, bmachine):
             rids =get_return_names(op)
             next_state.add_ids_to_frame(ids)
             next_state.add_ids_to_frame(rids)
-            #print op.opName
+            print "opname: \t", op.opName
 
             # (3) Select Operation Type
             assert isinstance(op, AOperation)

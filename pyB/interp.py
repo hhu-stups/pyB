@@ -333,6 +333,7 @@ def interpret(node, env):
     elif isinstance(node, AIncludePredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        print aSet1, aSet2
         return aSet1.issubset(aSet2)
     elif isinstance(node, ANotIncludePredicate):
         aSet1 = interpret(node.children[0], env)

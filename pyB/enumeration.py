@@ -45,6 +45,7 @@ def try_all_values(root, env, idNames):
     from interp import interpret
     name = idNames[0]
     atype = env.get_type(name)
+    print name, atype
     all_values = all_values_by_type(atype, env)
     if len(idNames)<=1:
         for val in all_values:
@@ -61,6 +62,7 @@ def try_all_values(root, env, idNames):
 
 
 # FIXME: dummy-init of mch-parameters
+# FIXME: dont use get_type
 def init_mch_param(root, env, mch):
     env.add_ids_to_frame(mch.scalar_params + mch.set_params)
     # TODO: retry if no animation possible
