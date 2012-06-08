@@ -75,7 +75,7 @@ class Environment():
 
 
     # TODO: (maybe) check if value has the correct type
-    # used by tests and emumaration and substitutipn
+    # used by tests and emumaration and substitution
     def set_value(self, id_Name, value):
         for i in range(len(self.value_stack)):
             top_map = self.value_stack[-(i+1)]
@@ -120,13 +120,14 @@ class Environment():
                 atype = m.state.get_type(string)
                 if not atype==None:
                 	return atype
-        raise Exception("lookuperror: unknown type of %s" % string)
+        raise Exception("lookup-error: unknown type of %s" % string)
 
 
     # A KeyError or a false assert is a typechecking bug
     # Used by the eumerator: all_values
     def get_type_by_node(self, node):
         assert isinstance(node, AIdentifierExpression)
+        print "XXX:",node.idName, node, self
         atype = self.node_to_type_map[node]
         assert isinstance(atype, BType) 
         return atype

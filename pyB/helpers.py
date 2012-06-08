@@ -72,6 +72,30 @@ def _find_var_names(node, lst):
             return #FIXME no children
 
 
+def find_var_nodes(node, lst):
+	lst = []
+	_find_var_nodes(node, lst) #side-effect: fills list
+	return lst
+
+
+# helper for find_var_nodes
+def _find_var_nodes(node, lst):
+    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
+        return
+    elif isinstance(node, AIdentifierExpression):
+        if not node.idName in [l.idName for l in lst]:
+            lst.append(node)
+    else:
+        if isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
+            if not node.idName in [l.idName for l in lst]:
+                lst.append(node)
+        try:
+            for n in node.children:
+                _find_var_nodes(n, lst)
+        except AttributeError:
+            return #FIXME no children	
+	
+
 def find_assignd_vars(node):
     lst = []
     _find_assignd_vars(node, lst)  #side-effect: fills list

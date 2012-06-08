@@ -161,6 +161,7 @@ class TypeCheck_Environment():
                 atype= utype
             node_lst = node_top_map[idName]
             for node in node_lst:
+                print idName,node, env
                 env.node_to_type_map[node] = atype
 
 
@@ -317,8 +318,8 @@ def type_check_bmch(root, mch):
     const_idNames = find_var_names(mch.aConstantsMachineClause)
     var_idNames = find_var_names(mch.aVariablesMachineClause)
     idNames = set_idNames + const_idNames + var_idNames
-    for name in mch.scalar_params + mch.set_params:
-        idNames.append(name) # add machine-parameters
+    for node in mch.scalar_params + mch.set_params:
+        idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, mch.state, [], idNames) ## FIXME: replace
     return type_env
 
@@ -348,8 +349,13 @@ def typeit(node, env, type_env):
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
 
+        # add para-nodes to map
+        for idNode in mch.aMachineHeader.children:
+            assert isinstance(idNode, AIdentifierExpression)
+            type_env.add_node_by_id(idNode)
+            
         for p in mch.set_params:
-            unknown_type = type_env.get_current_type(p)
+            unknown_type = type_env.get_current_type(p.idName)
             unify_equal(unknown_type, PowerSetType(SetType(p)), type_env)
 
         # type

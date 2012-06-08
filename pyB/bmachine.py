@@ -292,11 +292,10 @@ class BMachine:
         self.name = self.aMachineHeader.idName
         for idNode in self.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
-            param = idNode.idName
-            if str.islower(param):
-                self.scalar_params.append(param)
+            if str.islower(idNode.idName):
+                self.scalar_params.append(idNode)
             else:
-                self.set_params.append(param)
+                self.set_params.append(idNode)
         if not self.scalar_params==[]:
             assert not self.aConstraintsMachineClause==None
 

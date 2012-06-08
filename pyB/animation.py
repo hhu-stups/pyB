@@ -18,11 +18,11 @@ def calc_succ_states(current_state, bmachine):
             return_values = []
 
             # (2) find parameter names
-            ids = get_para_names(op)
+            idNodes = get_para_nodes(op)
             rids =get_return_names(op)
-            next_state.add_ids_to_frame(ids)
+            next_state.add_ids_to_frame([n.idName for n in idNodes])
             next_state.add_ids_to_frame(rids)
-            print "opname: \t", op.opName
+            #print "opname: \t", op.opName
 
             # (3) Select Operation Type
             assert isinstance(op, AOperation)
@@ -32,15 +32,16 @@ def calc_succ_states(current_state, bmachine):
                 # (3.1) enumerate parameters
                 predicate = substitution.children[0]
                 assert isinstance(predicate, Predicate)
-                if not ids==[]:
-                    gen = try_all_values(predicate, next_state, ids)
+                if not idNodes==[]:
+                    gen = try_all_values(predicate, next_state, idNodes)
                     k = 0
                     while gen.next() and k<max_op_solutions:
                         # gen a new state for every execution
                         temp_state = copy.deepcopy(next_state)
                         parameter_list = []
                         # (3.2) add parameter-solutions
-                        for i in ids:
+                        for n in idNodes:
+                            i = n.idName
                             parameter_list.append(tuple([i, temp_state.get_value(i)]))
                         # (3.3) calc next state
                         bmachine.interpreter_method(substitution.children[1], temp_state)
@@ -70,10 +71,10 @@ def calc_succ_states(current_state, bmachine):
                 predicate = substitution.children[index]
                 subs = substitution.children[index+1]    
                                   
-                if not ids==[]: 
+                if not idNodes==[]: 
                     # (3.1) enumerate parameters
                     while k<max_op_solutions:
-                        gen = try_all_values(predicate, next_state, ids)
+                        gen = try_all_values(predicate, next_state, idNodes)
                         # CHECK: (3.2.1) test if there are solutions for this pred
                         while gen.next() and k<max_op_solutions:
                             # Solution found:
@@ -81,7 +82,8 @@ def calc_succ_states(current_state, bmachine):
                             temp_state = copy.deepcopy(next_state)
                             parameter_list = []
                             # (3.2.2) add parameter-solutions
-                            for i in ids:
+                            for n in idNodes:
+                                i = n.idName
                                 parameter_list.append(tuple([i, temp_state.get_value(i)]))
                             # (3.2.3) calc next state
                             bmachine.interpreter_method(subs, temp_state)
@@ -146,12 +148,12 @@ def exec_op(current_state,  op_and_state_list, number):
         return state
 
 
-def get_para_names(op):
-    names = []
+def get_para_nodes(op):
+    nodes = []
     for i in range(op.return_Num, op.return_Num+op.parameter_Num):
         assert isinstance(op.children[i], AIdentifierExpression)
-        names.append(op.children[i].idName)
-    return names
+        nodes.append(op.children[i])
+    return nodes
 
 
 def get_return_names(op):

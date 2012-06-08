@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate
-from helpers import find_var_names, flatten, is_flat, double_element_check, find_assignd_vars, print_ast
+from helpers import find_var_nodes, find_var_names, flatten, is_flat, double_element_check, find_assignd_vars, print_ast
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -22,16 +22,16 @@ def interpret(node, env):
 # ******************************
     #print node
     if isinstance(node,APredicateParseUnit):
-        idNames = find_var_names(root.children[0]) 
+        idNodess = find_var_nodes(root.children[0]) 
         type_check_predicate(node, env)
         if idNames ==[]:
             result = interpret(node.children[0], env)
             print result
             return
         else:
-            print "enum. vars:",idNames
+            print "enum. vars:",[n.idName for n in idNodes]
             env.add_ids_to_frame(idNames)
-            gen = try_all_values(node.children[0], env, idNames)
+            gen = try_all_values(node.children[0], env, idNodes)
             if gen.next():
                 for i in idNames:
                     print i,":", env.get_value(i)
@@ -72,12 +72,12 @@ def interpret(node, env):
             res = interpret(mch.aPropertiesMachineClause, env)
             # Now set that constants which still dont have a value
             if mch.aConstantsMachineClause:
-                const_names = []
+                const_nodes = []
                 for idNode in mch.aConstantsMachineClause.children:
                     assert isinstance(idNode, AIdentifierExpression)
-                    const_names.append(idNode.idName)
+                    const_nodes.append(idNode)
                 if not res:
-                    gen = try_all_values(mch.aPropertiesMachineClause, env,const_names)
+                    gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
                     assert gen.next()
                     
 
@@ -281,32 +281,28 @@ def interpret(node, env):
         return acc
     elif isinstance(node, AQuantifiedUnionExpression):
         nodes = []
-        idNames = []
         result = frozenset([])
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-            idNames.append(idNode.idName)
         env.push_new_frame(nodes)
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
-        gen = try_all_values(pred, env, idNames)
+        gen = try_all_values(pred, env, nodes)
         while gen.next():
             result |= interpret(node.children[-1], env)
         env.pop_frame()
         return result
     elif isinstance(node, AQuantifiedIntersectionExpression):
         nodes = []
-        idNames = []
         result = frozenset([])
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-            idNames.append(idNode.idName)
         env.push_new_frame(nodes)
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
-        gen = try_all_values(pred, env, idNames)
+        gen = try_all_values(pred, env, nodes)
         if gen.next():
             result = interpret(node.children[-1], env)
         while gen.next():
@@ -333,7 +329,6 @@ def interpret(node, env):
     elif isinstance(node, AIncludePredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        print aSet1, aSet2
         return aSet1.issubset(aSet2)
     elif isinstance(node, ANotIncludePredicate):
         aSet1 = interpret(node.children[0], env)
@@ -882,23 +877,22 @@ def interpret(node, env):
             env.set_value(child.idName, value)
     elif isinstance(node, ABecomesSuchSubstitution):
         # TODO: more than on ID
-        ids = []
         nodes = []
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
-            ids.append(child.idName)
             nodes.append(child)
         # new frame to enable primed-ids
         env.push_new_frame(nodes)
-        gen = try_all_values(node.children[-1], env, ids) 
+        gen = try_all_values(node.children[-1], env, nodes) 
         gen.next() # sideeffect: set values
         results = []
-        for i in ids:
+        for n in nodes:
+            i = n.idName
             results.append(env.get_value(i))
         env.pop_frame()
         # write back
-        for i in range(len(ids)):
-            env.set_value(ids[i], results[i])
+        for i in range(len(nodes)):
+            env.set_value(nodes[i].idName, results[i])
     elif isinstance(node, AParallelSubstitution):
         import copy
         lst = []
@@ -1034,16 +1028,14 @@ def interpret(node, env):
         env.pop_frame()
     elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
         nodes = []
-        idNames = []
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-            idNames.append(idNode.idName)
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
         assert isinstance(node.children[-1], Substitution)
         env.push_new_frame(nodes)
-        gen = try_all_values(pred, env, idNames)
+        gen = try_all_values(pred, env, nodes)
         if gen.next():
             interpret(node.children[-1], env)
         env.pop_frame()

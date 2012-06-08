@@ -40,40 +40,39 @@ def all_values_by_type(atype, env):
     raise Exception(string)
 
 
-# FIXME: uses get_type
-def try_all_values(root, env, idNames):
+
+def try_all_values(root, env, idNodes):
     from interp import interpret
-    name = idNames[0]
-    atype = env.get_type(name)
-    print name, atype
+    node = idNodes[0]
+    atype = env.get_type_by_node(node)
     all_values = all_values_by_type(atype, env)
-    if len(idNames)<=1:
+    if len(idNodes)<=1:
         for val in all_values:
-            env.set_value(name, val)
+            env.set_value(node.idName, val)
             if interpret(root, env):
                 yield True
     else:
         for val in all_values:
-            env.set_value(name, val)
-            gen = try_all_values(root, env, idNames[1:])
+            env.set_value(node.idName, val)
+            gen = try_all_values(root, env, idNodes[1:])
             if gen.next():
                 yield True
     yield False
 
 
 # FIXME: dummy-init of mch-parameters
-# FIXME: dont use get_type
 def init_mch_param(root, env, mch):
-    env.add_ids_to_frame(mch.scalar_params + mch.set_params)
+    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     # TODO: retry if no animation possible
-    for name in mch.set_params:
-        atype = env.get_type(name)
+    for n in mch.set_params:
+        atype = env.get_type_by_node(n)
         assert isinstance(atype, PowerSetType)
-        assert isinstance(atype.data, SetType) 
+        assert isinstance(atype.data, SetType)
+        name = n.idName 
         env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
-    for name in mch.scalar_params:
+    for n in mch.scalar_params:
         # page 126
-        atype = env.get_type(name)
+        atype = env.get_type_by_node(n)
         assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
     if not mch.scalar_params==[]:
         assert not mch.aConstraintsMachineClause==None
