@@ -218,9 +218,9 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
-        assert env.get_value("A") == True
-        assert env.get_value("B") == True
-        assert env.get_value("C") == False
+        assert env.bstate.get_value("A") == True
+        assert env.bstate.get_value("B") == True
+        assert env.bstate.get_value("C") == False
 
 
     def test_structs(self):
@@ -272,7 +272,7 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
-        assert env.get_value("xx") == 4
+        assert env.bstate.get_value("xx") == 4
 
 
     def test_string_set(self):
@@ -290,4 +290,4 @@ class TestMCHLaod():
         # Test
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
-        assert env.get_value("s") == "Hallo Welt"
+        assert env.bstate.get_value("s") == "Hallo Welt"

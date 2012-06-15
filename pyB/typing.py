@@ -161,7 +161,7 @@ class TypeCheck_Environment():
                 atype= utype
             node_lst = node_top_map[idName]
             for node in node_lst:
-                print idName,node, env
+                #print idName,node, env
                 env.node_to_type_map[node] = atype
 
 
@@ -320,7 +320,7 @@ def type_check_bmch(root, mch):
     idNames = set_idNames + const_idNames + var_idNames
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
-    type_env = _test_typeit(root, mch.state, [], idNames) ## FIXME: replace
+    type_env = _test_typeit(root, mch.env, [], idNames) ## FIXME: replace
     return type_env
 
 
@@ -342,21 +342,26 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
-        mch = BMachine(node, None, None)
-        env.set_mch(mch)
+        mch = BMachine(node, None, env)
+        env.bstate = mch.bstate
+        env.bstate.set_mch(mch)
+        env.mch = mch
         mch.type_included(type_check_bmch, type_env)
         mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
+        env.bstate = mch.bstate
+        env.bstate.set_mch(mch)
+        env.mch = mch
 
         # add para-nodes to map
         for idNode in mch.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
-            type_env.add_node_by_id(idNode)
+            typeit(idNode, env, type_env)
             
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p.idName)
-            unify_equal(unknown_type, PowerSetType(SetType(p)), type_env)
+            unify_equal(unknown_type, PowerSetType(SetType(p.idName)), type_env)
 
         # type
         if mch.aExtendsMachineClause:
@@ -922,6 +927,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AIdentifierExpression):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
+        #print node, idtype
         return idtype
     elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression) or isinstance(node, ASuccessorExpression) or isinstance(node, APredecessorExpression) or isinstance(node, APowerOfExpression):
         return IntegerType(None)
@@ -992,11 +998,11 @@ def typeit(node, env, type_env):
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
         # FIXME: adding the node is not a task of type_checking 
-        operation_type = [ret_types, para_types, node.opName, node]
+        operation_type = [ret_types, para_types, node.opName, node, env.mch.name]
         env.mch_operation_type.append(operation_type)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        op_type, incl_mch = env.mch.get_includes_op_type(node.idName)
+        op_type = env.bstate.mch.get_includes_op_type(node.idName)
         para_types = op_type[1]
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)

@@ -21,7 +21,7 @@ def all_values_by_type(atype, env):
         return [True, False]
     elif isinstance(atype, SetType):
         type_name =  atype.data
-        value = env.get_value(type_name)
+        value = env.bstate.get_value(type_name)
         assert isinstance(value, frozenset)
         return value
     elif isinstance(atype, PowerSetType):
@@ -48,12 +48,12 @@ def try_all_values(root, env, idNodes):
     all_values = all_values_by_type(atype, env)
     if len(idNodes)<=1:
         for val in all_values:
-            env.set_value(node.idName, val)
+            env.bstate.set_value(node.idName, val)
             if interpret(root, env):
                 yield True
     else:
         for val in all_values:
-            env.set_value(node.idName, val)
+            env.bstate.set_value(node.idName, val)
             gen = try_all_values(root, env, idNodes[1:])
             if gen.next():
                 yield True
@@ -62,14 +62,14 @@ def try_all_values(root, env, idNodes):
 
 # FIXME: dummy-init of mch-parameters
 def init_mch_param(root, env, mch):
-    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
+    env.bstate.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     # TODO: retry if no animation possible
     for n in mch.set_params:
         atype = env.get_type_by_node(n)
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
         name = n.idName 
-        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+        env.bstate.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
     for n in mch.scalar_params:
         # page 126
         atype = env.get_type_by_node(n)
@@ -86,11 +86,11 @@ def init_deffered_set(def_set, env):
     # TODO: retry if no animation possible
     assert isinstance(def_set, ADeferredSet)
     name = def_set.idName
-    env.add_ids_to_frame([name])
+    env.bstate.add_ids_to_frame([name])
     lst = []
     for i in range(deferred_set_elements_num):
     	lst.append(str(i)+"_"+name)
-    env.set_value(name, frozenset(lst))
+    env.bstate.set_value(name, frozenset(lst))
 
 
 def get_image(function, preimage):
@@ -186,13 +186,13 @@ def set_comprehension_recursive_helper(depth, max_depth, node, env):
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             if interpret(pred, env):
                 result.append(i)
         return result
     else: # recursive call
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             partial_result = set_comprehension_recursive_helper(depth+1, max_depth, node, env)
             for j in partial_result:
                 temp = []
@@ -208,13 +208,13 @@ def exist_recursive_helper(depth, max_depth, node, env):
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             if interpret(pred, env):
                 return True
         return False
     else: # recursive call
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             if exist_recursive_helper(depth+1, max_depth, node, env):
                 return True
         return False
@@ -227,13 +227,13 @@ def forall_recursive_helper(depth, max_depth, node, env):
     idName = node.children[depth].idName
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             if not interpret(pred, env):
                 return False
         return True
     else: # recursive call
         for i in all_values(node.children[depth], env):
-            env.set_value(idName, i)
+            env.bstate.set_value(idName, i)
             if not forall_recursive_helper(depth+1, max_depth, node, env):
                 return False
         return True

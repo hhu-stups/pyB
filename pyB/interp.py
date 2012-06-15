@@ -30,11 +30,11 @@ def interpret(node, env):
             return
         else:
             print "enum. vars:",[n.idName for n in idNodes]
-            env.add_ids_to_frame(idNames)
+            env.bstate.add_ids_to_frame(idNames)
             gen = try_all_values(node.children[0], env, idNodes)
             if gen.next():
                 for i in idNames:
-                    print i,":", env.get_value(i)
+                    print i,":", env.bstate.get_value(i)
             else:
                 print "No Solution found"
                 print False
@@ -43,14 +43,19 @@ def interpret(node, env):
         return
     elif isinstance(node, AAbstractMachineParseUnit):
         mch = BMachine(node, interpret, env)
+        #env.bstate.set_mch(mch)
         #print mch.name
-
+        env.bstate = mch.bstate
+        env.bstate.set_mch(mch)
+        env.mch = mch
         type_check_bmch(node, mch) # also checks all included
         mch.init_include_mchs()
         mch.init_seen_mchs()
         mch.init_used_mchs()
         mch.init_extended_mchs()
-        env.set_mch(mch)
+        env.bstate = mch.bstate
+        env.bstate.set_mch(mch)
+        env.mch = mch
         # TODO: Check with B spec
         # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:
@@ -98,14 +103,14 @@ def interpret(node, env):
             assert isinstance(idNode, AIdentifierExpression)
             const_names.append(idNode.idName)
             #atype = env.get_type_by_node(idNode)
-        env.add_ids_to_frame(const_names)
+        env.bstate.add_ids_to_frame(const_names)
     elif isinstance(node, AVariablesMachineClause):
         var_names = []
         for idNode in node.children:
             assert isinstance(idNode, AIdentifierExpression)
             var_names.append(idNode.idName)
             #atype = env.get_type_by_node(idNode)
-        env.add_ids_to_frame(var_names)
+        env.bstate.add_ids_to_frame(var_names)
     elif isinstance(node, ASetsMachineClause):
         for child in node.children:
             if isinstance(child, AEnumeratedSet):
@@ -113,11 +118,11 @@ def interpret(node, env):
                 for elm in child.children:
                     assert isinstance(elm, AIdentifierExpression)
                     elm_lst.append(elm.idName)
-                    env.add_ids_to_frame([elm.idName])
+                    env.bstate.add_ids_to_frame([elm.idName])
                     # The values of elements of enumerated sets are their names
-                    env.set_value(elm.idName, elm.idName)
-                env.add_ids_to_frame([child.idName])
-                env.set_value(child.idName, frozenset(elm_lst))
+                    env.bstate.set_value(elm.idName, elm.idName)
+                env.bstate.add_ids_to_frame([child.idName])
+                env.bstate.set_value(child.idName, frozenset(elm_lst))
             else:
                 init_deffered_set(child, env)
     elif isinstance(node, AConstraintsMachineClause):
@@ -170,33 +175,33 @@ def interpret(node, env):
         return not expr
     elif isinstance(node, AUniversalQuantificationPredicate):
         # new scope 
-        env.push_new_frame(node.children[:-1])
+        env.bstate.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if not forall_recursive_helper(0, max_depth, node, env):
-            env.pop_frame()
+            env.bstate.pop_frame()
             return False
         else:
-            env.pop_frame()
+            env.bstate.pop_frame()
             return True
     elif isinstance(node, AExistentialQuantificationPredicate):
         # new scope
-        env.push_new_frame(node.children[:-1])
+        env.bstate.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2 # (two preds)
         if exist_recursive_helper(0, max_depth, node, env):
-            env.pop_frame()
+            env.bstate.pop_frame()
             return True
         else:
-            env.pop_frame()
+            env.bstate.pop_frame()
             return False
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         # special case: learn values if None (optimization)
-        if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
-            env.set_value(node.children[0].idName, expr2)
+        if isinstance(node.children[0], AIdentifierExpression) and env.bstate.get_value(node.children[0].idName)==None:
+            env.bstate.set_value(node.children[0].idName, expr2)
             return True
-        elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
-            env.set_value(node.children[1].idName, expr1)
+        elif isinstance(node.children[1], AIdentifierExpression) and env.bstate.get_value(node.children[1].idName)==None:
+            env.bstate.set_value(node.children[1].idName, expr1)
             return True
         else:
             # else normal check
@@ -222,7 +227,7 @@ def interpret(node, env):
         return frozenset()
     elif isinstance(node, AComprehensionSetExpression):
         # new scope
-        env.push_new_frame(node.children[:-1])
+        env.bstate.push_new_frame(node.children[:-1])
         max_depth = len(node.children) -2
         lst = set_comprehension_recursive_helper(0, max_depth, node, env)
         # FIXME: maybe wrong:
@@ -233,7 +238,7 @@ def interpret(node, env):
         else:
             for i in lst:
                 result.append(tuple(flatten(i,[])))
-        env.pop_frame()
+        env.bstate.pop_frame()
         return frozenset(result)
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
@@ -285,13 +290,13 @@ def interpret(node, env):
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-        env.push_new_frame(nodes)
+        env.bstate.push_new_frame(nodes)
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
         gen = try_all_values(pred, env, nodes)
         while gen.next():
             result |= interpret(node.children[-1], env)
-        env.pop_frame()
+        env.bstate.pop_frame()
         return result
     elif isinstance(node, AQuantifiedIntersectionExpression):
         nodes = []
@@ -299,7 +304,7 @@ def interpret(node, env):
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-        env.push_new_frame(nodes)
+        env.bstate.push_new_frame(nodes)
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
         gen = try_all_values(pred, env, nodes)
@@ -307,7 +312,7 @@ def interpret(node, env):
             result = interpret(node.children[-1], env)
         while gen.next():
             result &= interpret(node.children[-1], env)
-        env.pop_frame()
+        env.bstate.pop_frame()
         return result
 
 
@@ -394,7 +399,7 @@ def interpret(node, env):
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
-        env.push_new_frame(node.children[:-2])
+        env.bstate.push_new_frame(node.children[:-2])
         preds = node.children[-2]
         expr = node.children[-1]
         # TODO: this code (maybe) dont checks all possibilities!
@@ -402,16 +407,16 @@ def interpret(node, env):
         for child in node.children[:-2]:
             # enumeration
             for i in all_values(child, env):
-                env.set_value(child.idName, i)
+                env.bstate.set_value(child.idName, i)
                 if interpret(preds, env):
                     sum_ += interpret(expr, env)
         # done
-        env.pop_frame()
+        env.bstate.pop_frame()
         return sum_
     elif isinstance(node, AGeneralProductExpression):
         prod = 1
         # new scope
-        env.push_new_frame(node.children[:-2])
+        env.bstate.push_new_frame(node.children[:-2])
         preds = node.children[-2]
         expr = node.children[-1]
         # gen. all values:
@@ -419,10 +424,10 @@ def interpret(node, env):
         for child in node.children[:-2]:
             # enumeration
             for i in all_values(child, env):
-                env.set_value(child.idName, i)
+                env.bstate.set_value(child.idName, i)
                 if interpret(preds, env):
                     prod *= interpret(expr, env)
-        env.pop_frame()
+        env.bstate.pop_frame()
         return prod
 
 
@@ -636,7 +641,7 @@ def interpret(node, env):
     elif isinstance(node, ALambdaExpression):
         func_list = []
         # new scope
-        env.push_new_frame(node.children[:-2])
+        env.bstate.push_new_frame(node.children[:-2])
         pred = node.children[-2]
         expr = node.children[-1]
         # TODO: this code (maybe) dont checks all possibilities!
@@ -644,13 +649,13 @@ def interpret(node, env):
         for child in node.children[:-2]:
             # enumeration
             for i in all_values(child, env):
-                env.set_value(child.idName, i)
+                env.bstate.set_value(child.idName, i)
                 if interpret(pred, env):
                     image = interpret(expr, env)
                     tup = tuple([i, image])
                     func_list.append(tup)
         # done
-        env.pop_frame()
+        env.bstate.pop_frame()
         return frozenset(func_list)
     elif isinstance(node, AFunctionExpression):
         if isinstance(node.children[0], APredecessorExpression):
@@ -828,17 +833,22 @@ def interpret(node, env):
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)
         import copy
-        env_old = copy.deepcopy(env)
+        #env_old = copy.deepcopy(env)
+        save_state = env.bstate
+        old_state = copy.deepcopy(env.bstate)       
         used_ids = []
         for i in range(int(node.lhs_size)):
             lhs_node = node.children[i]
             rhs = node.children[i+int(node.rhs_size)]
             # this copy is only used in this loop/ in this execution path
-            env_copy = copy.deepcopy(env_old)
-            value = interpret(rhs, env_copy)
+            #env_copy = copy.deepcopy(env_old)
+            state_copy = copy.deepcopy(old_state)
+            env.bstate = state_copy
+            # BUG if the expression on the rhs has a sideeffect
+            value = interpret(rhs, env)
             if isinstance(lhs_node, AIdentifierExpression):
                 used_ids.append(lhs_node.idName)
-                env.set_value(lhs_node.idName, value)
+                save_state.set_value(lhs_node.idName, value)
             else:
                 assert isinstance(lhs_node, AFunctionExpression)
                 assert isinstance(lhs_node.children[0], AIdentifierExpression)
@@ -846,9 +856,9 @@ def interpret(node, env):
                 # get args
                 args = []
                 for child in lhs_node.children[1:]:
-                    arg = interpret(child, env_copy)
+                    arg = interpret(child, env)
                     args.append(arg)
-                func = dict(env_copy.get_value(func_name))
+                func = dict(state_copy.get_value(func_name))
                 used_ids.append(func_name)
                 # change
                 if len(args)==1:
@@ -861,12 +871,13 @@ def interpret(node, env):
                     lst.append(tuple([key,func[key]]))
                 new_func = frozenset(lst)
                 # write to env
-                env.set_value(func_name, new_func)
+                save_state.set_value(func_name, new_func)
         while not used_ids==[]:
             name = used_ids.pop()
             if name in used_ids:
                 string = name + " modified twice in multiple assign-substitution!"
                 raise Exception(string)
+        env.bstate = save_state
     elif isinstance(node, AConvertBoolExpression):
         return interpret(node.children[0], env)
     elif isinstance(node, ABecomesElementOfSubstitution):
@@ -874,7 +885,7 @@ def interpret(node, env):
         value = list(values)[0] # XXX
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
-            env.set_value(child.idName, value)
+            env.bstate.set_value(child.idName, value)
     elif isinstance(node, ABecomesSuchSubstitution):
         # TODO: more than on ID
         nodes = []
@@ -882,34 +893,36 @@ def interpret(node, env):
             assert isinstance(child, AIdentifierExpression)
             nodes.append(child)
         # new frame to enable primed-ids
-        env.push_new_frame(nodes)
+        env.bstate.push_new_frame(nodes)
         gen = try_all_values(node.children[-1], env, nodes) 
         gen.next() # sideeffect: set values
         results = []
         for n in nodes:
             i = n.idName
-            results.append(env.get_value(i))
-        env.pop_frame()
+            results.append(env.bstate.get_value(i))
+        env.bstate.pop_frame()
         # write back
         for i in range(len(nodes)):
-            env.set_value(nodes[i].idName, results[i])
+            env.bstate.set_value(nodes[i].idName, results[i])
     elif isinstance(node, AParallelSubstitution):
         import copy
         lst = []
         assignd_ids = []
+        save_state = env.bstate
         for child in node.children:
             ids = find_assignd_vars(child)
             assignd_ids += ids
-            env_copy = copy.deepcopy(env)
-            lst.append(env_copy)
-            interpret(child, env_copy)
+            bstate_copy = copy.deepcopy(save_state)
+            env.bstate = bstate_copy      
+            interpret(child, env)
+            lst.append(bstate_copy)
         # search for changes. no var can be modified twice (see page 108)
         assignd_ids = list(set(assignd_ids)) # throw away double-entrys
         new_values = []
-        for e in lst:
+        for state in lst:
             for i in assignd_ids:
-                new_val = e.get_value(i)
-                old_val = env.get_value(i)
+                new_val = state.get_value(i)
+                old_val = save_state.get_value(i)
                 if not new_val==old_val:
                     new_values.append(tuple([i, new_val]))
         # check for double entrys -> Error
@@ -921,7 +934,8 @@ def interpret(node, env):
                 raise Exception(string)
         # write changes
         for pair in new_values:
-            env.set_value(pair[0], pair[1])
+            save_state.set_value(pair[0], pair[1])
+        env.bstate = save_state
     elif isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
@@ -1023,9 +1037,9 @@ def interpret(node, env):
         for idNode in node.children[:-1]:
             assert isinstance(idNode, AIdentifierExpression)
             nodes.append(idNode)
-        env.push_new_frame(nodes)
+        env.bstate.push_new_frame(nodes)
         interpret(node.children[-1], env)
-        env.pop_frame()
+        env.bstate.pop_frame()
     elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
         nodes = []
         for idNode in node.children[:node.idNum]:
@@ -1034,11 +1048,11 @@ def interpret(node, env):
         pred = node.children[-2]
         assert isinstance(pred, Predicate)
         assert isinstance(node.children[-1], Substitution)
-        env.push_new_frame(nodes)
+        env.bstate.push_new_frame(nodes)
         gen = try_all_values(pred, env, nodes)
         if gen.next():
             interpret(node.children[-1], env)
-        env.pop_frame()
+        env.bstate.pop_frame()
 
 
 # ****************
@@ -1056,7 +1070,7 @@ def interpret(node, env):
     elif isinstance(node, AMaxIntExpression):
         return max_int
     elif isinstance(node, AIdentifierExpression):
-        return env.get_value(node.idName)
+        return env.bstate.get_value(node.idName)
     elif isinstance(node, APrimedIdentifierExpression):
         assert len(node.children)==1 # TODO x.y.z
         assert node.grade==0 #TODO: fix for while loop
@@ -1064,7 +1078,7 @@ def interpret(node, env):
         id_Name = node.children[0].idName
         # copy paste :-)
         assert isinstance(id_Name, str)
-        value_map_copy =  [x for x in env.value_stack] # no ref. copy
+        value_map_copy =  [x for x in env.bstate.value_stack] # no ref. copy
         # pop frame to get old value (you are inside an enumeration):
         value_map_copy.pop()
         value_map_copy.reverse() # FIXME
@@ -1083,41 +1097,6 @@ def interpret(node, env):
         return True
     elif isinstance(node, AFalseExpression):
         return False
-    #elif isinstance(node, ADefinitionExpression) or isinstance(node, ADefinitionPredicate):
-    #    # i hope this is faster than rebuilding asts...
-    #    ast = env.get_ast_by_definition(node.idName)
-    #    assert isinstance(ast, AExpressionDefinition) or isinstance(ast, APredicateDefinition)
-    #    # The Value of the definition depends on
-    #    # the Value of the parameters
-    #    nodes = []
-    #    for i in range(ast.paraNum):
-    #        if isinstance(ast.children[i], AIdentifierExpression):
-    #            nodes.append(ast.children[i])
-    #        else:
-    #            raise Exception("Parametes can only be Ids at the moment!")
-    #    env.push_new_frame(nodes)
-    #    # set nodes(variables) to values
-    #    for i in range(ast.paraNum):
-    #        value = interpret(node.children[i], env)
-    #        nothing = interpret(ast.children[i], env)
-    #        assert nothing==ast.children[i].idName # no value
-    #        env.set_value(ast.children[i].idName, value)
-    #    result = interpret(ast.children[-1], env)
-    #    env.pop_frame()
-    #    return result
-    #elif isinstance(node, ADefinitionSubstitution):
-    #    import copy
-    #    ast = env.get_ast_by_definition(node.idName)
-    #    new_ast = copy.deepcopy(ast)
-    #    #print_ast(ast)
-    #    assert isinstance(ast, ASubstitutionDefinition)
-    #    for i in range(ast.paraNum):
-    #        idNode = ast.children[i]
-    #        isinstance(idNode, AIdentifierExpression)
-    #        replaceNode = node.children[i]
-    #        new_ast = replace_node(new_ast, idNode, replaceNode)
-    #    #print_ast(new_ast)
-    #    return interpret(new_ast.children[-1], env)
     elif isinstance(node, AStructExpression):
         dictionary = {}
         for rec_entry in node.children:
@@ -1176,19 +1155,28 @@ def interpret(node, env):
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
     elif isinstance(node, AOpSubstitution):
-        op_type, incl_env = env.mch.get_includes_op_type(node.idName)
+        #FIXME: set env.btype and env.mch to the correct BMachine
+        op_type = env.bstate.mch.get_includes_op_type(node.idName)
         ret_types = op_type[0]
         para_types = op_type[1]
         id_nodes = [x[0] for x in ret_types] + [x[0] for x in para_types]
-        incl_env.push_new_frame(id_nodes)
+        # save mch+state
+        #save_state = env.bstate
+        #save_mch = env.mch
+        #env.bstate = call_mch.bstate
+        #env.mch = call_mch
+        env.bstate.push_new_frame(id_nodes)
         op_node = op_type[3]
         for i in range(len(para_types)):
             value = interpret(node.children[i], env)
             name = para_types[i][0].idName
-            incl_env.set_value(name, value)
+            env.bstate.set_value(name, value)
         assert isinstance(op_node, AOperation)
-        result = interpret(op_node.children[-1], incl_env)
-        incl_env.pop_frame()
+        result = interpret(op_node.children[-1], env)
+        env.bstate.pop_frame()
+        # revert to old mch+state
+    	#env.bstate = save_state
+        #env.mch = save_mch
         return result
     else:
         raise Exception("Unknown Node: %s",node)

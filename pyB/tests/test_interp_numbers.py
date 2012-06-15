@@ -184,14 +184,14 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["x"])
-        env.set_value("x", 1)
+        env.bstate.add_ids_to_frame(["x"])
+        env.bstate.set_value("x", 1)
         assert interpret(root.children[0], env)
 
-        env.set_value("x", 10)
+        env.bstate.set_value("x", 10)
         assert not interpret(root.children[0], env)
 
-        env.set_value("x", 6)
+        env.bstate.set_value("x", 6)
         assert not interpret(root.children[0], env)
 
 
@@ -203,14 +203,14 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["x"])
-        env.set_value("x", 1)
+        env.bstate.add_ids_to_frame(["x"])
+        env.bstate.set_value("x", 1)
         assert interpret(root.children[0], env)
 
-        env.set_value("x", 6)
+        env.bstate.set_value("x", 6)
         assert interpret(root.children[0], env)
 
-        env.set_value("x", 7)
+        env.bstate.set_value("x", 7)
         assert not interpret(root.children[0], env)
 
 
@@ -222,14 +222,14 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["x"])
-        env.set_value("x", 1)
+        env.bstate.add_ids_to_frame(["x"])
+        env.bstate.set_value("x", 1)
         assert not interpret(root.children[0], env)
 
-        env.set_value("x", 6)
+        env.bstate.set_value("x", 6)
         assert interpret(root.children[0], env)
 
-        env.set_value("x", 7)
+        env.bstate.set_value("x", 7)
         assert interpret(root.children[0], env)
 
 
@@ -241,9 +241,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
+        env.bstate.add_ids_to_frame(["S"])
         _test_typeit(root.children[0], env, [], ["S"])
-        env.set_value("S", frozenset([1,2,3,4,5]))
+        env.bstate.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
 
@@ -255,9 +255,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
+        env.bstate.add_ids_to_frame(["S"])
         _test_typeit(root.children[0], env, [], ["S"])
-        env.set_value("S", frozenset([1,2,3,4,5]))
+        env.bstate.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
 
@@ -353,9 +353,9 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["ID"])
+        env.bstate.add_ids_to_frame(["ID"])
         lst = [("ID", PowerSetType(SetType("ID")))]
-        env.set_value("ID", frozenset(["a","b"]))
+        env.bstate.set_value("ID", frozenset(["a","b"]))
         _test_typeit(root.children[0], env, lst, "")
         assert interpret(root.children[0],env)
 
@@ -368,8 +368,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["x"])
-        env.set_value("x", 2)
+        env.bstate.add_ids_to_frame(["x"])
+        env.bstate.set_value("x", 2)
         _test_typeit(root.children[0], env, [], "x")
         assert interpret(root.children[0],env)
 
@@ -382,8 +382,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["x"])
-        env.set_value("x", 2)
+        env.bstate.add_ids_to_frame(["x"])
+        env.bstate.set_value("x", 2)
         _test_typeit(root.children[0], env, [], "x")
         assert interpret(root.children[0],env)
 

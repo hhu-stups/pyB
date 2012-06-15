@@ -16,8 +16,8 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        env.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
+        env.bstate.add_ids_to_frame(["S"])
+        env.bstate.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
         lst = [("S", PowerSetType(SetType("X")))]
         _test_typeit(root, env, lst, [])
 
@@ -30,10 +30,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        env.add_ids_to_frame(["aa","bb","ID"])
-        env.set_value("aa", "aa")
-        env.set_value("bb", "bb")
-        env.set_value("ID", frozenset(["aa", "bb"]))
+        env.bstate.add_ids_to_frame(["aa","bb","ID"])
+        env.bstate.set_value("aa", "aa")
+        env.bstate.set_value("bb", "bb")
+        env.bstate.set_value("ID", frozenset(["aa", "bb"]))
         lst = [("aa", SetType("X")),("bb", SetType("X"))]
         _test_typeit(root, env, lst, ["ID"])
         assert isinstance(env.get_type("ID"), PowerSetType)

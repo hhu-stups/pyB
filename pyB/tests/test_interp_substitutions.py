@@ -27,7 +27,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==3
+        assert env.bstate.get_value("xx")==3
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
@@ -49,8 +49,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==1
-        assert env.get_value("yy")==2
+        assert env.bstate.get_value("xx")==1
+        assert env.bstate.get_value("yy")==2
         assert isinstance(env.get_type("xx"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
 
@@ -72,8 +72,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
-        assert env.get_value("yy")==1
+        assert env.bstate.get_value("xx")==2
+        assert env.bstate.get_value("yy")==1
         assert isinstance(env.get_type("xx"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
 
@@ -115,8 +115,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==1
-        assert env.get_value("yy")==2
+        assert env.bstate.get_value("xx")==1
+        assert env.bstate.get_value("yy")==2
         assert isinstance(env.get_type("xx"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
 
@@ -139,8 +139,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
-        assert env.get_value("yy")==1
+        assert env.bstate.get_value("xx")==2
+        assert env.bstate.get_value("yy")==1
         assert isinstance(env.get_type("xx"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
 
@@ -201,7 +201,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==True
+        assert env.bstate.get_value("xx")==True
         assert isinstance(env.get_type("xx"), BoolType)
 
 
@@ -222,8 +222,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")>0
-        assert env.get_value("xx")<4
+        assert env.bstate.get_value("xx")>0
+        assert env.bstate.get_value("xx")<4
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
@@ -244,8 +244,8 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")>0
-        assert env.get_value("xx")<6
+        assert env.bstate.get_value("xx")>0
+        assert env.bstate.get_value("xx")<6
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
@@ -267,7 +267,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")>=3
+        assert env.bstate.get_value("xx")>=3
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
@@ -288,7 +288,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")>=2
+        assert env.bstate.get_value("xx")>=2
         assert isinstance(env.get_type("xx"), IntegerType)
 
 
@@ -309,7 +309,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("f")==frozenset([(1,2),(3,3)])
+        assert env.bstate.get_value("f")==frozenset([(1,2),(3,3)])
 
 
     def test_genAST_sub_func_overw_many_args(self):
@@ -330,7 +330,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("f")==frozenset([((1,1),2),((2,2),1)])
+        assert env.bstate.get_value("f")==frozenset([((1,1),2),((2,2),1)])
 
 
     def test_genAST_sub_block(self):
@@ -350,7 +350,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_if(self):
@@ -374,7 +374,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_if2(self):
@@ -398,7 +398,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_if3(self):
@@ -422,7 +422,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==0
+        assert env.bstate.get_value("xx")==0
 
 
     def test_genAST_sub_if3(self):
@@ -445,7 +445,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==0
+        assert env.bstate.get_value("xx")==0
 
 
     def test_genAST_sub_if4(self):
@@ -467,7 +467,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==1
+        assert env.bstate.get_value("xx")==1
 
 
     def test_genAST_sub_pre(self):
@@ -487,7 +487,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_assert(self):
@@ -507,7 +507,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_pre2(self):
@@ -527,7 +527,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==1
+        assert env.bstate.get_value("xx")==1
 
 
     def test_genAST_sub_choice(self):
@@ -547,7 +547,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2 or env.get_value("xx")==3
+        assert env.bstate.get_value("xx")==2 or env.bstate.get_value("xx")==3
 
 
     def test_genAST_sub_choice2(self):
@@ -567,7 +567,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_choice3(self):
@@ -587,7 +587,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
+        assert env.bstate.get_value("xx")==2 or env.bstate.get_value("xx")==3 or env.bstate.get_value("xx")==4
 
 
     def test_genAST_sub_select(self):
@@ -610,7 +610,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_select2(self):
@@ -633,7 +633,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==4
+        assert env.bstate.get_value("xx")==4
 
 
 
@@ -657,7 +657,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==3
+        assert env.bstate.get_value("xx")==3
 
 
     def test_genAST_sub_case(self):
@@ -683,7 +683,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==2
+        assert env.bstate.get_value("xx")==2
 
 
     def test_genAST_sub_case2(self):
@@ -709,7 +709,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==3
+        assert env.bstate.get_value("xx")==3
 
 
     def test_genAST_sub_case3(self):
@@ -736,7 +736,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==4
+        assert env.bstate.get_value("xx")==4
 
 
     def test_genAST_sub_var(self):
@@ -762,7 +762,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==4
+        assert env.bstate.get_value("xx")==4
 
 
     def test_genAST_sub_any(self):
@@ -789,7 +789,7 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==5 or env.get_value("xx")==7 # 3+4 or 5+0
+        assert env.bstate.get_value("xx")==5 or env.bstate.get_value("xx")==7 # 3+4 or 5+0
 
 
 
@@ -818,10 +818,10 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("SumR")==1
-        assert env.get_value("DifferenceR")==3
-        assert env.get_value("Var1")==2
-        assert env.get_value("Var2")==3
+        assert env.bstate.get_value("SumR")==1
+        assert env.bstate.get_value("DifferenceR")==3
+        assert env.bstate.get_value("Var1")==2
+        assert env.bstate.get_value("Var2")==3
 
 
     def test_genAST_sub_skip(self):
@@ -840,4 +840,4 @@ class TestInterpSubstitutions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_value("xx")==3
+        assert env.bstate.get_value("xx")==3

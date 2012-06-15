@@ -17,6 +17,7 @@ class DefinitionHandler():
                 for definition in clause.children:
                     assert isinstance(definition, AExpressionDefinition) or isinstance(definition, APredicateDefinition) or isinstance(definition, ASubstitutionDefinition)
                     self.def_map[definition.idName] = definition
+
  
     # side-effect: change definitions to def free Asts
     def replace_definitions(self, root):
@@ -30,6 +31,7 @@ class DefinitionHandler():
                     self.replace_definitions(child)
         except AttributeError: # leaf:no children
             return
+
     
     def _gen_def_free_ast(self, def_node):
         ast = self.def_map[def_node.idName]

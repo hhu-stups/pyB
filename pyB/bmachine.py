@@ -2,6 +2,7 @@
 from ast_nodes import *
 from helpers import file_to_AST_str
 from environment import Environment
+from bstate import BState
 
 # -*- coding: utf-8 -*-
 # abstract machine
@@ -9,7 +10,9 @@ class BMachine:
     def __init__(self, node, interpreter_method, env):
         self.name = None
         self.root = node
-        self.state = env
+        self.env = env
+        self.bstate = BState()
+        self.bstate.set_mch(self)
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
         self.set_params = []      # Set machine parameter
@@ -94,8 +97,8 @@ class BMachine:
                 assert self.aUsesMachineClause == None
                 self.aUsesMachineClause = child
             elif isinstance(child, AExtendsMachineClause):
-            	assert self.aExtendsMachineClause == None
-            	self.aExtendsMachineClause = child
+                assert self.aExtendsMachineClause == None
+                self.aExtendsMachineClause = child
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
@@ -150,7 +153,7 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.included_nodes.append({0:root,1:child.idName,2:Environment()})
+                self.included_nodes.append({0:root,1:child.idName})
 
 
     def parse_extended(self):
@@ -161,7 +164,7 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.extended_nodes.append({0:root,1:child.idName,2:Environment()})        
+                self.extended_nodes.append({0:root,1:child.idName})        
 
     def parse_seen(self):
         if self.aSeesMachineClause:
@@ -170,7 +173,7 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.seen_nodes.append({0:root,1:child.idName,2:Environment()})
+                self.seen_nodes.append({0:root,1:child.idName})
  
  
     def parse_used(self):
@@ -180,18 +183,18 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.used_nodes.append({0:root,1:child.idName,2:Environment()})
+                self.used_nodes.append({0:root,1:child.idName})
                                
 
     def get_includes_op_type(self, idName):
         for d in self.included_nodes:
             node = d[0]
             name = d[1]
-            env = d[2]
-            for op in env.mch_operation_type:
+            for op in self.env.mch_operation_type:
                 name = op[2]
+                mch_name = op[4]
                 if idName == name:
-                    return op, env
+                    return op
         raise Exception("unknown op",idName)
 
 
@@ -199,8 +202,7 @@ class BMachine:
         for d in self.included_nodes:
             node = d[0]
             name = d[1]
-            env = d[2]
-            mch = BMachine(node, self.interpreter_method, env)
+            mch = BMachine(node, self.interpreter_method, self.env)
             type_env = type_check_bmch(node, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
@@ -210,8 +212,7 @@ class BMachine:
         for d in self.extended_nodes:
             node = d[0]
             name = d[1]
-            env = d[2]
-            mch = BMachine(node, self.interpreter_method, env)
+            mch = BMachine(node, self.interpreter_method, self.env)
             type_env = type_check_bmch(node, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
@@ -221,8 +222,7 @@ class BMachine:
         for d in self.seen_nodes:
             node = d[0]
             name = d[1]
-            env = d[2]
-            mch = BMachine(node, self.interpreter_method, env)
+            mch = BMachine(node, self.interpreter_method, self.env)
             type_env = type_check_bmch(node, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
@@ -232,8 +232,7 @@ class BMachine:
         for d in self.used_nodes:
             node = d[0]
             name = d[1]
-            env = d[2]
-            mch = BMachine(node, self.interpreter_method, env)
+            mch = BMachine(node, self.interpreter_method, self.env)
             type_env = type_check_bmch(node, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
@@ -244,9 +243,8 @@ class BMachine:
             for d in self.included_nodes:
                 node = d[0]
                 name = d[1]
-                env  = d[2]
                 # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, env)
+                mch = self.interpreter_method(node, self.env)
                 self.included_mch.append(mch)
         self.add_promoted_ops()
  
@@ -256,9 +254,8 @@ class BMachine:
             for d in self.extended_nodes:
                 node = d[0]
                 name = d[1]
-                env  = d[2]
                 # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, env)
+                mch = self.interpreter_method(node, self.env)
                 self.extended_mch.append(mch)
         self.add_extended_ops()       
 
@@ -268,9 +265,8 @@ class BMachine:
             for d in self.seen_nodes:
                 node = d[0]
                 name = d[1]
-                env  = d[2]
                 # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, env)
+                mch = self.interpreter_method(node, self.env)
                 self.seen_mch.append(mch)
         self.add_seen_ops()
  
@@ -280,9 +276,8 @@ class BMachine:
             for d in self.used_nodes:
                 node = d[0]
                 name = d[1]
-                env  = d[2]
                 # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, env)
+                mch = self.interpreter_method(node, self.env)
                 self.used_mch.append(mch)
         self.add_used_ops()                   
 

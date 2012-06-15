@@ -31,14 +31,14 @@ if not mch==None: #otherwise #PREDICATE
     number = raw_input(input_str)
     number = int(number)
     if number == n-1:
-        if not env.last_env==None:
-            env = env.last_env
+        if not env.bstate.last_state==None:
+            env.bstate = env.bstate.last_state
         else:
             print "No undo possible"
     elif number == n:
         exit()
     else:
-        env = exec_op(env, op_and_state_list, number)
+        env.bstate = exec_op(env, op_and_state_list, number)
 	# DO-WHILE python Problem
     while not number==n:
             print mch.name," - Invariant:", mch.eval_Invariant(env)
@@ -48,11 +48,11 @@ if not mch==None: #otherwise #PREDICATE
             number = raw_input(input_str)
             number = int(number)
             if number == n-1:
-                if not env.last_env==None:
-                    env = env.last_env
+                if not env.bstate.last_state==None:
+                    env.bstate = env.bstate.last_state
                 else:
                     print "No undo possible"
             elif number == n:
                 exit()
             else:
-                env = exec_op(env, op_and_state_list, number)
+                env.bstate = exec_op(env, op_and_state_list, number)
