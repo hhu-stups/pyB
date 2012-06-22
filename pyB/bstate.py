@@ -23,7 +23,7 @@ class BState():
                 string += name + ":" + str(value_map[name]) + " "
             print string
         for m in self.mch.included_mch:
-            m.env.print_env() # Todo: only state
+            m.bstate.print_state() 
 
 
     def get_value(self, id_Name):

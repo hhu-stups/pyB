@@ -18,13 +18,7 @@ class Environment():
     # used for debugging and cli-ui
     def print_env(self):
         #print self.mch.name
-        for value_map in self.value_stack:
-            string = ""
-            for name in value_map:
-                string += name + ":" + str(value_map[name]) + " "
-            print string
-        for m in self.mch.included_mch:
-            m.state.print_env()
+        self.bstate.print_state()
         #print "Types:"
         #for node in self.node_to_type_map:
         #    print node.idName,":", self.node_to_type_map[node]

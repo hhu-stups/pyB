@@ -75,6 +75,7 @@ def interpret(node, env):
             # Some Constants are set via Prop. Preds
             # FIXME: This is a hack! Introduce fresh envs!
             res = interpret(mch.aPropertiesMachineClause, env)
+            #res = None
             # Now set that constants which still dont have a value
             if mch.aConstantsMachineClause:
                 const_nodes = []
@@ -243,6 +244,7 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        print aSet1, aSet2
         return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
@@ -953,6 +955,7 @@ def interpret(node, env):
         assert isinstance(node.children[0], Predicate)
         assert isinstance(node.children[1], Substitution)
         condition = interpret(node.children[0], env)
+        print condition, node.children[0]
         if condition:
             interpret(node.children[1], env)
             return
@@ -1165,13 +1168,17 @@ def interpret(node, env):
         #save_mch = env.mch
         #env.bstate = call_mch.bstate
         #env.mch = call_mch
-        env.bstate.push_new_frame(id_nodes)
-        op_node = op_type[3]
+        values = []
         for i in range(len(para_types)):
             value = interpret(node.children[i], env)
+            values.append(value)
+        op_node = op_type[3]
+        env.bstate.push_new_frame(id_nodes)
+        for i in range(len(para_types)):
             name = para_types[i][0].idName
-            env.bstate.set_value(name, value)
+            env.bstate.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
+        #print_ast(op_node)
         result = interpret(op_node.children[-1], env)
         env.bstate.pop_frame()
         # revert to old mch+state

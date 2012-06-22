@@ -25,6 +25,7 @@ if not mch==None: #otherwise #PREDICATE
     op_and_state_list = calc_succ_states(env, mch)
     print mch.name," - Invariant:", mch.eval_Invariant(env)
     if op_and_state_list==[]:
+        env.bstate.print_state()
         exit()
     n = show_ui(env, mch, op_and_state_list)
     input_str = "Input (0-"+str(n)+"):"
@@ -56,3 +57,5 @@ if not mch==None: #otherwise #PREDICATE
                 exit()
             else:
                 env.bstate = exec_op(env, op_and_state_list, number)
+else:
+    env.bstate.print_state()
