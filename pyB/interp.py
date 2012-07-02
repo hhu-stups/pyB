@@ -8,7 +8,32 @@ from environment import Environment
 from enumeration import *
 
 
-
+# node is an "side-effect-free" AST
+def learn_assigned_values(node, env):
+    if isinstance(node, AEqualPredicate):
+        # special case: learn values if None (optimization)
+        if isinstance(node.children[0], AIdentifierExpression) and env.bstate.get_value(node.children[0].idName)==None:
+			if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression):
+				try:
+					expr = interpret(node.children[1], env)
+					env.bstate.set_value(node.children[0].idName, expr)
+					return
+				except Exception:
+					return 
+        elif isinstance(node.children[1], AIdentifierExpression) and env.bstate.get_value(node.children[1].idName)==None:
+			if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression):
+				try:
+					expr = interpret(node.children[0], env)
+					env.bstate.set_value(node.children[1].idName, expr)
+					return
+				except Exception:
+					return 
+        else:
+            return
+    if isinstance(node, AStringExpression) or isinstance(node,AIdentifierExpression) or isinstance(node, AIntegerExpression):
+    	return
+    for child in node.children:
+        learn_assigned_values(child, env)
 
 # sideeffect:
 # evals pred and sets var to values
@@ -22,14 +47,15 @@ def interpret(node, env):
 # ******************************
     #print node
     if isinstance(node,APredicateParseUnit):
-        idNodess = find_var_nodes(root.children[0]) 
-        type_check_predicate(node, env)
+        idNodes = find_var_nodes(node.children[0]) 
+        idNames = [n.idName for n in idNodes]
+        type_check_predicate(node, env, idNames)
         if idNames ==[]:
             result = interpret(node.children[0], env)
             print result
             return
         else:
-            print "enum. vars:",[n.idName for n in idNodes]
+            print "enum. vars:", idNames
             env.bstate.add_ids_to_frame(idNames)
             gen = try_all_values(node.children[0], env, idNodes)
             if gen.next():
@@ -40,7 +66,7 @@ def interpret(node, env):
                 print False
                 return
         print True
-        return
+        return None
     elif isinstance(node, AAbstractMachineParseUnit):
         mch = BMachine(node, interpret, env)
         #env.bstate.set_mch(mch)
@@ -57,7 +83,6 @@ def interpret(node, env):
         env.bstate.set_mch(mch)
         env.mch = mch
         # TODO: Check with B spec
-        # TODO: aDefinitionsMachineClause
         # Schneider Book page 62-64:
         # The parameters p make the constraints c True
         # #p.C
@@ -71,20 +96,25 @@ def interpret(node, env):
             interpret(mch.aConstantsMachineClause, env)
         if mch.aPropertiesMachineClause: # B
             # set up constants
+            # Some Constants/Sets are set via Prop. Preds
+            # TODO: give Blacklist of Variable Names
+            # find all constants like x=42 oder y={1,2,3}
+            learn_assigned_values(mch.aPropertiesMachineClause, env)
+            # if there are constants
             #TODO: Sets
-            # Some Constants are set via Prop. Preds
-            # FIXME: This is a hack! Introduce fresh envs!
-            res = interpret(mch.aPropertiesMachineClause, env)
-            #res = None
-            # Now set that constants which still dont have a value
             if mch.aConstantsMachineClause:
                 const_nodes = []
+                # find all constants/sets which are still not set
                 for idNode in mch.aConstantsMachineClause.children:
                     assert isinstance(idNode, AIdentifierExpression)
-                    const_nodes.append(idNode)
-                if not res:
-                    gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                    assert gen.next()
+                    if not env.bstate.get_value(idNode.idName):
+                    	const_nodes.append(idNode)
+                if const_nodes==[]:
+                    assert interpret(mch.aPropertiesMachineClause, env)
+                else:
+                    # if there are unset constants/sets enumerate them
+                	gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
+                	assert gen.next()
                     
 
 
@@ -244,7 +274,6 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        print aSet1, aSet2
         return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
@@ -1178,11 +1207,10 @@ def interpret(node, env):
             name = para_types[i][0].idName
             env.bstate.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
-        #print_ast(op_node)
         result = interpret(op_node.children[-1], env)
         env.bstate.pop_frame()
         # revert to old mch+state
-    	#env.bstate = save_state
+        #env.bstate = save_state
         #env.mch = save_mch
         return result
     else:

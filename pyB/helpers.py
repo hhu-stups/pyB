@@ -72,7 +72,7 @@ def _find_var_names(node, lst):
             return #FIXME no children
 
 
-def find_var_nodes(node, lst):
+def find_var_nodes(node):
 	lst = []
 	_find_var_nodes(node, lst) #side-effect: fills list
 	return lst

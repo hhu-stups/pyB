@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 22.05.2012 
+PyB: 31.08.2011 - 25.06.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -89,7 +89,7 @@ Index
     6.1.PARSING:
      PyB uses the same java-parser like ProB with one exception: 
      A AST-visitor "ASTPython.java" gens. a String with pythoncode.
-     This string is executed with "exec" in "pyB.py".
+     This string is executed with the "exec"-method in "pyB.py".
      (This needs to be changed for RPython to Jit it. e.g. through XML-parsing)
      The string is mapped via "exec" to the ASTNodes (python-classes) in
      "ast_nodes.py"
@@ -100,7 +100,7 @@ Index
      the definition_handler module
      
     6.3.TYPECHECKING: 
-     A map ASTNode-> Type is created via the typeit method.
+     A map(dict) ASTNode->BType is created via the typeit method.
      It uses a unify method to handle unknown types like "S=V\/T T:POW(X)".
      This method is not fully implemented.
      The typing is necessery to eval. quantified preds:
@@ -108,12 +108,13 @@ Index
      The TypeEnv(!=map) is filled with the unknown vars before a run.
      This assumes that an var which is not introduced in the vars section or
      the parameters of an opp is an quantified var or an error. This
-     is handled in the get_type method of the env. The typin uses a stack of
+     is handled in the get_type method of the env. The typing uses a stack of
      environments. Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
      and are added to a frame before typing if they are not quantified.
 
     6.4.INTERPRETATION:
-     This AST is eval. via an AST-interpreter "interp.py"
+     This AST is eval. via an AST-interpreter "interp.py". It uses the enumeration-methods
+     in "enumeration.py"
 
 
 
@@ -135,7 +136,9 @@ Index
     - BUG: mising String spaces (maybe a parser bug- java code) 
     - enable function applications (4.1.9) with many args
     - Implement B-mch-Operations
-    - find D-Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them. 
+    - find D-Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them.
+    - Implement Definitions 
+    - seperate enumeration from interpretation-module
 
 
 8. TODO-LIST:
@@ -146,7 +149,7 @@ Index
     - enable infinite sets
     - Implement UNION and INTER
     - Implement Rodin interface
-    - Implement Definitions
+    - Implement Definitions FILES
     - set mch-para to "good" values
     - enum set which have no expl. elements
     - Maybe all asserts inside the typechecker must be replaced by 
@@ -171,7 +174,6 @@ Index
     - check if all astnodes return types (if they have to)
     - Think of unifications like: "it is A or B" e.g. perm(s)
     - Dont create new instances of IntegerType if not nec.
-    - seperate enumeration from interpretation-module
     - seperate inperp-mode from interpretation-module
 8.3 minor problems
     - Dont assume that all functions are 2-tuple: otherwise crash

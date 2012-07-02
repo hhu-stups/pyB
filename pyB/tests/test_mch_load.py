@@ -291,3 +291,32 @@ class TestMCHLaod():
         env = Environment()
         interpret(root, env)# search for CONSTANTS which make PROPERTIES True
         assert env.bstate.get_value("s") == "Hallo Welt"
+        
+        
+    def test_CartesianProductOverride(self):
+        # added some 42 in the assertions clause
+        string = '''
+        MACHINE CartesianProductOverride
+		SETS
+		 S;T
+		CONSTANTS a,b,c
+		PROPERTIES
+		 /* Rule Hypotheses */
+		 a :  S <-> T &
+		 dom(a) = b &
+		 c <: T & 
+		
+		 /* Rule Conclusion */
+		 not( a <+ b * c = b * c )
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        assert isinstance(root.children[3], APropertiesMachineClause)
+        assert interpret(root.children[3], env)
+        

@@ -57,5 +57,5 @@ if not mch==None: #otherwise #PREDICATE
                 exit()
             else:
                 env.bstate = exec_op(env, op_and_state_list, number)
-else:
-    env.bstate.print_state()
+#else:
+#    env.bstate.print_state()
