@@ -13,25 +13,25 @@ def learn_assigned_values(node, env):
     if isinstance(node, AEqualPredicate):
         # special case: learn values if None (optimization)
         if isinstance(node.children[0], AIdentifierExpression) and env.bstate.get_value(node.children[0].idName)==None:
-			if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression):
-				try:
-					expr = interpret(node.children[1], env)
-					env.bstate.set_value(node.children[0].idName, expr)
-					return
-				except Exception:
-					return 
+            if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression) or isinstance(node.children[1], ABoolSetExpression) or isinstance(node.children[1], ATrueExpression) or isinstance(node.children[1], AFalseExpression):
+                try:
+                    expr = interpret(node.children[1], env)
+                    env.bstate.set_value(node.children[0].idName, expr)
+                    return
+                except Exception:
+                    return 
         elif isinstance(node.children[1], AIdentifierExpression) and env.bstate.get_value(node.children[1].idName)==None:
-			if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression):
-				try:
-					expr = interpret(node.children[0], env)
-					env.bstate.set_value(node.children[1].idName, expr)
-					return
-				except Exception:
-					return 
+            if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression) or isinstance(node.children[0], ABoolSetExpression) or isinstance(node.children[0], ATrueExpression) or isinstance(node.children[0], AFalseExpression):
+                try:
+                    expr = interpret(node.children[0], env)
+                    env.bstate.set_value(node.children[1].idName, expr)
+                    return
+                except Exception:
+                    return 
         else:
             return
     if isinstance(node, AStringExpression) or isinstance(node,AIdentifierExpression) or isinstance(node, AIntegerExpression):
-    	return
+        return
     for child in node.children:
         learn_assigned_values(child, env)
 
@@ -55,15 +55,28 @@ def interpret(node, env):
             print result
             return
         else:
-            print "enum. vars:", idNames
             env.bstate.add_ids_to_frame(idNames)
-            gen = try_all_values(node.children[0], env, idNodes)
-            if gen.next():
+            learn_assigned_values(node, env)
+            not_set = []
+            for n in idNodes:
+                if env.bstate.get_value(n.idName)==None:
+                    not_set.append(n)
+            # enumerate only unknown vars
+            if not_set:
+                print "enum. vars:", [n.idName for n in not_set]
+                gen = try_all_values(node.children[0], env, not_set)
+                if gen.next():
+                    for i in idNames:
+                        print i,":", env.bstate.get_value(i)
+                else:
+                    print "No Solution found"
+                    print False
+                    return
+            else:
                 for i in idNames:
                     print i,":", env.bstate.get_value(i)
-            else:
-                print "No Solution found"
-                print False
+                result = interpret(node.children[0], env)
+                print result
                 return
         print True
         return None
@@ -108,13 +121,13 @@ def interpret(node, env):
                 for idNode in mch.aConstantsMachineClause.children:
                     assert isinstance(idNode, AIdentifierExpression)
                     if not env.bstate.get_value(idNode.idName):
-                    	const_nodes.append(idNode)
+                        const_nodes.append(idNode)
                 if const_nodes==[]:
                     assert interpret(mch.aPropertiesMachineClause, env)
                 else:
                     # if there are unset constants/sets enumerate them
-                	gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                	assert gen.next()
+                    gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
+                    assert gen.next()
                     
 
 

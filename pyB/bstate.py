@@ -40,7 +40,7 @@ class BState():
             except KeyError:
                 continue
         # lookup included mch:
-        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]:
+        if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]):
             for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 try:
                     value = m.bstate.get_value(id_Name)
@@ -64,7 +64,7 @@ class BState():
                 return
         # lookup included mch, no seen mch!
         # if id_Name is a variable which is part of a seen mch M than self must be the state of M!
-        if not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == [] or not self.mch.extended_mch==[]:
+        if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == [] or not self.mch.extended_mch==[]):
             for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 try:
                     return m.bstate.set_value(id_Name, value)

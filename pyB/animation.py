@@ -49,7 +49,8 @@ def calc_succ_states(env, bmachine):
                         bmachine.interpreter_method(substitution.children[1], env)
                         return_values = add_return_values(env, rids)
                         result.append([op, parameter_list, return_values, env.bstate])
-                        k = k +1 
+                        k = k +1
+                        env.bstate = save_next_state # generator(gen) musst use correct state
                     env.bstate = save_next_state
                 # no parameter
                 else:

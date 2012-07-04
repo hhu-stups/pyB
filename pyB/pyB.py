@@ -2,15 +2,23 @@
 import sys
 from interp import interpret
 from environment import Environment
-from helpers import file_to_AST_str
+from helpers import file_to_AST_str, solution_file_to_AST_str
 from animation_clui import show_ui
 from animation import calc_succ_states, exec_op
 from definition_handler import DefinitionHandler
 from ast_nodes import *
 
 
-if len(sys.argv)>1:
+env = Environment()
+
+if len(sys.argv)==2:
     file_name_str = sys.argv[1]
+elif len(sys.argv)==3:
+    file_name_str = sys.argv[1]
+    solution_file_name_str = sys.argv[2]
+    ast_str = solution_file_to_AST_str(solution_file_name_str)
+    exec ast_str
+    interpret(root, env) # write solutions to env
 else:
     file_name_str = "input.txt"
 
@@ -18,7 +26,6 @@ ast_string = file_to_AST_str(file_name_str)
 exec ast_string
 dh = DefinitionHandler()
 dh.repl_defs(root)
-env = Environment()
 mch = interpret(root, env)
 
 if not mch==None: #otherwise #PREDICATE

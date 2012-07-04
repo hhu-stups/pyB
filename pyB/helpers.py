@@ -13,6 +13,17 @@ command_str += ":. de.prob.cliparser.CliBParser %s %s"
 #option_str = " -ast"
 option_str = " -python"
 
+
+def solution_file_to_AST_str(file_name_str):
+    f = open(file_name_str,"r")
+    string = "#PREDICATE \n"+f.read()
+    f.close()
+    f = open("solution.tmp", "w")
+    f.write(string)
+    f.close()
+    print "reading solution file.."
+    return file_to_AST_str("solution.tmp")
+    
 def file_to_AST_str(file_name_str):
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)

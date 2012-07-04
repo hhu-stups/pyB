@@ -294,7 +294,6 @@ class TestMCHLaod():
         
         
     def test_CartesianProductOverride(self):
-        # added some 42 in the assertions clause
         string = '''
         MACHINE CartesianProductOverride
 		SETS
