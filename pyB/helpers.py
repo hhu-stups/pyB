@@ -21,8 +21,9 @@ def solution_file_to_AST_str(file_name_str):
     f = open("solution.tmp", "w")
     f.write(string)
     f.close()
-    print "reading solution file.."
+    print "reading solution file "+file_name_str+" ..."
     return file_to_AST_str("solution.tmp")
+
     
 def file_to_AST_str(file_name_str):
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
