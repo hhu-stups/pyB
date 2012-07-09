@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret
+from interp import interpret, write_solutions_to_env
 from environment import Environment
-from helpers import file_to_AST_str, solution_file_to_AST_str
+from helpers import file_to_AST_str, solution_file_to_AST_str, print_ast
 from animation_clui import show_ui
 from animation import calc_succ_states, exec_op
 from definition_handler import DefinitionHandler
@@ -18,7 +18,9 @@ elif len(sys.argv)==3:
     solution_file_name_str = sys.argv[2]
     ast_str = solution_file_to_AST_str(solution_file_name_str)
     exec ast_str
-    interpret(root, env) # write solutions to env
+    write_solutions_to_env(root, env)
+    if env.solutions:
+        print "learnd: ", [x for x in env.solutions]
 else:
     file_name_str = "input.txt"
 

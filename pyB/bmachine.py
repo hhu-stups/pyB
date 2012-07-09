@@ -11,8 +11,6 @@ class BMachine:
         self.name = None
         self.root = node
         self.env = env
-        self.bstate = BState()
-        self.bstate.set_mch(self)
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
         self.set_params = []      # Set machine parameter
@@ -107,6 +105,27 @@ class BMachine:
         self.parse_extended()
         self.parse_seen()
         self.parse_used()
+        names = []
+        if env.solutions:
+            names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        self.bstate = BState(self, names, env.solutions)
+
+
+    def _learn_names(self, cmc, vmc, smc):
+        names =[]
+        if cmc:
+            for idNode in cmc.children:
+                assert isinstance(idNode, AIdentifierExpression)
+                names.append(idNode.idName)
+        if vmc:
+            for idNode in vmc.children:
+                assert isinstance(idNode, AIdentifierExpression)
+                names.append(idNode.idName)
+        if smc:
+            for dSet in smc.children:
+                if isinstance(dSet, ADeferredSet):
+                    names.append(dSet.idName)
+        return names
 
 
     def add_promoted_ops(self):

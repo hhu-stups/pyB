@@ -3,12 +3,20 @@ from btypes import *
 
 # BState: Set of Values
 class BState():
-    def __init__(self):
+    def __init__(self, bmachine, names=[], solutions={}):
         # Values of global and local vars: string -> value.
         # NEW FRAME on this stack via append <=> New Var. Scope.
         self.value_stack = [{}]
-        self.mch = None
+        self.mch = bmachine
         self.last_bstate = None # used in undo
+        self._write_solutions(names, solutions)
+    
+    
+    def _write_solutions(self, names, solutions):
+        vstack = self.value_stack[-1]
+        for name in names:
+            if name in solutions or self.mch.name+"."+name in solutions:
+                vstack[name] = solutions[name]
     
     # used in undo
     def save_last_state(self):
@@ -16,14 +24,16 @@ class BState():
         self.last_bstate = copy.deepcopy(self)
         
     def print_state(self):
-        print self.mch.name
+        if self.mch:
+            print self.mch.name
         for value_map in self.value_stack:
             string = ""
             for name in value_map:
                 string += name + ":" + str(value_map[name]) + " "
             print string
-        for m in self.mch.included_mch:
-            m.bstate.print_state() 
+        if self.mch:
+            for m in self.mch.included_mch:
+                m.bstate.print_state() 
 
 
     def get_value(self, id_Name):
@@ -72,11 +82,6 @@ class BState():
                     continue
         string = "set LookupErr: %s" % (id_Name)
         raise KeyError(string)
-
-
-    # reference to the owner-mch of this state
-    def set_mch(self, mch):
-        self.mch = mch
 
 
     # leave scope: throw all values of local vars away

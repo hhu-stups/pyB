@@ -344,14 +344,12 @@ def typeit(node, env, type_env):
         # TODO: mch-parameters
         mch = BMachine(node, None, env)
         env.bstate = mch.bstate
-        env.bstate.set_mch(mch)
         env.mch = mch
         mch.type_included(type_check_bmch, type_env)
         mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
         env.bstate = mch.bstate
-        env.bstate.set_mch(mch)
         env.mch = mch
 
         # add para-nodes to map

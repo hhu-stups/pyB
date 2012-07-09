@@ -8,8 +8,38 @@ from environment import Environment
 from enumeration import *
 
 
-# node is an "side-effect-free" AST
+# assumes that every Variable/Constant/Set appears once 
+def write_solutions_to_env(root, env):
+    for node in root.children:    
+        if isinstance(node, AConjunctPredicate):
+            write_solutions_to_env(node, env)
+            write_solutions_to_env(node, env)
+        elif isinstance(node, AEqualPredicate):
+            try:
+				if isinstance(node.children[0], AIdentifierExpression):
+					if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression) or isinstance(node.children[1], ABoolSetExpression) or isinstance(node.children[1], ATrueExpression) or isinstance(node.children[1], AFalseExpression):
+						expr = interpret(node.children[1], env)
+						env.solutions[node.children[0].idName] = expr
+						continue
+				elif isinstance(node.children[1], AIdentifierExpression):
+					if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression) or isinstance(node.children[0], ABoolSetExpression) or isinstance(node.children[0], ATrueExpression) or isinstance(node.children[0], AFalseExpression):
+						expr = interpret(node.children[0], env)
+						env.solutions[node.children[1].idName] = expr
+						continue
+				else:
+					continue
+            except Exception:
+                continue 
+           
+
 def learn_assigned_values(root, env):
+	lst = []
+	_learn_assigned_values(root, env, lst)
+	return lst
+	
+
+# node is an "side-effect-free" AST (no assignments := )
+def _learn_assigned_values(root, env, lst):
     for node in root.children:
         if isinstance(node, AEqualPredicate):
             # special case: learn values if None (optimization)
@@ -18,6 +48,7 @@ def learn_assigned_values(root, env):
                     try:
                         expr = interpret(node.children[1], env)
                         env.bstate.set_value(node.children[0].idName, expr)
+                        lst.append(node.children[0].idName)
                         continue
                     except Exception:
                         continue 
@@ -26,14 +57,15 @@ def learn_assigned_values(root, env):
                     try:
                         expr = interpret(node.children[0], env)
                         env.bstate.set_value(node.children[1].idName, expr)
+                        lst.append(node.children[1].idName)
                         continue
                     except Exception:
                         continue 
             else:
                 continue
         elif isinstance(node, AConjunctPredicate):
-            learn_assigned_values(node, env)
-            learn_assigned_values(node, env)
+            _learn_assigned_values(node, env, lst)
+            _learn_assigned_values(node, env, lst)
 
 
 # sideeffect:
@@ -57,7 +89,9 @@ def interpret(node, env):
             return
         else:
             env.bstate.add_ids_to_frame(idNames)
-            learn_assigned_values(node, env)
+            learnd_vars = learn_assigned_values(node, env)
+            if learnd_vars:
+                print "learnd: ", learnd_vars
             not_set = []
             for n in idNodes:
                 if env.bstate.get_value(n.idName)==None:
@@ -86,7 +120,6 @@ def interpret(node, env):
         #env.bstate.set_mch(mch)
         #print mch.name
         env.bstate = mch.bstate
-        env.bstate.set_mch(mch)
         env.mch = mch
         type_check_bmch(node, mch) # also checks all included
         mch.init_include_mchs()
@@ -94,7 +127,6 @@ def interpret(node, env):
         mch.init_used_mchs()
         mch.init_extended_mchs()
         env.bstate = mch.bstate
-        env.bstate.set_mch(mch)
         env.mch = mch
         # TODO: Check with B spec
         # Schneider Book page 62-64:
@@ -113,7 +145,9 @@ def interpret(node, env):
             # Some Constants/Sets are set via Prop. Preds
             # TODO: give Blacklist of Variable Names
             # find all constants like x=42 oder y={1,2,3}
-            learn_assigned_values(mch.aPropertiesMachineClause, env)
+            learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
+            if learnd_vars:
+                print "leard constants: ", learnd_vars
             # if there are constants
             #TODO: Sets
             if mch.aConstantsMachineClause:
