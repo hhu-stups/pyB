@@ -622,8 +622,8 @@ def typeit(node, env, type_env):
         atype1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(UnknownType(None,None))
         expected_type1 = PowerSetType(UnknownType(None,None))
-        unify_equal(atype0, expected_type0, type_env)
-        unify_equal(atype1, expected_type1, type_env)        
+        atype0 = unify_equal(atype0, expected_type0, type_env)
+        atype1 = unify_equal(atype1, expected_type1, type_env)      
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, ADomainExpression):
         rel_type =  typeit(node.children[0], env, type_env)
@@ -751,8 +751,8 @@ def typeit(node, env, type_env):
         type1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(UnknownType(None,None))
         expected_type1 = PowerSetType(UnknownType(None,None))
-        unify_equal(type0, expected_type0, type_env)
-        unify_equal(type1, expected_type1, type_env)
+        type0 = unify_equal(type0, expected_type0, type_env)
+        type1 = unify_equal(type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(type0, type1)))
     elif isinstance(node, AFunctionExpression):
         type0 = typeit(node.children[0], env, type_env)
@@ -784,7 +784,7 @@ def typeit(node, env, type_env):
     elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression) or isinstance(node, AIseq1Expression):
         type0 = typeit(node.children[0], env, type_env)
         expected_type0 = PowerSetType(UnknownType(None,None))
-        unify_equal(type0, expected_type0, type_env)
+        type0 = unify_equal(type0, expected_type0, type_env)
         return PowerSetType(PowerSetType(CartType(PowerSetType(IntegerType(None)),type0)))
     elif isinstance(node, AGeneralConcatExpression):
         type0 = typeit(node.children[0], env, type_env)

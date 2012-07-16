@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 25.06.2012 
+PyB: 31.08.2011 - 12.07.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -90,8 +90,8 @@ Index
      PyB uses the same java-parser like ProB with one exception: 
      A AST-visitor "ASTPython.java" gens. a String with pythoncode.
      This string is executed with the "exec"-method in "pyB.py".
-     (This needs to be changed for RPython to Jit it. e.g. through XML-parsing)
-     The string is mapped via "exec" to the ASTNodes (python-classes) in
+     (This needs to be changed for RPython to Jit it. e.g. through JSON-Codegen)
+     The string is mapped via "exec" to the AST-Nodes (python-classes) in
      "ast_nodes.py"
 
     6.2 DEFINITIONS:
@@ -139,6 +139,7 @@ Index
     - find D-Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them.
     - Implement Definitions 
     - seperate enumeration from interpretation-module
+    - "=" is used as ":=" inside the interpreter
 
 
 8. TODO-LIST:
@@ -154,6 +155,7 @@ Index
     - enum set which have no expl. elements
     - Maybe all asserts inside the typechecker must be replaced by 
       unify_equal()
+    - write JSON Codegen of javaparser
     - renaming with '.' (e.g. INCLUDES)
     - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
 8.2 Refactoring / small fixes
@@ -185,7 +187,6 @@ Index
 8.4 Bugs:
     - parallel substitution is not parallel
     - (2 + 3) / 2 == 2
-    - "=" is used as ":=" inside the interpreter
     - MAYBE BUG: eval of preds changes value_stack
     - Vars are added to a Frame at the wrong position!
     - typechecking the settype contains data, this data is not valid 

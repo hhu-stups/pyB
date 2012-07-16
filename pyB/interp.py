@@ -9,23 +9,21 @@ from enumeration import *
 
 
 # assumes that every Variable/Constant/Set appears once 
+# TODO: Add typeinfo too
 def write_solutions_to_env(root, env):
     for node in root.children:    
         if isinstance(node, AConjunctPredicate):
             write_solutions_to_env(node, env)
-            write_solutions_to_env(node, env)
         elif isinstance(node, AEqualPredicate):
             try:
 				if isinstance(node.children[0], AIdentifierExpression):
-					if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression) or isinstance(node.children[1], ABoolSetExpression) or isinstance(node.children[1], ATrueExpression) or isinstance(node.children[1], AFalseExpression):
-						expr = interpret(node.children[1], env)
-						env.solutions[node.children[0].idName] = expr
-						continue
+					expr = interpret(node.children[1], env)
+					env.solutions[node.children[0].idName] = expr
+					continue
 				elif isinstance(node.children[1], AIdentifierExpression):
-					if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression) or isinstance(node.children[0], ABoolSetExpression) or isinstance(node.children[0], ATrueExpression) or isinstance(node.children[0], AFalseExpression):
-						expr = interpret(node.children[0], env)
-						env.solutions[node.children[1].idName] = expr
-						continue
+					expr = interpret(node.children[0], env)
+					env.solutions[node.children[1].idName] = expr
+					continue
 				else:
 					continue
             except Exception:

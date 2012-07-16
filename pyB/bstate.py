@@ -77,7 +77,8 @@ class BState():
         if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == [] or not self.mch.extended_mch==[]):
             for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
                 try:
-                    return m.bstate.set_value(id_Name, value)
+                    m.bstate.set_value(id_Name, value)
+                    return
                 except KeyError:
                     continue
         string = "set LookupErr: %s" % (id_Name)

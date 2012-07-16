@@ -55,8 +55,6 @@ def string_to_file(string, file_name):
     return f
 
 
-
-
 # added every id in the a to a list, except quantified ids
 # predicate: root
 # b-machines: mch-clauses
@@ -155,6 +153,7 @@ def double_element_check(lst):
         if lst.count(element)>1:
             return True
     return False
+
 
 def print_ast(root):
     print root
