@@ -320,6 +320,9 @@ class ANaturalSetExpression(Expression):
 class ANat1SetExpression(Expression):
     pass
 
+class AIntegerSetExpression(Expression):
+    pass
+
 class ALambdaExpression(Expression):
     pass
 

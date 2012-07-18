@@ -49,8 +49,8 @@ class SetType(BType):
 # pairtype: Type x Type
 class CartType(BType):
     def __init__(self, setA, setB):
-        assert isinstance(setA, PowerSetType)
-        assert isinstance(setB, PowerSetType)
+        #assert isinstance(setA, PowerSetType)
+        #assert isinstance(setB, PowerSetType)
         self.data = (setA, setB)
 
 
@@ -63,7 +63,7 @@ class StructType(BType):
 class UnknownType(): # no BType: used later to throw Exceptions
     # the arg real_type is only set by tests!
     def __init__(self, name, real_type):
-        # this member is used to learn the name of sets
+        # this member is used to learn the name of sets and for debugging
         self.name = name
         # if this is still None after typechecking 
         # than a Typeerror has been found

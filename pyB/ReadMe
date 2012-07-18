@@ -184,6 +184,7 @@ Index
     - Tests ignore Frames and Scopes.
     - not tested: append/preprend more than one element - possible?
     - no random choice in CHOICE and SELECT
+    - INTEGER is min_int to max_int
 8.4 Bugs:
     - parallel substitution is not parallel
     - (2 + 3) / 2 == 2

@@ -8,6 +8,17 @@ from helpers import file_to_AST_str, string_to_file
 file_name = "input.txt"
 
 class TestTypesNumbers():
+    def test_types_simple_integer(self):
+        # Build AST
+        string_to_file("#PREDICATE x:INTEGER", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["x"])
+        assert isinstance(env.get_type("x"), IntegerType)
+        
     def test_types_simple_nat(self):
         # Build AST
         string_to_file("#PREDICATE x:NAT", file_name)
@@ -476,6 +487,42 @@ class TestTypesNumbers():
         env = Environment()
         _test_typeit(root, env, [], ["x"])
         assert isinstance(env.get_type("x"), IntegerType)
+
+
+    def test_types_exist(self):
+        # Build AST
+        string_to_file("#PREDICATE #(z).( z<4 & z>0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["z"])
+        assert isinstance(env.get_type("z"), IntegerType)
+
+
+    def test_types_exist2(self):
+        # Build AST
+        string_to_file("#PREDICATE S<:NAT & #(z).(z:S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S"])
+        assert isinstance(env.get_type("z"), IntegerType)
+        
+
+    def test_types_exist3(self):
+        # Build AST
+        string_to_file("#PREDICATE  #(z).(z:S) & S<:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["S"])
+        assert isinstance(env.get_type("z"), IntegerType)
 
 
     def test_types_expr_succ(self):
