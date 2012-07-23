@@ -63,7 +63,6 @@ def _learn_assigned_values(root, env, lst):
                 continue
         elif isinstance(node, AConjunctPredicate):
             _learn_assigned_values(node, env, lst)
-            _learn_assigned_values(node, env, lst)
 
 
 # sideeffect:

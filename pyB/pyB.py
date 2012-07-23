@@ -31,6 +31,7 @@ dh.repl_defs(root)
 mch = interpret(root, env)
 
 if not mch==None: #otherwise #PREDICATE
+    #print "calc states..."
     op_and_state_list = calc_succ_states(env, mch)
     print mch.name," - Invariant:", mch.eval_Invariant(env)
     if op_and_state_list==[]:
