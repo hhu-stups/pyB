@@ -278,16 +278,125 @@ def create_sequence(images, number, length):
 def quick_member_eval(root, env):
     from interp import interpret
     assert isinstance(root, ABelongPredicate)
-    if (isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], AIdentifierExpression)) and isinstance(root.children[1], ARelationsExpression):
-        aSet = interpret(root.children[0], env)
-        S = interpret(root.children[1].children[0], env)
-        T = interpret(root.children[1].children[1], env)
-        for tup in aSet:
-            preimage = tup[0]
-            image = tup[1]
-            if (not preimage in S) or (not image in T):
-                return False
-        return True 
+    if isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], AIdentifierExpression):
+        if isinstance(root.children[1], ARelationsExpression):
+            aSet = interpret(root.children[0], env)
+            S = interpret(root.children[1].children[0], env)
+            T = interpret(root.children[1].children[1], env)
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+            return True 
+        elif isinstance(root.children[1], APartialFunctionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+            return True
+        elif isinstance(root.children[1], APartialInjectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                T.remove(image) # test injection
+            return True
+        elif isinstance(root.children[1], APartialSurjectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            met = []
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                met.append(image)
+            if not set(T)==set(met): 
+                return False # test surjection
+            return True
+        elif isinstance(root.children[1], APartialBijectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                T.remove(image) # test injection
+            if not T==[]: 
+                return False # test surjection
+            return True
+        elif isinstance(root.children[1], ATotalFunctionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+            if not S==[]: 
+                return False # test total
+            return True  
+        elif isinstance(root.children[1], ATotalInjectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                T.remove(image) # test injection
+            if not S==[]: 
+                return False # test total
+            return True   
+        elif isinstance(root.children[1], ATotalSurjectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            met = []
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                met.append(image)
+            if not (S==[] and set(met) ==set(T)): 
+                return False # test total and surjection
+            return True
+        elif isinstance(root.children[1], ATotalBijectionExpression):
+            aSet = interpret(root.children[0], env)
+            S = list(interpret(root.children[1].children[0], env))
+            T = list(interpret(root.children[1].children[1], env))
+            for tup in aSet:
+                preimage = tup[0]
+                image = tup[1]
+                if (not preimage in S) or (not image in T):
+                    return False
+                S.remove(preimage) # test function attribute
+                T.remove(image)
+            if not (S==[] and T==[]): 
+                return False # test total and bijection
+            return True                                         
     raise Exception("Interpreter Bug: Unknown node")
 
 
@@ -295,10 +404,25 @@ def quick_member_eval(root, env):
 def quick_enum_possible(root, env):
     possible = False
     if isinstance(root, ABelongPredicate):
-        if isinstance(root.children[0], AIdentifierExpression) and isinstance(root.children[1], ARelationsExpression):
-            possible = True
-        if isinstance(root.children[0], ASetExtensionExpression) and isinstance(root.children[1], ARelationsExpression):
-            possible = True
+        if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression):
+            if isinstance(root.children[1], ARelationsExpression):
+                possible = True
+            elif isinstance(root.children[1], APartialFunctionExpression):
+                possible = True
+            elif isinstance(root.children[1], APartialInjectionExpression):
+                possible = True
+            elif isinstance(root.children[1], APartialSurjectionExpression):
+                possible = True
+            elif isinstance(root.children[1], APartialBijectionExpression):
+                possible = True  
+            elif isinstance(root.children[1], ATotalFunctionExpression):
+                possible = True 
+            elif isinstance(root.children[1], ATotalInjectionExpression):
+                possible = True      
+            elif isinstance(root.children[1], ATotalSurjectionExpression):
+                possible = True  
+            elif isinstance(root.children[1], ATotalBijectionExpression):
+                possible = True                                                                                                 
     if not possible:
         return False
     if not all_ids_known(root, env):

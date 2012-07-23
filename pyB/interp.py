@@ -1153,6 +1153,7 @@ def interpret(node, env):
     elif isinstance(node, AMaxIntExpression):
         return max_int
     elif isinstance(node, AIdentifierExpression):
+        #print node.idName
         return env.bstate.get_value(node.idName)
     elif isinstance(node, APrimedIdentifierExpression):
         assert len(node.children)==1 # TODO x.y.z
