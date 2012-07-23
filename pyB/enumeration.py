@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from btypes import *
-from helpers import flatten, is_flat, double_element_check
+from helpers import flatten, is_flat, double_element_check, all_ids_known
 
 
 # ** THE ENUMERATOR **
@@ -89,7 +89,7 @@ def init_deffered_set(def_set, env):
     env.bstate.add_ids_to_frame([name])
     lst = []
     for i in range(deferred_set_elements_num):
-    	lst.append(str(i)+"_"+name)
+        lst.append(str(i)+"_"+name)
     env.bstate.set_value(name, frozenset(lst))
 
 
@@ -274,3 +274,34 @@ def create_sequence(images, number, length):
     result.reverse()
     return result
 
+
+def quick_member_eval(root, env):
+    from interp import interpret
+    assert isinstance(root, ABelongPredicate)
+    if (isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], AIdentifierExpression)) and isinstance(root.children[1], ARelationsExpression):
+        aSet = interpret(root.children[0], env)
+        S = interpret(root.children[1].children[0], env)
+        T = interpret(root.children[1].children[1], env)
+        for tup in aSet:
+            preimage = tup[0]
+            image = tup[1]
+            if (not preimage in S) or (not image in T):
+                return False
+        return True 
+    raise Exception("Interpreter Bug: Unknown node")
+
+
+# checks if some "hacks" are possible
+def quick_enum_possible(root, env):
+    possible = False
+    if isinstance(root, ABelongPredicate):
+        if isinstance(root.children[0], AIdentifierExpression) and isinstance(root.children[1], ARelationsExpression):
+            possible = True
+        if isinstance(root.children[0], ASetExtensionExpression) and isinstance(root.children[1], ARelationsExpression):
+            possible = True
+    if not possible:
+        return False
+    if not all_ids_known(root, env):
+        return False
+    return True
+    # TODO: more

@@ -83,9 +83,9 @@ def _find_var_names(node, lst):
 
 
 def find_var_nodes(node):
-	lst = []
-	_find_var_nodes(node, lst) #side-effect: fills list
-	return lst
+    lst = []
+    _find_var_nodes(node, lst) #side-effect: fills list
+    return lst
 
 
 # helper for find_var_nodes
@@ -103,8 +103,8 @@ def _find_var_nodes(node, lst):
             for n in node.children:
                 _find_var_nodes(n, lst)
         except AttributeError:
-            return #FIXME no children	
-	
+            return #FIXME no children   
+    
 
 def find_assignd_vars(node):
     lst = []
@@ -154,6 +154,35 @@ def double_element_check(lst):
             return True
     return False
 
+# True if all free variables have an value BEFORE the visit of this AST
+# E.g. "x=42" is False if x has no value BEFORE 
+def all_ids_known(node, env):
+    if isinstance(node, AIdentifierExpression):
+        value = env.bstate.get_value(node.idName)
+        if value==None:
+            return False
+        return True
+    elif isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression) or isinstance(node, ATrueExpression) or isinstance(node, AFalseExpression):
+        return True
+    elif isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AUniversalQuantificationPredicate):
+        return False # TODO: implement me
+    elif isinstance(node, AStructExpression):
+        return False # TODO: implement me
+    elif isinstance(node, AComprehensionSetExpression):
+        id_names = []
+        for idNode in node.children[:-1]:
+            id_names.append(idNode.idName)
+        env.bstate.add_ids_to_frame(id_names)
+        for idNode in node.children[:-1]:
+            env.bstate.set_value(idNode.idName, "dummy_value_for_bound_variables")
+        # search for free variables which have no values        
+        return all_ids_known(node.children[-1], env)
+    else:
+        for child in node.children:
+            if all_ids_known(child, env)==False:
+                return False
+    return True
+         
 
 def print_ast(root):
     print root

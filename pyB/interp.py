@@ -16,6 +16,7 @@ def write_solutions_to_env(root, env):
             write_solutions_to_env(node, env)
         elif isinstance(node, AEqualPredicate):
             try:
+                #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32
 				if isinstance(node.children[0], AIdentifierExpression):
 					expr = interpret(node.children[1], env)
 					env.solutions[node.children[0].idName] = expr
@@ -399,6 +400,8 @@ def interpret(node, env):
 #
 # *************************
     elif isinstance(node, ABelongPredicate):
+        if quick_enum_possible(node, env):
+            return quick_member_eval(node, env)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         if isinstance(elm,str) and aSet=="":
