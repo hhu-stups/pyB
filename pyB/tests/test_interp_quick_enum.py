@@ -280,4 +280,29 @@ class TestQuickEnum():
         # Test
         env = Environment()
         env.bstate.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)                             
+        assert not interpret(root.children[0], env)         
+        
+
+    def test_quick_squence_member(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 5) & T=(1..10000) & R=[{1},{2},{3},{42},{5}] & R:S-->POW(T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S","T","R"])
+        assert interpret(root.children[0], env)	
+  
+        
+    def test_quick_squence_member2(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 34) & [1,1,2,2,3,4,5,6,7,7,8,9,10,10,11,11,12,13,14,12,15,16,17,17,18]:seq(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        assert interpret(root.children[0], env)	        
+                         

@@ -279,6 +279,7 @@ def quick_member_eval(ast, env, element):
     from interp import interpret
     if isinstance(element, int) or isinstance(element, str):
         S = list(interpret(ast, env))
+        #print element,S
         return element in S
 
     if isinstance(ast, ARelationsExpression):
@@ -317,7 +318,7 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     elif isinstance(ast, APartialSurjectionExpression):
-        S = list(interpret(ast.children[0], env))
+        #S = list(interpret(ast.children[0], env))
         T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
@@ -350,7 +351,7 @@ def quick_member_eval(ast, env, element):
         return True
     elif isinstance(ast, ATotalFunctionExpression):
         S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
         for tup in element:
@@ -365,7 +366,7 @@ def quick_member_eval(ast, env, element):
         return True  
     elif isinstance(ast, ATotalInjectionExpression):
         S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
         for tup in element:
@@ -407,7 +408,6 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        print T,S,preimage,image
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False         
         if not set(S)==set(preimage): # test total
@@ -417,6 +417,19 @@ def quick_member_eval(ast, env, element):
         if not (len(set(image))==len(image)): # test injection
             return False
         return True
+    elif isinstance(ast, ASeqExpression):
+        preimage = []
+        image = []
+        for tup in element:
+            assert isinstance(tup[0], int)
+            preimage.append(tup[0])
+            if not quick_member_eval(ast.children[0], env, tup[1]):
+                return False
+        if not (len(set(preimage))==len(preimage)): # test function attribute
+            return False        
+        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+            return False 
+        return True    
     elif isinstance(ast, APowSubsetExpression):
         for e in element: # element is a Set ;-)
             # TODO: empty set test 
@@ -441,7 +454,7 @@ def quick_member_eval(ast, env, element):
 def quick_enum_possible(root, env):
     possible = False
     if isinstance(root, ABelongPredicate):
-        if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], ACoupleExpression):
+        if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], ACoupleExpression) or isinstance(root.children[0], ASequenceExtensionExpression):
             if isinstance(root.children[1], ARelationsExpression):
                 possible = True
             elif isinstance(root.children[1], APartialFunctionExpression):
@@ -465,7 +478,9 @@ def quick_enum_possible(root, env):
             elif isinstance(root.children[1], APowSubsetExpression):
                 possible = True
             elif isinstance(root.children[1], AMultOrCartExpression):
-                possible = True                                                                                                 
+                possible = True
+            elif isinstance(root.children[1], ASeqExpression):
+                possible = True                                                                                             
     if not possible:
         return False
     if not all_ids_known(root, env):

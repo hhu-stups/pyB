@@ -594,6 +594,8 @@ def interpret(node, env):
     elif isinstance(node, AImageExpression):
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
+        #if rel==None or aSet==None:
+        #    return None
         image = [x[1] for x in rel if x[0] in aSet ]
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
