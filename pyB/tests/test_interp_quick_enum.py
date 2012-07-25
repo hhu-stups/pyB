@@ -220,4 +220,64 @@ class TestQuickEnum():
         # Test
         env = Environment()
         env.bstate.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)                   
+        assert interpret(root.children[0], env)
+        
+
+    def test_quick_powerset_member(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 32) & {1}:POW(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        assert interpret(root.children[0], env)
+
+
+    def test_quick_cart_member(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 10000) & T=(1..10000) & (1,1):S*T & (9999,9999):S*T", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S","T"])
+        assert interpret(root.children[0], env)
+
+
+    def test_quick_power_cart_member(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 10000) & T=(1..10000) & {(1,1)}:POW(S*T) & {(9999,9999)}:POW(S*T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S","T"])
+        assert interpret(root.children[0], env) 
+
+
+    def test_quick_power_cart_member2(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 10000) & T=(1..10000) & {(1,0)}:POW(S*T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S","T"])
+        assert not interpret(root.children[0], env)
+
+
+    def test_quick_power_cart_member3(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(1 .. 10000) & T=(1..10000) & {(9999,10001)}:POW(S*T)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S","T"])
+        assert not interpret(root.children[0], env)                             
