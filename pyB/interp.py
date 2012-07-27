@@ -81,7 +81,7 @@ def interpret(node, env):
         idNodes = find_var_nodes(node.children[0]) 
         idNames = [n.idName for n in idNodes]
         type_check_predicate(node, env, idNames)
-        if idNames ==[]:
+        if idNames ==[]: # variable free predicate
             result = interpret(node.children[0], env)
             print result
             return

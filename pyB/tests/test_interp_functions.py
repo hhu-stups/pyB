@@ -299,6 +299,18 @@ class TestInterpFunctions():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_fun_app5(self):
+        # Build AST:
+        string_to_file("#PREDICATE f={(2,42),(1,777)} & #z.(z:NAT & 42=f(z))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.bstate.add_ids_to_frame(["f"])
+        _test_typeit(root.children[0], env, [], ["f"])
+        assert interpret(root.children[0],env)
+
+
     def test_genAST_pred_seq_empty(self):
         # Build AST:
         string_to_file("#PREDICATE []={}", file_name)

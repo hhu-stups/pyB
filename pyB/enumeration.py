@@ -3,6 +3,7 @@ from config import *
 from ast_nodes import *
 from btypes import *
 from helpers import flatten, is_flat, double_element_check, all_ids_known
+from bexceptions import *
 
 
 # ** THE ENUMERATOR **
@@ -48,9 +49,12 @@ def try_all_values(root, env, idNodes):
     all_values = all_values_by_type(atype, env)
     if len(idNodes)<=1:
         for val in all_values:
-            env.bstate.set_value(node.idName, val)
-            if interpret(root, env):
-                yield True
+            try:
+                env.bstate.set_value(node.idName, val)
+                if interpret(root, env):
+                    yield True
+            except ValueNotInDomainException:
+                continue
     else:
         for val in all_values:
             env.bstate.set_value(node.idName, val)
@@ -97,7 +101,7 @@ def get_image(function, preimage):
     for atuple in function:
         if atuple[0] == preimage:
             return atuple[1]
-    return None #no image found
+    raise ValueNotInDomainException(preimage)
 
 
 # filters out every function which is not injective
@@ -187,8 +191,11 @@ def set_comprehension_recursive_helper(depth, max_depth, node, env):
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
             env.bstate.set_value(idName, i)
-            if interpret(pred, env):
-                result.append(i)
+            try:
+                if interpret(pred, env):
+                    result.append(i)
+            except ValueNotInDomainException:
+                continue
         return result
     else: # recursive call
         for i in all_values(node.children[depth], env):
@@ -209,8 +216,11 @@ def exist_recursive_helper(depth, max_depth, node, env):
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
             env.bstate.set_value(idName, i)
-            if interpret(pred, env):
-                return True
+            try:
+                if interpret(pred, env):
+                    return True
+            except ValueNotInDomainException:
+                continue
         return False
     else: # recursive call
         for i in all_values(node.children[depth], env):
@@ -228,8 +238,11 @@ def forall_recursive_helper(depth, max_depth, node, env):
     if depth == max_depth: #basecase
         for i in all_values(node.children[depth], env):
             env.bstate.set_value(idName, i)
-            if not interpret(pred, env):
-                return False
+            try:
+                if not interpret(pred, env):
+                    return False
+            except:
+                continue
         return True
     else: # recursive call
         for i in all_values(node.children[depth], env):
@@ -446,14 +459,22 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, AMultOrCartExpression):
         if (not quick_member_eval(ast.children[0], env, element[0])) or (not quick_member_eval(ast.children[1], env, element[1])):
             return False
-        return True                                             
-    raise Exception("Interpreter Bug: Unknown node")
+        return True
+    else:
+        #XXX
+        aSet = interpret(ast, env)
+        if isinstance(element,str) and aSet=="":
+            return True # FIXME: hack
+        return element in aSet                                             
+
 
 
 # checks if some "hacks" are possible
 def quick_enum_possible(root, env):
     possible = False
     if isinstance(root, ABelongPredicate):
+        possible = True
+        """
         if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], ACoupleExpression) or isinstance(root.children[0], ASequenceExtensionExpression):
             if isinstance(root.children[1], ARelationsExpression):
                 possible = True
@@ -480,7 +501,7 @@ def quick_enum_possible(root, env):
             elif isinstance(root.children[1], AMultOrCartExpression):
                 possible = True
             elif isinstance(root.children[1], ASeqExpression):
-                possible = True                                                                                             
+                possible = True"""                                                                                             
     if not possible:
         return False
     if not all_ids_known(root, env):
