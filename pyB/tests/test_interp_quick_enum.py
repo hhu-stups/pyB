@@ -305,4 +305,39 @@ class TestQuickEnum():
         env = Environment()
         env.bstate.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)	        
-                         
+
+
+    def test_quick_squence_member3(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(0 .. 42) & []/:seq1(S) & [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]:seq1(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        assert interpret(root.children[0], env)
+
+
+    def test_quick_squence_member4(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(0 .. 20) & []:iseq(S) & [0, 2, 4, 8, 10, 12, 14, 16, 18, 20,1,3,5,7,9,11,13,15,17,19]:iseq(S) & [1,1]/:iseq(S) & [42]/:iseq(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        assert interpret(root.children[0], env)
+
+
+    def test_quick_squence_member5(self):
+        # Build AST
+        string_to_file("#PREDICATE S=(0 .. 20) & []/:perm(S) & [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20,1,3,5,7,9,11,13,15,17,19]:perm(S) & [1,1]/:perm(S) & [42]/:perm(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        assert interpret(root.children[0], env)	 	 	                         

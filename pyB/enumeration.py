@@ -287,7 +287,7 @@ def create_sequence(images, number, length):
     result.reverse()
     return result
 
-
+# TODO: move. This is no enumfunction
 def quick_member_eval(ast, env, element):
     from interp import interpret
     if isinstance(element, int) or isinstance(element, str):
@@ -430,9 +430,11 @@ def quick_member_eval(ast, env, element):
         if not (len(set(image))==len(image)): # test injection
             return False
         return True
-    elif isinstance(ast, ASeqExpression):
+    elif isinstance(ast, ASeqExpression) or isinstance(ast, ASeq1Expression):
         preimage = []
         image = []
+        if isinstance(ast, ASeq1Expression) and element==frozenset([]):
+            return False
         for tup in element:
             assert isinstance(tup[0], int)
             preimage.append(tup[0])
@@ -442,7 +444,41 @@ def quick_member_eval(ast, env, element):
             return False        
         if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
             return False 
-        return True    
+        return True
+    elif isinstance(ast, AIseqExpression) or isinstance(ast, AIseq1Expression):
+        preimage = []
+        image = []
+        if isinstance(ast, AIseq1Expression) and element==frozenset([]):
+            return False
+        for tup in element:
+            assert isinstance(tup[0], int)
+            preimage.append(tup[0])
+            image.append(tup[1])
+            if not quick_member_eval(ast.children[0], env, tup[1]):
+                return False
+        if not (len(set(preimage))==len(preimage)): # test function attribute
+            return False        
+        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+            return False
+        if not (len(set(image))==len(image)): # test injective
+            return False 
+        return True
+    elif isinstance(ast, APermExpression):
+        preimage = []
+        image = []
+        for tup in element:
+            assert isinstance(tup[0], int)
+            preimage.append(tup[0])
+            image.append(tup[1])
+            if not quick_member_eval(ast.children[0], env, tup[1]):
+                return False
+        if not (len(set(preimage))==len(preimage)): # test function attribute
+            return False        
+        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+            return False
+        if not (set(image)==interpret(ast.children[0], env)): # test bijection/perm
+            return False 
+        return True            
     elif isinstance(ast, APowSubsetExpression):
         for e in element: # element is a Set ;-)
             # TODO: empty set test 
@@ -468,11 +504,11 @@ def quick_member_eval(ast, env, element):
         return element in aSet                                             
 
 
-
+# TODO: remane
 # checks if some "hacks" are possible
 def quick_enum_possible(root, env):
     possible = False
-    if isinstance(root, ABelongPredicate):
+    if isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate):
         possible = True
         """
         if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], ACoupleExpression) or isinstance(root.children[0], ASequenceExtensionExpression):

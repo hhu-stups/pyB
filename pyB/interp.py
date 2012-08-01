@@ -402,16 +402,21 @@ def interpret(node, env):
     elif isinstance(node, ABelongPredicate):
         if quick_enum_possible(node, env):
             elm = interpret(node.children[0], env)
-            return quick_member_eval(node.children[1], env, elm)
+            result = quick_member_eval(node.children[1], env, elm)
+            return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
+        print elm, aSet, node.children[0], node.children[1]
         if isinstance(elm,str) and aSet=="":
             return True # FIXME: hack
         return elm in aSet
     elif isinstance(node, ANotBelongPredicate):
-        # TODO: quick check
+        if quick_enum_possible(node, env):
+            elm = interpret(node.children[0], env)
+            return not quick_member_eval(node.children[1], env, elm)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
+        #TODO: string
         return not elm in aSet
     elif isinstance(node, AIncludePredicate):
         aSet1 = interpret(node.children[0], env)

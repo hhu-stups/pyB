@@ -297,6 +297,20 @@ class TestInterpNumbers():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_exist_subset_nat(self):
+        # Build AST:
+        string_to_file("#PREDICATE  #(x).(x:S & x>4999) & S<:NAT & S={5000}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env.bstate.add_ids_to_frame(["S"])
+        env.bstate.set_value("S", frozenset([1,2,3,5]))
+        _test_typeit(root.children[0], env, [], ["S"])
+        assert interpret(root.children[0],env)
+ 
+        
     def test_genAST_pred_forall(self):
         # Build AST:
         string_to_file("#PREDICATE !(z).( z<4 => z<5)", file_name)

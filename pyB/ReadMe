@@ -466,6 +466,10 @@ Index
     caseAConstantsContextClause
     caseAAxiomsContextClause
     caseATheoremsContextClause
-    
+
+
+10. Design Decisions:  
+    The Argumentes(childs) of the CartSetType are the types of the sets.
+    Resolve at the end of typechecking. E.g !(x).(x:T=>x:S) & S:POW(NAT)    
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    

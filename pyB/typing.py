@@ -89,6 +89,7 @@ class TypeCheck_Environment():
     def set_concrete_type(self, utype, ctype):
         assert isinstance(utype, UnknownType)
         assert isinstance(ctype, BType)
+        #print utype.name, ctype
         if isinstance(utype, PowCartORIntegerType):
             u0 = unknown_closure(utype.data[0])
             u1 = unknown_closure(utype.data[1])
