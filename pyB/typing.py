@@ -16,22 +16,28 @@ class TypeCheck_Environment():
         # is used to construct the env.node_to_type_map
         self.id_to_nodes_stack = []
         self.id_to_types_stack = []
+        self.id_to_enum_hint_stack = []
 
 
     def init_env(self, known_types_list, idNames):
         id_to_nodes_map = {} # A: str->NODE
         id_to_types_map = {} # T: str->Type
+        id_to_enum_hint = {} # E: str->str
+        # 1. write known Informations 
         for atuple in known_types_list:
             id_Name = atuple[0]
             atype = atuple[1]
             id_to_types_map[id_Name] = UnknownType(id_Name, atype)
             id_to_nodes_map[id_Name] = []
-        # ids with unknown types
+            id_to_enum_hint[id_Name] = None
+        # 2. and ids with unknown types
         for id_Name in idNames:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
+            id_to_enum_hint[id_Name] = None
         self.id_to_types_stack = [id_to_types_map]
         self.id_to_nodes_stack = [id_to_nodes_map]
+        self.id_to_enum_hint_stack = [id_to_enum_hint]
 
 
     def add_known_types_of_child_env(self, id_to_types_map):
@@ -47,11 +53,14 @@ class TypeCheck_Environment():
     def push_frame(self, id_Names):
         id_to_nodes_map = {} # A: str->NODE
         id_to_types_map = {} # T: str->Type
+        id_to_enum_hint = {} # E: str->str
         for id_Name in id_Names:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
+            id_to_enum_hint[id_Name] = None
         self.id_to_nodes_stack.append(id_to_nodes_map)
         self.id_to_types_stack.append(id_to_types_map)
+        self.id_to_enum_hint_stack.append(id_to_enum_hint)
 
 
     def add_node_by_id(self, node):
@@ -144,17 +153,23 @@ class TypeCheck_Environment():
     def pop_frame(self, env):
         node_top_map = self.id_to_nodes_stack[-1]
         type_top_map = self.id_to_types_stack[-1]
+        id_to_enum_hint = self.id_to_enum_hint_stack[-1]
         self.id_to_nodes_stack.pop()
         self.id_to_types_stack.pop()
+        self.id_to_enum_hint_stack.pop()
         #assert isinstance(env, Environment)
-        self.write_to_env(env, type_top_map, node_top_map)
+        self.write_to_env(env, type_top_map, node_top_map, id_to_enum_hint)
 
 
 
-    def write_to_env(self, env, type_top_map, node_top_map):
+    def write_to_env(self, env, type_top_map, node_top_map, id_to_enum_hint):
         for idName in type_top_map:
             utype = type_top_map[idName]
             atype = unknown_closure(utype)
+            try:
+                enum_hint = id_to_enum_hint[idName]
+            except KeyError:
+                enum_hint = None #XXX/TODO: child env
             # unknown now. will be found in resole()
             # This is when local vars use global vars
             # which are unknown a this time
@@ -162,7 +177,7 @@ class TypeCheck_Environment():
                 atype= utype
             node_lst = node_top_map[idName]
             for node in node_lst:
-                #print idName,node, env
+                node.enum_hint = enum_hint
                 env.node_to_type_map[node] = atype
 
 
@@ -187,6 +202,17 @@ class TypeCheck_Environment():
         raise BTypeException(string)
 
 
+    def set_enumeration_hint(self, idName, hint_idName):
+        id_to_enum_hint = self.id_to_enum_hint_stack[-1]
+        try:
+            current_hint = id_to_enum_hint[idName]
+        except KeyError: # TODO: child env
+            current_hint = None
+        if current_hint ==None:
+            id_to_enum_hint[idName] = hint_idName
+        # TODO: else chose better set 
+
+
 
 # env.node_to_type_map should be a set of tree with 
 # Nodes as leafs and Btypes as roots. 
@@ -195,8 +221,8 @@ class TypeCheck_Environment():
 # If this is not possible the typechecking has failed
 def resolve_type(env):
     for node in env.node_to_type_map:
-        #print node.idName
         tree = env.node_to_type_map[node]
+        # print node.idName, tree
         tree_without_unknown = throw_away_unknown(tree)
         env.node_to_type_map[node] = tree_without_unknown
 
@@ -304,7 +330,7 @@ def _test_typeit(root, env, known_types_list, idNames):
     type_env = TypeCheck_Environment()
     type_env.init_env(known_types_list, idNames)
     typeit(root, env, type_env)
-    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
     resolve_type(env) # throw away unknown types
     return type_env # contains only knowladge about ids at global level
 
@@ -553,12 +579,20 @@ def typeit(node, env, type_env):
 #       2.1 Set predicates
 #
 # *************************
-    # TODO: notBelong
-    elif isinstance(node, ABelongPredicate) or isinstance(node, ANotBelongPredicate):
+    elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
         unify_element_of(elm_type, set_type, type_env)
+        #print elm_type, set_type, node.children[0].idName, node.children[1]
+        if isinstance(elm_type, UnknownType) and isinstance(node.children[0], AIdentifierExpression) and isinstance(node.children[1], AIdentifierExpression):
+            type_env.set_enumeration_hint(node.children[0].idName, node.children[1].idName)
         return BoolType()
+    # TODO: notBelong
+    elif isinstance(node, ANotBelongPredicate):
+        elm_type = typeit(node.children[0], env, type_env)
+        set_type = typeit(node.children[1], env, type_env)
+        unify_element_of(elm_type, set_type, type_env)
+        return BoolType()    
     elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)

@@ -1,1 +1,1 @@
-#PREDICATE r=id(S)
+#PREDICATE A=bool(1<2)

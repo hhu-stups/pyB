@@ -11,6 +11,8 @@ from bexceptions import *
 # only works if the typechecking/typing of typeit was successful
 def all_values(node, env):
     assert isinstance(node, AIdentifierExpression)
+    if node.enum_hint:
+        return env.bstate.get_value(node.enum_hint)
     atype = env.get_type_by_node(node)
     return all_values_by_type(atype, env)
 
@@ -45,8 +47,11 @@ def all_values_by_type(atype, env):
 def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
-    atype = env.get_type_by_node(node)
-    all_values = all_values_by_type(atype, env)
+    if node.enum_hint:
+        all_values = env.bstate.get_value(node.enum_hint)
+    else:
+    	atype = env.get_type_by_node(node)
+    	all_values = all_values_by_type(atype, env)
     if len(idNodes)<=1:
         for val in all_values:
             try:

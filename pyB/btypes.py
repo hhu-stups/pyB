@@ -28,7 +28,7 @@ class BoolType(BType):
 class IntegerType(BType):
     def __init__(self, number_or_None):
         # maybe this data is useless for typechecking
-        self.data = number_or_None 
+        self.data = number_or_None
 
 
 class PowerSetType(BType):

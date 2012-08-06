@@ -513,6 +513,7 @@ class AStringExpression(Expression):
 class AIdentifierExpression(Expression):
     def __init__(self, idName):
         self.idName = idName
+        self.enum_hint = None
 
 class AIntegerExpression(Expression):
     def __init__(self, intValue):

@@ -406,7 +406,7 @@ def interpret(node, env):
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        print elm, aSet, node.children[0], node.children[1]
+        #print elm, aSet, node.children[0], node.children[1]
         if isinstance(elm,str) and aSet=="":
             return True # FIXME: hack
         return elm in aSet
@@ -756,6 +756,7 @@ def interpret(node, env):
             value = interpret(node.children[1], env)
             return value+1
         function = interpret(node.children[0], env)
+        #print "FunctionName:", node.children[0].idName
         args = [] 
         for child in node.children[1:]:
             arg = interpret(child, env)
