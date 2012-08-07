@@ -422,3 +422,14 @@ class TestInterpNumbers():
         # Type
         env = Environment()
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_natural(self):
+        # Build AST
+        string_to_file("#PREDICATE 1000:NATURAL", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)

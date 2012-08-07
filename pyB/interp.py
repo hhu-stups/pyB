@@ -441,7 +441,10 @@ def interpret(node, env):
 #       3. Numbers
 #
 # *****************
-    elif isinstance(node, ANatSetExpression) or isinstance(node, ANaturalSetExpression):
+    elif isinstance(node, ANaturalSetExpression):
+        print "WARNING: NATURAL = 0.."+str(max_int)
+        return frozenset(range(0,max_int+1)) #XXX
+    elif isinstance(node, ANatSetExpression):
         return frozenset(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return frozenset(range(1,max_int+1))

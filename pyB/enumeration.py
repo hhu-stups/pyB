@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from btypes import *
-from helpers import flatten, is_flat, double_element_check, all_ids_known
+from helpers import flatten, is_flat, double_element_check, all_ids_known, print_ast
 from bexceptions import *
 
 
@@ -296,6 +296,10 @@ def create_sequence(images, number, length):
 def quick_member_eval(ast, env, element):
     from interp import interpret
     if isinstance(element, int) or isinstance(element, str):
+        if isinstance(ast, ANaturalSetExpression):
+            assert isinstance(element, int) # if False: typechecking Bug
+    	    return element >=0
+    	# TODO: NATURAL 1
         S = list(interpret(ast, env))
         #print element,S
         return element in S
@@ -308,8 +312,8 @@ def quick_member_eval(ast, env, element):
                 return False
         return True 
     elif isinstance(ast, APartialFunctionExpression):
-        S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #S = list(interpret(ast.children[0], env))
+        #T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
         for tup in element:
@@ -321,8 +325,8 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     elif isinstance(ast, APartialInjectionExpression):
-        S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #S = list(interpret(ast.children[0], env))
+        #T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
         for tup in element:
@@ -351,7 +355,7 @@ def quick_member_eval(ast, env, element):
             return False # test surjection
         return True
     elif isinstance(ast, APartialBijectionExpression):
-        S = list(interpret(ast.children[0], env))
+        #S = list(interpret(ast.children[0], env))
         T = list(interpret(ast.children[1], env))
         preimage = []
         image = []
