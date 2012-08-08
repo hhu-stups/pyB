@@ -316,11 +316,17 @@ class ANatSetExpression(Expression):
 
 class ANaturalSetExpression(Expression):
     pass
-
+    
+class ANatural1SetExpression(Expression):
+    pass
+    
 class ANat1SetExpression(Expression):
     pass
 
 class AIntegerSetExpression(Expression):
+    pass
+
+class AIntSetExpression(Expression):
     pass
 
 class ALambdaExpression(Expression):

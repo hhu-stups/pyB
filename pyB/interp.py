@@ -444,12 +444,18 @@ def interpret(node, env):
     elif isinstance(node, ANaturalSetExpression):
         print "WARNING: NATURAL = 0.."+str(max_int)
         return frozenset(range(0,max_int+1)) #XXX
+    elif isinstance(node, ANatural1SetExpression):
+        print "WARNING: NATURAL1 = 1.."+str(max_int)
+        return frozenset(range(1,max_int+1)) #XXX
     elif isinstance(node, ANatSetExpression):
         return frozenset(range(0,max_int+1))
     elif isinstance(node, ANat1SetExpression):
         return frozenset(range(1,max_int+1))
+    elif isinstance(node, AIntSetExpression):
+        return frozenset(range(min_int,max_int+1)) 
     elif isinstance(node, AIntegerSetExpression):
-        return frozenset(range(min_int,max_int+1))
+        print "WARNING: INTEGER = "+str(min_int)+".."+str(max_int)
+        return frozenset(range(min_int,max_int+1)) #XXX
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         return min(list(aSet))

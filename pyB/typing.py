@@ -609,7 +609,7 @@ def typeit(node, env, type_env):
 #       3. Numbers
 #
 # *****************
-    elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, AIntegerSetExpression):
+    elif isinstance(node, AIntSetExpression) or isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression) or isinstance(node, AIntervalExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AIntegerSetExpression):
         return PowerSetType(IntegerType(None))
     elif isinstance(node, AIntegerExpression):
         return IntegerType(node.intValue)

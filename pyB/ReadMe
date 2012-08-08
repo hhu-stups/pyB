@@ -365,6 +365,7 @@ Index
     caseASeesMachineClause
     caseAUsesMachineClause
     caseAExtendsMachineClause
+    caseAIntegerSetExpression
     
 
  9.2 NOT IMPLEMENTED:
@@ -397,7 +398,6 @@ Index
     caseAFalsePredicate
     caseAFinitePredicate
     
-    caseAIntegerSetExpression
     caseANatural1SetExpression
     caseAIntSetExpression
     caseASuccessorExpression

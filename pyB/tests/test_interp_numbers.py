@@ -433,3 +433,47 @@ class TestInterpNumbers():
         # Type
         env = Environment()
         assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_natural2(self):
+        # Build AST
+        string_to_file("#PREDICATE 1000:NATURAL1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_natural3(self):
+        # Build AST
+        string_to_file("#PREDICATE 0:NATURAL1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert  not interpret(root.children[0],env)
+
+
+    def test_genAST_expr_integer(self):
+        # Build AST
+        string_to_file("#PREDICATE -54321:INTEGER", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)
+
+
+    def test_genAST_expr_int(self):
+        # Build AST
+        string_to_file("#PREDICATE -1:INT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        assert interpret(root.children[0],env)

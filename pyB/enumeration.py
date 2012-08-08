@@ -299,6 +299,12 @@ def quick_member_eval(ast, env, element):
         if isinstance(ast, ANaturalSetExpression):
             assert isinstance(element, int) # if False: typechecking Bug
     	    return element >=0
+        if isinstance(ast, ANatural1SetExpression):
+            assert isinstance(element, int) # if False: typechecking Bug
+    	    return element >0
+    	elif isinstance(ast, AIntegerSetExpression):
+    	    assert isinstance(element, int)
+    	    return True
     	# TODO: NATURAL 1
         S = list(interpret(ast, env))
         #print element,S

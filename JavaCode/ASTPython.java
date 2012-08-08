@@ -1,3 +1,4 @@
+// AST Walker
 package de.be4.classicalb.core.parser.analysis.python;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
@@ -7,8 +8,13 @@ import java.util.List;
 // walks the tree and prints a pythonlike AST
 
 public class ASTPython extends DepthFirstAdapter{
-    public String out = "";
+    public StringBuilder out;
     private int idCounter = 0;
+    
+    public ASTPython()
+    {
+        out = new StringBuilder();
+    }
 
     private String getClassName(Node node)
     {
@@ -21,121 +27,143 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void outAIntegerExpression(AIntegerExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AIntegerExpression(";
-        out += node.getLiteral().toString() + ")\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AIntegerExpression(");
+        out.append(node.getLiteral().toString() + ")\n");
     }
 
 
     public void outAIdentifierExpression(AIdentifierExpression node)
     {
         // FIXME: some bug with a space at the end
-        out += "id"+ (idCounter++) +"=";
-        out += "AIdentifierExpression(\"";
-        out += node.getIdentifier().toString().replace("[","").replace("]","") + "\")\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AIdentifierExpression(\"");
+        out.append(node.getIdentifier().toString().replace("[","").replace("]","") + "\")\n");
     }
 
 
     public void caseAStringExpression(AStringExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AStringExpression(\"";
-        out += node.getContent().getText()+ "\")\n";;
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AStringExpression(\"");
+        out.append(node.getContent().getText()+ "\")\n");
     }
 
 
     public void caseAStringSetExpression(AStringSetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AStringSetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AStringSetExpression()\n");
     }
 
 
     public void outAEmptySetExpression(AEmptySetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AEmptySetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AEmptySetExpression()\n");
     }
 
 
     public void caseAEmptySequenceExpression(AEmptySequenceExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AEmptySequenceExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AEmptySequenceExpression()\n");
+    }
+
+
+    public void caseAIntegerSetExpression(AIntegerSetExpression node)
+    {
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AIntegerSetExpression()\n");
     }
 
     public void caseANatSetExpression(ANatSetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ANatSetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ANatSetExpression()\n");
     }
 
     public void caseANaturalSetExpression(ANaturalSetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ANaturalSetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ANaturalSetExpression()\n");
     }
 
+
+    public void caseAIntSetExpression(AIntSetExpression node)
+    {
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AIntSetExpression()\n");
+    }
+    
+        
+    public void caseANatural1SetExpression(ANatural1SetExpression node)
+    {
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ANatural1SetExpression()\n");
+    }
+    
+    
     public void caseANat1SetExpression(ANat1SetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ANat1SetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ANat1SetExpression()\n");
     }
 
 
     public void caseATrueExpression(ATrueExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ATrueExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ATrueExpression()\n");
     }
 
 
     public void caseABoolSetExpression(ABoolSetExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ABoolSetExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ABoolSetExpression()\n");
     }
 
 
     public void caseAFalseExpression(AFalseExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AFalseExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AFalseExpression()\n");
     }
 
 
     public void caseASkipSubstitution(ASkipSubstitution node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ASkipSubstitution()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ASkipSubstitution()\n");
     }
 
 
     public void caseAMinIntExpression(AMinIntExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AMinIntExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AMinIntExpression()\n");
     }
 
 
     public void caseAMaxIntExpression(AMaxIntExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "AMaxIntExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("AMaxIntExpression()\n");
     }
 
 
     public void caseASuccessorExpression(ASuccessorExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "ASuccessorExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ASuccessorExpression()\n");
     }
 
 
     public void caseAPredecessorExpression(APredecessorExpression node)
     {
-        out += "id"+ (idCounter++) +"=";
-        out += "APredecessorExpression()\n";
+        out.append("id"+ (idCounter++) +"=");
+        out.append("APredecessorExpression()\n");
     }
 
 
@@ -149,7 +177,7 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAPredicateParseUnit(APredicateParseUnit node)
     {
         printStdOut_oneChild(node, node.getPredicate());
-        out += "root = id"+(idCounter-1)+ "\n";
+        out.append("root = id"+(idCounter-1)+ "\n");
     }
 
 
@@ -167,9 +195,9 @@ public class ASTPython extends DepthFirstAdapter{
         {
             mtype = node.getType().toString();
         }
-        out += "id"+(idCounter-1)+".type = \""+mtype+"\"\n";
+        out.append("id"+(idCounter-1)+".type = \""+mtype+"\"\n");
 
-        out += "root = id"+(idCounter-1)+ "\n";
+        out.append("root = id"+(idCounter-1)+ "\n");
     }
 
 
@@ -187,9 +215,9 @@ public class ASTPython extends DepthFirstAdapter{
         {
             refines = node.getRefMachine().toString();
         }
-        out += "id"+(idCounter-1)+".refines = \""+refines+"\"\n";
+        out.append("id"+(idCounter-1)+".refines = \""+refines+"\"\n");
 
-        out += "root = id"+(idCounter-1)+ "\n";
+        out.append("root = id"+(idCounter-1)+ "\n");
     }
 
 
@@ -207,7 +235,7 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -226,11 +254,11 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getName().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
         if (node.getParameters()!=null)
-            out += "id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n";
+            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
         else
-            out += "id"+(idCounter-1)+".paraNum = 0";
+            out.append("id"+(idCounter-1)+".paraNum = 0");
     }
 
 
@@ -248,11 +276,11 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getName().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
         if (node.getParameters()!=null)
-            out += "id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n";
+            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
         else
-            out += "id"+(idCounter-1)+".paraNum = 0";
+            out.append("id"+(idCounter-1)+".paraNum = 0");
     }
 
 
@@ -270,11 +298,11 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getName().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
         if (node.getParameters()!=null)
-            out += "id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n";
+            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
         else
-            out += "id"+(idCounter-1)+".paraNum = 0";
+            out.append("id"+(idCounter-1)+".paraNum = 0");
     }
 
 
@@ -290,7 +318,7 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getDefLiteral().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -306,7 +334,7 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getDefLiteral().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -322,7 +350,7 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getDefLiteral().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -335,8 +363,8 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getRhsExpressions());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".lhs_size = \""+node.getLhsExpression().size()+"\"\n";
-        out += "id"+(idCounter-1)+".rhs_size = \""+node.getRhsExpressions().size()+"\"\n";
+        out.append("id"+(idCounter-1)+".lhs_size = \""+node.getLhsExpression().size()+"\"\n");
+        out.append("id"+(idCounter-1)+".rhs_size = \""+node.getRhsExpressions().size()+"\"\n");
     }
 
 
@@ -354,7 +382,7 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -369,10 +397,10 @@ public class ASTPython extends DepthFirstAdapter{
         }
 
         String nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
+        out.append("id" + nodeid + "=");
+        out.append(getClassName(node) +"()\n");
         idCounter++;
-        out += "id"+nodeid+".idName = \""+idName+"\"\n";
+        out.append("id"+nodeid+".idName = \""+idName+"\"\n");
     }
 
 
@@ -393,9 +421,9 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out += "id"+(idCounter-1)+".opName = \""+idName+"\"\n";
-        out += "id"+(idCounter-1)+".return_Num = "+node.getReturnValues().size()+"\n";
-        out += "id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n";
+        out.append("id"+(idCounter-1)+".opName = \""+idName+"\"\n");
+        out.append("id"+(idCounter-1)+".return_Num = "+node.getReturnValues().size()+"\n");
+        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
     }
 
 
@@ -405,7 +433,7 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_manyChildren(node, children);
 
         if(node.getGrade() != null)
-            out += "id"+(idCounter-1)+".grade = "+node.getGrade()+"\n";
+            out.append("id"+(idCounter-1)+".grade = "+node.getGrade()+"\n");
     }
 
 
@@ -424,7 +452,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getElse());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n";
+        out.append("id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n");
     }
 
 
@@ -435,7 +463,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getSubstitution());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".expNum = "+node.getExpressions().size()+"\n";
+        out.append("id"+(idCounter-1)+".expNum = "+node.getExpressions().size()+"\n");
     }
 
 
@@ -446,7 +474,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getSubstitution());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
     }
 
 
@@ -459,7 +487,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getThen());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
     }
 
 
@@ -473,7 +501,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getSubstitution());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
     }
 
 
@@ -486,7 +514,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getExpression());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
     }
 
 
@@ -499,7 +527,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getExpression());
         printStdOut_manyChildren(node, children);
 
-        out += "id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n";
+        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
     }
 
 
@@ -517,7 +545,7 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -533,7 +561,7 @@ public class ASTPython extends DepthFirstAdapter{
         {
             idName = node.getName().toString();
         }
-        out += "id"+(idCounter-1)+".idName = \""+idName+"\"\n";
+        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -626,7 +654,7 @@ public class ASTPython extends DepthFirstAdapter{
             hasElse = "True";
         }
         printStdOut_manyChildren(node, children);
-        out += "id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n";
+        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
     }
 
 
@@ -646,7 +674,7 @@ public class ASTPython extends DepthFirstAdapter{
             hasElse = "True";
         }
         printStdOut_manyChildren(node, children);
-        out += "id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n";
+        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
     }
 
 
@@ -1390,10 +1418,10 @@ public class ASTPython extends DepthFirstAdapter{
             cnode.apply(this);
             childid = ""+(idCounter-1);
             nodeid = ""+idCounter;
-            out += "id"+ nodeid +"=";
-            out += getClassName(node) +"()\n";
+            out.append("id"+ nodeid +"=");
+            out.append(getClassName(node) +"()\n");
             idCounter++;
-            out += "id"+nodeid+".children.append(id"+childid+")\n";
+            out.append("id"+nodeid+".children.append(id"+childid+")\n");
         }
     }
 
@@ -1415,15 +1443,15 @@ public class ASTPython extends DepthFirstAdapter{
         }
 
         nodeid = ""+ idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
+        out.append("id" + nodeid + "=");
+        out.append(getClassName(node) +"()\n");
         idCounter++;
 
         if(left != null)
-            out += "id"+nodeid+".children.append(id"+childid1+")\n";
+            out.append("id"+nodeid+".children.append(id"+childid1+")\n");
 
         if(right != null)
-            out += "id"+nodeid+".children.append(id"+childid2+")\n";
+            out.append("id"+nodeid+".children.append(id"+childid2+")\n");
     }
 
 
@@ -1439,11 +1467,11 @@ public class ASTPython extends DepthFirstAdapter{
         }
 
         String nodeid = "" + idCounter;
-        out += "id" + nodeid + "=";
-        out += getClassName(node) +"()\n";
+        out.append("id" + nodeid + "=");
+        out.append(getClassName(node) +"()\n");
         idCounter++;
 
         for(i=0; i<ids.length; i++)
-            out += "id"+nodeid+".children.append(id"+ids[i]+")\n";
+            out.append("id"+nodeid+".children.append(id"+ids[i]+")\n");
     }
 }
