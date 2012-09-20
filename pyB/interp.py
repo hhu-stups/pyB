@@ -89,7 +89,7 @@ def interpret(node, env):
             env.bstate.add_ids_to_frame(idNames)
             learnd_vars = learn_assigned_values(node, env)
             if learnd_vars:
-                print "learnd: ", learnd_vars
+                print "learnd(no enumeration): ", learnd_vars
             not_set = []
             for n in idNodes:
                 if env.bstate.get_value(n.idName)==None:
@@ -145,7 +145,7 @@ def interpret(node, env):
             # find all constants like x=42 oder y={1,2,3}
             learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
             if learnd_vars:
-                print "leard constants: ", learnd_vars
+                print "leard constants(no enumeration): ", learnd_vars
             # if there are constants
             #TODO: Sets
             if mch.aConstantsMachineClause:

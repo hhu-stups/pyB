@@ -159,6 +159,7 @@ Index
     - renaming with '.' (e.g. INCLUDES)
     - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
 8.2 Refactoring / small fixes
+    - Cruise_finite1.mch very slow 
     - The values of elements of enumerated sets are their names
     - Check Includes, Sees, Uses, Extends rules 
     - inconsistency in java parser part: some args are given as fields some as constructor args
@@ -185,6 +186,7 @@ Index
     - not tested: append/preprend more than one element - possible?
     - no random choice in CHOICE and SELECT
     - INTEGER is min_int to max_int
+    - no good operation number (e.g. Farmer-example)
 8.4 Bugs:
     - parallel substitution is not parallel
     - (2 + 3) / 2 == 2
