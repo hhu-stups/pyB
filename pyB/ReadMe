@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 12.07.2012 
+PyB: 31.08.2011 - 20.09.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -64,14 +64,17 @@ Index
     - Evals interval sum and pi
     - Evals itrations and closure
     - generalized conc and strings
-    - Typechecking of the most preds
-
+    - Typechecking of the most predicates
     - Everything from "A concise summary of the b mathematical toolkit",
       except the missing features in 5.
-    - And Also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
+    - And also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
       iseq1(S);X**Y;closure1(r);S>+>>T(part bij);XX$0(pimed IDs);
       func(r);rel(f)
       see: www.atelierb.eu/ressources/manrefb1.8.6.uk.pdf
+    - Animation of B-machines 
+    - Processing of "Solution-files" + B-Machines
+    - Assertion checks
+    - most substitutions
 
 
 5. MISSING FEATURES:
@@ -79,10 +82,12 @@ Index
     - NAT and NAT1 is not infinite!
     - while substitution
     - min/max on infinite numbers - not ProB
-    - lambda abstractions with more vars
-    - tree/btree
+    - lambda abstractions with more vars (one var. works)
+    - translation to RPython (and maybe add a jit)
+    - tree/"btree"
+    - Enable Event-B
     - and maybe more...;-)
-    - NO IMPLEMENTATION: LTL and Event-B
+    - NO IMPLEMENTATION: LTL 
 
 
 6. How it works:

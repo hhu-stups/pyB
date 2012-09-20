@@ -156,12 +156,15 @@ def interpret(node, env):
                     if env.bstate.get_value(idNode.idName)==None:
                         const_nodes.append(idNode)
                 if const_nodes==[]:
-                    assert interpret(mch.aPropertiesMachineClause, env)
+                    prop_result = interpret(mch.aPropertiesMachineClause, env)
                 else:
                     # if there are unset constants/sets enumerate them
                     print "enum. vars:", [n.idName for n in const_nodes]
                     gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                    assert gen.next()
+                    aprop_result = gen.next()
+                if not prop_result:
+                    print "Properties FALSE!"
+                assert prop_result
                     
 
 
