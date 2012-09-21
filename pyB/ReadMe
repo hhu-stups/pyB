@@ -51,7 +51,7 @@ Index
 
 3. Run Tests:
     py.test
-    the tests/ are in the tests folder
+    the "tests" are in the tests folder
 
 
 4. Features:

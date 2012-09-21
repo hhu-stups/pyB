@@ -161,7 +161,7 @@ def interpret(node, env):
                     # if there are unset constants/sets enumerate them
                     print "enum. vars:", [n.idName for n in const_nodes]
                     gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                    aprop_result = gen.next()
+                    prop_result = gen.next()
                 if not prop_result:
                     print "Properties FALSE!"
                 assert prop_result
