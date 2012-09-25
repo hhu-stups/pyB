@@ -27,6 +27,9 @@ class AAbstractMachineParseUnit(Node):
 class APredicateParseUnit(Node):
     pass
 
+class AExpressionParseUnit(Node):
+    pass
+
 class AOperation(Node):
     pass
 

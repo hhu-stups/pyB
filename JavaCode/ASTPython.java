@@ -179,6 +179,13 @@ public class ASTPython extends DepthFirstAdapter{
         printStdOut_oneChild(node, node.getPredicate());
         out.append("root = id"+(idCounter-1)+ "\n");
     }
+    
+
+    public void caseAExpressionParseUnit(AExpressionParseUnit node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
+        out.append("root = id"+(idCounter-1)+ "\n");
+    }
 
 
     public void caseAAbstractMachineParseUnit(AAbstractMachineParseUnit node)

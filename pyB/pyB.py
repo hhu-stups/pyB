@@ -7,24 +7,38 @@ from animation_clui import show_ui
 from animation import calc_succ_states, exec_op
 from definition_handler import DefinitionHandler
 from ast_nodes import *
+from config import default_input_filename
 
 
-env = Environment()
+def read_input_string():
+	file_name_str = default_input_filename
+	solution_file_name_str = ""
+	if len(sys.argv)==2:
+		file_name_str = sys.argv[1]
+	elif len(sys.argv)==3:
+		file_name_str = sys.argv[1]
+		solution_file_name_str = sys.argv[2]
+	else:
+		print "Warning: No input file! default:",file_name_str
+	return file_name_str, solution_file_name_str
 
-if len(sys.argv)==2:
-    file_name_str = sys.argv[1]
-elif len(sys.argv)==3:
-    file_name_str = sys.argv[1]
-    solution_file_name_str = sys.argv[2]
+
+def read_solution_file(env):
     ast_str = solution_file_to_AST_str(solution_file_name_str)
     exec ast_str
     write_solutions_to_env(root, env)
     if env.solutions:
-        print "learnd: ", [x for x in env.solutions]
-else:
-    file_name_str = "input.txt"
+        print "learnd from solution-file: ", [x for x in env.solutions] 
 
-ast_string = file_to_AST_str(file_name_str)
+
+
+##### MAIN PROGRAM ######
+
+env = Environment() # 1. create environment 
+file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
+if solution_file_name_str: # 3. parse and use solution-file
+    read_solution_file(env)
+ast_string = file_to_AST_str(file_name_str) # 4. parse input-file
 exec ast_string
 dh = DefinitionHandler()
 dh.repl_defs(root)

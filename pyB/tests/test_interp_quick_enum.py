@@ -340,4 +340,8 @@ class TestQuickEnum():
         # Test
         env = Environment()
         env.bstate.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)	 	 	                         
+        assert interpret(root.children[0], env)
+    
+    
+    def test_quick_lambda(self):
+        pass	 	 	                         

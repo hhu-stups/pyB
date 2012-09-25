@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from config import *
 from ast_nodes import *
-from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate
+from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
 from helpers import find_var_nodes, find_var_names, flatten, is_flat, double_element_check, find_assignd_vars, print_ast
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
+from quick_eval import quick_member_eval
 
 
 # assumes that every Variable/Constant/Set appears once 
@@ -113,6 +114,16 @@ def interpret(node, env):
                 return
         print True
         return None
+    elif isinstance(node, AExpressionParseUnit): #TODO more
+        idNodes = find_var_nodes(node.children[0]) 
+        idNames = [n.idName for n in idNodes]
+        type_check_expression(node, env, idNames)
+        if idNames ==[]: # variable free expression
+            result = interpret(node.children[0], env)
+            print result
+        else:
+            print "Warning: Expressions with variables are not implemented now"
+        return
     elif isinstance(node, AAbstractMachineParseUnit):
         mch = BMachine(node, interpret, env)
         #env.bstate.set_mch(mch)

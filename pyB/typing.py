@@ -339,6 +339,10 @@ def type_check_predicate(root, env, idNames):
     ## FIXME: replace this call someday
     type_env = _test_typeit(root.children[0], env, [], idNames)
 
+def type_check_expression(root, env, idNames):
+    ## FIXME: replace this call someday
+    type_env = _test_typeit(root.children[0], env, [], idNames)
+
 
 def type_check_bmch(root, mch):
     # TODO: abstr const/vars
@@ -369,6 +373,9 @@ def typeit(node, env, type_env):
     if isinstance (node, APredicateParseUnit):
         for child in node.children:
             typeit(child, env, type_env)
+    elif isinstance(node, AExpressionParseUnit):
+        for child in node.children:
+            typeit(child, env, type_env)    
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
         mch = BMachine(node, None, env)
