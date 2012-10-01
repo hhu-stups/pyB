@@ -53,4 +53,25 @@ class TestConstraintSolver():
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
         assert domain[0]==range(1,100+1)
-        
+
+    
+    def test_set_comp(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#PREDICATE card({x|x:NAT & x=12})=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], [""])
+        assert isinstance(env.get_type("x"), IntegerType)
+        setexpr = root.children[0].children[0].children[0] 
+        assert isinstance(setexpr, AComprehensionSetExpression)
+        varList = setexpr.children[0:-1]
+        P = setexpr.children[-1]
+        assert isinstance(P, Predicate)
+        env._min_int = -2**8
+        env._max_int = 2**8
+        domain = calc_constraint_domain(env, varList, P)
+        assert domain[0]==[12]

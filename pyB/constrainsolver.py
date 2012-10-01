@@ -35,7 +35,20 @@ def add_constraints(env, problem, varList, node):
     if isinstance(node, AConjunctPredicate):
         add_constraints(env, problem, varList, node.children[0])
         add_constraints(env, problem, varList, node.children[1])
-    if isinstance(node, ABelongPredicate):
+    elif isinstance(node, AEqualPredicate):
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
+            name = str(node.children[0].idName)
+            if isinstance(node.children[1], AIntegerExpression):
+                number = node.children[1].intValue
+                expr = "lambda "+name+":"+name+"=="+str(number)
+                problem.addConstraint(eval(expr))
+        elif isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName in [x.idName for x in varList]:
+            name = str(node.children[1].idName)
+            if isinstance(node.children[0], AIntegerExpression):
+                number = node.children[0].intValue
+                expr = "lambda "+name+":"+name+"=="+str(number)
+                problem.addConstraint(eval(expr))        
+    elif isinstance(node, ABelongPredicate):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
             if isinstance(node.children[1], AIntervalExpression):
                 name = str(node.children[0].idName)
