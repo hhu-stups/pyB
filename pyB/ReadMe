@@ -163,6 +163,7 @@ Index
     - write JSON Codegen of javaparser
     - renaming with '.' (e.g. INCLUDES)
     - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
+    - wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
 8.2 Refactoring / small fixes
     - Cruise_finite1.mch very slow 
     - The values of elements of enumerated sets are their names

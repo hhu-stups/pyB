@@ -2,6 +2,7 @@
 from ast_nodes import *
 from btypes import *
 from bstate import BState
+from config import *
 
 class Environment():
     def __init__(self):
@@ -15,6 +16,11 @@ class Environment():
         self.bstate = BState(None)   # current Working B-State
         self.mch = None              # current Working B-Machine
         self.solutions = {}          # read by a solution-file
+        # from config 
+        # for possible modification after module import time (tests)
+        self._min_int = min_int
+        self._max_int = max_int
+
 
     # used for debugging and cli-ui
     def print_env(self):

@@ -456,20 +456,20 @@ def interpret(node, env):
 #
 # *****************
     elif isinstance(node, ANaturalSetExpression):
-        print "WARNING: NATURAL = 0.."+str(max_int)
-        return frozenset(range(0,max_int+1)) #XXX
+        print "WARNING: NATURAL = 0.."+str(env._max_int)
+        return frozenset(range(0,env._max_int+1)) #XXX
     elif isinstance(node, ANatural1SetExpression):
-        print "WARNING: NATURAL1 = 1.."+str(max_int)
-        return frozenset(range(1,max_int+1)) #XXX
+        print "WARNING: NATURAL1 = 1.."+str(env._max_int)
+        return frozenset(range(1,env._max_int+1)) #XXX
     elif isinstance(node, ANatSetExpression):
-        return frozenset(range(0,max_int+1))
+        return frozenset(range(0,env._max_int+1))
     elif isinstance(node, ANat1SetExpression):
-        return frozenset(range(1,max_int+1))
+        return frozenset(range(1,env._max_int+1))
     elif isinstance(node, AIntSetExpression):
-        return frozenset(range(min_int,max_int+1)) 
+        return frozenset(range(env._min_int, env._max_int+1)) 
     elif isinstance(node, AIntegerSetExpression):
-        print "WARNING: INTEGER = "+str(min_int)+".."+str(max_int)
-        return frozenset(range(min_int,max_int+1)) #XXX
+        print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
+        return frozenset(range(env._min_int,env._max_int+1)) #XXX
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         return min(list(aSet))
@@ -802,7 +802,7 @@ def interpret(node, env):
         sequence_list = [frozenset([])]
         max_len = 1
         # find all seq. from 1..max_int
-        for i in range(1,max_int+1):
+        for i in range(1, env._max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         return frozenset(sequence_list)
     elif isinstance(node,ASeq1Expression):
@@ -810,7 +810,7 @@ def interpret(node, env):
         sequence_list = []
         max_len = 1
         # find all seq. from 1..max_int
-        for i in range(1,max_int+1):
+        for i in range(1, env._max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         return frozenset(sequence_list)
     elif isinstance(node,AIseqExpression):
@@ -819,7 +819,7 @@ def interpret(node, env):
         sequence_list = [frozenset([])]
         max_len = 1
         # find all seq from 1..max_int
-        for i in range(1,max_int+1):
+        for i in range(1, env._max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         return frozenset(inj_sequence_list)
@@ -829,7 +829,7 @@ def interpret(node, env):
         sequence_list = [frozenset([])]
         max_len = 1
         # find all seq from 1..max_int
-        for i in range(1,max_int+1):
+        for i in range(1, env._max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         return frozenset(inj_sequence_list)
@@ -840,7 +840,7 @@ def interpret(node, env):
         max_len = 1
         # TODO: maybe call all_values() here...
         # find all seq from 1..max_int
-        for i in range(1,max_int+1):
+        for i in range(1, env._max_int+1):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
@@ -1182,9 +1182,9 @@ def interpret(node, env):
     elif isinstance(node, AIntegerExpression):
         return node.intValue
     elif isinstance(node, AMinIntExpression):
-        return min_int
+        return env._min_int
     elif isinstance(node, AMaxIntExpression):
-        return max_int
+        return env._max_int
     elif isinstance(node, AIdentifierExpression):
         #print node.idName
         return env.bstate.get_value(node.idName)

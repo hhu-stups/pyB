@@ -19,7 +19,7 @@ def all_values(node, env):
 
 def all_values_by_type(atype, env):
     if isinstance(atype, IntegerType):
-        return range(min_int, max_int+1)
+        return range(env._min_int, env._max_int+1)
     elif isinstance(atype, BoolType):
         return [True, False]
     elif isinstance(atype, SetType):

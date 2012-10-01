@@ -1,1 +1,1 @@
-#PREDICATE !(z).((z:NAT & z>2 & z<5) => (z>1 & z<=10))
+#PREDICATE A=bool(1<2)
