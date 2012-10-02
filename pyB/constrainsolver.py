@@ -3,20 +3,23 @@
 # python setup.py build
 # python setup.py install
 from constraint import *
+# pyB imports
 from ast_nodes import *
 from enumeration import all_values_by_type
 
 
+# wrapper function for contraint solver 
 def calc_constraint_domain(env, varList, predicate):
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
+    # get domain 
     for idNode in varList:
         assert isinstance(idNode, AIdentifierExpression)
         atype = env.get_type_by_node(idNode)
         domain = all_values_by_type(atype, env)
         tup = (idNode.idName, domain)
         var_and_domain_lst.append(tup)
-    problem = Problem() # form constraint
+    problem = Problem() # import from "constraint"
     for tup in var_and_domain_lst:
         problem.addVariable(tup[0], tup[1])
     add_constraints(env, problem, varList, predicate)
@@ -30,6 +33,8 @@ def calc_constraint_domain(env, varList, predicate):
     return result
 
 
+# TODO: not, include
+# only a list of special cases at the moment
 def add_constraints(env, problem, varList, node):
     print node
     if isinstance(node, AConjunctPredicate):
@@ -58,15 +63,17 @@ def add_constraints(env, problem, varList, node):
                 expr1 = "lambda "+name+":"+name+"<"+str(number1+1)
                 problem.addConstraint(eval(expr0))
                 problem.addConstraint(eval(expr1))
-    elif isinstance(node, AGreaterPredicate):
+    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList] and  isinstance(node.children[1], AIntegerExpression):
             number = node.children[1].intValue
             name = str(node.children[0].idName)
-            expr = "lambda "+name+":"+name+">"+str(number)
+            if isinstance(node, AGreaterPredicate):
+                expr = "lambda "+name+":"+name+">"+str(number)
+            elif isinstance(node, ALessPredicate):
+                expr = "lambda "+name+":"+name+"<"+str(number)
+            elif isinstance(node, AGreaterEqualPredicate):
+                expr = "lambda "+name+":"+name+">="+str(number)
+            elif isinstance(node, ALessEqualPredicate):
+                expr = "lambda "+name+":"+name+"<="+str(number)
             problem.addConstraint(eval(expr))
-    elif isinstance(node, ALessPredicate):
-         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList] and  isinstance(node.children[1], AIntegerExpression):
-            number = node.children[1].intValue
-            name = str(node.children[0].idName)
-            expr = "lambda "+name+":"+name+"<"+str(number)
-            problem.addConstraint(eval(expr))   
+  
