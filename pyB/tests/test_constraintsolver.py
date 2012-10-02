@@ -97,3 +97,26 @@ class TestConstraintSolver():
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
         assert domain[0]==[12]
+
+
+    def test_pi(self):
+        # PI (z).(P|E)
+        # Build AST:
+        string_to_file("#PREDICATE PI(x).(x:-4..4 & x/=0 | x)=576", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], [""])
+        assert isinstance(env.get_type("x"), IntegerType)
+        setexpr = root.children[0].children[0]
+        assert isinstance(setexpr, AGeneralProductExpression)
+        varList = setexpr.children[0:-2]
+        P = setexpr.children[-2]
+        E= setexpr.children[-1]
+        assert isinstance(P, Predicate)
+        env._min_int = -2**8
+        env._max_int = 2**8
+        domain = calc_constraint_domain(env, varList, P)
+        assert domain[0]==[-4,-3,-2,-1,1,2,3,4]

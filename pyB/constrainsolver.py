@@ -36,44 +36,53 @@ def calc_constraint_domain(env, varList, predicate):
 # TODO: not, include
 # only a list of special cases at the moment
 def add_constraints(env, problem, varList, node):
-    print node
+    #print node
     if isinstance(node, AConjunctPredicate):
         add_constraints(env, problem, varList, node.children[0])
-        add_constraints(env, problem, varList, node.children[1])
-    elif isinstance(node, AEqualPredicate):
-        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
-            name = str(node.children[0].idName)
-            if isinstance(node.children[1], AIntegerExpression):
-                number = node.children[1].intValue
-                expr = "lambda "+name+":"+name+"=="+str(number)
-                problem.addConstraint(eval(expr))
-        elif isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName in [x.idName for x in varList]:
-            name = str(node.children[1].idName)
-            if isinstance(node.children[0], AIntegerExpression):
-                number = node.children[0].intValue
-                expr = "lambda "+name+":"+name+"=="+str(number)
-                problem.addConstraint(eval(expr))        
+        add_constraints(env, problem, varList, node.children[1])       
     elif isinstance(node, ABelongPredicate):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
             if isinstance(node.children[1], AIntervalExpression):
                 name = str(node.children[0].idName)
-                number0 = node.children[1].children[0].intValue
-                number1 = node.children[1].children[1].intValue
+                if isinstance(node.children[1].children[0], AUnaryExpression):
+                    number0 = node.children[1].children[0].children[0].intValue * -1
+                else:
+                    number0 = node.children[1].children[0].intValue
+                if isinstance(node.children[1].children[1], AUnaryExpression):
+                    number1 = node.children[1].children[1].children[0].intValue * -1
+                else:
+                    number1 = node.children[1].children[1].intValue
                 expr0 = "lambda "+name+":"+name+">"+str(number0-1)
                 expr1 = "lambda "+name+":"+name+"<"+str(number1+1)
                 problem.addConstraint(eval(expr0))
                 problem.addConstraint(eval(expr1))
-    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate):
+    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
+        left = ""
+        right = ""
+        name = ""
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList] and  isinstance(node.children[1], AIntegerExpression):
             number = node.children[1].intValue
             name = str(node.children[0].idName)
+            left = name
+            right = str(number)
+        elif isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName in [x.idName for x in varList] and  isinstance(node.children[0], AIntegerExpression):
+            number = node.children[0].intValue
+            name = str(node.children[1].idName)
+            right = name
+            left = str(number)
+        if left and right and name:
             if isinstance(node, AGreaterPredicate):
-                expr = "lambda "+name+":"+name+">"+str(number)
+                bin_op = ">"
             elif isinstance(node, ALessPredicate):
-                expr = "lambda "+name+":"+name+"<"+str(number)
+                bin_op = "<"
             elif isinstance(node, AGreaterEqualPredicate):
-                expr = "lambda "+name+":"+name+">="+str(number)
+                bin_op = ">="
             elif isinstance(node, ALessEqualPredicate):
-                expr = "lambda "+name+":"+name+"<="+str(number)
-            problem.addConstraint(eval(expr))
+                bin_op = "<="
+            elif isinstance(node, AEqualPredicate):
+                bin_op = "=="
+            elif isinstance(node, AUnequalPredicate):
+                bin_op = "!="
+            expr = "lambda "+name+":"+left+bin_op+right
+            problem.addConstraint(eval(expr)) # XXX not Rpython
   
