@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE PI(x).(x:-4..4 & x/=0 | x)=576
