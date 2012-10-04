@@ -28,13 +28,13 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==[3,4]
+        assert domain[0]==frozenset([3,4])
 
 
     def test_forAll2(self):
         # !x.(P=>Q)
         # Build AST:
-        string_to_file("#PREDICATE f={(1,7),(2,8),(3,9)} & S={1,2,3} & !(x,y).(y:INTEGER &(x:S & f(x)<y) & y>0 =>y:T)", file_name)
+        string_to_file("#PREDICATE f={(1,7),(2,8),(3,9)} & S={1,2,3} & !(x,y).(y:INTEGER &(x:S & f(x)<y) & y<42 =>y:T)", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
         
@@ -58,7 +58,8 @@ class TestConstraintSolver():
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
         domain = calc_constraint_domain(env, varList, P)
-        print domain
+        assert domain[0]==frozenset([1,2,3])
+        assert domain[1]==frozenset(range(10,42))
 
 
 
@@ -81,7 +82,7 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==[2,3,4,5]
+        assert domain[0]== frozenset([2,3,4,5])
 
     
     def test_lambda(self):
@@ -105,7 +106,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==range(1,100+1)
+        assert domain[0]== frozenset(range(1,100+1))
 
     
     def test_set_comp(self):
@@ -127,7 +128,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==[12]
+        assert domain[0]==frozenset([12])
 
 
     def test_pi(self):
@@ -150,4 +151,4 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==[-4,-3,-2,-1,1,2,3,4]
+        assert domain[0]==frozenset([-4,-3,-2,-1,1,2,3,4])
