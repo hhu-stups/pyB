@@ -9,7 +9,7 @@ from constrainsolver import calc_constraint_domain
 file_name = "input.txt"
 
 class TestConstraintSolver():
-    def test_forAll(self):
+    def test_constraint_forAll(self):
         # !x.(P=>Q)
         # Build AST:
         string_to_file("#PREDICATE !(z).((z:NAT & z>2 & z<5) => (z>1 & z<=10))", file_name)
@@ -31,7 +31,7 @@ class TestConstraintSolver():
         assert frozenset([x["z"] for x in domain])==frozenset([3,4])
 
 
-    def test_forAll2(self):
+    def test_constraint_forAll2(self):
         # !x.(P=>Q)
         # Build AST:
         string_to_file("#PREDICATE f={(1,7),(2,8),(3,9)} & S={1,2,3} & !(x,y).(y:INTEGER &(x:S & f(x)<y) & y<42 =>y:T)", file_name)
@@ -62,7 +62,7 @@ class TestConstraintSolver():
         assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
 
 
-    def test_ex(self):
+    def test_constraint_ex(self):
         # #x.(P & Q)
         # Build AST:
         string_to_file("#PREDICATE #(z).((z:NAT & z>=2 & z<=5) & (z>1 & z<=10))", file_name)
@@ -84,7 +84,7 @@ class TestConstraintSolver():
         assert frozenset([x["z"] for x in domain])== frozenset([2,3,4,5])
 
     
-    def test_lambda(self):
+    def test_constraint_lambda(self):
         # %x.(P|E)
         # Build AST:
         string_to_file("#PREDICATE card(%x.(x:1..100|x*x))=100", file_name)
@@ -105,10 +105,11 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
+        print domain
         assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
 
     
-    def test_set_comp(self):
+    def test_constraint_set_comp(self):
         # {x|P}
         # Build AST:
         string_to_file("#PREDICATE card({x|x:NAT & x=12})=1", file_name)
@@ -130,7 +131,7 @@ class TestConstraintSolver():
         assert frozenset([x["x"] for x in domain])==frozenset([12])
 
 
-    def test_pi(self):
+    def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:
         string_to_file("#PREDICATE PI(x).(x:-4..4 & x/=0 | x)=576", file_name)

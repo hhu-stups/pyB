@@ -7,6 +7,7 @@ from bmachine import BMachine
 from environment import Environment
 from enumeration import *
 from quick_eval import quick_member_eval
+from constrainsolver import calc_constraint_domain
 
 
 # assumes that every Variable/Constant/Set appears once 
@@ -755,20 +756,24 @@ def interpret(node, env):
     elif isinstance(node, ALambdaExpression):
         func_list = []
         # new scope
-        env.bstate.push_new_frame(node.children[:-2])
+        varList = node.children[:-2]
+        env.bstate.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        # TODO: this code (maybe) dont checks all possibilities!
-        # gen. all values:
-        for child in node.children[:-2]:
-            # enumeration
-            for i in all_values(child, env):
-                env.bstate.set_value(child.idName, i)
-                if interpret(pred, env):
-                    image = interpret(expr, env)
-                    tup = tuple([i, image])
-                    func_list.append(tup)
-        # done
+        domain = calc_constraint_domain(env, varList, pred)
+        for entry in domain:
+            i = 0
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.bstate.set_value(name, value)
+                i = i + 1
+                if i==1:
+                	arg = value
+                else:
+                    arg = tuple([arg, value])              
+            image = interpret(expr, env)
+            tup = tuple([arg, image])
+            func_list.append(tup) 
         env.bstate.pop_frame()
         return frozenset(func_list)
     elif isinstance(node, AFunctionExpression):

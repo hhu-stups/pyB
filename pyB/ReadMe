@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 20.09.2012 
+PyB: 31.08.2011 - 05.10.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -82,7 +82,6 @@ Index
     - NAT and NAT1 is not infinite!
     - while substitution
     - min/max on infinite numbers - not ProB
-    - lambda abstractions with more vars (one var. works)
     - translation to RPython (and maybe add a jit)
     - tree/"btree"
     - Enable Event-B

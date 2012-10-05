@@ -334,6 +334,18 @@ class TestInterpFunctions():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_lambda2(self):
+        # Build AST
+        string_to_file("#PREDICATE f="+"%"+"x,y,z.(x:1..2 & y:1..2 & z:1..2|x+y+z)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        env = Environment()
+        env.bstate.add_ids_to_frame(["f"])
+        _test_typeit(root, env, [], ["f","x"])
+        env.bstate.set_value("f", frozenset([(((1,1),1),3),(((1,1),2),4),(((1,2),1),4),(((2,1),1),4),(((1,2),2),5),(((2,2),1),5),(((2,1),2),5),(((2,2),2),6)]))
+        assert interpret(root.children[0],env)
+
     def test_genAST_pred_seq_simple(self):
         # Build AST:
         string_to_file("#PREDICATE s:seq(S)", file_name)
