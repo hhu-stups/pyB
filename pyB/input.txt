@@ -1,1 +1,1 @@
-#PREDICATE f={(1,7),(2,8),(3,9)} & S={1,2,3} & !(x,y).(y:INTEGER &(x:S & f(x)<y) & y<42 =>y:T)
+#PREDICATE A=bool(1<2)

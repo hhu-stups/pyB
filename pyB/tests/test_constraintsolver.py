@@ -28,7 +28,7 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==frozenset([3,4])
+        assert frozenset([x["z"] for x in domain])==frozenset([3,4])
 
 
     def test_forAll2(self):
@@ -58,9 +58,8 @@ class TestConstraintSolver():
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==frozenset([1,2,3])
-        assert domain[1]==frozenset(range(10,42))
-
+        assert frozenset([x["x"] for x in domain])==frozenset([1,2,3])
+        assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
 
 
     def test_ex(self):
@@ -82,7 +81,7 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]== frozenset([2,3,4,5])
+        assert frozenset([x["z"] for x in domain])== frozenset([2,3,4,5])
 
     
     def test_lambda(self):
@@ -106,7 +105,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]== frozenset(range(1,100+1))
+        assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
 
     
     def test_set_comp(self):
@@ -128,7 +127,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==frozenset([12])
+        assert frozenset([x["x"] for x in domain])==frozenset([12])
 
 
     def test_pi(self):
@@ -151,4 +150,4 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        assert domain[0]==frozenset([-4,-3,-2,-1,1,2,3,4])
+        assert frozenset([x["x"] for x in domain])==frozenset([-4,-3,-2,-1,1,2,3,4])

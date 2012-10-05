@@ -23,20 +23,13 @@ def calc_constraint_domain(env, varList, predicate):
     for tup in var_and_domain_lst:
         problem.addVariable(tup[0], tup[1])
     constraint_string = pretty_print(env, varList, predicate)
+    names = [x.idName for x in varList]
     expr = "lambda "
-    for x in varList[0:-1]:
-        expr += x.idName+","
-    expr += varList[-1].idName+":"+constraint_string
-    print expr
-    problem.addConstraint(eval(expr)) # XXX not Rpython
-    L = problem.getSolutions()
-    result = []
-    # add constraint domain to result list
-    for idNode in varList: 
-        values = [x[idNode.idName] for x in L]
-        values.sort()
-        result.append(frozenset(values))
-    result.reverse()
+    for n in names[0:-1]:
+        expr += n+","
+    expr += varList[-1].idName+":"+constraint_string#+",("
+    problem.addConstraint(eval(expr),names) # XXX not Rpython
+    result = problem.getSolutions()
     return result
 
 
