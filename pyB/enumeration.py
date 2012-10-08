@@ -36,7 +36,7 @@ def all_values_by_type(atype, env):
     elif isinstance(atype, CartType):
         val_pi = all_values_by_type(atype.data[0].data, env)
         val_i = all_values_by_type(atype.data[1].data, env)
-        # TODO: test for realtions, seams incompleate
+        # TODO: test for realtions, seams incomplete
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
     string = "Unknown Type / Not Implemented: %s", atype
@@ -298,35 +298,7 @@ def create_sequence(images, number, length):
 def quick_enum_possible(root, env):
     possible = False
     if isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate):
-        possible = True
-        """
-        if isinstance(root.children[0], AIdentifierExpression) or isinstance(root.children[0], ASetExtensionExpression) or isinstance(root.children[0], ACoupleExpression) or isinstance(root.children[0], ASequenceExtensionExpression):
-            if isinstance(root.children[1], ARelationsExpression):
-                possible = True
-            elif isinstance(root.children[1], APartialFunctionExpression):
-                possible = True
-            elif isinstance(root.children[1], APartialInjectionExpression):
-                possible = True
-            elif isinstance(root.children[1], APartialSurjectionExpression):
-                possible = True
-            elif isinstance(root.children[1], APartialBijectionExpression):
-                possible = True  
-            elif isinstance(root.children[1], ATotalFunctionExpression):
-                possible = True 
-            elif isinstance(root.children[1], ATotalInjectionExpression):
-                possible = True      
-            elif isinstance(root.children[1], ATotalSurjectionExpression):
-                possible = True  
-            elif isinstance(root.children[1], ATotalBijectionExpression):
-                possible = True
-            elif isinstance(root.children[1], APow1SubsetExpression):
-                possible = True
-            elif isinstance(root.children[1], APowSubsetExpression):
-                possible = True
-            elif isinstance(root.children[1], AMultOrCartExpression):
-                possible = True
-            elif isinstance(root.children[1], ASeqExpression):
-                possible = True"""                                                                                             
+        possible = True                                                                                            
     if not possible:
         return False
     if not all_ids_known(root, env):

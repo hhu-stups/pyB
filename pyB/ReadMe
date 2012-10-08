@@ -79,7 +79,7 @@ Index
 
 5. MISSING FEATURES:
     - infinite sets/sequences/relations
-    - NAT and NAT1 is not infinite!
+    - NATURAL and INTEGER is not infinite!
     - while substitution
     - min/max on infinite numbers - not ProB
     - translation to RPython (and maybe add a jit)

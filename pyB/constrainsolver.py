@@ -1,14 +1,47 @@
+# extern software:
 # install http://labix.org/python-constraint
 # download and unzip python-constraint-1.1.tar.bz2
 # python setup.py build
 # python setup.py install
 from constraint import *
-# pyB imports
+# pyB imports:
 from ast_nodes import *
 from enumeration import all_values_by_type
+from bexceptions import ConstraintNotImplementedException
 
 
-# wrapper function for contraint solver 
+
+def calc_possible_solutions(env, varList, predicate):
+    try:
+        solutions = calc_constraint_domain(env, varList, predicate)
+        return solutions
+    except Exception: 
+        solutions = all_pairs(env, varList)
+        return solutions
+    
+
+def all_pairs(env, varList):
+    solutions = []
+    for d in gen_all_values(env, varList, {}):
+        solutions.append(d)
+    return solutions
+
+
+def gen_all_values(env, varList, dic):
+    idNode = varList[0]
+    assert isinstance(idNode, AIdentifierExpression)
+    atype = env.get_type_by_node(idNode)
+    domain = all_values_by_type(atype, env)
+    var_name = idNode.idName
+    for value in domain:
+        dic[var_name] = value
+        if len(varList)==1:
+            yield dic.copy()
+        else:
+            yield gen_all_values(env, varList[1:],dic).next()  
+                
+
+# wrapper-function for contraint solver 
 def calc_constraint_domain(env, varList, predicate):
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
@@ -38,8 +71,9 @@ def function(env, func_name, key):
     return dict(f)[key]
 
     
-# TODO: not, include
+# TODO: not, include and much more
 # only a list of special cases at the moment
+# helper-function for calc_constraint_domain
 def pretty_print(env, varList, node):
     #print node
     if isinstance(node, AConjunctPredicate):
@@ -104,5 +138,7 @@ def pretty_print(env, varList, node):
         string = str(dict(env.bstate.get_value(func_name)))
         string += "["+node.children[1].idName +"]" # XXX more args
         return string
+    #print node
+    #raise ConstraintNotImplementedException(node)
          
   
