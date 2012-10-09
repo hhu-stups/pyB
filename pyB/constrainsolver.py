@@ -53,7 +53,8 @@ def calc_constraint_domain(env, varList, predicate):
     expr = "lambda "
     for n in names[0:-1]:
         expr += n+","
-    expr += varList[-1].idName+":"+constraint_string#+",("
+    expr += varList[-1].idName+":"+constraint_string
+    #print expr
     problem.addConstraint(eval(expr),names) # XXX not Rpython
     return problem.getSolutionIter()
 
@@ -92,6 +93,14 @@ def pretty_print(env, varList, node):
             value = env.bstate.get_value(setName)
             string = name+" in "+str(value)
             return string 
+        elif isinstance(node.children[1], ANatSetExpression):
+            name = str(node.children[0].idName)
+            string = name+" in "+str(range(0,env._max_int+1))
+            return string   
+        elif isinstance(node.children[1], ANat1SetExpression):
+            name = str(node.children[0].idName)
+            string = name+" in "+str(range(1,env._max_int+1))
+            return string       
     elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
         left = ""
         right = ""

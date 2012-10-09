@@ -19,25 +19,25 @@ def write_solutions_to_env(root, env):
         elif isinstance(node, AEqualPredicate):
             try:
                 #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32
-				if isinstance(node.children[0], AIdentifierExpression):
-					expr = interpret(node.children[1], env)
-					env.solutions[node.children[0].idName] = expr
-					continue
-				elif isinstance(node.children[1], AIdentifierExpression):
-					expr = interpret(node.children[0], env)
-					env.solutions[node.children[1].idName] = expr
-					continue
-				else:
-					continue
+                if isinstance(node.children[0], AIdentifierExpression):
+                    expr = interpret(node.children[1], env)
+                    env.solutions[node.children[0].idName] = expr
+                    continue
+                elif isinstance(node.children[1], AIdentifierExpression):
+                    expr = interpret(node.children[0], env)
+                    env.solutions[node.children[1].idName] = expr
+                    continue
+                else:
+                    continue
             except Exception:
                 continue 
            
 
 def learn_assigned_values(root, env):
-	lst = []
-	_learn_assigned_values(root, env, lst)
-	return lst
-	
+    lst = []
+    _learn_assigned_values(root, env, lst)
+    return lst
+    
 
 # node is an "side-effect-free" AST (no assignments := )
 def _learn_assigned_values(root, env, lst):
@@ -267,25 +267,42 @@ def interpret(node, env):
         expr = interpret(node.children[0], env)
         return not expr
     elif isinstance(node, AUniversalQuantificationPredicate):
-        # new scope 
-        env.bstate.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2 # (two preds)
-        if not forall_recursive_helper(0, max_depth, node, env):
-            env.bstate.pop_frame()
-            return False
-        else:
-            env.bstate.pop_frame()
-            return True
+        # new scope
+        varList = node.children[:-1]
+        env.bstate.push_new_frame(varList)
+        pred = node.children[-1]
+        domain_generator = calc_possible_solutions(env, varList, pred.children[0])
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.bstate.set_value(name, value)
+            try:
+                if interpret(pred.children[0], env) and not interpret(pred.children[1], env):  # test
+                    env.bstate.pop_frame()           
+                    return False
+            except ValueNotInDomainException:
+                continue
+        env.bstate.pop_frame()
+        return True        
     elif isinstance(node, AExistentialQuantificationPredicate):
         # new scope
-        env.bstate.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2 # (two preds)
-        if exist_recursive_helper(0, max_depth, node, env):
-            env.bstate.pop_frame()
-            return True
-        else:
-            env.bstate.pop_frame()
-            return False
+        varList = node.children[:-1]
+        env.bstate.push_new_frame(varList)
+        pred = node.children[-1]
+        domain_generator = calc_possible_solutions(env, varList, pred.children[0])
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                print value
+                env.bstate.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test
+                    env.bstate.pop_frame()           
+                    return True
+            except ValueNotInDomainException:
+                continue
+        env.bstate.pop_frame()
+        return False        
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -523,8 +540,11 @@ def interpret(node, env):
             for name in [x.idName for x in varList]:
                 value = entry[name]
                 env.bstate.set_value(name, value)
-            if interpret(pred, env):  # test          
-                sum_ += interpret(expr, env)
+            try:
+                if interpret(pred, env):  # test          
+                    sum_ += interpret(expr, env)
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
         return sum_
     elif isinstance(node, AGeneralProductExpression):
@@ -539,8 +559,11 @@ def interpret(node, env):
             for name in [x.idName for x in varList]:
                 value = entry[name]
                 env.bstate.set_value(name, value)
-            if interpret(pred, env):  # test           
-                prod_ *= interpret(expr, env)
+            try:
+                if interpret(pred, env):  # test           
+                    prod_ *= interpret(expr, env)
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
         return prod_
 
@@ -770,13 +793,16 @@ def interpret(node, env):
                 env.bstate.set_value(name, value)
                 i = i + 1
                 if i==1:
-                	arg = value
+                    arg = value
                 else:
                     arg = tuple([arg, value])
-            if interpret(pred, env):  # test       
-				image = interpret(expr, env)
-				tup = tuple([arg, image])
-				func_list.append(tup) 
+            try:
+                if interpret(pred, env):  # test       
+                    image = interpret(expr, env)
+                    tup = tuple([arg, image])
+                    func_list.append(tup) 
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
         return frozenset(func_list)
     elif isinstance(node, AFunctionExpression):

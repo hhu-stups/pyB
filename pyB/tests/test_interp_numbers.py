@@ -307,6 +307,7 @@ class TestInterpNumbers():
         env = Environment()
         env.bstate.add_ids_to_frame(["S"])
         env.bstate.set_value("S", frozenset([5000]))
+        env._max_int = 2**16
         _test_typeit(root.children[0], env, [], ["S"])
         assert interpret(root.children[0],env)
  
