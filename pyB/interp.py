@@ -378,6 +378,7 @@ def interpret(node, env):
             acc = acc.intersection(aset)
         return acc
     elif isinstance(node, AQuantifiedUnionExpression):
+        # TODO: use constraint solving 
         nodes = []
         result = frozenset([])
         for idNode in node.children[:node.idNum]:
@@ -392,6 +393,7 @@ def interpret(node, env):
         env.bstate.pop_frame()
         return result
     elif isinstance(node, AQuantifiedIntersectionExpression):
+        # TODO: use constraint solving 
         nodes = []
         result = frozenset([])
         for idNode in node.children[:node.idNum]:
@@ -516,8 +518,8 @@ def interpret(node, env):
         env.bstate.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain = calc_possible_solutions(env, varList, pred)
-        for entry in domain:
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
                 env.bstate.set_value(name, value)
@@ -532,8 +534,8 @@ def interpret(node, env):
         env.bstate.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain = calc_possible_solutions(env, varList, pred)
-        for entry in domain:
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
                 env.bstate.set_value(name, value)
@@ -760,8 +762,8 @@ def interpret(node, env):
         env.bstate.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain = calc_possible_solutions(env, varList, pred)
-        for entry in domain:
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
             i = 0
             for name in [x.idName for x in varList]:
                 value = entry[name]

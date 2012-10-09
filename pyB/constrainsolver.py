@@ -13,19 +13,12 @@ from bexceptions import ConstraintNotImplementedException
 
 def calc_possible_solutions(env, varList, predicate):
     try:
-        solutions = calc_constraint_domain(env, varList, predicate)
-        return solutions
+        iterator = calc_constraint_domain(env, varList, predicate)
+        return iterator
     except Exception: 
-        solutions = all_pairs(env, varList)
-        return solutions
+        generator = gen_all_values(env, varList, {})
+        return generator.__iter__()
     
-
-def all_pairs(env, varList):
-    solutions = []
-    for d in gen_all_values(env, varList, {}):
-        solutions.append(d)
-    return solutions
-
 
 def gen_all_values(env, varList, dic):
     idNode = varList[0]
@@ -62,8 +55,7 @@ def calc_constraint_domain(env, varList, predicate):
         expr += n+","
     expr += varList[-1].idName+":"+constraint_string#+",("
     problem.addConstraint(eval(expr),names) # XXX not Rpython
-    result = problem.getSolutions()
-    return result
+    return problem.getSolutionIter()
 
 
 def function(env, func_name, key):

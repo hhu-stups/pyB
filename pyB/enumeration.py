@@ -282,6 +282,7 @@ def create_all_seq_w_fixlen(images, length):
     return result
 
 
+# WARNING: this could take some time...
 def create_sequence(images, number, length):
     result = []
     basis = len(images)

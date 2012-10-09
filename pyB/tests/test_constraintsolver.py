@@ -59,6 +59,7 @@ class TestConstraintSolver():
         Q = unqantPred.children[-1].children[1]
         domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([1,2,3])
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
 
 
