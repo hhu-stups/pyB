@@ -187,7 +187,59 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
+
+
+# WARNING: this could take some time...
+def all_records(value_dict, result, acc, index):
+    if len(value_dict)==index:
+        import copy
+        result.append(copy.deepcopy(acc))
+    else:
+        name = list(value_dict.keys())[index]
+        values = list(value_dict.values())[index]
+        for v in values:
+            acc[name] = v
+            all_records(value_dict, result, acc, index+1)
+
+
+# WARNING: this could take some time...
+def create_all_seq_w_fixlen(images, length):
+    result = []
+    basis = len(images)
+    noc = basis**length # number of combinations
+    for i in range(noc):
+        lst = create_sequence(images, i, length)
+        result.append(frozenset(lst))
+    return result
+
+
+# WARNING: this could take some time...
+def create_sequence(images, number, length):
+    result = []
+    basis = len(images)
+    for i in range(length):
+        symbol = tuple([i+1,images[number % basis]])
+        result.append(symbol)
+        number /= basis
+    result.reverse()
+    return result
+
+
+# TODO: remane
+# checks if some "hacks" are possible
+def quick_enum_possible(root, env):
+    possible = False
+    if isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate):
+        possible = True                                                                                            
+    if not possible:
+        return False
+    if not all_ids_known(root, env):
+        return False
+    return True
+    # TODO: more
+
 # FIXME: rename quantified variables!
+"""
 def set_comprehension_recursive_helper(depth, max_depth, node, env):
     from interp import interpret
     result = []
@@ -255,54 +307,4 @@ def forall_recursive_helper(depth, max_depth, node, env):
             if not forall_recursive_helper(depth+1, max_depth, node, env):
                 return False
         return True
-
-
-
-# WARNING: this could take some time...
-def all_records(value_dict, result, acc, index):
-    if len(value_dict)==index:
-        import copy
-        result.append(copy.deepcopy(acc))
-    else:
-        name = list(value_dict.keys())[index]
-        values = list(value_dict.values())[index]
-        for v in values:
-            acc[name] = v
-            all_records(value_dict, result, acc, index+1)
-
-
-# WARNING: this could take some time...
-def create_all_seq_w_fixlen(images, length):
-    result = []
-    basis = len(images)
-    noc = basis**length # number of combinations
-    for i in range(noc):
-        lst = create_sequence(images, i, length)
-        result.append(frozenset(lst))
-    return result
-
-
-# WARNING: this could take some time...
-def create_sequence(images, number, length):
-    result = []
-    basis = len(images)
-    for i in range(length):
-        symbol = tuple([i+1,images[number % basis]])
-        result.append(symbol)
-        number /= basis
-    result.reverse()
-    return result
-
-
-# TODO: remane
-# checks if some "hacks" are possible
-def quick_enum_possible(root, env):
-    possible = False
-    if isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate):
-        possible = True                                                                                            
-    if not possible:
-        return False
-    if not all_ids_known(root, env):
-        return False
-    return True
-    # TODO: more
+"""

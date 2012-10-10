@@ -411,35 +411,44 @@ def interpret(node, env):
             acc = acc.intersection(aset)
         return acc
     elif isinstance(node, AQuantifiedUnionExpression):
-        # TODO: use constraint solving 
-        nodes = []
         result = frozenset([])
-        for idNode in node.children[:node.idNum]:
-            assert isinstance(idNode, AIdentifierExpression)
-            nodes.append(idNode)
-        env.bstate.push_new_frame(nodes)
+        # new scope
+        varList = node.children[:-2]
+        env.bstate.push_new_frame(varList)
         pred = node.children[-2]
-        assert isinstance(pred, Predicate)
-        gen = try_all_values(pred, env, nodes)
-        while gen.next():
-            result |= interpret(node.children[-1], env)
+        expr = node.children[-1]
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.bstate.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test   
+                    result |= interpret(expr, env) 
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
         return result
-    elif isinstance(node, AQuantifiedIntersectionExpression):
-        # TODO: use constraint solving 
-        nodes = []
+    elif isinstance(node, AQuantifiedIntersectionExpression):  
         result = frozenset([])
-        for idNode in node.children[:node.idNum]:
-            assert isinstance(idNode, AIdentifierExpression)
-            nodes.append(idNode)
-        env.bstate.push_new_frame(nodes)
+        # new scope
+        varList = node.children[:-2]
+        env.bstate.push_new_frame(varList)
         pred = node.children[-2]
-        assert isinstance(pred, Predicate)
-        gen = try_all_values(pred, env, nodes)
-        if gen.next():
-            result = interpret(node.children[-1], env)
-        while gen.next():
-            result &= interpret(node.children[-1], env)
+        expr = node.children[-1]
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.bstate.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test
+                    if result==frozenset([]):
+                         result = interpret(expr, env)  
+                    else:      
+                         result &= interpret(expr, env) 
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
         return result
 
