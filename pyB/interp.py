@@ -336,20 +336,31 @@ def interpret(node, env):
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
     elif isinstance(node, AComprehensionSetExpression):
-        # new scope
-        env.bstate.push_new_frame(node.children[:-1])
-        max_depth = len(node.children) -2
-        lst = set_comprehension_recursive_helper(0, max_depth, node, env)
-        # FIXME: maybe wrong:
-        # [[x1,y1],[x2,y2]..] => [(x1,y2),(x2,y2)...]
         result = []
-        if is_flat(lst):
-            result = lst
-        else:
-            for i in lst:
-                result.append(tuple(flatten(i,[])))
+        # new scope
+        varList = node.children[:-1]
+        env.bstate.push_new_frame(varList)
+        pred = node.children[-1]
+        domain_generator = calc_possible_solutions(env, varList, pred)
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.bstate.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test
+                    i = 0
+                    for name in [x.idName for x in varList]:
+                        value = env.bstate.get_value(name)
+                        i = i + 1
+                        if i==1:
+                            tup = value
+                        else:
+                            tup = tuple([tup,value])
+                    result.append(tup)  
+            except ValueNotInDomainException:
+                continue
         env.bstate.pop_frame()
-        return frozenset(result)
+        return frozenset(result)       
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -359,11 +370,16 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
-        lst = []
+        result = None
+        i = 0
         for child in node.children:
             elm = interpret(child, env)
-            lst.append(elm)
-        return tuple(lst)
+            if i==0:
+                result = elm
+            else:
+                result = tuple([result, elm]) 
+            i = i + 1
+        return result
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
         res = powerset(aSet)
@@ -814,14 +830,17 @@ def interpret(node, env):
             return value+1
         function = interpret(node.children[0], env)
         #print "FunctionName:", node.children[0].idName
-        args = [] 
+        args = None
+        i = 0 
         for child in node.children[1:]:
             arg = interpret(child, env)
-            args.append(arg)
-        if len(args) > 1:
-            return get_image(function, tuple(args))
-        else:
-            return get_image(function, args[0])
+            if i==0:
+                args = arg
+            else:
+                args = tuple([args, arg])
+            i = i+1
+        return get_image(function, args)
+
 
 
 # ********************

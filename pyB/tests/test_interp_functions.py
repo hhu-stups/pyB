@@ -294,7 +294,7 @@ class TestInterpFunctions():
 
         env = Environment()
         env.bstate.add_ids_to_frame(["zz","f"])
-        env.bstate.set_value("f", frozenset([((1,1,1),42),((2,2,2),777)]))
+        env.bstate.set_value("f", frozenset([(((1,1),1),42),(((2,2),2),777)]))
         env.bstate.set_value("zz", 777)
         assert interpret(root.children[0],env)
 

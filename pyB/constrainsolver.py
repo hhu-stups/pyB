@@ -31,7 +31,9 @@ def gen_all_values(env, varList, dic):
         if len(varList)==1:
             yield dic.copy()
         else:
-            yield gen_all_values(env, varList[1:],dic).next()  
+            for d in gen_all_values(env, varList[1:], dic):
+                yield d
+            
                 
 
 # wrapper-function for contraint solver 
@@ -54,7 +56,6 @@ def calc_constraint_domain(env, varList, predicate):
     for n in names[0:-1]:
         expr += n+","
     expr += varList[-1].idName+":"+constraint_string
-    #print expr
     problem.addConstraint(eval(expr),names) # XXX not Rpython
     return problem.getSolutionIter()
 
@@ -78,6 +79,15 @@ def pretty_print(env, varList, node):
             return string0
         elif string1:
             return string1
+    elif isinstance(node, ADisjunctPredicate):
+        string0 = pretty_print(env, varList, node.children[0])
+        string1 = pretty_print(env, varList, node.children[1])
+        if string0 and string1:
+            return string0 +" or "+ string1     
+        elif string0:
+            return string0
+        elif string1:
+            return string1    
     elif isinstance(node, ABelongPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
         if isinstance(node.children[1], AIntervalExpression):
 			name = str(node.children[0].idName)
