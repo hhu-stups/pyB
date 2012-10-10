@@ -2,13 +2,15 @@
 from config import max_op_solutions
 from enumeration import try_all_values
 from ast_nodes import *
+from constrainsolver import calc_possible_solutions
+from bexceptions import ValueNotInDomainException
 
 # returns (op, parameter_list, return_values, bstate)
-# TODO: returnvalues
+# TODO?: returnvalues
 def calc_succ_states(env, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
-        # assumes no vars/set with the same name in two mch
+        # WARNING: assumes no vars/set with the same name in two mch
         save_state = env.bstate
         operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
         for op in operations:
@@ -18,7 +20,7 @@ def calc_succ_states(env, bmachine):
             parameter_list = []
             return_values = []
 
-            # (2) find parameter names
+            # (2) find parameter names and add them to the frame
             idNodes = get_para_nodes(op)
             rids =get_return_names(op)
             env.bstate.add_ids_to_frame([n.idName for n in idNodes])
@@ -30,30 +32,39 @@ def calc_succ_states(env, bmachine):
             substitution = op.children[-1]
             assert isinstance(substitution, Substitution)
             if isinstance(substitution, APreconditionSubstitution):
-                # (3.1) enumerate parameters
                 predicate = substitution.children[0]
                 assert isinstance(predicate, Predicate)
-                if not idNodes==[]:
-                    gen = try_all_values(predicate, env, idNodes)
-                    k = 0
+                if not idNodes==[]: # (3.1a) enumerate operation-parameters
+                    k = 0 # number of found solutions 
                     save_next_state = env.bstate
-                    while gen.next() and k<max_op_solutions:
-                        # gen a new state for every execution
-                        env.bstate = copy.deepcopy(save_next_state)
-                        parameter_list = []
-                        # (3.2) add parameter-solutions
-                        for n in idNodes:
-                            i = n.idName
-                            parameter_list.append(tuple([i, env.bstate.get_value(i)]))
-                        # (3.3) calc next state
-                        bmachine.interpreter_method(substitution.children[1], env)
-                        return_values = add_return_values(env, rids)
-                        result.append([op, parameter_list, return_values, env.bstate])
-                        k = k +1
-                        env.bstate = save_next_state # generator(gen) musst use correct state
+                    domain_generator = calc_possible_solutions(env, idNodes, predicate)
+                    for entry in domain_generator:
+                        if k==max_op_solutions:
+                            break
+                        try:
+                            # gen a new state for every execution
+                            env.bstate = copy.deepcopy(save_next_state)
+                            # use values of solution-candidate
+                            for name in [x.idName for x in idNodes]:
+                                value = entry[name]
+                                env.bstate.set_value(name, value)
+                            if bmachine.interpreter_method(predicate, env):  # test
+                                # Solution found!
+                                parameter_list = []
+                                # (3.2) add parameter-solutions
+                                for n in idNodes:
+                                    i = n.idName
+                                    parameter_list.append(tuple([i, env.bstate.get_value(i)]))
+                                # (3.3) calc next state and add to result list
+                                bmachine.interpreter_method(substitution.children[1], env)
+                                return_values = add_return_values(env, rids)
+                                result.append([op, parameter_list, return_values, env.bstate])
+                                k = k +1
+                            env.bstate = save_next_state # generator musst use correct state
+                        except ValueNotInDomainException:
+                            env.bstate = save_next_state # generator musst use correct state
                     env.bstate = save_next_state
-                # no parameter
-                else:
+                else: # (3.1b) no operation-parameters: no enumeration 
                     if bmachine.interpreter_method(predicate, env):
                         bmachine.interpreter_method(substitution.children[-1], env)
                         return_values = add_return_values(env, rids)
@@ -113,8 +124,7 @@ def calc_succ_states(env, bmachine):
                         else:
                             # checked everything: no more solutions and no else block
                             break
-                else:
-                    # no parameters: no enumeration
+                else:  # no operation-parameters: no enumeration 
                     save_next_state = env.bstate
                     while k<max_op_solutions:
                         env.bstate = copy.deepcopy(save_next_state)

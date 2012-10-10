@@ -87,7 +87,7 @@ def interpret(node, env):
             result = interpret(node.children[0], env)
             print result
             return
-        else:
+        else:            # there are variables 
             env.bstate.add_ids_to_frame(idNames)
             learnd_vars = learn_assigned_values(node, env)
             if learnd_vars:
@@ -293,7 +293,6 @@ def interpret(node, env):
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
-                print value
                 env.bstate.set_value(name, value)
             try:
                 if interpret(pred, env):  # test
