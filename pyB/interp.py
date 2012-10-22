@@ -18,7 +18,7 @@ def write_solutions_to_env(root, env):
             write_solutions_to_env(node, env)
         elif isinstance(node, AEqualPredicate):
             try:
-                #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32
+                #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32 (underscore bug)
                 if isinstance(node.children[0], AIdentifierExpression):
                     expr = interpret(node.children[1], env)
                     env.solutions[node.children[0].idName] = expr
@@ -97,6 +97,7 @@ def interpret(node, env):
                 if env.bstate.get_value(n.idName)==None:
                     not_set.append(n)
             # enumerate only unknown vars
+            # FIXME: Dont enum quantified vars like !x.(P=>Q)
             if not_set:
                 print "enum. vars:", [n.idName for n in not_set]
                 gen = try_all_values(node.children[0], env, not_set)

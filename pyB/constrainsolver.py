@@ -1,9 +1,3 @@
-# extern software:
-# install http://labix.org/python-constraint
-# download and unzip python-constraint-1.1.tar.bz2
-# python setup.py build
-# python setup.py install
-from constraint import *
 # pyB imports:
 from ast_nodes import *
 from enumeration import all_values_by_type
@@ -38,6 +32,12 @@ def gen_all_values(env, varList, dic):
 
 # wrapper-function for contraint solver 
 def calc_constraint_domain(env, varList, predicate):
+    # extern software:
+    # install http://labix.org/python-constraint
+    # download and unzip python-constraint-1.1.tar.bz2
+    # python setup.py build
+    # python setup.py install
+    from constraint import *
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
     # get domain 
@@ -90,13 +90,13 @@ def pretty_print(env, varList, node):
             return string1    
     elif isinstance(node, ABelongPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
         if isinstance(node.children[1], AIntervalExpression):
-			name = str(node.children[0].idName)
-			number0 = pretty_print(env, varList, node.children[1].children[0])
-			number1 = pretty_print(env, varList, node.children[1].children[1])
-			if number0 and number1:
-				string = name+">="+str(number0)
-				string += " and "+name+"<="+str(number1)
-				return string
+            name = str(node.children[0].idName)
+            number0 = pretty_print(env, varList, node.children[1].children[0])
+            number1 = pretty_print(env, varList, node.children[1].children[1])
+            if number0 and number1:
+                string = name+">="+str(number0)
+                string += " and "+name+"<="+str(number1)
+                return string
         elif isinstance(node.children[1], AIdentifierExpression):
             name = str(node.children[0].idName)
             setName = str(node.children[1].idName)
