@@ -84,16 +84,24 @@ def _find_var_names(node, lst):
 
 def find_var_nodes(node):
     lst = []
-    _find_var_nodes(node, lst) #side-effect: fills list
+    _find_var_nodes(node, lst, []) #side-effect: fills list
     return lst
 
 
 # helper for find_var_nodes
-def _find_var_nodes(node, lst):
-    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
+# TODO: quantifed preds
+def _find_var_nodes(node, lst, black_list):
+    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression):
+        bl = black_list + [x.idName for x in node.children[:-1]]
+        _find_var_nodes(node.children[-1], lst, bl)
         return
+    elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression) or isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression) or isinstance(node, ALambdaExpression):
+        bl = black_list + [x.idName for x in node.children[:-2]]
+        _find_var_nodes(node.children[-2], lst, bl)
+        _find_var_nodes(node.children[-1], lst, bl)
+        return    
     elif isinstance(node, AIdentifierExpression):
-        if not node.idName in [l.idName for l in lst]:
+        if (not node.idName in [l.idName for l in lst]) and (not node.idName in black_list):
             lst.append(node)
     else:
         if isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
@@ -101,7 +109,7 @@ def _find_var_nodes(node, lst):
                 lst.append(node)
         try:
             for n in node.children:
-                _find_var_nodes(n, lst)
+                _find_var_nodes(n, lst, black_list)
         except AttributeError:
             return #FIXME no children   
     

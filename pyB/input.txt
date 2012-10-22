@@ -1,1 +1,1 @@
-#PREDICATE %x.(x>3|x)={}
+#PREDICATE A=bool(1<2)

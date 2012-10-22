@@ -97,7 +97,7 @@ def interpret(node, env):
                 if env.bstate.get_value(n.idName)==None:
                     not_set.append(n)
             # enumerate only unknown vars
-            # FIXME: Dont enum quantified vars like !x.(P=>Q)
+            # Dont enums quantified vars like !x.(P=>Q)
             if not_set:
                 print "enum. vars:", [n.idName for n in not_set]
                 gen = try_all_values(node.children[0], env, not_set)
@@ -105,7 +105,7 @@ def interpret(node, env):
                     for i in idNames:
                         print i,":", env.bstate.get_value(i)
                 else:
-                    print "No Solution found"
+                    print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
                     print False
                     return
             else:

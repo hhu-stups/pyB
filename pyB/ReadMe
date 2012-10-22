@@ -144,6 +144,7 @@ Index
     - Implement Definitions 
     - seperate enumeration from interpretation-module
     - "=" is used as ":=" inside the interpreter
+    - Implement UNION and INTER
 
 
 8. TODO-LIST:
@@ -152,7 +153,6 @@ Index
     - check names for anti-collision rules: man 7.26 
     - write a better build-script
     - enable infinite sets
-    - Implement UNION and INTER
     - Implement Rodin interface
     - Implement Definitions FILES
     - set mch-para to "good" values
