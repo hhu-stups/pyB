@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# TODO; refactoring: capital letters of constants
 min_int = -1
 max_int = 5
 max_op_solutions = 4

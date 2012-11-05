@@ -4,14 +4,14 @@
 # Page 14: 3.2. B-Types
 #
 # Type ::= Basic_type
-#        | “P” “(“ Type “)”
-#        | Type x Type
-#        | “struct” “(“ (Ident “:” Type)+”,” “)”
-#        | “(“ Type “)”
+#        	 | “P” “(“ Type “)”
+#        	 | Type x Type
+#        	 | “struct” “(“ (Ident “:” Type)+”,” “)”
+#        	 | “(“ Type “)”
 # Basic_type ::= “Z”
-#        | “BOOL”
-#        | “STRING”
-#        | Ident
+#        	 | “BOOL”
+#       	 | “STRING”
+#        	 | Ident
 
 
 
@@ -41,11 +41,6 @@ class SetType(BType):
         self.data = name # None when name unknown
 
 
-#class EmptySetType(BType):
-#    def __init__(self):
-#        pass
-
-
 # pairtype: Type x Type
 class CartType(BType):
     def __init__(self, setA, setB):
@@ -70,14 +65,14 @@ class UnknownType(): # no BType: used later to throw Exceptions
         self.real_type = real_type
 
 
-# will be decidet in resolve()
+# will be decided in resolve()
 class PowCartORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, None,None)
         self.data = (arg1, arg2)
 
 
-# will be decidet in resolve()
+# will be decided in resolve()
 class PowORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, None,None)

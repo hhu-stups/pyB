@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 05.10.2012 
+PyB: 31.08.2011 - 05.11.2012 
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -39,9 +39,8 @@ Index
     1.2: the jar files must be in the correct dir. see helpers.py Line 7-10
      This hard-codes path must be set manually at the moment
 
-
     WAY C: auto
-    Checkout and run build.sh (Testet on Unbuntu and Kubuntu Linux)
+    Checkout and run build.sh (Testet on Unbuntu-, Kubuntu Linux and Mac 10.6.8 )
 
 
 2. Run pyB:
@@ -67,14 +66,15 @@ Index
     - Typechecking of the most predicates
     - Everything from "A concise summary of the b mathematical toolkit",
       except the missing features in 5.
-    - And also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
+      And also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
       iseq1(S);X**Y;closure1(r);S>+>>T(part bij);XX$0(pimed IDs);
       func(r);rel(f)
       see: www.atelierb.eu/ressources/manrefb1.8.6.uk.pdf
     - Animation of B-machines 
-    - Processing of "Solution-files" + B-Machines
+    - limited processing of "Solution-files" + B-Machines
     - Assertion checks
     - most substitutions
+    - limited constraint solving
 
 
 5. MISSING FEATURES:
@@ -93,7 +93,7 @@ Index
     6.1.PARSING:
      PyB uses the same java-parser like ProB with one exception: 
      A AST-visitor "ASTPython.java" gens. a String with pythoncode.
-     This string is executed with the "exec"-method in "pyB.py".
+     This string is executed with the "exec"-method in "pyB.py" and "bmachine.py".
      (This needs to be changed for RPython to Jit it. e.g. through JSON-Codegen)
      The string is mapped via "exec" to the AST-Nodes (python-classes) in
      "ast_nodes.py"
@@ -118,7 +118,7 @@ Index
 
     6.4.INTERPRETATION:
      This AST is eval. via an AST-interpreter "interp.py". It uses the enumeration-methods
-     in "enumeration.py"
+     in "enumeration.py". Animation uses a (third party) constraint-solver 
 
 
 
@@ -149,6 +149,7 @@ Index
 
 8. TODO-LIST:
 8.1 Features
+    - Deep_copy is the performance problem
     - visibility: only one env and clause check what they can see 
     - check names for anti-collision rules: man 7.26 
     - write a better build-script
@@ -206,7 +207,7 @@ Index
 
 
 9. AST-Node Checklist
- 9.1 DONE:
+ 9.1 DONE (Mapping to Python, Typeing, Interpretation):
     caseStart (no change)
     caseAAbstractMachineParseUnit 
     caseAPredicateParseUnit
@@ -375,7 +376,7 @@ Index
     caseAIntegerSetExpression
     
 
- 9.2 NOT IMPLEMENTED:
+ 9.2 NOT IMPLEMENTED/TODO:
     caseAExpressionParseUnit
     caseASubstitutionParseUnit
     caseAMachineClauseParseUnit
@@ -478,5 +479,6 @@ Index
 10. Design Decisions:  
     The Argumentes(childs) of the CartSetType are the types of the sets.
     Resolve at the end of typechecking. E.g !(x).(x:T=>x:S) & S:POW(NAT)    
+    
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    

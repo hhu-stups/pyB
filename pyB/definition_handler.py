@@ -1,5 +1,6 @@
 from ast_nodes import *
 
+# This class modifies an AST. It generates a "definition free" AST ahead of time
 class DefinitionHandler():
     
     def __init__(self):
@@ -11,6 +12,7 @@ class DefinitionHandler():
         self.replace_definitions(root)
 
 
+    # fill def_map with "definition-definitions"
     def save_definitions(self, root):
         for clause in root.children:
             if isinstance(clause, ADefinitionsMachineClause):

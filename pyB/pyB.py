@@ -39,9 +39,11 @@ file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
 if solution_file_name_str: # 3. parse and use solution-file
     read_solution_file(env)
 ast_string = file_to_AST_str(file_name_str) # 4. parse input-file
-exec ast_string
+exec ast_string # TODO: encapsulation of parsing
 dh = DefinitionHandler()
 dh.repl_defs(root)
+#import cProfile
+#cProfile.run('mch = interpret(root, env)','profile_out.txt')
 mch = interpret(root, env)
 
 if not mch==None: #otherwise #PREDICATE

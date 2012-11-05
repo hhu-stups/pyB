@@ -4,6 +4,7 @@ from btypes import *
 from bstate import BState
 from config import *
 
+# TODO: This must be a singelton object
 class Environment():
     def __init__(self):
         # Types of AST-ID-Nodes: Node->type.

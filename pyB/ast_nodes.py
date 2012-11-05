@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# This classes are used to map Java-AST Nodes to Python Objects
+# TODO: write a JSON-parser to avoid the string-eval
 
 class Node():
     def __init__(self):

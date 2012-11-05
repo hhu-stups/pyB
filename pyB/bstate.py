@@ -21,7 +21,7 @@ class BState():
     # used in undo
     def save_last_state(self):
         import copy
-        self.last_bstate = copy.deepcopy(self)
+        self.last_bstate = copy.deepcopy(self) #TODO: performance Problem , write clone method. Dont clone the bmachine (static data)
         
     def print_state(self):
         if self.mch:

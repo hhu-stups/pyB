@@ -193,7 +193,7 @@ def powerset(iterable):
 def all_records(value_dict, result, acc, index):
     if len(value_dict)==index:
         import copy
-        result.append(copy.deepcopy(acc))
+        result.append(copy.deepcopy(acc)) # FIXME: Performance-Problems
     else:
         name = list(value_dict.keys())[index]
         values = list(value_dict.values())[index]
@@ -237,74 +237,3 @@ def quick_enum_possible(root, env):
         return False
     return True
     # TODO: more
-
-# FIXME: rename quantified variables!
-"""
-def set_comprehension_recursive_helper(depth, max_depth, node, env):
-    from interp import interpret
-    result = []
-    pred = node.children[len(node.children) -1]
-    idName = node.children[depth].idName
-    if depth == max_depth: #basecase
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            try:
-                if interpret(pred, env):
-                    result.append(i)
-            except ValueNotInDomainException:
-                continue
-        return result
-    else: # recursive call
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            partial_result = set_comprehension_recursive_helper(depth+1, max_depth, node, env)
-            for j in partial_result:
-                temp = []
-                temp.append(i)
-                temp.append(j)
-                result.append(temp)
-        return result
-
-
-def exist_recursive_helper(depth, max_depth, node, env):
-    from interp import interpret
-    pred = node.children[len(node.children) -1]
-    idName = node.children[depth].idName
-    if depth == max_depth: #basecase
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            try:
-                if interpret(pred, env):
-                    return True
-            except ValueNotInDomainException:
-                continue
-        return False
-    else: # recursive call
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            if exist_recursive_helper(depth+1, max_depth, node, env):
-                return True
-        return False
-
-
-
-def forall_recursive_helper(depth, max_depth, node, env):
-    from interp import interpret
-    pred = node.children[len(node.children) -1]
-    idName = node.children[depth].idName
-    if depth == max_depth: #basecase
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            try:
-                if not interpret(pred, env):
-                    return False
-            except:
-                continue
-        return True
-    else: # recursive call
-        for i in all_values(node.children[depth], env):
-            env.bstate.set_value(idName, i)
-            if not forall_recursive_helper(depth+1, max_depth, node, env):
-                return False
-        return True
-"""

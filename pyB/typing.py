@@ -11,6 +11,7 @@ class BTypeException(Exception):
 
 
 # Helper env: will be thrown away after Typechecking
+# FIXME: But is used in bmachine
 class TypeCheck_Environment():
     def __init__(self):
         # is used to construct the env.node_to_type_map
