@@ -126,7 +126,7 @@ Index
     - replace depricated set module
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
-    - move tests in seperated files
+    - move tests in separated files
     - use new env interface inside tests
     - !, # set-comp and pi dont use correct enum
     - rename quantified variables in helper-funcs -solved by scoping
@@ -149,6 +149,7 @@ Index
 
 8. TODO-LIST:
 8.1 Features
+    - fully seperate console output from other modules
     - Deep_copy is the performance problem
     - visibility: only one env and clause check what they can see 
     - check names for anti-collision rules: man 7.26 

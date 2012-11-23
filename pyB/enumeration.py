@@ -12,7 +12,7 @@ from bexceptions import *
 def all_values(node, env):
     assert isinstance(node, AIdentifierExpression)
     if node.enum_hint:
-        return env.bstate.get_value(node.enum_hint)
+        return env.get_value(node.enum_hint)
     atype = env.get_type_by_node(node)
     return all_values_by_type(atype, env)
 
@@ -24,7 +24,7 @@ def all_values_by_type(atype, env):
         return [True, False]
     elif isinstance(atype, SetType):
         type_name =  atype.data
-        value = env.bstate.get_value(type_name)
+        value = env.get_value(type_name)
         assert isinstance(value, frozenset)
         return value
     elif isinstance(atype, PowerSetType):
@@ -48,21 +48,21 @@ def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
     if node.enum_hint:
-        all_values = env.bstate.get_value(node.enum_hint)
+        all_values = env.get_value(node.enum_hint)
     else:
     	atype = env.get_type_by_node(node)
     	all_values = all_values_by_type(atype, env)
     if len(idNodes)<=1:
         for val in all_values:
             try:
-                env.bstate.set_value(node.idName, val)
+                env.set_value(node.idName, val)
                 if interpret(root, env):
                     yield True
             except ValueNotInDomainException:
                 continue
     else:
         for val in all_values:
-            env.bstate.set_value(node.idName, val)
+            env.set_value(node.idName, val)
             gen = try_all_values(root, env, idNodes[1:])
             if gen.next():
                 yield True
@@ -71,14 +71,14 @@ def try_all_values(root, env, idNodes):
 
 # FIXME: dummy-init of mch-parameters
 def init_mch_param(root, env, mch):
-    env.bstate.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
+    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     # TODO: retry if no animation possible
     for n in mch.set_params:
         atype = env.get_type_by_node(n)
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
         name = n.idName 
-        env.bstate.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
     for n in mch.scalar_params:
         # page 126
         atype = env.get_type_by_node(n)
@@ -95,11 +95,11 @@ def init_deffered_set(def_set, env):
     # TODO: retry if no animation possible
     assert isinstance(def_set, ADeferredSet)
     name = def_set.idName
-    env.bstate.add_ids_to_frame([name])
+    env.add_ids_to_frame([name])
     lst = []
     for i in range(deferred_set_elements_num):
         lst.append(str(i)+"_"+name)
-    env.bstate.set_value(name, frozenset(lst))
+    env.set_value(name, frozenset(lst))
 
 
 def get_image(function, preimage):

@@ -46,10 +46,10 @@ class TestConstraintSolver():
         assert isinstance(env.get_type("y"), IntegerType)
         assert isinstance(env.get_type("T"), PowerSetType)
         assert isinstance(env.get_type("T").data, IntegerType)
-        env.bstate.add_ids_to_frame(["f","S","T"])
-        env.bstate.set_value("f", frozenset([(1,7),(2,8),(3,9)]))
-        env.bstate.set_value("S", frozenset([1,2,3]))
-        env.bstate.set_value("T", frozenset(range(10,42)))
+        env.add_ids_to_frame(["f","S","T"])
+        env.set_value("f", frozenset([(1,7),(2,8),(3,9)]))
+        env.set_value("S", frozenset([1,2,3]))
+        env.set_value("T", frozenset(range(10,42)))
         env._min_int = -2**8
         env._max_int = 2**8
         unqantPred = root.children[0].children[1]

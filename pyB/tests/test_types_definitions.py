@@ -4,6 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
+from parsing import parse_ast
 from definition_handler import DefinitionHandler
 
 file_name = "input.txt"
@@ -26,6 +27,7 @@ class TestTypesDefinitions():
         dh = DefinitionHandler()
         dh.repl_defs(root)
         env = Environment()
+        parse_ast(root,env)
         lst = []
         _test_typeit(root, env, lst, ["z"])
         assert isinstance(env.get_type("z"), IntegerType)
@@ -48,6 +50,7 @@ class TestTypesDefinitions():
         dh = DefinitionHandler()
         dh.repl_defs(root)
         env = Environment()
+        parse_ast(root, env)
         lst = []
         _test_typeit(root, env, lst, ["z"])
         assert isinstance(env.get_type("z"), IntegerType)

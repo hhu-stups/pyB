@@ -36,6 +36,28 @@ def file_to_AST_str(file_name_str):
     e.close()
     return del_spaces(out)
 
+# returns list of 2-tuples (predicate, substitution)
+def select_ast_to_list(select_ast):
+    assert isinstance(select_ast, ASelectSubstitution)
+    result = []
+    predicate = select_ast.children[0]
+    substitution = select_ast.children[1]
+    assert isinstance(predicate, Predicate)
+    assert isinstance(substitution, Substitution)
+    result.append(tuple([predicate,substitution]))
+    for case in select_ast.children[2:]:
+        if isinstance(case, ASelectWhenSubstitution):
+            predicate = case.children[0]
+            substitution = case.children[1]
+            assert isinstance(predicate, Predicate)
+            assert isinstance(substitution, Substitution)
+            result.append(tuple([predicate,substitution]))
+        elif isinstance(case, Substitution):
+            assert select_ast.hasElse=="True"
+            result.append(tuple([None,case]))
+        else:
+            raise Exception("wrong select ast!")          
+    return result
 
 # del all space except that into b-strings
 def del_spaces(string):
@@ -166,7 +188,7 @@ def double_element_check(lst):
 # E.g. "x=42" is False if x has no value BEFORE 
 def all_ids_known(node, env):
     if isinstance(node, AIdentifierExpression):
-        value = env.bstate.get_value(node.idName)
+        value = env.get_value(node.idName)
         if value==None:
             return False
         return True
@@ -180,9 +202,9 @@ def all_ids_known(node, env):
         id_names = []
         for idNode in node.children[:-1]:
             id_names.append(idNode.idName)
-        env.bstate.add_ids_to_frame(id_names)
+        env.add_ids_to_frame(id_names)
         for idNode in node.children[:-1]:
-            env.bstate.set_value(idNode.idName, "dummy_value_for_bound_variables")
+            env.set_value(idNode.idName, "dummy_value_for_bound_variables")
         # search for free variables which have no values        
         return all_ids_known(node.children[-1], env)
     else:
@@ -190,7 +212,7 @@ def all_ids_known(node, env):
             if all_ids_known(child, env)==False:
                 return False
     return True
-         
+        
 
 def print_ast(root):
     print root

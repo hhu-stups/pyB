@@ -131,14 +131,14 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["x"])
-        env.bstate.set_value("x", 1)
+        env.add_ids_to_frame(["x"])
+        env.set_value("x", 1)
         assert interpret(gtPred, env)
 
-        env.bstate.set_value("x", 10)
+        env.set_value("x", 10)
         assert not interpret(gtPred, env)
 
-        env.bstate.set_value("x", 6)
+        env.set_value("x", 6)
         assert not interpret(gtPred, env)
 
 
@@ -152,14 +152,14 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["x"])
-        env.bstate.set_value("x", 1)
+        env.add_ids_to_frame(["x"])
+        env.set_value("x", 1)
         assert not interpret(eqPred, env)
 
-        env.bstate.set_value("x", 10)
+        env.set_value("x", 10)
         assert not interpret(eqPred, env)
 
-        env.bstate.set_value("x", 6)
+        env.set_value("x", 6)
         assert interpret(eqPred, env)
 
 
@@ -173,14 +173,14 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["x"])
-        env.bstate.set_value("x", 1)
+        env.add_ids_to_frame(["x"])
+        env.set_value("x", 1)
         assert interpret(lsPred, env)
 
-        env.bstate.set_value("x", 10)
+        env.set_value("x", 10)
         assert not interpret(lsPred, env)
 
-        env.bstate.set_value("x", 6)
+        env.set_value("x", 6)
         assert not interpret(lsPred, env)
 
 
@@ -204,21 +204,21 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["x","y"])
-        env.bstate.set_value("x", 1)
-        env.bstate.set_value("y", 7)
+        env.add_ids_to_frame(["x","y"])
+        env.set_value("x", 1)
+        env.set_value("y", 7)
         assert not interpret(conPred, env)
 
-        env.bstate.set_value("x", 10)
-        env.bstate.set_value("y", 3)
+        env.set_value("x", 10)
+        env.set_value("y", 3)
         assert not interpret(conPred, env)
 
-        env.bstate.set_value("x", 6)
-        env.bstate.set_value("y", 42)
+        env.set_value("x", 6)
+        env.set_value("y", 42)
         assert not interpret(conPred, env)
 
-        env.bstate.set_value("x", 6)
-        env.bstate.set_value("y", 6)
+        env.set_value("x", 6)
+        env.set_value("y", 6)
         assert interpret(conPred, env)
 
 
@@ -242,21 +242,21 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["x","y"])
-        env.bstate.set_value("x", 1)
-        env.bstate.set_value("y", 7)
+        env.add_ids_to_frame(["x","y"])
+        env.set_value("x", 1)
+        env.set_value("y", 7)
         assert interpret(dsjPred, env)
 
-        env.bstate.set_value("x", 10)
-        env.bstate.set_value("y", 3)
+        env.set_value("x", 10)
+        env.set_value("y", 3)
         assert not interpret(dsjPred, env)
 
-        env.bstate.set_value("x", 6)
-        env.bstate.set_value("y", 42)
+        env.set_value("x", 6)
+        env.set_value("y", 42)
         assert not interpret(dsjPred, env)
 
-        env.bstate.set_value("x", 1)
-        env.bstate.set_value("y", 6)
+        env.set_value("x", 1)
+        env.set_value("y", 6)
         assert interpret(dsjPred, env)
 
 
@@ -280,18 +280,18 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>True is True
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 42)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 42)
         assert interpret(implPred, env)
 
         env = Environment()
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 43)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 43)
         assert interpret(implPred, env)
 
         env = Environment() # False=>False is True
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 41)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 41)
         assert interpret(implPred, env)
 
 
@@ -319,13 +319,13 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>False is False
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 42)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 42)
         assert not interpret(implPred, env)
 
         env = Environment() # False=>False is False
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 41)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 41)
         assert interpret(implPred, env)
 
 
@@ -353,12 +353,12 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment() # True=>True is True
-        env.bstate.add_ids_to_frame(["z"])
-        env.bstate.set_value("z", 42)
+        env.add_ids_to_frame(["z"])
+        env.set_value("z", 42)
         assert interpret(implPred, env)
 
         # False=>True is True
-        env.bstate.set_value("z", 41)
+        env.set_value("z", 41)
         assert interpret(implPred, env)
 
 
@@ -414,12 +414,12 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["ID","yy"])
-        env.bstate.set_value("yy", "aa")
-        env.bstate.set_value("ID", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["ID","yy"])
+        env.set_value("yy", "aa")
+        env.set_value("ID", frozenset(["aa","bb"]))
         assert interpret(belPred, env)
 
-        env.bstate.set_value("yy", "cc")
+        env.set_value("yy", "cc")
         assert not interpret(belPred, env)
 
 
@@ -433,9 +433,9 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["ID","yy"])
-        env.bstate.set_value("yy", "aa")
-        env.bstate.set_value("ID", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["ID","yy"])
+        env.set_value("yy", "aa")
+        env.set_value("ID", frozenset(["aa","bb"]))
         assert not interpret(notbelPred, env)
 
 
@@ -455,14 +455,14 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["yy","aa","bb","cc"])
-        env.bstate.set_value("yy", "aa")
-        env.bstate.set_value("aa", "aa") #FIXME: maybe this is a Bug..
-        env.bstate.set_value("bb", "bb") #
-        env.bstate.set_value("cc", "cc") #
+        env.add_ids_to_frame(["yy","aa","bb","cc"])
+        env.set_value("yy", "aa")
+        env.set_value("aa", "aa") #FIXME: maybe this is a Bug..
+        env.set_value("bb", "bb") #
+        env.set_value("cc", "cc") #
         assert interpret(belPred, env)
 
-        env.bstate.set_value("yy", "yy")
+        env.set_value("yy", "yy")
         assert not interpret(belPred, env)
 
 
@@ -476,21 +476,21 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["A","B"])
-        env.bstate.set_value("A", frozenset(["aa"]))
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["A","B"])
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclPred, env)
 
-        env.bstate.set_value("B", frozenset())
-        env.bstate.set_value("A", frozenset())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert interpret(inclPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
 
 
@@ -504,17 +504,17 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["A","B"])
-        env.bstate.set_value("A", frozenset(["aa"]))
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["A","B"])
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclPred, env)
 
-        env.bstate.set_value("B", frozenset())
-        env.bstate.set_value("A", frozenset())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert not interpret(notinclPred, env)
 
     def test_simple_set_pred_str_subset(self):
@@ -527,21 +527,21 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["A","B"])
-        env.bstate.set_value("A", frozenset(["aa"]))
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["A","B"])
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert interpret(inclstrPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclstrPred, env)
 
-        env.bstate.set_value("B", frozenset())
-        env.bstate.set_value("A", frozenset())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert not interpret(inclstrPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert not interpret(inclstrPred, env)
 
     def test_simple_set_pred_not_str_subset(self):
@@ -554,21 +554,21 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["A","B"])
-        env.bstate.set_value("A", frozenset(["aa"]))
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["A","B"])
+        env.set_value("A", frozenset(["aa"]))
+        env.set_value("B", frozenset(["aa","bb"]))
         assert not interpret(notinclstrPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclstrPred, env)
 
-        env.bstate.set_value("B", frozenset())
-        env.bstate.set_value("A", frozenset())
+        env.set_value("B", frozenset())
+        env.set_value("A", frozenset())
         assert interpret(notinclstrPred, env)
 
-        env.bstate.set_value("B", frozenset(["aa","bb"]))
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.set_value("B", frozenset(["aa","bb"]))
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(notinclstrPred, env)
 
     def test_simple_set_pred_empt_set(self):
@@ -581,8 +581,8 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["A"])
-        env.bstate.set_value("A", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["A"])
+        env.set_value("A", frozenset(["aa","bb"]))
         assert interpret(inclPred, env)
 
 
@@ -598,8 +598,8 @@ class TestInterp_fixedAST():
 
         #TestInterp
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["S"])
+        env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(gtPred, env)
 
 
@@ -617,9 +617,9 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["bb","cc","dd"]))
+        env.add_ids_to_frame(["S","T"])
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert interpret(inclPred, env)
 
 
@@ -637,17 +637,17 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["bb","cc","dd"]))
+        env.add_ids_to_frame(["S","T"])
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
 
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["aa","bb","cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["aa","bb","cc","dd"]))
         assert interpret(inclPred, env)
 
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["cc","dd"]))
         assert not interpret(inclPred, env)
 
 
@@ -665,13 +665,13 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["bb","cc","dd"]))
+        env.add_ids_to_frame(["S","T"])
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["bb","cc","dd"]))
         assert not interpret(inclPred, env)
 
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
-        env.bstate.set_value("T", frozenset(["cc","dd"]))
+        env.set_value("S", frozenset(["aa","bb"]))
+        env.set_value("T", frozenset(["cc","dd"]))
         assert interpret(inclPred, env)
 
 
@@ -689,9 +689,9 @@ class TestInterp_fixedAST():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
-        env.bstate.set_value("S", frozenset(["aa"]))
-        env.bstate.set_value("T", frozenset(["bb","cc"]))
+        env.add_ids_to_frame(["S","T"])
+        env.set_value("S", frozenset(["aa"]))
+        env.set_value("T", frozenset(["bb","cc"]))
         assert not interpret(inclPred, env)
 
         result = frozenset([("aa","bb"),("aa","cc")])
@@ -706,7 +706,7 @@ class TestInterp_fixedAST():
 
         #Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
-        env.bstate.set_value("S", frozenset(["aa","bb"]))
+        env.add_ids_to_frame(["S"])
+        env.set_value("S", frozenset(["aa","bb"]))
         assert interpret(cardExp, env)==2
 

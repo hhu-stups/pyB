@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from environment import Environment
-from helpers import file_to_AST_str, string_to_file, find_var_names, all_ids_known
+from helpers import file_to_AST_str, string_to_file, find_var_names, all_ids_known, select_ast_to_list
 
 file_name = "input.txt"
 
@@ -30,7 +30,7 @@ class TestHelpers():
         exec ast_string
         
         env = Environment()
-        env.bstate.add_ids_to_frame(["x","y"])
+        env.add_ids_to_frame(["x","y"])
         assert all_ids_known(root, env)==False
 
 
@@ -40,9 +40,9 @@ class TestHelpers():
         exec ast_string
         
         env = Environment()
-        env.bstate.add_ids_to_frame(["x","y"])
-        env.bstate.set_value("x",42)
-        env.bstate.set_value("y",42)
+        env.add_ids_to_frame(["x","y"])
+        env.set_value("x",42)
+        env.set_value("y",42)
         assert all_ids_known(root, env)==True
 
 
@@ -61,7 +61,7 @@ class TestHelpers():
         exec ast_string
         
         env = Environment()
-        env.bstate.add_ids_to_frame(["ID"])
+        env.add_ids_to_frame(["ID"])
         assert all_ids_known(root, env)==False        
   
   
@@ -71,8 +71,8 @@ class TestHelpers():
         exec ast_string
         
         env = Environment()
-        env.bstate.add_ids_to_frame(["ID"])
-        env.bstate.set_value("ID", frozenset([1,2,3])) # would be false
+        env.add_ids_to_frame(["ID"])
+        env.set_value("ID", frozenset([1,2,3])) # would be false
         assert all_ids_known(root, env)==True
         
   
@@ -82,7 +82,33 @@ class TestHelpers():
         exec ast_string
         
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
-        env.bstate.set_value("S", frozenset([1,2,3,4,5]))
-        env.bstate.set_value("T", frozenset([1,2,3,4,5]))  
+        env.add_ids_to_frame(["S","T"])
+        env.set_value("S", frozenset([1,2,3,4,5]))
+        env.set_value("T", frozenset([1,2,3,4,5]))  
         assert all_ids_known(root, env)==True               
+    
+    
+    def test_select_ast_to_list(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT 
+        INITIALISATION BEGIN xx:=1; 
+            SELECT 1+1=2 THEN xx:=2 
+            WHEN 1+1=3 THEN xx:=3
+            ELSE xx:=4 END END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        select_ast = root.children[3].children[0].children[0].children[1]
+        assert isinstance(select_ast, ASelectSubstitution)
+        lst = select_ast_to_list(select_ast)
+        for tup in lst:
+            assert isinstance(tup[1], Substitution)
+            if tup[0]:
+                assert isinstance(tup[0], Predicate)
+            else:
+                assert select_ast.hasElse=="True"

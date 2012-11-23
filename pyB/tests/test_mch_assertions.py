@@ -3,6 +3,7 @@ from ast_nodes import *
 from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
+from parsing import parse_ast
 
 file_name = "input.txt"
 
@@ -38,6 +39,7 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
+        parse_ast(root, env)
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -77,6 +79,7 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
+        parse_ast(root, env)
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -130,6 +133,7 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
+        parse_ast(root, env)
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -181,6 +185,7 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
+        parse_ast(root, env)
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)

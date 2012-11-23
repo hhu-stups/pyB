@@ -15,7 +15,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -27,7 +27,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)
 
 
@@ -39,7 +39,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -51,7 +51,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -63,7 +63,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -75,7 +75,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -87,7 +87,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)
 
 
@@ -99,7 +99,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)          
  
  
@@ -111,7 +111,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -123,7 +123,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)
 
 
@@ -135,7 +135,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -147,7 +147,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)    
 
 
@@ -159,7 +159,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -171,7 +171,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -183,7 +183,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -195,7 +195,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -207,7 +207,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)
 
 
@@ -219,7 +219,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
         
 
@@ -231,7 +231,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)
 
 
@@ -243,7 +243,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env)
 
 
@@ -255,7 +255,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert interpret(root.children[0], env) 
 
 
@@ -267,7 +267,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)
 
 
@@ -279,7 +279,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T"])
+        env.add_ids_to_frame(["S","T"])
         assert not interpret(root.children[0], env)         
         
 
@@ -291,7 +291,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S","T","R"])
+        env.add_ids_to_frame(["S","T","R"])
         assert interpret(root.children[0], env)	
   
         
@@ -303,7 +303,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)	        
 
 
@@ -315,7 +315,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)
 
 
@@ -327,7 +327,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)
 
 
@@ -339,7 +339,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.bstate.add_ids_to_frame(["S"])
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)
     
     

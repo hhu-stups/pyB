@@ -1,15 +1,27 @@
 # -*- coding: utf-8 -*-
 
 # console user-interface
-def show_ui(env, mch, op_and_state_list):
+def show_ui(env, mch, op_list):
     show_env(env)
-    string, num_of_ops = show_ops(op_and_state_list, env)
+    string, num_of_ops = show_ops(op_list, env)
     print string
     return num_of_ops
 
 
 def show_env(env):
-    env.print_env()
+    bstate = env.state_space.get_state()
+    print_state(bstate)
+
+
+def print_state(bstate):
+    for key in bstate.bmch_dict:
+        print key
+        value_stack = bstate.bmch_dict[key]
+        for value_map in value_stack:
+            string = ""
+            for name in value_map:
+                string += name + ":" + str(value_map[name]) + " "
+            print string
 
 
 def show_ops(op_list, env):
@@ -18,8 +30,8 @@ def show_ops(op_list, env):
     for entry in op_list:
         op = entry[0]
         string += "["+ str(i) +"]: "
-        string += str(entry[2])
-        string += " <-- "
+        #string += str(entry[2])
+        #string += " <-- "
         string += op.opName
         string += str(entry[1])
         i = i +1

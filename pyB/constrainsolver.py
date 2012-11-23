@@ -31,6 +31,7 @@ def gen_all_values(env, varList, dic):
                 
 
 # wrapper-function for contraint solver 
+# WARNING: asumes that every variable in varList has no value!
 def calc_constraint_domain(env, varList, predicate):
     # extern software:
     # install http://labix.org/python-constraint
@@ -61,7 +62,7 @@ def calc_constraint_domain(env, varList, predicate):
 
 
 def function(env, func_name, key):
-    f = env.bstate.get_value(func_name)
+    f = env.get_value(func_name)
     return dict(f)[key]
 
     
@@ -100,7 +101,7 @@ def pretty_print(env, varList, node):
         elif isinstance(node.children[1], AIdentifierExpression):
             name = str(node.children[0].idName)
             setName = str(node.children[1].idName)
-            value = env.bstate.get_value(setName)
+            value = env.get_value(setName)
             string = name+" in "+str(value)
             return string 
         elif isinstance(node.children[1], ANatSetExpression):
@@ -146,7 +147,7 @@ def pretty_print(env, varList, node):
         return str(number)
     elif isinstance(node, AFunctionExpression):
         func_name =  node.children[0].idName
-        string = str(dict(env.bstate.get_value(func_name)))
+        string = str(dict(env.get_value(func_name)))
         string += "["+node.children[1].idName +"]" # XXX more args
         return string
     #print node

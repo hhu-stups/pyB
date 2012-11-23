@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from helpers import file_to_AST_str
-from environment import Environment
-from bstate import BState
+#from environment import Environment
 
 # -*- coding: utf-8 -*-
 # abstract machine
@@ -105,10 +104,12 @@ class BMachine:
         self.parse_extended()
         self.parse_seen()
         self.parse_used()
-        names = []
+        names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        bstate = env.state_space.get_state()
         if env.solutions:
-            names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
-        self.bstate = BState(self, names, env.solutions)
+            bstate.add_mch_state(self, names, env.solutions)
+        else:
+            bstate.add_mch_state(self, names, {})
 
 
     def _learn_names(self, cmc, vmc, smc):

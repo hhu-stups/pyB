@@ -380,13 +380,13 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
         mch = BMachine(node, None, env)
-        env.bstate = mch.bstate
+        #env.bstate = mch.bstate
         env.mch = mch
         mch.type_included(type_check_bmch, type_env)
         mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
-        env.bstate = mch.bstate
+        #env.bstate = mch.bstate
         env.mch = mch
 
         # add para-nodes to map
@@ -1055,7 +1055,7 @@ def typeit(node, env, type_env):
         env.mch_operation_type.append(operation_type)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        op_type = env.bstate.mch.get_includes_op_type(node.idName)
+        op_type = env.get_state().mch.get_includes_op_type(node.idName)
         para_types = op_type[1]
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)

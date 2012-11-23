@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from bstate import BState
+from statespace import StateSpace
 from config import *
 
 # TODO: This must be a singelton object
@@ -14,18 +14,14 @@ class Environment():
         # AST-SubTrees: ID(String)->AST
         #self.definition_id_to_ast = {}
         self.mch_operation_type = [] # rettype, opname, paratype
-        self.bstate = BState(None)   # current Working B-State
-        self.mch = None              # current Working B-Machine
+        self.state_space = StateSpace()   # statespace        
         self.solutions = {}          # read by a solution-file
         # from config 
         # for possible modification after module import time (tests)
         self._min_int = min_int
         self._max_int = max_int
-
-
-    # used for debugging and cli-ui
-    def print_env(self):
-        self.bstate.print_state()
+        self.root_mch = None
+        self.current_mch = None              # current Working B-Machine
 
 
     # This method should only(!) be used by the typechecking-tests.
@@ -56,3 +52,36 @@ class Environment():
     # reference to the owner-mch of this state/env
     def set_mch(self, mch):
         self.mch = mch
+        
+    def get_state(self):
+        return self.state_space.get_state()
+    
+    # encapsule kind of parse-unit and statespace
+    def set_value(self, id_Name, value):
+        bstate = self.get_state()
+        bmachine = self.root_mch # TODO lookup
+        bstate.set_value(id_Name, value, bmachine)
+
+        
+    def get_value(self, id_Name):
+        bstate = self.get_state()
+        bmachine = self.root_mch # TODO lookup
+        return bstate.get_value(id_Name, bmachine)
+
+    
+    def add_ids_to_frame(self, ids):
+        bstate = self.get_state()
+        bmachine = self.root_mch # TODO lookup
+        bstate.add_ids_to_frame(ids, bmachine)   
+
+    
+    def push_new_frame(self, nodes):
+        bstate = self.get_state()
+        bmachine = self.root_mch # TODO lookup
+        bstate.push_new_frame(nodes, bmachine) 
+
+    
+    def pop_frame(self):
+        bstate = self.get_state()
+        bmachine = self.root_mch # TODO lookup
+        bstate.pop_frame(bmachine) 
