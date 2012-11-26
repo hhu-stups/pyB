@@ -1008,8 +1008,7 @@ def interpret(node, env):
     elif isinstance(node, ASkipSubstitution):
         pass
     elif isinstance(node, AAssignSubstitution):
-        assert int(node.lhs_size) == int(node.rhs_size)
-        old_state = env.get_state().clone()      
+        assert int(node.lhs_size) == int(node.rhs_size)     
         used_ids = []
         for i in range(int(node.lhs_size)):
             lhs_node = node.children[i]
@@ -1028,7 +1027,7 @@ def interpret(node, env):
                 for child in lhs_node.children[1:]:
                     arg = interpret(child, env)
                     args.append(arg)
-                func = dict(old_state.get_value(func_name))
+                func = dict(env.get_value(func_name))
                 used_ids.append(func_name)
                 # change
                 if len(args)==1:
@@ -1077,35 +1076,34 @@ def interpret(node, env):
         import copy
         lst = []
         assignd_ids = []
-        #save_state = env.bstate
-        save_state = env.get_state().clone()
+        # 1. exec. every parallel path and save state and bmachine for late lookup
         for child in node.children:
             ids = find_assignd_vars(child)
             assignd_ids += ids
-            bstate_copy = save_state.clone()
-            #env.bstate = bstate_copy      
+            bstate = env.get_state().clone()
+            env.state_space.add_state(bstate) # TODO: write clean interface     
             interpret(child, env)
-            lst.append(bstate_copy)
-        # search for changes. no var can be modified twice (see page 108)
+            lst.append((bstate,env.current_mch))
+            env.state_space.undo()
+        # 2. search for changes. no var can be modified twice (see page 108)
         assignd_ids = list(set(assignd_ids)) # throw away double-entrys
         new_values = []
-        for state in lst:
+        for (state, bmachine) in lst:
             for i in assignd_ids:
-                new_val = state.get_value(i)
-                old_val = save_state.get_value(i)
+                new_val = state.get_value(i, bmachine)
+                old_val = env.get_value(i)
                 if not new_val==old_val:
                     new_values.append(tuple([i, new_val]))
-        # check for double entrys -> Error
+        # 3. check for double entrys -> Error
         id_names = [x[0] for x in new_values]
         while not id_names==[]:
             name = id_names.pop()
             if name in id_names:
                 string = name + " modified twice in parallel substitution!"
                 raise Exception(string)
-        # write changes
+        # 4. write changes
         for pair in new_values:
-            save_state.set_value(pair[0], pair[1])
-        #env.bstate = save_state
+            env.set_value(pair[0], pair[1])
     elif isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
@@ -1251,7 +1249,7 @@ def interpret(node, env):
         # copy paste :-)
         assert isinstance(id_Name, str)
         # FIXME:
-        value_map_copy =  [x for x in env.bstate.value_stack] # no ref. copy
+        value_map_copy =  [x for x in env.get_state().value_stack] # no ref. copy
         # pop frame to get old value (you are inside an enumeration):
         value_map_copy.pop()
         value_map_copy.reverse() # FIXME

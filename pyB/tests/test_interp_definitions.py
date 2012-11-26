@@ -56,7 +56,7 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
-        assert env.get_state().get_value("z")==4
+        assert env.get_value("z")==4
 
 
     def test_genAST_para_def(self):
@@ -82,7 +82,7 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_state().get_value("z")==3
+        assert env.get_value("z")==3
 
 
     def test_genAST_para_def2(self):
@@ -106,7 +106,7 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_state().get_value("z")==2
+        assert env.get_value("z")==2
 
 
     def test_genAST_two_para_def(self):
@@ -130,7 +130,7 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_state().get_value("z")==4
+        assert env.get_value("z")==4
 
 
     def test_genAST_pred_def(self):
@@ -175,8 +175,8 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_state().get_value("z")==2
-        assert env.get_state().get_value("b")==True
+        assert env.get_value("z")==2
+        assert env.get_value("b")==True
 
 
     def test_genAST_subst_def2(self):
@@ -199,6 +199,6 @@ class TestInterpDefinitions():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        assert env.get_state().get_value("z")==3
-        assert env.get_state().get_value("b")==True
-        assert env.get_state().get_value("x")==2
+        assert env.get_value("z")==3
+        assert env.get_value("b")==True
+        assert env.get_value("x")==2

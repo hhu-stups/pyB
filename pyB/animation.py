@@ -22,8 +22,8 @@ def calc_possible_operations(env, bmachine):
             # (2) find parameter names and add them to the frame
             parameter_idNodes = get_para_nodes(op)
             bstate = env.state_space.get_state()
-            bstate.add_ids_to_frame([n.idName for n in parameter_idNodes])
-            bstate.push_new_frame(parameter_idNodes) 
+            bstate.add_ids_to_frame([n.idName for n in parameter_idNodes], bmachine)
+            bstate.push_new_frame(parameter_idNodes, bmachine) 
             #print "opname: \t", op.opName # DEBUG
 
             # (3) Select Operation Type
@@ -132,7 +132,7 @@ def calc_possible_operations(env, bmachine):
                             break         
             else:
                 raise Exception("ERROR: Optype not implemented:", op.children[-1]) 
-            bstate.pop_frame()
+            bstate.pop_frame(bmachine)
     return result
 
 
@@ -145,18 +145,18 @@ def exec_op(env,  op_list, number, bmachine):
         
         # set parameters
         varList = get_para_nodes(op)
-        bstate.push_new_frame(varList)
+        bstate.push_new_frame(varList, bmachine)
         for p in parameter_list:
             name = p[0]
             value = p[1]
-            bstate.set_value(name, value)
+            bstate.set_value(name, value, bmachine)
         #state = op_and_state_list[number][3]
         #
         #XXX rids =get_return_names(op) todo: search ridis
         # env.bstate.add_ids_to_frame(rids)
         bmachine.interpreter_method(substitution, env)
         #return_values = add_return_values(env, rids)
-        bstate.pop_frame()
+        bstate.pop_frame(bmachine)
         return bstate
 
 

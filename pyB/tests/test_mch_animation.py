@@ -5,7 +5,7 @@ from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
-from animation import calc_succ_states, exec_op
+from animation import calc_possible_operations, exec_op
 from definition_handler import DefinitionHandler
 from parsing import parse_ast
 
@@ -35,11 +35,13 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         for i in range(4):
-            op_and_state_list = calc_succ_states(env, mch)
-            env.get_state() = exec_op(env, op_and_state_list, 1)
+            op_and_state_list = calc_possible_operations(env, mch)
+            bstate = exec_op(env, op_and_state_list, 1, mch)
+            env.state_space.add_state(bstate)
             assert interpret(root.children[2], env)
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 1)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 1, mch)
+        env.state_space.add_state(bstate)
         assert not interpret(root.children[2], env) # floor=-1
 
 
@@ -100,16 +102,19 @@ class TestMCHAnimation():
         empty = env.get_value("read")
         assert empty==frozenset([])
         #BOOKS = env.get_value("BOOK")
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 0)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
         read = env.get_value("read")
         assert len(read)==1
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 0)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
         read = env.get_value("read")
         assert len(read)==2
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 0)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
         read = env.get_value("read")
         assert len(read)==3
 
@@ -168,8 +173,9 @@ class TestMCHAnimation():
         assert interpret(root.children[3], env)
         empty = env.get_value("keys")
         assert empty==frozenset([])
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 0)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
         keys = env.get_value("keys")
         assert len(keys)==1
 
@@ -211,10 +217,12 @@ class TestMCHAnimation():
         interpret(root, env)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
-        op_and_state_list = calc_succ_states(env, mch)
-        env.get_state() = exec_op(env, op_and_state_list, 0)
-        op_and_state_list = calc_succ_states(env, mch) #opening enabled
-        env.get_state() = exec_op(env, op_and_state_list, 0)
+        op_and_state_list = calc_possible_operations(env, mch)
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
+        op_and_state_list = calc_possible_operations(env, mch) #opening enabled
+        bstate = exec_op(env, op_and_state_list, 0, mch)
+        env.state_space.add_state(bstate)
         # test PROMOTES:
         names = [op[0].opName for op in op_and_state_list]
         assert  "closedoor" in names
@@ -269,17 +277,18 @@ class TestMCHAnimation():
         interpret(root, env)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
-        op_and_state_list = calc_succ_states(env, mch) #opening enabled
+        op_and_state_list = calc_possible_operations(env, mch) #opening enabled
         
         # test PROMOTES:
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
         empty = env.get_value("keys")
         assert empty==frozenset([])
-        env.get_state() = exec_op(env, op_and_state_list, 0) # insert
+        bstate = exec_op(env, op_and_state_list, 0, mch) # insert
+        env.state_space.add_state(bstate)
         one = env.get_value("keys")
         assert len(one)==1
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock', 'unlock'])
         
@@ -311,7 +320,7 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         interpret(root, env)      
         assert not env.get_value("GOODS")==None
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['setprice', 'pricequery'])
 
@@ -342,7 +351,7 @@ class TestMCHAnimation():
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
         assert env.get_value("takings")==0
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
@@ -385,11 +394,12 @@ class TestMCHAnimation():
         interpret(root, env)
         value = env.get_value("marriage") 
         assert value==frozenset([])
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born'])
-        env.get_state() = exec_op(env, op_and_state_list, 0) # born
-        op_and_state_list = calc_succ_states(env, mch) 
+        bstate = exec_op(env, op_and_state_list, 0, mch) # born
+        env.state_space.add_state(bstate)
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born', 'die'])
 
@@ -412,7 +422,7 @@ class TestMCHAnimation():
         interpret(root, env)
         value = env.get_value("read") 
         assert value==frozenset([])
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
         
@@ -494,7 +504,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         interpret(root, env)
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['new','nr_ready'])
 
@@ -542,5 +552,5 @@ class TestMCHAnimation():
         far = env.get_value("far") 
         assert near==frozenset(["farmer","fox","chicken","grain"]) 
         assert far==frozenset([])
-        op_and_state_list = calc_succ_states(env, mch) 
+        op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
