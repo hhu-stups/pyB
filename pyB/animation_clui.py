@@ -14,9 +14,10 @@ def show_env(env):
 
 
 def print_state(bstate):
-    for key in bstate.bmch_dict:
-        print key
-        value_stack = bstate.bmch_dict[key]
+    for bmachine in bstate.bmch_dict:
+        if not bmachine==None:
+            bmachine.name
+        value_stack = bstate.bmch_dict[bmachine]
         for value_map in value_stack:
             string = ""
             for name in value_map:

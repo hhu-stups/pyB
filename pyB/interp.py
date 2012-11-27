@@ -1125,7 +1125,7 @@ def interpret(node, env):
         assert isinstance(node.children[0], Predicate)
         assert isinstance(node.children[1], Substitution)
         condition = interpret(node.children[0], env)
-        print condition, node.children[0]
+        #print condition, node.children[0]
         if condition:
             interpret(node.children[1], env)
             return

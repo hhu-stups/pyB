@@ -10,6 +10,7 @@ from animation import calc_possible_operations, exec_op
 from definition_handler import DefinitionHandler
 from ast_nodes import *
 from config import default_input_filename
+from parsing import parse_ast
 
         
 def read_input_string():
@@ -68,8 +69,7 @@ if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION
     elif number == n:
         exit()
     else:
-        bstate = exec_op(env, op_list, number,mch)
-        env.state_space.add_state(bstate)
+        exec_op(env, op_list, number,mch)
     # DO-WHILE python Problem
     while not number==n:
             print mch.name," - Invariant:", mch.eval_Invariant(env)
@@ -86,8 +86,7 @@ if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION
             elif number == n:
                 exit()
             else:
-                bstate = exec_op(env, op_list, number,mch)
-                env.state_space.add_state(bstate)
+                exec_op(env, op_list, number,mch)
 #TODO: PREDICATE or #EXPRESSION 
 #else:
 #    env.bstate.print_state()

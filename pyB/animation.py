@@ -48,13 +48,14 @@ def calc_possible_operations(env, bmachine):
                             # calc. states affect each other 
                             for name in [x.idName for x in parameter_idNodes]:
                                 value = solution[name]
-                                bstate.set_value(name, value)
+                                bstate.set_value(name, value, bmachine)
                             if bmachine.interpreter_method(predicate, env): # TEST
                                 # Solution found!
                                 parameter_list = []
                                 # (3.2) add parameter-solutions
                                 for name in [x.idName for x in parameter_idNodes]:
-                                    parameter_list.append(tuple([name, bstate.get_value(name)]))
+                                    para_value = bstate.get_value(name,bmachine)
+                                    parameter_list.append(tuple([name, para_value]))
                                 # (3.3) add op and parameter-values to result list
                                 result.append([op, parameter_list, substitution.children[-1]]) #TODO: -1
                                 k = k +1
@@ -94,14 +95,15 @@ def calc_possible_operations(env, bmachine):
                             # calculated states affect each other 
                             for name in [x.idName for x in parameter_idNodes]:
                                 value = solution[name]
-                                bstate.set_value(name, value)
+                                bstate.set_value(name, value, bmachine)
                             # TEST solution candidate 
                             if bmachine.interpreter_method(predicate, env): 
                                 # Solution found!
                                 parameter_list = []
                                 # (3.2) add parameter-solution-tuple
                                 for name in [x.idName for x in parameter_idNodes]:
-                                    parameter_list.append(tuple([name, bstate.get_value(name)]))
+                                    para_value = bstate.get_value(name, bmachine)
+                                    parameter_list.append(tuple([name, para_value]))
                                 # (3.3) add op and parameter-values to result list
                                 result.append([op, parameter_list, substitution]) 
                                 k = k +1
@@ -142,22 +144,26 @@ def exec_op(env,  op_list, number, bmachine):
         parameter_list = op_list[number][1]
         substitution = op_list[number][2]
         bstate = env.state_space.get_state().clone()
+        env.state_space.add_state(bstate)
         
         # set parameters
         varList = get_para_nodes(op)
-        bstate.push_new_frame(varList, bmachine)
+        env.push_new_frame(varList)
         for p in parameter_list:
             name = p[0]
             value = p[1]
-            bstate.set_value(name, value, bmachine)
+            env.set_value(name, value)
+        # exec
+        bmachine.interpreter_method(substitution, env)
+        env.pop_frame()
         #state = op_and_state_list[number][3]
         #
         #XXX rids =get_return_names(op) todo: search ridis
         # env.bstate.add_ids_to_frame(rids)
-        bmachine.interpreter_method(substitution, env)
+        
         #return_values = add_return_values(env, rids)
-        bstate.pop_frame(bmachine)
-        return bstate
+        #bstate.pop_frame(bmachine)
+        #return bstate
 
 
 def get_para_nodes(op):
