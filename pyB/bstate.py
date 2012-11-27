@@ -1,6 +1,7 @@
 from ast_nodes import *
 from btypes import *
 from bmachine import BMachine
+from bexceptions import ValueNotInBStateException
 
 # BState: Set of all Values of all B-machines 
 class BState():
@@ -62,10 +63,9 @@ class BState():
                 continue
         # No entry in the value_stack. The Variable with the name id_Name
         # is unknown for the machine bmachine. 
-        # This is maybe an Error found by the typechecker
-        # TODO: raise custom exception. e.g lookuperror
         string = "state.get() LookupError: %s" % (id_Name)
-        raise KeyError(string)
+        print string
+        raise ValueNotInBStateException(string)
         
         # lookup included mch:
 		#         if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]):
@@ -88,8 +88,11 @@ class BState():
             if id_Name in top_map:
                 top_map[id_Name] = value
                 return
+        # No entry in the value_stack. The Variable with the name id_Name
+        # is unknown for the machine bmachine. 
         string = "state.set() LookupError: %s" % (id_Name)
-        raise KeyError(string)
+        print string
+        raise ValueNotInBStateException(string)
         
         # lookup included mch, no seen mch!
         # if id_Name is a variable which is part of a seen mch M than self must be the state of M!

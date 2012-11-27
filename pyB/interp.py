@@ -1077,37 +1077,40 @@ def interpret(node, env):
         for i in range(len(nodes)):
             env.set_value(nodes[i].idName, results[i])
     elif isinstance(node, AParallelSubstitution):
-        import copy
-        lst = []
-        assignd_ids = []
-        # 1. exec. every parallel path and save state and bmachine for late lookup
+        new_values = [] # values changed by this path
+        # 1. exec. every parallel path and remember changed values for late lookup
         for child in node.children:
-            ids = find_assignd_vars(child)
-            assignd_ids += ids
+            assignd_ids = find_assignd_vars(child)
+            assignd_ids = list(set(assignd_ids)) # remove double entrys
             bstate = env.get_state().clone()
-            env.state_space.add_state(bstate) # TODO: write clean interface     
+            env.state_space.add_state(bstate) # TODO: write clean interface 
+            # 1.1 calc path    
             interpret(child, env)
-            lst.append((bstate,env.current_mch))
-            env.state_space.undo()
-        # 2. search for changes. no var can be modified twice (see page 108)
-        assignd_ids = list(set(assignd_ids)) # throw away double-entrys
-        new_values = []
-        for (state, bmachine) in lst:
-            for i in assignd_ids:
-                new_val = state.get_value(i, bmachine)
-                old_val = env.get_value(i)
-                if not new_val==old_val:
-                    new_values.append(tuple([i, new_val]))
-        # 3. check for double entrys -> Error
+            # 1.2. remember (possible) changes
+            possible_new_values = {}
+            for name in assignd_ids:
+                val = env.get_value(name)
+                possible_new_values[name] = val
+            env.state_space.undo() #set to old state and drop other state
+            # 1.3 test for changes
+            for name in assignd_ids:
+                new = possible_new_values[name]
+                old = env.get_value(name)
+                if not new==old: # change! - remember it
+                    new_values.append(tuple([name, new]))
+        # 2. test: no variable can be modified twice (see page 108)
+        # check for double entrys -> Error
         id_names = [x[0] for x in new_values]
         while not id_names==[]:
             name = id_names.pop()
             if name in id_names:
                 string = name + " modified twice in parallel substitution!"
                 raise Exception(string)
-        # 4. write changes
+        # 3. write changes to state
         for pair in new_values:
-            env.set_value(pair[0], pair[1])
+            name = pair[0]
+            value = pair[1]
+            env.set_value(name, value)
     elif isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)

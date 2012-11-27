@@ -21,9 +21,10 @@ def calc_possible_operations(env, bmachine):
 
             # (2) find parameter names and add them to the frame
             parameter_idNodes = get_para_nodes(op)
-            bstate = env.state_space.get_state()
-            bstate.add_ids_to_frame([n.idName for n in parameter_idNodes], bmachine)
-            bstate.push_new_frame(parameter_idNodes, bmachine) 
+            bstate = env.state_space.get_state().clone()
+            env.state_space.add_state(bstate) # add helper state (dropped at the end of iteration)      
+            env.add_ids_to_frame([n.idName for n in parameter_idNodes])
+            env.push_new_frame(parameter_idNodes) 
             #print "opname: \t", op.opName # DEBUG
 
             # (3) Select Operation Type
@@ -48,13 +49,13 @@ def calc_possible_operations(env, bmachine):
                             # calc. states affect each other 
                             for name in [x.idName for x in parameter_idNodes]:
                                 value = solution[name]
-                                bstate.set_value(name, value, bmachine)
+                                env.set_value(name, value)
                             if bmachine.interpreter_method(predicate, env): # TEST
                                 # Solution found!
                                 parameter_list = []
                                 # (3.2) add parameter-solutions
                                 for name in [x.idName for x in parameter_idNodes]:
-                                    para_value = bstate.get_value(name,bmachine)
+                                    para_value = env.get_value(name)
                                     parameter_list.append(tuple([name, para_value]))
                                 # (3.3) add op and parameter-values to result list
                                 result.append([op, parameter_list, substitution.children[-1]]) #TODO: -1
@@ -95,14 +96,14 @@ def calc_possible_operations(env, bmachine):
                             # calculated states affect each other 
                             for name in [x.idName for x in parameter_idNodes]:
                                 value = solution[name]
-                                bstate.set_value(name, value, bmachine)
+                                env.set_value(name, value)
                             # TEST solution candidate 
                             if bmachine.interpreter_method(predicate, env): 
                                 # Solution found!
                                 parameter_list = []
                                 # (3.2) add parameter-solution-tuple
                                 for name in [x.idName for x in parameter_idNodes]:
-                                    para_value = bstate.get_value(name, bmachine)
+                                    para_value = env.get_value(name)
                                     parameter_list.append(tuple([name, para_value]))
                                 # (3.3) add op and parameter-values to result list
                                 result.append([op, parameter_list, substitution]) 
@@ -134,7 +135,7 @@ def calc_possible_operations(env, bmachine):
                             break         
             else:
                 raise Exception("ERROR: Optype not implemented:", op.children[-1]) 
-            bstate.pop_frame(bmachine)
+            env.state_space.undo() # drop helper state
     return result
 
 
@@ -148,6 +149,9 @@ def exec_op(env,  op_list, number, bmachine):
         
         # set parameters
         varList = get_para_nodes(op)
+        env.push_new_frame(varList)
+        # add empty return variables
+        varList = get_return_names(op)
         env.push_new_frame(varList)
         for p in parameter_list:
             name = p[0]
@@ -178,7 +182,7 @@ def get_return_names(op):
     names = []
     for i in range(op.return_Num):
         assert isinstance(op.children[i], AIdentifierExpression)
-        names.append(op.children[i].idName)
+        names.append(op.children[i])
     return names
 
 

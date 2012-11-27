@@ -105,6 +105,7 @@ class BMachine:
         self.parse_seen()
         self.parse_used()
         names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        self.names = names
         bstate = env.state_space.get_state()
         if env.solutions:
             bstate.add_mch_state(self, names, env.solutions)
