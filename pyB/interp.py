@@ -1010,11 +1010,15 @@ def interpret(node, env):
     elif isinstance(node, AAssignSubstitution):
         assert int(node.lhs_size) == int(node.rhs_size)     
         used_ids = []
-        for i in range(int(node.lhs_size)):
-            lhs_node = node.children[i]
+        values = []
+        for i in range(int(node.rhs_size)):
             rhs = node.children[i+int(node.rhs_size)]
-            # BUG if the expression on the rhs has a sideeffect
             value = interpret(rhs, env)
+            values.append(value)
+        for i in range(int(node.lhs_size)):
+            lhs_node = node.children[i]            
+            # BUG if the expression on the rhs has a sideeffect
+            value = values[i]
             if isinstance(lhs_node, AIdentifierExpression):
                 used_ids.append(lhs_node.idName)
                 env.set_value(lhs_node.idName, value)
@@ -1248,20 +1252,21 @@ def interpret(node, env):
         id_Name = node.children[0].idName
         # copy paste :-)
         assert isinstance(id_Name, str)
+        return env.get_value(id_Name)
         # FIXME:
-        value_map_copy =  [x for x in env.get_state().value_stack] # no ref. copy
+        #value_map_copy =  [x for x in env.get_state().value_stack] # no ref. copy
         # pop frame to get old value (you are inside an enumeration):
-        value_map_copy.pop()
-        value_map_copy.reverse() # FIXME
-        stack_depth = len(value_map_copy)
+        #value_map_copy.pop()
+        #value_map_copy.reverse() # FIXME
+        #stack_depth = len(value_map_copy)
         # lookup:
-        for i in range(stack_depth):
-            try:
-                return value_map_copy[i][id_Name]
-            except KeyError:
-                continue
-        print "LookupErr:", id_Name
-        raise KeyError
+        #for i in range(stack_depth):
+        #    try:
+        #        return value_map_copy[i][id_Name]
+        #    except KeyError:
+        #        continue
+        #print "LookupErr:", id_Name
+        #raise KeyError
     elif isinstance(node, ABoolSetExpression):
         return frozenset([True,False])
     elif isinstance(node, ATrueExpression):
