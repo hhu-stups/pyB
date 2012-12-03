@@ -4,6 +4,7 @@ from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
+from typing import type_check_bmch
 
 file_name = "input.txt"
 
@@ -39,7 +40,8 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -79,7 +81,8 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -133,7 +136,8 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -185,7 +189,8 @@ class TestMCHAssert():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)

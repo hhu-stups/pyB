@@ -3,7 +3,7 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit
+from typing import _test_typeit, type_check_bmch
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
@@ -25,7 +25,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -48,7 +49,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -72,7 +74,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -97,7 +100,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         # "xx modified twice in parallel substitution!"
         import py.test
         py.test.raises(Exception, "interpret(root, env)")
@@ -117,7 +121,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -142,7 +147,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -166,7 +172,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         # "modified twice in multiple assign-substitution!"
         import py.test
         py.test.raises(Exception, "interpret(root, env)")
@@ -187,7 +194,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         # "modified twice in multiple assign-substitution!"
         import py.test
         py.test.raises(Exception, "interpret(root, env)")
@@ -207,7 +215,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -229,7 +238,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -252,7 +262,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -276,7 +287,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -298,7 +310,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -320,7 +333,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -342,7 +356,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -363,7 +378,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -388,7 +404,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -413,7 +430,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -438,7 +456,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -462,7 +481,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -485,7 +505,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -506,7 +527,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -527,7 +549,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -548,7 +571,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -569,7 +593,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -590,7 +615,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -611,7 +637,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -635,7 +662,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -659,7 +687,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -684,7 +713,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -711,7 +741,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -738,7 +769,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -766,7 +798,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -793,7 +826,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -821,7 +855,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -851,7 +886,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -874,7 +910,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
-        parse_ast(root, env)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)

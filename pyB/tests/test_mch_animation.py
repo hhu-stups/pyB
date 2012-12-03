@@ -8,6 +8,7 @@ from animation_clui import show_ui
 from animation import calc_possible_operations, exec_op
 from definition_handler import DefinitionHandler
 from parsing import parse_ast
+from typing import type_check_bmch
 
 file_name = "input.txt"
 
@@ -31,6 +32,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -63,6 +65,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
@@ -91,6 +94,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -136,6 +140,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
@@ -163,6 +168,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
@@ -208,6 +214,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
@@ -266,6 +273,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
@@ -309,6 +317,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)      
         assert not env.get_value("GOODS")==None
         op_and_state_list = calc_possible_operations(env, mch) 
@@ -338,6 +347,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)      
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
@@ -382,6 +392,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         value = env.get_value("marriage") 
         assert value==frozenset([])
@@ -409,6 +420,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         value = env.get_value("read") 
         assert value==frozenset([])
@@ -493,6 +505,7 @@ class TestMCHAnimation():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
@@ -535,6 +548,7 @@ class TestMCHAnimation():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env)
         assert isinstance(root.children[6], AInvariantMachineClause)
         assert interpret(root.children[6], env)

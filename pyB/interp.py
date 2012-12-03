@@ -132,7 +132,6 @@ def interpret(node, env):
         #print mch.name
         #env.bstate = mch.bstate
         #env.mch = mch
-        type_check_bmch(node, mch) # also checks all included
         mch.init_include_mchs()
         mch.init_seen_mchs()
         mch.init_used_mchs()
@@ -1335,7 +1334,7 @@ def interpret(node, env):
         return frozenset(function)
     elif isinstance(node, AOpSubstitution):
         #FIXME: set env.btype and env.mch to the correct BMachine
-        op_type = env.get_state().mch.get_includes_op_type(node.idName)
+        op_type = env.current_mch.get_includes_op_type(node.idName)
         ret_types = op_type[0]
         para_types = op_type[1]
         id_nodes = [x[0] for x in ret_types] + [x[0] for x in para_types]
@@ -1354,7 +1353,10 @@ def interpret(node, env):
             name = para_types[i][0].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
+        temp = env.current_mch
+        env.current_mch = op_type[4]
         result = interpret(op_node.children[-1], env)
+        env.current_mch = temp
         env.pop_frame()
         # revert to old mch+state
         #env.bstate = save_state

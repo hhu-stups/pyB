@@ -11,6 +11,7 @@ from definition_handler import DefinitionHandler
 from ast_nodes import *
 from config import default_input_filename
 from parsing import parse_ast
+from typing import type_check_bmch
 
         
 def read_input_string():
@@ -47,6 +48,8 @@ dh.repl_defs(root)
 #import cProfile
 #cProfile.run('mch = interpret(root, env)','profile_out.txt')
 parse_object = parse_ast(root, env)
+if isinstance(parse_object, BMachine):
+    type_check_bmch(root, parse_object) # also checks all included, seen, used and extend
 result = interpret(parse_object.root, env)
 
 if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION 

@@ -149,10 +149,9 @@ def exec_op(env,  op_list, number, bmachine):
         
         # set parameters
         varList = get_para_nodes(op)
-        env.push_new_frame(varList)
+        varList2 = get_return_names(op)
+        env.push_new_frame(varList + varList2)
         # add empty return variables
-        varList = get_return_names(op)
-        env.push_new_frame(varList)
         for p in parameter_list:
             name = p[0]
             value = p[1]

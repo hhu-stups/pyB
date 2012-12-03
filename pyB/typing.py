@@ -65,7 +65,7 @@ class TypeCheck_Environment():
 
 
     def add_node_by_id(self, node):
-        #print node.idName
+        #print node.idName, self.id_to_nodes_stack
         assert isinstance(node, AIdentifierExpression)
         # lookup:
         for i in range(len(self.id_to_nodes_stack)):
@@ -379,15 +379,16 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)    
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
-        mch = BMachine(node, None, env)
-        #env.bstate = mch.bstate
-        env.mch = mch
+        # mch = BMachine(node, None, env)
+        # env.bstate = mch.bstate
+        #env.mch = mch
+        mch = env.current_mch
         mch.type_included(type_check_bmch, type_env)
         mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
         #env.bstate = mch.bstate
-        env.mch = mch
+        #env.mch = mch
 
         # add para-nodes to map
         for idNode in mch.aMachineHeader.children:
@@ -1051,11 +1052,11 @@ def typeit(node, env, type_env):
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
         # FIXME: adding the node is not a task of type_checking 
-        operation_type = [ret_types, para_types, node.opName, node, env.mch.name]
+        operation_type = [ret_types, para_types, node.opName, node, env.current_mch]
         env.mch_operation_type.append(operation_type)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        op_type = env.get_state().mch.get_includes_op_type(node.idName)
+        op_type = env.current_mch.get_includes_op_type(node.idName)
         para_types = op_type[1]
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)

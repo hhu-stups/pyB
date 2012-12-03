@@ -13,10 +13,6 @@ class BMachine:
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
         self.set_params = []      # Set machine parameter
-        self.included_nodes = []  # nodes of mch roots
-        self.seen_nodes   = []    # nodes of mch roots
-        self.used_nodes   = []    # nodes of mch roots 
-        self.extended_nodes = []  # nodes of mch roots 
         self.included_mch = []    # list of b-mchs
         self.extended_mch = []    # list of b-mchs
         self.seen_mch     = []    # list of b-mchs
@@ -111,6 +107,7 @@ class BMachine:
             bstate.add_mch_state(self, names, env.solutions)
         else:
             bstate.add_mch_state(self, names, {})
+        #print self, "Bmachine created",self.name
 
 
     def _learn_names(self, cmc, vmc, smc):
@@ -174,7 +171,8 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.included_nodes.append({0:root,1:child.idName})
+                mch = BMachine(root, self.interpreter_method, self.env)
+                self.included_mch.append(mch)
 
 
     def parse_extended(self):
@@ -185,7 +183,9 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.extended_nodes.append({0:root,1:child.idName})        
+                mch = BMachine(root, self.interpreter_method, self.env)
+                self.extended_mch.append(mch)
+      
 
     def parse_seen(self):
         if self.aSeesMachineClause:
@@ -194,7 +194,8 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.seen_nodes.append({0:root,1:child.idName})
+                mch = BMachine(root, self.interpreter_method, self.env)
+                self.seen_mch.append(mch)
  
  
     def parse_used(self):
@@ -204,102 +205,99 @@ class BMachine:
                 file_name = "examples/"+ child.idName + ".mch"
                 ast_string = file_to_AST_str(file_name)
                 exec ast_string
-                self.used_nodes.append({0:root,1:child.idName})
+                mch = BMachine(root, self.interpreter_method, self.env)
+                self.used_mch.append(mch)
                                
 
     def get_includes_op_type(self, idName):
-        for d in self.included_nodes:
-            node = d[0]
-            name = d[1]
+        for mch in self.included_mch:
+            node = mch.root
+            name = mch.name
             for op in self.env.mch_operation_type:
                 name = op[2]
-                mch_name = op[4]
+                mch = op[4]
                 if idName == name:
                     return op
         raise Exception("unknown op",idName)
 
 
     def type_included(self, type_check_bmch, root_type_env):
-        for d in self.included_nodes:
-            node = d[0]
-            name = d[1]
-            mch = BMachine(node, self.interpreter_method, self.env)
-            type_env = type_check_bmch(node, mch)
+        temp = self.env.current_mch
+        for mch in self.included_mch:
+            self.env.current_mch = mch
+            type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
+        self.env.current_mch = temp
 
 
     def type_extended(self, type_check_bmch, root_type_env):
-        for d in self.extended_nodes:
-            node = d[0]
-            name = d[1]
-            mch = BMachine(node, self.interpreter_method, self.env)
-            type_env = type_check_bmch(node, mch)
+        temp = self.env.current_mch
+        for mch in self.extended_mch:
+            self.env.current_mch = mch
+            type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
+        self.env.current_mch = temp
 
 
     def type_seen(self, type_check_bmch, root_type_env):
-        for d in self.seen_nodes:
-            node = d[0]
-            name = d[1]
-            mch = BMachine(node, self.interpreter_method, self.env)
-            type_env = type_check_bmch(node, mch)
+        temp = self.env.current_mch
+        for mch in self.seen_mch:
+            self.env.current_mch = mch
+            type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
+        self.env.current_mch = temp
 
 
     def type_used(self, type_check_bmch, root_type_env):
-        for d in self.used_nodes:
-            node = d[0]
-            name = d[1]
-            mch = BMachine(node, self.interpreter_method, self.env)
-            type_env = type_check_bmch(node, mch)
+        temp = self.env.current_mch
+        for mch in self.used_mch:
+            self.env.current_mch = mch
+            type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
+        self.env.current_mch = temp
 
 
     def init_include_mchs(self):
-        if self.included_nodes: # nodes of mch roots
-            for d in self.included_nodes:
-                node = d[0]
-                name = d[1]
-                # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, self.env)
-                self.included_mch.append(mch)
+        if self.included_mch: # list of BMachines
+            temp = self.env.current_mch 
+            for mch in self.included_mch:                
+                self.env.current_mch = mch
+                self.interpreter_method(mch.root, self.env)
+            self.env.current_mch = temp
         self.add_promoted_ops()
  
  
     def init_extended_mchs(self):
-        if self.extended_nodes: # nodes of mch roots
-            for d in self.extended_nodes:
-                node = d[0]
-                name = d[1]
-                # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, self.env)
-                self.extended_mch.append(mch)
+        if self.extended_mch: # list of BMachines 
+            temp = self.env.current_mch
+            for mch in self.extended_mch:
+                self.env.current_mch = mch
+                self.interpreter_method(mch.root, self.env)
+            self.env.current_mch = temp
         self.add_extended_ops()       
 
 
     def init_seen_mchs(self):
-        if self.seen_nodes: # nodes of mch roots
-            for d in self.seen_nodes:
-                node = d[0]
-                name = d[1]
-                # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, self.env)
-                self.seen_mch.append(mch)
+        if self.seen_mch: # list of BMachines
+            temp = self.env.current_mch 
+            for mch in self.seen_mch:
+                self.env.current_mch = mch
+                self.interpreter_method(mch.root, self.env)
+            self.env.current_mch = temp
         self.add_seen_ops()
  
  
     def init_used_mchs(self):
-        if self.used_nodes: # nodes of mch roots
-            for d in self.used_nodes:
-                node = d[0]
-                name = d[1]
-                # FIXME: performance: double typechecking
-                mch = self.interpreter_method(node, self.env)
-                self.used_mch.append(mch)
+        if self.used_mch: # list of BMachines 
+            temp = self.env.current_mch
+            for mch in self.used_mch:
+                self.env.current_mch = mch
+                mch = self.interpreter_method(mch.root, self.env)
+            self.env.current_mch = temp
         self.add_used_ops()                   
 
 
