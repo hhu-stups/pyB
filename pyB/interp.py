@@ -1333,16 +1333,10 @@ def interpret(node, env):
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
     elif isinstance(node, AOpSubstitution):
-        #FIXME: set env.btype and env.mch to the correct BMachine
         op_type = env.current_mch.get_includes_op_type(node.idName)
         ret_types = op_type[0]
         para_types = op_type[1]
         id_nodes = [x[0] for x in ret_types] + [x[0] for x in para_types]
-        # save mch+state
-        #save_state = env.bstate
-        #save_mch = env.mch
-        #env.bstate = call_mch.bstate
-        #env.mch = call_mch
         values = []
         for i in range(len(para_types)):
             value = interpret(node.children[i], env)
@@ -1358,9 +1352,6 @@ def interpret(node, env):
         result = interpret(op_node.children[-1], env)
         env.current_mch = temp
         env.pop_frame()
-        # revert to old mch+state
-        #env.bstate = save_state
-        #env.mch = save_mch
         return result
     else:
         raise Exception("Unknown Node: %s",node)

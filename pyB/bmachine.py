@@ -17,10 +17,10 @@ class BMachine:
         self.extended_mch = []    # list of b-mchs
         self.seen_mch     = []    # list of b-mchs
         self.used_mch     = []    # list of b-mchs
-        self.promoted_ops = []    # list of operation
-        self.seen_ops     = []    # list of operation
-        self.used_ops     = []    # list of operation 
-        self.extended_ops = []    # list of operation
+        self.promoted_ops = []    # list of operations
+        self.seen_ops     = []    # list of operations
+        self.used_ops     = []    # list of operations 
+        self.extended_ops = []    # list of operations
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -100,6 +100,7 @@ class BMachine:
         self.parse_extended()
         self.parse_seen()
         self.parse_used()
+        # TODO: better name for "names"
         names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
         self.names = names
         bstate = env.state_space.get_state()
@@ -222,82 +223,74 @@ class BMachine:
 
 
     def type_included(self, type_check_bmch, root_type_env):
-        temp = self.env.current_mch
         for mch in self.included_mch:
             self.env.current_mch = mch
             type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = temp
+        self.env.current_mch = self
 
 
     def type_extended(self, type_check_bmch, root_type_env):
-        temp = self.env.current_mch
         for mch in self.extended_mch:
             self.env.current_mch = mch
             type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = temp
+        self.env.current_mch = self
 
 
     def type_seen(self, type_check_bmch, root_type_env):
-        temp = self.env.current_mch
         for mch in self.seen_mch:
             self.env.current_mch = mch
             type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = temp
+        self.env.current_mch = self
 
 
     def type_used(self, type_check_bmch, root_type_env):
-        temp = self.env.current_mch
         for mch in self.used_mch:
             self.env.current_mch = mch
             type_env = type_check_bmch(mch.root, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = temp
+        self.env.current_mch = self
 
 
     def init_include_mchs(self):
         if self.included_mch: # list of BMachines
-            temp = self.env.current_mch 
             for mch in self.included_mch:                
                 self.env.current_mch = mch
                 self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = temp
+            self.env.current_mch = self
         self.add_promoted_ops()
  
  
     def init_extended_mchs(self):
         if self.extended_mch: # list of BMachines 
-            temp = self.env.current_mch
             for mch in self.extended_mch:
                 self.env.current_mch = mch
                 self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = temp
+            self.env.current_mch = self
         self.add_extended_ops()       
 
 
     def init_seen_mchs(self):
         if self.seen_mch: # list of BMachines
-            temp = self.env.current_mch 
             for mch in self.seen_mch:
                 self.env.current_mch = mch
                 self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = temp
+            self.env.current_mch = self
         self.add_seen_ops()
  
  
     def init_used_mchs(self):
         if self.used_mch: # list of BMachines 
-            temp = self.env.current_mch
             for mch in self.used_mch:
                 self.env.current_mch = mch
                 mch = self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = temp
+            self.env.current_mch = self
         self.add_used_ops()                   
 
 
