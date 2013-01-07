@@ -1,9 +1,15 @@
+# -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
 
-# TODO: move. This is no enumfunction
+# This function is used in an Belong(member)-Node. x : S
+# It recursively checks if the right side(S) can 'generate' the element(x) of the left side.
+# This function is quicker than fully generating the (potentially large) set (S) on the right side.
+# If some sets of the right side are 'generated' by this function then only 
+# if this shouldnt take much time and the full set is needed anyway
 def quick_member_eval(ast, env, element):
     from interp import interpret
+    # Base case of recursion
     if isinstance(element, int) or isinstance(element, str):
         if isinstance(ast, ANaturalSetExpression):
             assert isinstance(element, int) # if False: typechecking Bug
@@ -14,15 +20,24 @@ def quick_member_eval(ast, env, element):
     	elif isinstance(ast, AIntegerSetExpression):
     	    assert isinstance(element, int)
     	    return True
-    	# TODO: NATURAL 1
+    	elif isinstance(ast, ANatSetExpression):
+            assert isinstance(element, int)
+            return element >=0 and element <= env._max_int
+        elif isinstance(ast, ANat1SetExpression):
+            assert isinstance(element, int)
+            return element >0 and element <= env._max_int
+        elif isinstance(ast, AIntSetExpression):
+            assert isinstance(element, int)
+            return element >= env._min_int and element <= env._max_int
+    	# fallback: enumerate right side. This 'should' never happen...
         S = list(interpret(ast, env))
-        #print element,S
+        #print element,S # DEBUG
         return element in S
 
     if isinstance(ast, ARelationsExpression):
-        S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
-        for tup in element:
+        #S = list(interpret(ast.children[0], env))
+        #T = list(interpret(ast.children[1], env))
+        for tup in element: # a relation is a set of 2-tuples
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
         return True 

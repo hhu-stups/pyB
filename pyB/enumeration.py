@@ -5,6 +5,8 @@ from btypes import *
 from helpers import flatten, is_flat, double_element_check, all_ids_known, print_ast
 from bexceptions import *
 
+# WARNING: most of the functions in this module should only be used
+# if the full set is needed in an expression. The functions are very slow 
 
 # ** THE ENUMERATOR **
 # returns a list with "all" possible values of a type
@@ -17,6 +19,7 @@ def all_values(node, env):
     return all_values_by_type(atype, env)
 
 
+# generate all values of a type (basetype or composed)
 def all_values_by_type(atype, env):
     if isinstance(atype, IntegerType):
         return range(env._min_int, env._max_int+1)
@@ -43,7 +46,7 @@ def all_values_by_type(atype, env):
     raise Exception(string)
 
 
-
+# generate all values that statify a predicate 'root'
 def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
@@ -97,7 +100,7 @@ def init_deffered_set(def_set, env):
     name = def_set.idName
     env.add_ids_to_frame([name])
     lst = []
-    for i in range(deferred_set_elements_num):
+    for i in range(DEFERRED_SET_ELEMENTS_NUM):
         lst.append(str(i)+"_"+name)
     env.set_value(name, frozenset(lst))
 
@@ -170,6 +173,7 @@ def is_a_function(relation):
 
 
 # returns S<-->T
+# WARNING: this could take some time...
 def make_set_of_realtions(S,T):
     cartSet = frozenset(((x,y) for x in S for y in T))
     res = powerset(cartSet)

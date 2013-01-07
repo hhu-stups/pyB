@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from config import max_op_solutions, MAX_SELECT_BRANCHES
+from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES
 from enumeration import try_all_values
 from ast_nodes import *
 from constrainsolver import calc_possible_solutions
@@ -39,7 +39,7 @@ def calc_possible_operations(env, bmachine):
                     k = 0 # number of found solutions 
                     domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
                     for solution in domain_generator:
-                        if k==max_op_solutions:
+                        if k==MAX_OP_SOLUTIONS-1:
                             break
                         try:
                             # use values of solution:
@@ -79,7 +79,7 @@ def calc_possible_operations(env, bmachine):
                                   
                 if not parameter_idNodes==[]: 
                     # (3.1) enumerate parameters
-                    while k<max_op_solutions:
+                    while not k==MAX_OP_SOLUTIONS-1:
                         predicate = select_lst[index][0]
                         substitution = select_lst[index][1]
                         if predicate==None:
@@ -111,13 +111,13 @@ def calc_possible_operations(env, bmachine):
                             # TODO: if states affect each other: !param.param := None
                         except ValueNotInDomainException:
                             continue
-                          
+
                         # SELECT: select next predicate
                         index = index +1
                         if index == len(select_lst):
                             break
                 else:  # no operation-parameters: no enumeration 
-                    while k<max_op_solutions:
+                    while not k==MAX_OP_SOLUTIONS-1:
                         predicate = select_lst[index][0]
                         substitution = select_lst[index][1]
                         if predicate==None:
@@ -128,29 +128,28 @@ def calc_possible_operations(env, bmachine):
                         if bmachine.interpreter_method(predicate, env):
                             result.append([op, [], substitution])
                             k = k+1
-                            
+
                         # SELECT: select next predicate
                         index = index +1
                         if index == len(select_lst):
-                            break         
+                            break
             else:
                 raise Exception("ERROR: Optype not implemented:", op.children[-1]) 
             env.state_space.undo() # drop helper state
     return result
 
 
-def exec_op(env,  op_list, number, bmachine):
-    if len(op_list)>number:
-        op = op_list[number][0]
-        parameter_list = op_list[number][1]
-        substitution = op_list[number][2]
+def exec_op(env,  operation, bmachine):
+        op_ast = operation[0]
+        parameter_list = operation[1]
+        substitution = operation[2]
         bstate = env.state_space.get_state().clone()
         env.state_space.add_state(bstate)
-        
+
         # set parameters
-        varList = get_para_nodes(op)
-        varList2 = get_return_names(op)
-        env.push_new_frame(varList + varList2)
+        varList_par = get_para_nodes(op_ast)
+        varList_ret = get_return_nodes(op_ast)
+        env.push_new_frame(varList_par + varList_ret)
         # add empty return variables
         for p in parameter_list:
             name = p[0]
@@ -158,15 +157,29 @@ def exec_op(env,  op_list, number, bmachine):
             env.set_value(name, value)
         # exec
         bmachine.interpreter_method(substitution, env)
+        # remember return values for ui
+        return_values = []
+        for ret_name in [x.idName for x in varList_ret]:
+            value = env.get_value(ret_name)
+            return_values.append(tuple([ret_name, value]))
+        operation.append(return_values)
         env.pop_frame()
         #state = op_and_state_list[number][3]
         #
         #XXX rids =get_return_names(op) todo: search ridis
         # env.bstate.add_ids_to_frame(rids)
-        
+
         #return_values = add_return_values(env, rids)
         #bstate.pop_frame(bmachine)
         #return bstate
+
+
+def calc_bstates(env, op_list, bmachine):
+    for operation in op_list:
+        exec_op(env, operation, bmachine)
+        operation.append(env.get_state())
+        env.state_space.undo()
+    return op_list # with states
 
 
 def get_para_nodes(op):
@@ -177,7 +190,7 @@ def get_para_nodes(op):
     return nodes
 
 
-def get_return_names(op):
+def get_return_nodes(op):
     names = []
     for i in range(op.return_Num):
         assert isinstance(op.children[i], AIdentifierExpression)

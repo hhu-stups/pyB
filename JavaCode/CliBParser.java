@@ -22,6 +22,7 @@ public class CliBParser {
 	private static final String CLI_SWITCH_OUTPUT = "-out";
 	private static final String CLI_SWITCH_INDENTION = "-indent";
 	private static final String CLI_SWITCH_PYTHON = "-python";
+	private static final String CLI_SWITCH_JSON = "-json";
 
 	public static void main(final String[] args) {
 		final ConsoleOptions options = createConsoleOptions(args);
@@ -68,6 +69,7 @@ public class CliBParser {
 		behaviour.verbose = options.isOptionSet(CLI_SWITCH_VERBOSE);
 		behaviour.fastPrologOutput = options.isOptionSet(CLI_SWITCH_FASTPROLOG);
                 behaviour.pythonOutput = options.isOptionSet(CLI_SWITCH_PYTHON);
+                behaviour.jsonOutput = options.isOptionSet(CLI_SWITCH_JSON);
 
 		final File bfile = new File(args[args.length - 1]);
 		int returnValue;
@@ -98,6 +100,7 @@ public class CliBParser {
 		options.addOption(CLI_SWITCH_UI, "Show AST as Swing UI");
 		options.addOption(CLI_SWITCH_PROLOG, "Show AST as Prolog term");
 		options.addOption(CLI_SWITCH_PYTHON, "Create Python-AST");
+		options.addOption(CLI_SWITCH_JSON, "Create Json-AST");
 		options.addOption(CLI_SWITCH_PROLOG_LINES,
 				"Put line numbers into prolog terms");
 		options.addOption(CLI_SWITCH_OUTPUT, "Specify output file", 1);

@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 from ast_nodes import *
 
-# This class modifies an AST. It generates a "definition free" AST ahead of time
+# This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing before interpretation)
 class DefinitionHandler():
     
     def __init__(self):

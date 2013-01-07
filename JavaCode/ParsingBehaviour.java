@@ -20,4 +20,5 @@ public class ParsingBehaviour {
 	public boolean printAST;
 	public boolean fastPrologOutput;
 	public boolean pythonOutput;
+	public boolean jsonOutput;
 }

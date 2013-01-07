@@ -19,8 +19,8 @@ class Environment():
         self.solutions = {}          # read by a solution-file
         # from config 
         # for possible modification after module import time (tests)
-        self._min_int = min_int
-        self._max_int = max_int
+        self._min_int = MIN_INT
+        self._max_int = MAX_INT
         self.root_mch = None
         self.current_mch = None              # current Working B-Machine
 
@@ -53,7 +53,8 @@ class Environment():
     # reference to the owner-mch of this state/env
     def set_mch(self, mch):
         self.mch = mch
-        
+
+
     def get_state(self):
         return self.state_space.get_state()
 
@@ -68,7 +69,7 @@ class Environment():
                     return bmachine
         return None
 
-    
+
     # encapsule kind of parse-unit and statespace
     def set_value(self, id_Name, value):
         bstate = self.get_state()

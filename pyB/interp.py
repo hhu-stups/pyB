@@ -13,7 +13,7 @@ from constrainsolver import calc_possible_solutions
 # assumes that every Variable/Constant/Set appears once 
 # TODO: Add typeinfo too
 def write_solutions_to_env(root, env):
-    for node in root.children:    
+    for node in root.children:
         if isinstance(node, AConjunctPredicate):
             write_solutions_to_env(node, env)
         elif isinstance(node, AEqualPredicate):
@@ -232,7 +232,7 @@ def interpret(node, env):
     elif isinstance(node, AInvariantMachineClause):
         return interpret(node.children[0], env)
     elif isinstance(node, AAssertionsMachineClause):
-        if enable_assertions:
+        if ENABLE_ASSERTIONS:
             print "checking assertions"
             for child in node.children:
                 print "\t", interpret(child, env)
@@ -1312,7 +1312,7 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("wrong entry:", name)
     elif isinstance(node, AStringSetExpression):
-        return "" # TODO: return set of "all" strings
+        return "" # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         relation = []

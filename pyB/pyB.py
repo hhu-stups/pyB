@@ -4,18 +4,18 @@ from interp import interpret, write_solutions_to_env
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str, solution_file_to_AST_str
-from parsing import PredicateParseUnit,ExpressionParseUnit
+from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
 from animation_clui import show_ui, show_env
-from animation import calc_possible_operations, exec_op
+from animation import calc_possible_operations, exec_op, calc_bstates
 from definition_handler import DefinitionHandler
 from ast_nodes import *
-from config import default_input_filename
+from config import DEFAULT_INPUT_FILENAME
 from parsing import parse_ast
 from typing import type_check_bmch
 
-        
+
 def read_input_string():
-    file_name_str = default_input_filename
+    file_name_str = DEFAULT_INPUT_FILENAME
     solution_file_name_str = ""
     if len(sys.argv)==2:
         file_name_str = sys.argv[1]
@@ -29,67 +29,57 @@ def read_input_string():
 
 def read_solution_file(env):
     ast_str = solution_file_to_AST_str(solution_file_name_str)
-    exec ast_str
+    exec ast_str # TODO: JSON
     write_solutions_to_env(root, env)
     if env.solutions:
         print "learnd from solution-file: ", [x for x in env.solutions] 
 
 
-##### MAIN PROGRAM ######
-
-env = Environment() # 1. create environment 
+###### MAIN PROGRAM ######
+env = Environment()                                         # 1. create env.
 file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
-if solution_file_name_str: # 3. parse and use solution-file
+if solution_file_name_str:                                  # 3. parse and use solution-file and write to env.
     read_solution_file(env)
-ast_string = file_to_AST_str(file_name_str) # 4. parse input-file
-exec ast_string # TODO: encapsulation of parsing
-dh = DefinitionHandler()
+ast_string = file_to_AST_str(file_name_str)                 # 4. parse input-file to string
+root = str_ast_to_python_ast(ast_string)                    # 5. parse string to python ast TODO: JSON
+dh = DefinitionHandler()                                    # 6. replace defs if present 
 dh.repl_defs(root)
 #import cProfile
-#cProfile.run('mch = interpret(root, env)','profile_out.txt')
-parse_object = parse_ast(root, env)
-if isinstance(parse_object, BMachine):
+#cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
+parse_object = parse_ast(root, env)                         # 7. which kind of ast?
+if isinstance(parse_object, BMachine):                      # 8. typecheck
     type_check_bmch(root, parse_object) # also checks all included, seen, used and extend
-result = interpret(parse_object.root, env)
+result = interpret(parse_object.root, env)                  # 9. calc init state
 
+                                                            # 10. animate if ops are present 
 if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION 
     mch = env.root_mch
-    #print "calc states..."
-    op_list = calc_possible_operations(env, mch)
-    print mch.name," - Invariant:", mch.eval_Invariant(env)
-    if op_list==[]:
-        show_env(env)
-        exit()
-    n = show_ui(env, mch, op_list)
-    input_str = "Input (0-"+str(n)+"):"
-    number = raw_input(input_str)
-    number = int(number)
-    if number == n-1:
-        if not env.state_space.empty():
-            env.state_space.undo()
-        else:
-            print "No undo possible"
-    elif number == n:
-        exit()
-    else:
-        exec_op(env, op_list, number,mch)
-    # DO-WHILE python Problem
-    while not number==n:
-            print mch.name," - Invariant:", mch.eval_Invariant(env)
-            op_list = calc_possible_operations(env, mch)
-            n = show_ui(env, mch, op_list)
-            input_str = "Input (0-"+str(n)+"):"
-            number = raw_input(input_str)
-            number = int(number)
-            if number == n-1:
-                if not env.state_space.empty():
-                    env.state_space.undo()
-                else:
-                    print "No undo possible"
-            elif number == n:
-                exit()
+    # DO-WHILE Loop
+    while True:
+        print mch.name," - Invariant:", mch.eval_Invariant(env) # TODO: move print to animation_clui
+        op_list = calc_possible_operations(env, mch)            # List of lists
+        op_and_bstate_list = calc_bstates(env, op_list, mch)
+        if op_list==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
+            show_env(env)
+            break
+        n = show_ui(env, mch, op_list)
+        input_str = "Input (0-"+str(n)+"):"
+        number = raw_input(input_str)
+        number = int(number)
+        if number == n-1:
+            if not env.state_space.empty():
+                env.state_space.undo()
             else:
-                exec_op(env, op_list, number,mch)
+                print "No undo possible: init state"
+        elif number == n:
+            break
+        else:
+            assert len(op_list)>number
+            assert number >= 0
+            bstate = op_and_bstate_list[number][4]
+            env.state_space.add_state(bstate)
+
 #TODO: PREDICATE or #EXPRESSION 
+#TODO: move print to animation_clui
 #else:
 #    env.bstate.print_state()

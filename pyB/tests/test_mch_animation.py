@@ -38,10 +38,10 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         for i in range(4):
             op_and_state_list = calc_possible_operations(env, mch)
-            exec_op(env, op_and_state_list, 1, mch)
+            exec_op(env, op_and_state_list[1], mch)
             assert interpret(root.children[2], env)
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 1, mch)
+        exec_op(env, op_and_state_list[1], mch)
         assert not interpret(root.children[2], env) # floor=-1
 
 
@@ -105,15 +105,15 @@ class TestMCHAnimation():
         assert empty==frozenset([])
         #BOOKS = env.get_value("BOOK")
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==1
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==2
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==3
 
@@ -175,7 +175,7 @@ class TestMCHAnimation():
         empty = env.get_value("keys")
         assert empty==frozenset([])
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         keys = env.get_value("keys")
         assert len(keys)==1
 
@@ -219,9 +219,9 @@ class TestMCHAnimation():
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
         op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         op_and_state_list = calc_possible_operations(env, mch) #opening enabled
-        exec_op(env, op_and_state_list, 0, mch)
+        exec_op(env, op_and_state_list[0], mch)
         # test PROMOTES:
         names = [op[0].opName for op in op_and_state_list]
         assert  "closedoor" in names
@@ -284,7 +284,7 @@ class TestMCHAnimation():
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
         empty = env.get_value("keys")
         assert empty==frozenset([])
-        exec_op(env, op_and_state_list, 0, mch) # insert
+        exec_op(env, op_and_state_list[0], mch) # insert
         one = env.get_value("keys")
         assert len(one)==1
         op_and_state_list = calc_possible_operations(env, mch) 
@@ -399,7 +399,7 @@ class TestMCHAnimation():
         op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born'])
-        exec_op(env, op_and_state_list, 0, mch) # born
+        exec_op(env, op_and_state_list[0], mch) # born
         op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born', 'die'])

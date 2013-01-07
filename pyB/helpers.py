@@ -24,7 +24,7 @@ def solution_file_to_AST_str(file_name_str):
     print "reading solution file "+file_name_str+" ..."
     return file_to_AST_str("solution.tmp")
 
-    
+
 def file_to_AST_str(file_name_str):
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)
@@ -35,6 +35,7 @@ def file_to_AST_str(file_name_str):
     w.close()
     e.close()
     return del_spaces(out)
+
 
 # returns list of 2-tuples (predicate, substitution)
 def select_ast_to_list(select_ast):
@@ -58,6 +59,7 @@ def select_ast_to_list(select_ast):
         else:
             raise Exception("wrong select ast!")          
     return result
+
 
 # del all space except that into b-strings
 def del_spaces(string):
@@ -134,11 +136,11 @@ def _find_var_nodes(node, lst, black_list):
                 _find_var_nodes(n, lst, black_list)
         except AttributeError:
             return #FIXME no children   
-    
+
 
 def find_assignd_vars(node):
     lst = []
-    _find_assignd_vars(node, lst)  #side-effect: fills list
+    _find_assignd_vars(node, lst)  # side-effect: fills list
     return lst 
 
 
@@ -212,7 +214,7 @@ def all_ids_known(node, env):
             if all_ids_known(child, env)==False:
                 return False
     return True
-        
+
 
 def print_ast(root):
     print root

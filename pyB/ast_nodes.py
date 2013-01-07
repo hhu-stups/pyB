@@ -43,16 +43,16 @@ class ADeferredSet(Node):
 
 class AMachineReference(Node):
     pass
-    
+
 class ASeesMachineClause(Clause):
-	pass
-	
+    pass
+
 class AUsesMachineClause(Clause):
-	pass
+    pass
 
 class AExtendsMachineClause(Clause):
-	pass
-	
+    pass
+
 class APromotesMachineClause(Clause):
     pass
 
@@ -321,10 +321,10 @@ class ANatSetExpression(Expression):
 
 class ANaturalSetExpression(Expression):
     pass
-    
+
 class ANatural1SetExpression(Expression):
     pass
-    
+
 class ANat1SetExpression(Expression):
     pass
 

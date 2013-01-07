@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 05.11.2012 
+PyB: 31.08.2011 - 03.01.2013
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -32,7 +32,7 @@ Index
     1.4: the jar files must be in the correct dir. see helpers.py Line 7-10
      This hard-codes path must be set manually at the moment
 
-    WAY B: Copy jars 
+    WAY B: Copy jars *DEPRICATED
     1.0: Checkout the Bparser
         git clone https://github.com/bendisposto/probparsers.git
     1.1: Checkout bparser-2.0.67.jar, prologlib-2.0.1.jar, parserbase-2.0.1.jar, cliparser-2.0.67.jar
@@ -46,6 +46,7 @@ Index
 2. Run pyB:
     python pyB.py <FileName>
     e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" or B-Abstr. Machine
+    config via config.py
 
 
 3. Run Tests:
@@ -145,65 +146,72 @@ Index
     - seperate enumeration from interpretation-module
     - "=" is used as ":=" inside the interpreter
     - Implement UNION and INTER
+    - Cruise_finite1.mch very slow 
+    - 34. write prop. python module (e.g for min max int)
 
 
 8. TODO-LIST:
 8.1 Features
-    - fully seperate console output from other modules
-    - Deep_copy is the performance problem
-    - visibility: only one env and clause check what they can see 
-    - check names for anti-collision rules: man 7.26 
-    - write a better build-script
-    - enable infinite sets
-    - Implement Rodin interface
-    - Implement Definitions FILES
-    - set mch-para to "good" values
-    - enum set which have no expl. elements
-    - Maybe all asserts inside the typechecker must be replaced by 
+    - 11. fully seperate console output from other modules
+    - 12. visibility: only one env and clause check what they can see 
+    - 13. check names for anti-collision rules: man 7.26 
+    - 14. write a better build-script
+    - 15. enable infinite sets
+    - 16. Implement Rodin interface
+    - 17. Implement Definitions FILES
+    - 18. set mch-para to "good" values
+    - 19. enum set which have no expl. elements
+    - 20. Maybe all asserts inside the typechecker must be replaced by 
       unify_equal()
-    - write JSON Codegen of javaparser
-    - renaming with '.' (e.g. INCLUDES)
-    - typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
-    - wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
-8.2 Refactoring / small fixes
-    - Cruise_finite1.mch very slow 
-    - The values of elements of enumerated sets are their names
-    - Check Includes, Sees, Uses, Extends rules 
-    - inconsistency in java parser part: some args are given as fields some as constructor args
-    - throw better Typeexceptions
-    - write prop. python module (e.g for min max int)
-    - Typeerrors are scattered through the whole code via asserts
-    - move name-learning of sets in typing from AUnequal/EqualPredicate to
+    - 21. write JSON Codegen of javaparser
+    - 22. renaming with '.' (e.g. INCLUDES)
+    - 23. typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
+    - 24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
+    - 25. include init and set_constants step in animation
+    - 26. generate dot output of statespace
+    - 27. made setup_constants and init an extra op in animation 
+    - 28. take care of nondeterministic points inside the code to enable modelchecking
+    - 29. safe state to a file
+8.2 Refactoring / small fixes:
+    - 30. The values of elements of enumerated sets are their names
+    - 31. Check Includes, Sees, Uses, Extends rules 
+    - 32. inconsistency in java parser part: some args are given as fields some as constructor args
+    - 33. throw better Typeexceptions
+    - 35. Typeerrors are scattered through the whole code via asserts
+    - 36. move name-learning of sets in typing from AUnequal/EqualPredicate to
       unify
-    - remove fix value/type from tests if possible
-    - write more scoping tests
-    - write more AST-Gen tests
-    - Maybe the implemenation has to be fixed if infinite sets are introduced
-    - S=NAT Type(S)=Pow(NAT) (lose of info)
-    - MAYBE implement deferredSets
-    - check if all astnodes return types (if they have to)
-    - Think of unifications like: "it is A or B" e.g. perm(s)
-    - Dont create new instances of IntegerType if not nec.
-    - seperate inperp-mode from interpretation-module
-8.3 minor problems
-    - Dont assume that all functions are 2-tuple: otherwise crash
-    - typechecker and interpreter has undefined behavior if there is a error in 
+    - 37. remove fix value/type from tests if possible
+    - 38. write more scoping tests
+    - 39. write more AST-Gen tests
+    - 40. Maybe the implemenation has to be fixed if infinite sets are introduced
+    - 41. S=NAT Type(S)=Pow(NAT) (lose of info)
+    - 43. check if all astnodes return types (if they have to)
+    - 44. Think of unifications like: "it is A or B" e.g. perm(s)
+    - 45. Dont create new instances of IntegerType if not nec.
+    - 46. seperate inperp-mode from interpretation-module
+    - 47. refactor typing.py (spageticode nd use of temp-datastructures outside of typing.py)
+8.3 Minor problems:
+    - 48. Deepcopy inside 'record creation' is the performance problem
+    - 49. Dont assume that all functions are 2-tuple: otherwise crash
+    - 50. typechecker and interpreter has undefined behavior if there is a error in 
       the java-Bparser
-    - Tests ignore Frames and Scopes.
-    - not tested: append/preprend more than one element - possible?
-    - no random choice in CHOICE and SELECT
-    - INTEGER is min_int to max_int
-    - no good operation number (e.g. Farmer-example)
+    - 51. Tests ignore Frames and Scopes.
+    - 52. not tested: append/preprend more than one element - possible?
+    - 53. no random choice in CHOICE and SELECT
+    - 54. INTEGER is min_int to max_int
+    - 55. no good operation number (e.g. Farmer-example)
 8.4 Bugs:
-    - parallel substitution is not parallel
-    - (2 + 3) / 2 == 2
-    - MAYBE BUG: eval of preds changes value_stack
-    - Vars are added to a Frame at the wrong position!
-    - typechecking the settype contains data, this data is not valid 
+    - 56. parallel substitution is not parallel
+    - 57. Vars are added to a Frame at the wrong position!
+    - 58. typechecking the settype contains data, this data is not valid 
       e.g. after set union, inters. diff.
-    - unknown-nodes like NaturalSetExpression create atype == atype.data
-    - maybe there is a unify Bug. unify unifies with the first POW in a 
+    - 59. unknown-nodes like NaturalSetExpression create atype == atype.data
+    - 60. maybe there is a unify Bug. 'unify' unifies with the first POW in a 
       type-tree
+8.5 Maybe Bugs:
+    - 61. (2 + 3) / 2 == 2
+    - 62. eval of preds changes value_stack
+
 
 
 

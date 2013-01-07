@@ -341,7 +341,51 @@ class TestQuickEnum():
         env = Environment()
         env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env)
-    
-    
+
+
+    def test_infinite_set_member(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,3),(3,2),(2,1)}:NAT>+>NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
+
+
+    def test_infinite_set_member2(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,3),(3,2),(2,1)}:NAT1>+>NAT1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
+
+
+    def test_infinite_set_member3(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,3),(3,2),(2,1)}:NATURAL1>+>NATURAL", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
+
+
+    def test_infinite_set_member4(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,3),(3,2),(2,1)}:INT>+>INTEGER", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
+
     def test_quick_lambda(self):
-        pass	 	 	                         
+        pass
+

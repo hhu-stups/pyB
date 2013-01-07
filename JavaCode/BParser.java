@@ -25,6 +25,7 @@ import de.be4.classicalb.core.parser.analysis.checking.PrimedIdentifierCheck;
 import de.be4.classicalb.core.parser.analysis.checking.ProverExpressionsCheck;
 import de.be4.classicalb.core.parser.analysis.checking.SemanticCheck;
 import de.be4.classicalb.core.parser.analysis.python.ASTPython;
+import de.be4.classicalb.core.parser.analysis.json.ASTJSON;
 import de.be4.classicalb.core.parser.analysis.prolog.PrologExceptionPrinter;
 import de.be4.classicalb.core.parser.analysis.prolog.RecursiveMachineLoader;
 import de.be4.classicalb.core.parser.analysis.transforming.Couples;
@@ -76,7 +77,15 @@ public class BParser {
         {
             ASTPython pythonVisitor = new ASTPython();
             tree.apply(pythonVisitor);
-            System.out.println(pythonVisitor.out);
+            out.println(pythonVisitor.out.toString());
+        }
+
+        public static void printASTasJSON(final PrintStream out,
+                        final BParser parser, final File bfile, final Start tree) throws BException
+        {
+            ASTJSON jsonVisitor = new ASTJSON();
+            tree.apply(jsonVisitor);
+            out.println(jsonVisitor.out.toString());
         }
 
 	public static void printASTasProlog(final PrintStream out,
@@ -419,6 +428,10 @@ public class BParser {
 			{
                             printASTasPython(out, this, bfile, tree);
 			}
+			if (options.jsonOutput)
+                        {
+                            printASTasJSON(out, this, bfile, tree);
+                        }
 			if (options.fastPrologOutput) {
 				try {
 					String fp = getASTasFastProlog(this, bfile, tree);
