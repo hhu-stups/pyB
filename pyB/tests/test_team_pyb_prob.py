@@ -8,21 +8,13 @@ from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 from interp import interpret, write_solutions_to_env
 
+
 bfile_name = "temp"
-
-
-def create_file(b_str):
-    from subprocess import Popen, PIPE
-    p =  Popen("echo \"%s\" > %s.mch" % (b_str, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
-    e = p.stderr
-    err_out = e.read()
-    print err_out
-    e.close()
 
 
 def run_with_prob(option_str=""):
     from subprocess import Popen, PIPE
-    p =  Popen("../../ProB_115/probcli %s -sptxt %s_values.txt %s.mch" % (option_str, bfile_name, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+    p =  Popen("../ProB/probcli %s -sptxt %s_values.txt %s.mch" % (option_str, bfile_name, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     e = p.stderr
     err_out = e.read()
     print err_out

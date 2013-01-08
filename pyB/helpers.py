@@ -25,16 +25,24 @@ def solution_file_to_AST_str(file_name_str):
     return file_to_AST_str("solution.tmp")
 
 
+def create_file(b_str, bfile_name):
+    from subprocess import Popen, PIPE
+    p =  Popen("echo \"%s\" > %s.mch" % (b_str, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+    e = p.stderr
+    err_out = e.read()
+    print err_out
+    e.close()
+    
+
 def file_to_AST_str(file_name_str):
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)
     out = r.read()
     err_out = e.read()
-    print err_out
     r.close()
     w.close()
     e.close()
-    return del_spaces(out)
+    return del_spaces(out), err_out
 
 
 # returns list of 2-tuples (predicate, substitution)

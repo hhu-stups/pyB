@@ -170,7 +170,9 @@ class BMachine:
                 assert isinstance(child, AMachineReference)
                 # FIXME: impl search strategy
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str(file_name)
+                if error:
+                    print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
                 self.included_mch.append(mch)
@@ -182,7 +184,9 @@ class BMachine:
                 assert isinstance(child, AMachineReference)
                 # FIXME: impl search strategy
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str(file_name)
+                if error:
+                    print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
                 self.extended_mch.append(mch)
@@ -193,7 +197,9 @@ class BMachine:
             for child in self.aSeesMachineClause.children:
                 assert isinstance(child, AIdentifierExpression)
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str(file_name)
+                if error:
+                    print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
                 self.seen_mch.append(mch)
@@ -204,7 +210,9 @@ class BMachine:
             for child in self.aUsesMachineClause.children:
                 assert isinstance(child, AIdentifierExpression)
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str(file_name)
+                if error:
+                    print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
                 self.used_mch.append(mch)
