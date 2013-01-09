@@ -3,7 +3,7 @@ import sys
 from interp import interpret, write_solutions_to_env
 from bmachine import BMachine
 from environment import Environment
-from helpers import file_to_AST_str, solution_file_to_AST_str
+from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
 from animation_clui import show_ui, show_env
 from animation import calc_possible_operations, exec_op, calc_bstates
@@ -29,7 +29,7 @@ def read_input_string():
 
 
 def read_solution_file(env):
-    ast_str, error = solution_file_to_AST_str(solution_file_name_str)
+    ast_str, error = file_to_AST_str_no_print(solution_file_name_str)
     if error:
         print error
     exec ast_str # TODO: JSON
@@ -46,7 +46,7 @@ env = Environment()                                         # 1. create env.
 file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
 if solution_file_name_str:                                  # 3. parse and use solution-file and write to env.
     read_solution_file(env)
-ast_string, error = file_to_AST_str(file_name_str)          # 4. parse input-file to string
+ast_string, error = file_to_AST_str_no_print(file_name_str) # 4. parse input-file to string
 if error:
     print error
 root = str_ast_to_python_ast(ast_string)                    # 5. parse string to python ast TODO: JSON

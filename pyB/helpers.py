@@ -32,9 +32,9 @@ def create_file(b_str, bfile_name):
     err_out = e.read()
     print err_out
     e.close()
-    
 
-def file_to_AST_str(file_name_str):
+
+def file_to_AST_str_no_print(file_name_str): 
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)
     out = r.read()
@@ -43,6 +43,19 @@ def file_to_AST_str(file_name_str):
     w.close()
     e.close()
     return del_spaces(out), err_out
+
+
+def file_to_AST_str(file_name_str):
+    p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+    w, r, e = (p.stdin, p.stdout, p.stderr)
+    out = r.read()
+    err_out = e.read()
+    if err_out:
+        print err_out
+    r.close()
+    w.close()
+    e.close()
+    return del_spaces(out)
 
 
 # returns list of 2-tuples (predicate, substitution)

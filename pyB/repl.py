@@ -1,5 +1,5 @@
 from ast_nodes import *
-from helpers import  string_to_file, file_to_AST_str
+from helpers import  string_to_file, file_to_AST_str_no_print
 from environment import Environment
 from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
@@ -17,11 +17,11 @@ def run_repl():
             break
         try:   
             string_to_file("#EXPRESSION "+string, "temp.b")
-            ast_string,error = file_to_AST_str("temp.b")
+            ast_string,error = file_to_AST_str_no_print("temp.b")
             root = str_ast_to_python_ast(ast_string)    
         except NameError:
             string_to_file("#PREDICATE "+string, "temp.b")
-            ast_string, error = file_to_AST_str("temp.b")
+            ast_string, error = file_to_AST_str_no_print("temp.b")
             if error:
                 print error
                 exit()                

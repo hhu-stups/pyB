@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from helpers import file_to_AST_str
+from helpers import file_to_AST_str_no_print
 #from environment import Environment
 
 # -*- coding: utf-8 -*-
@@ -170,7 +170,7 @@ class BMachine:
                 assert isinstance(child, AMachineReference)
                 # FIXME: impl search strategy
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error
                 exec ast_string
@@ -184,7 +184,7 @@ class BMachine:
                 assert isinstance(child, AMachineReference)
                 # FIXME: impl search strategy
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error
                 exec ast_string
@@ -197,7 +197,7 @@ class BMachine:
             for child in self.aSeesMachineClause.children:
                 assert isinstance(child, AIdentifierExpression)
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error
                 exec ast_string
@@ -210,7 +210,7 @@ class BMachine:
             for child in self.aUsesMachineClause.children:
                 assert isinstance(child, AIdentifierExpression)
                 file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str(file_name)
+                ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error
                 exec ast_string
