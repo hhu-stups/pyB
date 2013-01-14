@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from typing import _test_typeit, type_check_bmch
-from interp import interpret
+from interp import interpret, _init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from definition_handler import DefinitionHandler
@@ -30,7 +30,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
 
@@ -55,7 +55,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
         assert env.get_value("z")==4
@@ -82,7 +82,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("z")==3
@@ -107,7 +107,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("z")==2
@@ -132,7 +132,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("z")==4
@@ -156,7 +156,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -179,7 +179,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("z")==2
@@ -204,7 +204,7 @@ class TestInterpDefinitions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        _init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("z")==3

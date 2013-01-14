@@ -72,27 +72,6 @@ def try_all_values(root, env, idNodes):
     yield False
 
 
-# FIXME: dummy-init of mch-parameters
-def init_mch_param(root, env, mch):
-    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
-    # TODO: retry if no animation possible
-    for n in mch.set_params:
-        atype = env.get_type_by_node(n)
-        assert isinstance(atype, PowerSetType)
-        assert isinstance(atype.data, SetType)
-        name = n.idName 
-        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
-    for n in mch.scalar_params:
-        # page 126
-        atype = env.get_type_by_node(n)
-        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
-    if not mch.scalar_params==[]:
-        assert not mch.aConstraintsMachineClause==None
-        pred = mch.aConstraintsMachineClause
-        gen = try_all_values(pred, env, mch.scalar_params)
-        assert gen.next()
-
-
 # FIXME: dummy-init of deffered sets
 def init_deffered_set(def_set, env):
     # TODO: retry if no animation possible

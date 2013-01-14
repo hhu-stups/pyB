@@ -9,6 +9,80 @@ from enumeration import *
 from quick_eval import quick_member_eval
 from constrainsolver import calc_possible_solutions
 
+# used in tests and child mchs(included, seen...)
+# TODO: also use solutionfiles for children. 
+def _init_machine(root, env, mch):
+	mch.init_include_mchs()
+	mch.init_seen_mchs()
+	mch.init_used_mchs()
+	mch.init_extended_mchs()
+	init_mch_param(root, env, mch)
+	set_up_sets(root, env, mch)
+	set_up_constants(root, env, mch)
+	check_properties(root, env, mch)
+	mch.eval_Variables(env)
+	mch.eval_Assertions(env)
+	mch.eval_Init(env)
+
+
+# FIXME: dummy-init of mch-parameters
+def init_mch_param(root, env, mch):
+    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
+    # TODO: retry if no animation possible
+    for n in mch.set_params:
+        atype = env.get_type_by_node(n)
+        assert isinstance(atype, PowerSetType)
+        assert isinstance(atype.data, SetType)
+        name = n.idName 
+        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+    for n in mch.scalar_params:
+        # page 126
+        atype = env.get_type_by_node(n)
+        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+    if not mch.scalar_params==[]:
+        assert not mch.aConstraintsMachineClause==None
+        pred = mch.aConstraintsMachineClause
+        gen = try_all_values(pred, env, mch.scalar_params)
+        assert gen.next()
+
+def set_up_sets(node, env, mch):
+    if mch.aSetsMachineClause: # St
+        interpret(mch.aSetsMachineClause, env)  
+
+# TODO: enable possibilities for animation and user choice 
+def set_up_constants(node, env, mch):
+	if mch.aConstantsMachineClause: # k
+		interpret(mch.aConstantsMachineClause, env)
+
+def check_properties(node, env, mch):
+	if mch.aPropertiesMachineClause: # B
+		# set up constants
+		# Some Constants/Sets are set via Prop. Preds
+		# TODO: give Blacklist of Variable Names
+		# find all constants like x=42 oder y={1,2,3}
+		learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
+		if learnd_vars:
+			print "leard constants(no enumeration): ", learnd_vars
+		# if there are constants
+		#TODO: Sets
+		if mch.aConstantsMachineClause:
+			const_nodes = []
+			# find all constants/sets which are still not set
+			for idNode in mch.aConstantsMachineClause.children:
+				assert isinstance(idNode, AIdentifierExpression)
+				if env.get_value(idNode.idName)==None:
+					const_nodes.append(idNode)
+			if const_nodes==[]:
+				prop_result = interpret(mch.aPropertiesMachineClause, env)
+			else:
+				# if there are unset constants/sets enumerate them
+				print "enum. vars:", [n.idName for n in const_nodes]
+				gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
+				prop_result = gen.next()
+			if not prop_result:
+				print "Properties FALSE!"
+			assert prop_result
+
  
 # assumes that every Variable/Constant/Set appears once 
 # TODO: Add typeinfo too
@@ -79,7 +153,7 @@ def interpret(node, env):
 #
 # ******************************
     #print node
-    if isinstance(node,APredicateParseUnit):
+    if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
         idNodes = find_var_nodes(node.children[0]) 
         idNames = [n.idName for n in idNodes]
         type_check_predicate(node, env, idNames)
@@ -117,6 +191,7 @@ def interpret(node, env):
         print True
         return None
     elif isinstance(node, AExpressionParseUnit): #TODO more
+        #TODO: move print to animation_clui
         idNodes = find_var_nodes(node.children[0]) 
         idNames = [n.idName for n in idNodes]
         type_check_expression(node, env, idNames)
@@ -127,69 +202,10 @@ def interpret(node, env):
             print "Warning: Expressions with variables are not implemented now"
         return
     elif isinstance(node, AAbstractMachineParseUnit):
+        # TODO: remove when prob solution eval for child mch is done
         mch = env.current_mch
-        #env.bstate.set_mch(mch)
-        #print mch.name
-        #env.bstate = mch.bstate
-        #env.mch = mch
-        mch.init_include_mchs()
-        mch.init_seen_mchs()
-        mch.init_used_mchs()
-        mch.init_extended_mchs()
-        #env.bstate = mch.bstate
-        #env.mch = mch
-        # TODO: Check with B spec
-        # Schneider Book page 62-64:
-        # The parameters p make the constraints c True
-        # #p.C
-        init_mch_param(node, env, mch)
-
-        # Sets St and constants k which meet the constraints c make the properties B True
-        # C => #St,k.B
-        if mch.aSetsMachineClause: # St
-            interpret(mch.aSetsMachineClause, env)
-        if mch.aConstantsMachineClause: # k
-            interpret(mch.aConstantsMachineClause, env)
-        if mch.aPropertiesMachineClause: # B
-            # set up constants
-            # Some Constants/Sets are set via Prop. Preds
-            # TODO: give Blacklist of Variable Names
-            # find all constants like x=42 oder y={1,2,3}
-            learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
-            if learnd_vars:
-                print "leard constants(no enumeration): ", learnd_vars
-            # if there are constants
-            #TODO: Sets
-            if mch.aConstantsMachineClause:
-                const_nodes = []
-                # find all constants/sets which are still not set
-                for idNode in mch.aConstantsMachineClause.children:
-                    assert isinstance(idNode, AIdentifierExpression)
-                    if env.get_value(idNode.idName)==None:
-                        const_nodes.append(idNode)
-                if const_nodes==[]:
-                    prop_result = interpret(mch.aPropertiesMachineClause, env)
-                else:
-                    # if there are unset constants/sets enumerate them
-                    print "enum. vars:", [n.idName for n in const_nodes]
-                    gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                    prop_result = gen.next()
-                if not prop_result:
-                    print "Properties FALSE!"
-                assert prop_result
-                    
-
-
-        # If C and B is True there should be Variables v which make the Invaraiant I True
-        # TODO: B & C => #v.I
-        mch.eval_Variables(env)
-        mch.eval_Init(env)
-
-        res = mch.eval_Invariant(env)
-
-        # Not in schneiders book:
-        mch.eval_Assertions(env)
-        return mch # return B-machine for further processing
+    	_init_machine(node, env, mch)
+    	return mch
     elif isinstance(node, AConstantsMachineClause):
         const_names = []
         for idNode in node.children:

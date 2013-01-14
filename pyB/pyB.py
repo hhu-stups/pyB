@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env
+from interp import interpret, write_solutions_to_env, set_up_sets, set_up_constants, check_properties,init_mch_param
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
@@ -44,24 +44,51 @@ if sys.argv[1]=="-repl":
     exit()
 env = Environment()                                         # 1. create env.
 file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
-if solution_file_name_str:                                  # 3. parse and use solution-file and write to env.
-    read_solution_file(env)
-ast_string, error = file_to_AST_str_no_print(file_name_str) # 4. parse input-file to string
+ast_string, error = file_to_AST_str_no_print(file_name_str) # 3. parse input-file to string
 if error:
     print error
-root = str_ast_to_python_ast(ast_string)                    # 5. parse string to python ast TODO: JSON
-dh = DefinitionHandler()                                    # 6. replace defs if present 
+root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
+dh = DefinitionHandler()                                    # 5. replace defs if present 
 dh.repl_defs(root)
 #import cProfile
 #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
-parse_object = parse_ast(root, env)                         # 7. which kind of ast?
-if isinstance(parse_object, BMachine):                      # 8. typecheck
+parse_object = parse_ast(root, env)                         # 6. which kind of ast?
+if not isinstance(parse_object, BMachine):                  #PREDICATE or #EXPRESSION                   
+	interpret(parse_object.root, env)                       # eval predicate or expression
+else:
+    assert isinstance(parse_object,	BMachine)			    # 7. typecheck
     type_check_bmch(root, parse_object) # also checks all included, seen, used and extend
-result = interpret(parse_object.root, env)                  # 9. calc init state
+    mch = parse_object
+    mch.init_include_mchs()
+    mch.init_seen_mchs()
+    mch.init_used_mchs()
+    mch.init_extended_mchs()
 
-                                                            # 10. animate if ops are present 
-if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION 
-    mch = env.root_mch
+    # TODO: Check with B spec
+    # Schneider Book page 62-64:
+    # The parameters p make the constraints c True
+    # #p.C
+    init_mch_param(root, env, mch)
+
+    # Sets St and constants k which meet the constraints c make the properties B True
+    # C => #St,k.B
+    set_up_sets(root, env, mch)
+    if solution_file_name_str:                              # 8. parse and use solution-file and write to env.
+        read_solution_file(env)
+    else:
+        set_up_constants(root, env, mch)
+    check_properties(root, env, mch)
+    
+    # If C and B is True there should be Variables v which make the Invaraiant I True
+    # TODO: B & C => #v.I
+    if not solution_file_name_str:
+    	mch.eval_Variables(env)
+    
+
+    # Not in schneiders book:
+    mch.eval_Assertions(env)
+    mch.eval_Init(env)
+                                                            # 9. animate if ops are present                                                    
     # DO-WHILE Loop
     while True:
         print mch.name," - Invariant:", mch.eval_Invariant(env) # TODO: move print to animation_clui
@@ -86,8 +113,3 @@ if isinstance(parse_object, BMachine): #otherwise #PREDICATE or #EXPRESSION
             assert number >= 0
             bstate = op_and_bstate_list[number][4]
             env.state_space.add_state(bstate)
-
-#TODO: PREDICATE or #EXPRESSION 
-#TODO: move print to animation_clui
-#else:
-#    env.bstate.print_state()
