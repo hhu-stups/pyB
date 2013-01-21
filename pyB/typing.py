@@ -875,15 +875,12 @@ def typeit(node, env, type_env):
         assert type1.data == type0.data.data[1].data.data # Setname
         return type0
     elif isinstance(node, ASequenceExtensionExpression):
-        type_list = []
-        for child in node.children:
-            t = typeit(child, env, type_env)
-            type_list.append(t)
-        atype = type_list[0]
-        for t in type_list[1:]:
-            # TODO: learn types: all types must be equal!
-            assert t.data == atype.data
-        return PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(atype)))
+        # Todo: s=[]
+        reftype = typeit(node.children[0], env, type_env) 
+        for n in node.children[1:]:
+            atype = typeit(n, env, type_env)
+            unify_equal(atype, reftype, type_env)
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(reftype)))
     elif isinstance(node, ASizeExpression):
         type0 = typeit(node.children[0], env, type_env)
         expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("ASizeExpression",None))))

@@ -316,6 +316,22 @@ class TestTypesFunctions():
         assert isinstance(env.get_type("t").data.data[1].data, SetType)
 
 
+    def test_types_seq_extention(self):
+        # Build AST
+        string_to_file("#PREDICATE s=[1,2,3]", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["s"])
+        assert isinstance(env.get_type("s"), PowerSetType)
+        assert isinstance(env.get_type("s").data, CartType)
+        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("s").data.data[1].data, IntegerType)
+
+
+
     def test_types_fnc_expr(self):
         # Build AST
         string_to_file("#PREDICATE R1 = {(0|->1), (0|->2), (1|->1), (1|->7), (2|->3)} & f= fnc(R1)", file_name)

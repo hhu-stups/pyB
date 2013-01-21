@@ -635,6 +635,21 @@ class TestTypesSets():
         env = Environment()
         _test_typeit(root, env, [], ["s"])
         assert isinstance(env.get_type("s"), StringType)
+    
+
+    def test_types_string2(self):
+        # Build AST
+        string_to_file("#PREDICATE  s= [\"VIA_1\",\"VIA_2\",\"VIA_3\",\"VIA_4\"]", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string    
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["s"])
+        assert isinstance(env.get_type("s"), PowerSetType)
+        assert isinstance(env.get_type("s").data, CartType)
+        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("s").data.data[1].data, StringType)
 
 
     def test_types_bool(self):
@@ -656,7 +671,6 @@ class TestTypesSets():
         string_to_file("#PREDICATE A=bool(1<2)", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
-        print ast_string
 
         # Type
         env = Environment()
