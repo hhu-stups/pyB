@@ -94,6 +94,30 @@ class TestTypesFunctions():
         assert isinstance(env.get_type("x"), IntegerType)
 
 
+    def test_types_lambda2(self):
+        # Build AST
+        string_to_file("#PREDICATE f="+"%"+"(x,y).(x=0 & y=10|TRUE)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+       # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["f","x","y"])
+        assert isinstance(env.get_type("f"), PowerSetType)
+        assert isinstance(env.get_type("f").data, CartType)
+        assert isinstance(env.get_type("f").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("f").data.data[1], PowerSetType)
+        dom_type = env.get_type("f").data.data[0]
+        img_type = env.get_type("f").data.data[1]
+        assert isinstance(img_type.data, BoolType)
+        assert isinstance(dom_type.data, CartType)
+        assert isinstance(dom_type.data.data[0], PowerSetType)
+        assert isinstance(dom_type.data.data[1], PowerSetType)
+        assert isinstance(dom_type.data.data[0].data, IntegerType)
+        assert isinstance(dom_type.data.data[1].data, IntegerType)
+
+
+
     def test_types_seq(self):
         # Build AST
         string_to_file("#PREDICATE s:seq(S)", file_name)

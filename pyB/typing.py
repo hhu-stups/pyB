@@ -5,6 +5,17 @@ from helpers import find_var_names
 from bmachine import BMachine
 
 
+
+# helper for debugging
+def __print__btype(tree, t=0):
+    print " "*t, tree
+    if isinstance(tree, PowerSetType):
+        __print__btype(tree.data,t+1)
+    elif isinstance(tree, CartType):
+        __print__btype(tree.data[0],t+1)
+        __print__btype(tree.data[1],t+1) 
+
+
 class BTypeException(Exception):
     def __init__(self, string):
         self.string = string
@@ -371,6 +382,7 @@ def typeit(node, env, type_env):
 #        0. Typechecking-mode
 #
 # ******************************
+    #print node
     if isinstance (node, APredicateParseUnit):
         for child in node.children:
             typeit(child, env, type_env)
@@ -827,8 +839,13 @@ def typeit(node, env, type_env):
         for child in node.children[:-1]:
             typeit(child, env, type_env)
         pre_img_type = typeit(node.children[0], env, type_env)
+        if len(node.children[:-2])>1: #more than one arg
+            for n in node.children[1:-2]:
+                atype = typeit(n, env, type_env)
+                pre_img_type = CartType(PowerSetType(pre_img_type), PowerSetType(atype))
         img_type = typeit(node.children[-1], env, type_env)
         type_env.pop_frame(env)
+        #print "DEBUG:",pre_img_type,img_type
         return PowerSetType(CartType(PowerSetType(pre_img_type), PowerSetType(img_type)))
 
 
@@ -924,7 +941,12 @@ def typeit(node, env, type_env):
             rhs = node.children[i+int(node.rhs_size)]
             atype0 = typeit(rhs, env, type_env)
             if isinstance(lhs_node, AIdentifierExpression):
+                #print lhs_node.idName, node.children
                 atype1 = typeit(lhs_node, env, type_env)
+                #print "left",lhs_node.idName
+                #__print__btype(atype1)
+                #print "right"
+                #__print__btype(atype0)
                 unify_equal(atype0, atype1, type_env)
             else:
                 assert isinstance(lhs_node, AFunctionExpression)
@@ -1065,7 +1087,7 @@ def typeit(node, env, type_env):
         return ret_type[1] # FIXME: more than one retval
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
-        #print "WARNING: unhandeld node"
+        #print "WARNING: unhandeld node:", node
         for child in node.children:
             typeit(child, env, type_env)
 
@@ -1078,7 +1100,9 @@ def typeit(node, env, type_env):
 # TODO: This function is not full implemented!
 def unify_equal(maybe_type0, maybe_type1, type_env):
     assert isinstance(type_env, TypeCheck_Environment)
-    #print maybe_type0,maybe_type1
+    #import inspect
+    #print inspect.stack()[1] 
+    #print "type 1/2",maybe_type0,maybe_type1
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
     if maybe_type0==maybe_type1:

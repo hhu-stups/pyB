@@ -487,7 +487,34 @@ Index
 
 10. Design Decisions:  
     The Argumentes(childs) of the CartSetType are the types of the sets.
-    Resolve at the end of typechecking. E.g !(x).(x:T=>x:S) & S:POW(NAT)    
+    Resolve at the end of typechecking. E.g !(x).(x:T=>x:S) & S:POW(NAT)   
+    
+11. Type-Doc:
+
+S = StringType
+B = BoolType
+I = IntegerType
+P = PowerSetType
+Se = SetType
+C = CartType
+Str = StructType
+U = UnknownType *
+
+P & Q       B
+P or Q      B
+P => Q      B
+P <=> Q     B
+not P       B
+!(z).(P=>Q) B
+#(z).(P&Q)  B
+E = F       B
+E /= F      B
+
+{E}         	P(type(E))
+{}				P(U)
+{z|P}       	P(type(z)) (only one var)
+{x1,x2,..xn|P}	P(C(C(P(type(x1),P(type(x2)),P(type(x3)....P(type(xn))
+
     
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    
