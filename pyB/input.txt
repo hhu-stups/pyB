@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE f:S+->T & y=f(x)

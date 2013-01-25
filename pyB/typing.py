@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import find_var_names
+from helpers import find_var_names, print_ast
 from bmachine import BMachine
 
 
@@ -700,8 +700,8 @@ def typeit(node, env, type_env):
         expected_type1 = PowerSetType(CartType(PowerSetType(UnknownType("ACompositionExpression",None)), PowerSetType(UnknownType(None,None))))
         unify_equal(rel_type0, expected_type0, type_env)
         unify_equal(rel_type1, expected_type1, type_env)  
-        preimagetype = rel_type0.data.data[1]
-        imagetype = rel_type1.data.data[0]
+        preimagetype = rel_type0.data.data[0]
+        imagetype = rel_type1.data.data[1]
         return PowerSetType(CartType(preimagetype, imagetype))
     elif isinstance(node, AIdentityExpression):
         atype0 = typeit(node.children[0], env, type_env)
@@ -819,7 +819,10 @@ def typeit(node, env, type_env):
         unify_equal(type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(type0, type1)))
     elif isinstance(node, AFunctionExpression):
-        type0 = typeit(node.children[0], env, type_env)
+        type0 = typeit(node.children[0], env, type_env) # id, or size, rev, last, tail, front, ...
+        print "enter"
+        print_ast(node)
+        __print__btype(type0)
         # type args
         for child in node.children[1:]:
             typeit(child, env, type_env)
@@ -828,6 +831,9 @@ def typeit(node, env, type_env):
             return type0
         # TODO: use knowledge from args
         expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
+        print "exit"
+        print_ast(node)
+        __print__btype(type0)
         unify_equal(type0, expected_type0, type_env)
         return type0.data.data[1].data
     elif isinstance(node, ALambdaExpression):
@@ -854,6 +860,8 @@ def typeit(node, env, type_env):
 #       4.2 Sequences
 #
 # ********************
+    elif isinstance(node,AEmptySequenceExpression):
+		return PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AEmptySequenceExpression",None))))
     elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression) or isinstance(node, AIseq1Expression):
         type0 = typeit(node.children[0], env, type_env)
         expected_type0 = PowerSetType(UnknownType("ASeqExpression",None))

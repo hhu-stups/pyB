@@ -109,7 +109,7 @@ class TestTypesRelations():
         lst = [("S", PowerSetType(SetType("X"))),("T", PowerSetType(SetType("Y")))]
         _test_typeit(root, env, lst, ["r0","r1","x"])
         assert isinstance(env.get_type("x"), SetType)
-        assert env.get_type("x").data == "X"
+        assert env.get_type("x").data == "Y"
 
 
     def test_types_simple_identity(self):

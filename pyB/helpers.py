@@ -244,7 +244,10 @@ def print_ast(root):
 
 
 def __print_ast(node, num):
-    if isinstance(node, AIdentifierExpression) or isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression):
+    if isinstance(node, AIdentifierExpression):
+        print "\t"*num, " " ,node.idName
+        return
+    elif isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression):
         return
     for child in node.children:
         print "\t"*num,"|-",child
