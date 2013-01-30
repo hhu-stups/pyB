@@ -322,8 +322,52 @@ class TestTypesFunctions():
         assert isinstance(env.get_type("s").data, CartType)
         assert isinstance(env.get_type("ss"), PowerSetType)
         assert isinstance(env.get_type("ss").data, CartType)
+   
+        
+    def test_types_seq_conc2(self):
+        # Build AST
+        string_to_file("#PREDICATE s=conc([[2, 5], [-1, -2, 9], [], [5]])", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string    
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["s"])
+        assert isinstance(env.get_type("s"), PowerSetType)
+        assert isinstance(env.get_type("s").data, CartType)
+        assert isinstance(env.get_type("s").data.data[0], PowerSetType)   
+        assert isinstance(env.get_type("s").data.data[1], PowerSetType)       
+        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)   
+        assert isinstance(env.get_type("s").data.data[1].data, IntegerType)          
 
 
+    def test_types_seq_conc3(self):
+        # Build AST
+        string_to_file("#PREDICATE S=[[2, 5], [-1, -2, 9], [], [5]] & s=conc(S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string    
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["s","S"])
+        assert isinstance(env.get_type("s"), PowerSetType)
+        assert isinstance(env.get_type("s").data, CartType)
+        assert isinstance(env.get_type("s").data.data[0], PowerSetType)   
+        assert isinstance(env.get_type("s").data.data[1], PowerSetType)       
+        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)   
+        assert isinstance(env.get_type("s").data.data[1].data, IntegerType) 
+        assert isinstance(env.get_type("S"), PowerSetType)
+        assert isinstance(env.get_type("S").data, CartType)
+        assert isinstance(env.get_type("S").data.data[0], PowerSetType)   
+        assert isinstance(env.get_type("S").data.data[1], PowerSetType) 
+        assert isinstance(env.get_type("S").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("S").data.data[1].data.data, CartType)
+        assert isinstance(env.get_type("S").data.data[1].data.data.data[0], PowerSetType)
+        assert isinstance(env.get_type("S").data.data[1].data.data.data[1], PowerSetType)
+        assert isinstance(env.get_type("S").data.data[1].data.data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("S").data.data[1].data.data.data[1].data, IntegerType)
+                
+                
     def test_types_seq_append(self):
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & E:S & t=s<-E", file_name)

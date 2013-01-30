@@ -871,10 +871,13 @@ def typeit(node, env, type_env):
         atype = unify_equal(set_type, expected_type, type_env)
         return PowerSetType(PowerSetType(CartType(PowerSetType(IntegerType(None)), atype)))
     elif isinstance(node, AGeneralConcatExpression):
-        seq_type = typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("AGeneralConcatExpression",None)), PowerSetType(UnknownType("AGeneralConcatExpression",None))))
-        atype = unify_equal(seq_type, expected_type, type_env)
-        return atype
+        seq_seq_type = typeit(node.children[0], env, type_env)
+        __print__btype(seq_seq_type)
+        expected_seq_type = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AGeneralConcatExpression",None))))
+        expected_type = PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(expected_seq_type)))
+        atype = unify_equal(seq_seq_type, expected_type, type_env)
+        image_type = atype.data.data[1].data.data.data[1]
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)), image_type))
     elif isinstance(node, AConcatExpression):
         seq_type0 = typeit(node.children[0], env, type_env)
         seq_type1 = typeit(node.children[1], env, type_env)
@@ -882,8 +885,8 @@ def typeit(node, env, type_env):
         expected_type1 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AConcatExpression",None))))
         atype0 = unify_equal(seq_type0, expected_type0, type_env)
         atype1 = unify_equal(seq_type1, expected_type1, type_env)
-        assert atype0.data.data[1].data == atype1.data.data[1].data
-        return PowerSetType(CartType(PowerSetType(IntegerType(None)),type0.data.data[1]))
+        image_type = unify_equal(atype0.data.data[1].data ,atype1.data.data[1].data, type_env)
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(image_type)))
     elif isinstance(node, AInsertFrontExpression):
         set_type = typeit(node.children[0], env, type_env)
         seq_type = typeit(node.children[1], env, type_env)
