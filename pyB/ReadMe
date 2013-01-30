@@ -46,6 +46,8 @@ Index
 2. Run pyB:
     python pyB.py <FileName>
     e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" or B-Abstr. Machine
+    or
+    python pyB.py -repl
     config via config.py
 
 
@@ -172,6 +174,8 @@ Index
     - 27. made setup_constants and init an extra op in animation 
     - 28. take care of nondeterministic points inside the code to enable modelchecking
     - 29. safe state to a file
+    - 63: docu: write about typing system. Less powerfull than prob because of expr like dom(f) with
+          f unknown at the moment. Problem: the typechecker needs a subtree witch doesnt exist 
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names
     - 31. Check Includes, Sees, Uses, Extends rules 
