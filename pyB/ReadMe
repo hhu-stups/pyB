@@ -1,0 +1,524 @@
+PyB: 31.08.2011 - 03.01.2013
+by John Witulski:
+ HHU Duesseldorf Germany
+ www.stups.uni-duesseldorf.de
+ John.Witulski@uni-duesseldorf.de
+
+
+Index
+------------------------
+
+1. Config
+2. Run PyB
+3. Tests
+4. Features
+5. Missing Features
+6. How it Works
+7. Fixed Bugs
+8. Todo-List
+9. Nodes
+
+------------------------
+
+1. Config:
+    WAY A: Build jars 
+    1.0: Checkout the Bparser 
+        get clone https://github.com/bendisposto/probparsers.git
+    1.1: copy ASTPython.java to
+     .../bparser/src/main/java/de/be4/classicalb/core/parser/analysis/python
+    1.2: overwrite BParser.java  CliBParser.java  ConsoleOptions.java
+     ParsingBehaviour.java inside the correct src folder
+    1.3: generate the jar by typing "./gradlew jar" in the project-root-dir
+    1.4: the jar files must be in the correct dir. see helpers.py Line 7-10
+     This hard-codes path must be set manually at the moment
+
+    WAY B: Copy jars *DEPRICATED
+    1.0: Checkout the Bparser
+        git clone https://github.com/bendisposto/probparsers.git
+    1.1: Checkout bparser-2.0.67.jar, prologlib-2.0.1.jar, parserbase-2.0.1.jar, cliparser-2.0.67.jar
+    1.2: the jar files must be in the correct dir. see helpers.py Line 7-10
+     This hard-codes path must be set manually at the moment
+
+    WAY C: auto
+    Checkout and run build.sh (Testet on Unbuntu-, Kubuntu Linux and Mac 10.6.8 )
+
+
+2. Run pyB:
+    python pyB.py <FileName>
+    e.g Filename or input.txt with the content like: "#PREDICATE 4-3=1" or B-Abstr. Machine
+    or
+    python pyB.py -repl
+    config via config.py
+
+
+3. Run Tests:
+    py.test
+    the "tests" are in the tests folder
+
+
+4. Features:
+    - Evals arith. Preds like:   1+1=2
+    - Evals set Preds like:   x:ID 
+    - Evals set extentions like:  {a,b,c}
+    - Evals quantified preds like: #(z).(z<4 & z>0) 
+    - Evals Set Comprehensions like:  (1,2):{(x,y) | x>0 & x <4 & x/=0 or y/=x} 
+    - Evals realtions, functions and sequences
+    - Evals interval sum and pi
+    - Evals itrations and closure
+    - generalized conc and strings
+    - Typechecking of the most predicates
+    - Everything from "A concise summary of the b mathematical toolkit",
+      except the missing features in 5.
+      And also: MAXINT;MININT;succ(E);pred(E);rec(E);struct(E);
+      iseq1(S);X**Y;closure1(r);S>+>>T(part bij);XX$0(pimed IDs);
+      func(r);rel(f)
+      see: www.atelierb.eu/ressources/manrefb1.8.6.uk.pdf
+    - Animation of B-machines 
+    - limited processing of "Solution-files" + B-Machines
+    - Assertion checks
+    - most substitutions
+    - limited constraint solving
+
+
+5. MISSING FEATURES:
+    - infinite sets/sequences/relations
+    - NATURAL and INTEGER is not infinite!
+    - while substitution
+    - min/max on infinite numbers - not ProB
+    - translation to RPython (and maybe add a jit)
+    - tree/"btree"
+    - Enable Event-B
+    - and maybe more...;-)
+    - NO IMPLEMENTATION: LTL 
+
+
+6. How it works:
+    6.1.PARSING:
+     PyB uses the same java-parser like ProB with one exception: 
+     A AST-visitor "ASTPython.java" gens. a String with pythoncode.
+     This string is executed with the "exec"-method in "pyB.py" and "bmachine.py".
+     (This needs to be changed for RPython to Jit it. e.g. through JSON-Codegen)
+     The string is mapped via "exec" to the AST-Nodes (python-classes) in
+     "ast_nodes.py"
+
+    6.2 DEFINITIONS:
+     A new "definition-free" AST is generate before execution or typechecking. All
+     definitions are replaced and the variables (def args) are substituted by
+     the definition_handler module
+     
+    6.3.TYPECHECKING: 
+     A map(dict) ASTNode->BType is created via the typeit method.
+     It uses a unify method to handle unknown types like "S=V\/T T:POW(X)".
+     This method is not fully implemented.
+     The typing is necessery to eval. quantified preds:
+     assumes that both sides of ops like (\/ or /=) have the same type.
+     The TypeEnv(!=map) is filled with the unknown vars before a run.
+     This assumes that an var which is not introduced in the vars section or
+     the parameters of an opp is an quantified var or an error. This
+     is handled in the get_type method of the env. The typing uses a stack of
+     environments. Local Vars(e.g in ops) overwrite global vars (e.g VARIABLES) 
+     and are added to a frame before typing if they are not quantified.
+
+    6.4.INTERPRETATION:
+     This AST is eval. via an AST-interpreter "interp.py". It uses the enumeration-methods
+     in "enumeration.py". Animation uses a (third party) constraint-solver 
+
+
+
+7. FIXED BUGS:
+    - replace depricated set module
+    - implement AST Gen for Node with more than two children
+        e.g. ASetExtensionExpression
+    - move tests in separated files
+    - use new env interface inside tests
+    - !, # set-comp and pi dont use correct enum
+    - rename quantified variables in helper-funcs -solved by scoping
+    - Maybe a BUG: there are no local vars. all vars are global
+    - TODO: quantiefed vars must be added to the frame
+    - Typing maybe fails if vars have the same name (unify)
+    - TODO: Typing must throw "Typing-error" if after "one run" a var has an 
+    "unknown-type"
+    - sets and frozensets are mixed (e.g in POW)..fix that
+    - not tested: sequences of sequences
+    - BUG: mising String spaces (maybe a parser bug- java code) 
+    - enable function applications (4.1.9) with many args
+    - Implement B-mch-Operations
+    - find D-Sets which have no expl. elements (e.g. BOOKS Testscase). Only gen elements for them.
+    - Implement Definitions 
+    - seperate enumeration from interpretation-module
+    - "=" is used as ":=" inside the interpreter
+    - Implement UNION and INTER
+    - Cruise_finite1.mch very slow 
+    - 34. write prop. python module (e.g for min max int)
+
+
+8. TODO-LIST:
+8.1 Features
+    - 11. fully seperate console output from other modules
+    - 12. visibility: only one env and clause check what they can see 
+    - 13. check names for anti-collision rules: man 7.26 
+    - 14. write a better build-script
+    - 15. enable infinite sets
+    - 16. Implement Rodin interface
+    - 17. Implement Definitions FILES
+    - 18. set mch-para to "good" values
+    - 19. enum set which have no expl. elements
+    - 20. Maybe all asserts inside the typechecker must be replaced by 
+      unify_equal()
+    - 21. write JSON Codegen of javaparser
+    - 22. renaming with '.' (e.g. INCLUDES)
+    - 23. typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
+    - 24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
+    - 25. include init and set_constants step in animation
+    - 26. generate dot output of statespace
+    - 27. made setup_constants and init an extra op in animation 
+    - 28. take care of nondeterministic points inside the code to enable modelchecking
+    - 29. safe state to a file
+    - 63: docu: write about typing system. Less powerfull than prob because of expr like dom(f) with
+          f unknown at the moment. Problem: the typechecker needs a subtree witch doesnt exist 
+8.2 Refactoring / small fixes:
+    - 30. The values of elements of enumerated sets are their names
+    - 31. Check Includes, Sees, Uses, Extends rules 
+    - 32. inconsistency in java parser part: some args are given as fields some as constructor args
+    - 33. throw better Typeexceptions
+    - 35. Typeerrors are scattered through the whole code via asserts
+    - 36. move name-learning of sets in typing from AUnequal/EqualPredicate to
+      unify
+    - 37. remove fix value/type from tests if possible
+    - 38. write more scoping tests
+    - 39. write more AST-Gen tests
+    - 40. Maybe the implemenation has to be fixed if infinite sets are introduced
+    - 41. S=NAT Type(S)=Pow(NAT) (lose of info)
+    - 43. check if all astnodes return types (if they have to)
+    - 44. Think of unifications like: "it is A or B" e.g. perm(s)
+    - 45. Dont create new instances of IntegerType if not nec.
+    - 46. seperate inperp-mode from interpretation-module
+    - 47. refactor typing.py (spageticode nd use of temp-datastructures outside of typing.py)
+8.3 Minor problems:
+    - 48. Deepcopy inside 'record creation' is the performance problem
+    - 49. Dont assume that all functions are 2-tuple: otherwise crash
+    - 50. typechecker and interpreter has undefined behavior if there is a error in 
+      the java-Bparser
+    - 51. Tests ignore Frames and Scopes.
+    - 52. not tested: append/preprend more than one element - possible?
+    - 53. no random choice in CHOICE and SELECT
+    - 54. INTEGER is min_int to max_int
+    - 55. no good operation number (e.g. Farmer-example)
+8.4 Bugs:
+    - 56. parallel substitution is not parallel
+    - 57. Vars are added to a Frame at the wrong position!
+    - 58. typechecking the settype contains data, this data is not valid 
+      e.g. after set union, inters. diff.
+    - 59. unknown-nodes like NaturalSetExpression create atype == atype.data
+    - 60. maybe there is a unify Bug. 'unify' unifies with the first POW in a 
+      type-tree
+8.5 Maybe Bugs:
+    - 61. (2 + 3) / 2 == 2
+    - 62. eval of preds changes value_stack
+
+
+
+
+9. AST-Node Checklist
+ 9.1 DONE (Mapping to Python, Typeing, Interpretation):
+    caseStart (no change)
+    caseAAbstractMachineParseUnit 
+    caseAPredicateParseUnit
+    caseAMachineHeader (BUG)
+    caseASetsMachineClause
+    caseAVariablesMachineClause
+    caseAConstantsMachineClause
+    caseAPropertiesMachineClause
+    caseAConstraintsMachineClause
+    caseAInitialisationMachineClause
+    caseAInvariantMachineClause
+    caseAAssertionsMachineClause
+    caseADeferredSet (BUG)
+    caseAEnumeratedSet
+    caseAConjunctPredicate
+    caseANegationPredicate
+    caseADisjunctPredicate
+    caseAImplicationPredicate
+    caseAEquivalencePredicate
+    caseAUniversalQuantificationPredicate
+    caseAExistentialQuantificationPredicate
+    caseAEqualPredicate
+    caseAUnequalPredicate
+    caseABelongPredicate
+    caseANotBelongPredicate
+    caseAIncludePredicate
+    caseAIncludeStrictlyPredicate
+    caseANotIncludePredicate
+    caseANotIncludeStrictlyPredicate
+    caseALessEqualPredicate
+    caseALessPredicate
+    caseAGreaterEqualPredicate
+    caseAGreaterPredicate
+    caseAIdentifierExpression (only in/out)
+    caseAStringExpression
+    caseAIntegerExpression
+    caseAEmptySetExpression
+    caseANaturalSetExpression
+    caseANatSetExpression
+    caseANat1SetExpression
+    caseAAddExpression
+    caseAMinusOrSetSubtractExpression
+    caseAMultOrCartExpression
+    caseADivExpression
+    caseAModuloExpression
+    caseAMaxExpression
+    caseAMinExpression
+    caseACardExpression
+    caseAGeneralSumExpression
+    caseAGeneralProductExpression
+    caseACoupleExpression
+    caseAComprehensionSetExpression
+    caseAPowSubsetExpression
+    caseAPow1SubsetExpression
+    caseAFinSubsetExpression (no test)
+    caseAFin1SubsetExpression (no test)
+    caseASetExtensionExpression
+    caseAIntervalExpression
+    caseAUnionExpression
+    caseAIntersectionExpression
+    caseAGeneralUnionExpression
+    caseAGeneralIntersectionExpression
+    caseARelationsExpression
+    caseAIdentityExpression
+    caseAReverseExpression
+    caseAFirstProjectionExpression
+    caseASecondProjectionExpression
+    caseACompositionExpression
+    caseADirectProductExpression
+    caseAParallelProductExpression
+    caseAIterationExpression
+    caseAReflexiveClosureExpression # impl. like prob
+    caseADomainExpression
+    caseARangeExpression
+    caseAImageExpression
+    caseADomainRestrictionExpression
+    caseADomainSubtractionExpression
+    caseARangeRestrictionExpression
+    caseARangeSubtractionExpression
+    caseAOverwriteExpression
+    caseAPartialFunctionExpression
+    caseATotalFunctionExpression
+    caseAPartialInjectionExpression
+    caseATotalInjectionExpression
+    caseAPartialSurjectionExpression
+    caseATotalSurjectionExpression
+    caseALambdaExpression
+    caseASeqExpression
+    caseASeq1Expression
+    caseAIseqExpression
+    caseAPermExpression
+    caseAEmptySequenceExpression
+    caseASequenceExtensionExpression
+    caseASizeExpression
+    caseAFirstExpression
+    caseALastExpression
+    caseAFrontExpression
+    caseATailExpression
+    caseARevExpression
+    caseAConcatExpression
+    caseAInsertFrontExpression
+    caseAInsertTailExpression
+    caseARestrictFrontExpression
+    caseARestrictTailExpression
+    caseAGeneralConcatExpression
+    caseAFunctionExpression
+    caseABoolSetExpression
+    caseATrueExpression
+    caseAFalseExpression
+    caseAExpressionDefinition
+    caseADefinitionsMachineClause
+    caseADefinitionExpression
+    caseAAssignSubstitution
+    caseAParallelSubstitution
+    caseAConvertBoolExpression
+    caseABecomesSuchSubstitution
+    caseADefinitionPredicate
+    caseAPredicateDefinition
+    caseASubstitutionDefinition
+    caseADefinitionSubstitution
+    caseASequenceSubstitution
+    caseABecomesElementOfSubstitution
+    caseAUnaryExpression
+    caseABlockSubstitution
+    caseAIfSubstitution
+    caseAIfElsifSubstitution
+    caseAPreconditionSubstitution
+    caseAChoiceSubstitution
+    caseAChoiceOrSubstitution
+    caseASelectSubstitution
+    caseASelectWhenSubstitution
+    caseACaseSubstitution
+    caseACaseOrSubstitution
+    caseAAnySubstitution
+    caseALetSubstitution
+    caseAVarSubstitution
+    caseASkipSubstitution
+    caseAMaxIntExpression 
+    caseAMinIntExpression
+    caseAQuantifiedUnionExpression
+    caseAQuantifiedIntersectionExpression
+    caseAStructExpression
+    caseARecExpression
+    caseARecordFieldExpression
+    caseARecEntry
+    caseAIseq1Expression
+    caseAPowerOfExpression
+    caseAClosureExpression
+    caseATotalBijectionExpression
+    caseAPartialBijectionExpression
+    caseAPrimedIdentifierExpression
+    caseAAssertionSubstitution # fails if assertion is false
+    caseAStringSetExpression #via hack
+    caseASetSubtractionExpression
+    caseATransFunctionExpression
+    caseATransRelationExpression
+    caseAOperationsMachineClause
+    caseAOperation
+    caseAMachineReference
+    caseAIncludesMachineClause
+    caseAPromotesMachineClause
+    caseAOpSubstitution
+    caseASeesMachineClause
+    caseAUsesMachineClause
+    caseAExtendsMachineClause
+    caseAIntegerSetExpression
+    
+
+ 9.2 NOT IMPLEMENTED/TODO:
+    caseAExpressionParseUnit
+    caseASubstitutionParseUnit
+    caseAMachineClauseParseUnit
+    caseAOppatternParseUnit
+
+    caseAUndefArgpattern
+    caseADefArgpattern
+    
+    caseARefinementMachineParseUnit
+    caseAImplementationMachineParseUnit
+    caseADefinitionFileParseUnit
+    
+    caseAInArgtype
+    caseAOutArgtype
+
+    caseAJoinArgtype
+    caseAImportsMachineClause			- only in Implemenation
+    caseAConcreteVariablesMachineClause
+    caseAAbstractConstantsMachineClause
+    caseAValuesMachineClause
+    caseALocalOperationsMachineClause
+    
+    caseAFileDefinition
+    caseAValuesEntry
+    
+    caseATruePredicate
+    caseAFalsePredicate
+    caseAFinitePredicate
+    
+    caseANatural1SetExpression
+    caseAIntSetExpression
+    caseASuccessorExpression
+    caseAPredecessorExpression
+    caseAProverComprehensionSetExpression (EventB ?)
+    
+    caseAFuncOpSubstitution             - impl sees first
+    caseAOpWithReturnSubstitution       - impl sees first
+    caseAWhileSubstitution
+
+
+ 9.3 IMPLEMENTATION SOME DAY...(Tree Stuff)
+    caseATreeExpression
+    caseABtreeExpression
+    caseAConstExpression
+    caseATopExpression
+    caseASonsExpression
+    caseAPrefixExpression
+    caseAPostfixExpression
+    caseASizetExpression
+    caseAMirrorExpression
+    caseARankExpression
+    caseAFatherExpression
+    caseASonExpression
+    caseASubtreeExpression
+    caseAArityExpression
+    caseABinExpression
+    caseALeftExpression
+    caseARightExpression
+    caseAInfixExpression
+
+
+ 9.4 NO IMPLEMENTATION PLANED (Event B, CSP):
+    caseACsppattern
+    caseAEventBContextParseUnit
+    caseAEventBModelParseUnit
+    caseAEventsModelClause
+    caseAEvent
+    caseAOrdinaryEventstatus
+    caseAAnticipatedEventstatus
+    caseAConvergentEventstatus
+    caseAEventBComprehensionSetExpression
+    caseAEventBIdentityExpression
+    caseAEventBFirstProjectionExpression
+    caseAEventBFirstProjectionV2Expression
+    caseAEventBSecondProjectionExpression
+    caseAEventBSecondProjectionV2Expression
+    // only used by EventB translator: see BParser.scc comments
+    caseARingExpression 
+    caseAWitness
+    caseAMinusExpression
+    caseAMultiplicationExpression
+    caseACartesianProductExpression
+    caseATotalRelationExpression
+    caseASurjectionRelationExpression
+    caseATotalSurjectionRelationExpression
+    caseAPartitionPredicate
+    caseARefinesModelClause
+    caseASeesModelClause
+    caseAVariablesModelClause
+    caseAInvariantModelClause
+    caseATheoremsModelClause
+    caseAVariantModelClause
+    caseAExtendsContextClause
+    caseASetsContextClause
+    caseAConstantsContextClause
+    caseAAxiomsContextClause
+    caseATheoremsContextClause
+
+
+10. Design Decisions:  
+    The Argumentes(childs) of the CartSetType are the types of the sets.
+    Resolve at the end of typechecking. E.g !(x).(x:T=>x:S) & S:POW(NAT)   
+    
+11. Type-Doc:
+
+S = StringType
+B = BoolType
+I = IntegerType
+P = PowerSetType
+Se = SetType
+C = CartType
+Str = StructType
+U = UnknownType *
+
+P & Q       B
+P or Q      B
+P => Q      B
+P <=> Q     B
+not P       B
+!(z).(P=>Q) B
+#(z).(P&Q)  B
+E = F       B
+E /= F      B
+
+{E}         	P(type(E))
+{}				P(U)
+{z|P}       	P(type(z)) (only one var)
+{x1,x2,..xn|P}	P(C(C(P(type(x1),P(type(x2)),P(type(x3)....P(type(xn))
+
+    
+java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
+export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    
