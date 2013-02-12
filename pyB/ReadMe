@@ -519,6 +519,9 @@ E /= F      B
 {z|P}       	P(type(z)) (only one var)
 {x1,x2,..xn|P}	P(C(C(P(type(x1),P(type(x2)),P(type(x3)....P(type(xn))
 
-    
+Print ASTS:
+java -cp ../jars/bparser-2.0.67.jar:../jars/prologlib-2.0.67.jar:../jars/parserbase-2.0.67.jar:../jars/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt    
+or
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
+PATH for testing:
 export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    

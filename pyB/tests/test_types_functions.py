@@ -100,7 +100,7 @@ class TestTypesFunctions():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
-       # Type
+        # Type
         env = Environment()
         _test_typeit(root, env, [], ["f","x","y"])
         assert isinstance(env.get_type("f"), PowerSetType)
@@ -116,6 +116,29 @@ class TestTypesFunctions():
         assert isinstance(dom_type.data.data[0].data, IntegerType)
         assert isinstance(dom_type.data.data[1].data, IntegerType)
 
+
+    def test_types_type_arg(self):
+        # Build AST
+        string_to_file("#PREDICATE paid: 1..5 --> BOOL & switcher: 1..5 --> {0, 1} & !(i).(paid(i) = FALSE => switcher(i) = 1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["paid","switcher"])
+        # TODO:
+
+
+    def test_types_type_arg2(self):
+        # Build AST
+        string_to_file("#PREDICATE f: NAT * NAT * BOOL --> BOOL  & !(x,y,z).(f(x,y,z) = FALSE => 1+1=2)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["f"])
+        # TODO:        
 
 
     def test_types_seq(self):

@@ -16,6 +16,30 @@ def __print__btype(tree, t=0):
         __print__btype(tree.data[1],t+1) 
 
 
+def create_func_arg_type(num_args):
+	if num_args==2:
+		return PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
+	else:
+		arg_type = create_func_arg_type(num_args-1)
+		return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
+
+def _get_arg_type_list(type,lst):
+	assert isinstance(type, PowerSetType)
+	if isinstance(type.data, CartType):
+	    _get_arg_type_list(type.data.data[0], lst)
+	    _get_arg_type_list(type.data.data[1], lst)
+	else:
+		lst.append(type.data) # funcargs have not the pow_set but the set type
+		return
+	    
+	    
+
+def get_arg_type_list(func_type):
+	lst = []
+	_get_arg_type_list(func_type, lst) # sideeffect: fill list with types
+	return lst
+	
+
 class BTypeException(Exception):
     def __init__(self, string):
         self.string = string
@@ -821,22 +845,29 @@ def typeit(node, env, type_env):
         atype1 = unify_equal(set_type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, AFunctionExpression):
-        type0 = typeit(node.children[0], env, type_env) # id, or size, rev, last, tail, front, ...
+        type0 = typeit(node.children[0], env, type_env) 
         #print "enter"
         #print_ast(node)
         #__print__btype(type0)
-        # type args
-        for child in node.children[1:]:
-            typeit(child, env, type_env)
-        if isinstance(type0, IntegerType):
+        if isinstance(type0, IntegerType): # special case (succ/pred)
             assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
             return type0
+        
+        num_args = len(node.children[1:])
+        if num_args==1:
+            expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
+        else:
+            arg_type = create_func_arg_type(num_args)
+            expected_type0 = PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
+        atype = unify_equal(type0, expected_type0, type_env) 
+           
+        # type args
+        arg_type_list = get_arg_type_list(atype.data.data[0])
+        for i in range(len(node.children[1:])):
+            child = node.children[i+1]
+            arg_type = typeit(child, env, type_env)
+            unify_equal(arg_type, arg_type_list[i], type_env) 
         # TODO: use knowledge from args
-        expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
-        #print "exit"
-        #print_ast(node)
-        #__print__btype(type0)
-        atype = unify_equal(type0, expected_type0, type_env)
         return atype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
         # TODO: unification 
