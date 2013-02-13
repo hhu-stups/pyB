@@ -17,28 +17,28 @@ def __print__btype(tree, t=0):
 
 
 def create_func_arg_type(num_args):
-	if num_args==2:
-		return PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
-	else:
-		arg_type = create_func_arg_type(num_args-1)
-		return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
+    if num_args==2:
+        return PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
+    else:
+        arg_type = create_func_arg_type(num_args-1)
+        return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
 
 def _get_arg_type_list(type,lst):
-	assert isinstance(type, PowerSetType)
-	if isinstance(type.data, CartType):
-	    _get_arg_type_list(type.data.data[0], lst)
-	    _get_arg_type_list(type.data.data[1], lst)
-	else:
-		lst.append(type.data) # funcargs have not the pow_set but the set type
-		return
-	    
-	    
+    assert isinstance(type, PowerSetType)
+    if isinstance(type.data, CartType):
+        _get_arg_type_list(type.data.data[0], lst)
+        _get_arg_type_list(type.data.data[1], lst)
+    else:
+        lst.append(type.data) # function-args have not the pow_set but the set type
+        return
+        
+        
 
 def get_arg_type_list(func_type):
-	lst = []
-	_get_arg_type_list(func_type, lst) # sideeffect: fill list with types
-	return lst
-	
+    lst = []
+    _get_arg_type_list(func_type, lst) # sideeffect: fill list with types
+    return lst
+    
 
 class BTypeException(Exception):
     def __init__(self, string):
@@ -863,11 +863,19 @@ def typeit(node, env, type_env):
            
         # type args
         arg_type_list = get_arg_type_list(atype.data.data[0])
+        arg_type_list2 = []
         for i in range(len(node.children[1:])):
             child = node.children[i+1]
             arg_type = typeit(child, env, type_env)
-            unify_equal(arg_type, arg_type_list[i], type_env) 
-        # TODO: use knowledge from args
+            if isinstance(child, ACoupleExpression):
+                arg_type_list2.append(arg_type.data[0].data)
+                arg_type_list2.append(arg_type.data[1].data)
+            else: 
+                arg_type_list2.append(arg_type)
+        for arg_type in arg_type_list2: 
+            unify_equal(arg_type, arg_type_list[i], type_env)
+        
+        # return imagetype
         return atype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
         # TODO: unification 
@@ -895,7 +903,7 @@ def typeit(node, env, type_env):
 #
 # ********************
     elif isinstance(node,AEmptySequenceExpression):
-		return PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AEmptySequenceExpression",None))))
+        return PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AEmptySequenceExpression",None))))
     elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression) or isinstance(node, AIseq1Expression):
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(UnknownType("ASeqExpression",None))
@@ -903,7 +911,7 @@ def typeit(node, env, type_env):
         return PowerSetType(PowerSetType(CartType(PowerSetType(IntegerType(None)), atype)))
     elif isinstance(node, AGeneralConcatExpression):
         seq_seq_type = typeit(node.children[0], env, type_env)
-        __print__btype(seq_seq_type)
+        #__print__btype(seq_seq_type)
         expected_seq_type = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AGeneralConcatExpression",None))))
         expected_type = PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(expected_seq_type)))
         atype = unify_equal(seq_seq_type, expected_type, type_env)
