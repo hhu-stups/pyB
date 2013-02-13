@@ -867,12 +867,15 @@ def typeit(node, env, type_env):
         for i in range(len(node.children[1:])):
             child = node.children[i+1]
             arg_type = typeit(child, env, type_env)
-            if isinstance(child, ACoupleExpression):
+            # e.g f(x|->y) instead of (expected) f(x,y). 
+            # This problem can be indirect! So only checking for the type is correct
+            if isinstance(arg_type, CartType): 
                 arg_type_list2.append(arg_type.data[0].data)
                 arg_type_list2.append(arg_type.data[1].data)
             else: 
                 arg_type_list2.append(arg_type)
-        for arg_type in arg_type_list2: 
+        for i in range(len(arg_type_list2)): 
+            arg_type = arg_type_list2[i]
             unify_equal(arg_type, arg_type_list[i], type_env)
         
         # return imagetype
