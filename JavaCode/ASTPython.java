@@ -840,6 +840,21 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getParameters());
         printStdOut_manyChildren(node, children);
     }
+ 
+    
+    public void caseAWhileSubstitution(AWhileSubstitution node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getCondition() != null)
+            children.add(node.getCondition());
+        if(node.getDoSubst() != null)
+            children.add(node.getDoSubst());
+        if(node.getInvariant() != null)
+            children.add(node.getInvariant());
+        if(node.getVariant() != null)
+            children.add(node.getVariant());
+        printStdOut_manyChildren(node, children);
+    }
 
 
     public void caseAPowerOfExpression(APowerOfExpression node)

@@ -11,7 +11,7 @@ from parsing import parse_ast
 from typing import type_check_bmch
 
 file_name = "input.txt"
-		
+        
 class TestMCHAnimation():
     def test_ani_examples_simple_acounter(self):
         string = '''
@@ -558,3 +558,47 @@ class TestMCHAnimation():
         assert far==frozenset([])
         op_and_state_list = calc_possible_operations(env, mch) 
         names = [op[0].opName for op in op_and_state_list]
+      
+        
+    # not B spec.    
+    def test_genAST_sub_while(self):
+        string = '''
+        MACHINE test
+        VARIABLES varLoc, cpt
+        INVARIANT
+          varLoc:NAT & cpt:NAT
+        INITIALISATION varLoc:= 0; cpt:=0
+        OPERATIONS
+        op = 
+            BEGIN 
+               BEGIN 
+                 varLoc := 5 ; 
+                 cpt := 0
+               END;
+               WHILE cpt<5 DO
+                    varLoc := varLoc + 1;
+                    cpt := cpt+1 
+               INVARIANT
+                    cpt : NAT & cpt<=5 & varLoc:NAT & varLoc = 5 + cpt
+               VARIANT 
+                  5 - cpt
+               END
+            END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        env._max_int = 10
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        op_and_state_list = calc_possible_operations(env, mch) 
+        assert op_and_state_list[0][0].opName=="op"
+        varLoc = env.get_value("varLoc") 
+        assert varLoc ==0
+        exec_op(env, op_and_state_list[0], mch)
+        varLoc = env.get_value("varLoc") 
+        assert varLoc ==10

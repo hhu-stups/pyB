@@ -99,6 +99,21 @@ public class ASTJSON extends DepthFirstAdapter{
         out.append(getClassName(node));
         out.append("\"]");
     }
+    
+    public void caseAIntSetExpression(AIntSetExpression node)
+    {
+        out.append("[\"");
+        out.append(getClassName(node));
+        out.append("\"]");
+    }
+    
+        
+    public void caseANatural1SetExpression(ANatural1SetExpression node)
+    {
+        out.append("[\"");
+        out.append(getClassName(node));
+        out.append("\"]");
+    }
 
     public void caseANat1SetExpression(ANat1SetExpression node)
     {
@@ -182,6 +197,11 @@ public class ASTJSON extends DepthFirstAdapter{
     public void caseAPredicateParseUnit(APredicateParseUnit node)
     {
         printStdOut_oneChild(node, node.getPredicate());
+    }
+    
+    public void caseAExpressionParseUnit(AExpressionParseUnit node)
+    {
+        printStdOut_oneChild(node, node.getExpression());
     }
 
 
@@ -904,6 +924,21 @@ public class ASTJSON extends DepthFirstAdapter{
         children.add(node.getIdentifier());
         if (node.getParameters()!=null)
             children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
+    }
+
+
+    public void caseAWhileSubstitution(AWhileSubstitution node)
+    {
+        List<Node> children = new ArrayList<Node>();
+        if(node.getCondition() != null)
+            children.add(node.getCondition());
+        if(node.getDoSubst() != null)
+            children.add(node.getDoSubst());
+        if(node.getInvariant() != null)
+            children.add(node.getInvariant());
+        if(node.getVariant() != null)
+            children.add(node.getVariant());
         printStdOut_manyChildren(node, children);
     }
 

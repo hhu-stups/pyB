@@ -490,6 +490,9 @@ class ALetSubstitution(Substitution):
 class ASkipSubstitution(Substitution):
     pass
 
+class AWhileSubstitution(Substitution):
+    pass
+    
 class ARecEntry(Node):
     pass
 

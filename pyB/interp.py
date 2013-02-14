@@ -1129,6 +1129,22 @@ def interpret(node, env):
     elif isinstance(node, ASequenceSubstitution):
         for child in node.children:
             interpret(child, env)
+    elif isinstance(node, AWhileSubstitution):
+    	print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace warning
+    	condition = node.children[0]
+        doSubst   = node.children[1]
+        invariant = node.children[2]
+        variant   = node.children[3]
+        v_value = interpret(variant, env)
+        while interpret(condition, env):
+        	assert interpret(invariant, env)
+        	interpret(doSubst, env)
+        	temp = interpret(variant, env)
+        	assert temp < v_value
+        	v_value = temp
+        return
+        
+        return
 
 
 # **********************
