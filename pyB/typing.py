@@ -932,20 +932,22 @@ def typeit(node, env, type_env):
     elif isinstance(node, AInsertFrontExpression):
         set_type = typeit(node.children[0], env, type_env)
         seq_type = typeit(node.children[1], env, type_env)
-        expected_type0 = SetType(None)
-        expected_type1 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AInsertFrontExpression",None))))
-        atype0 = unify_equal(set_type, expected_type0, type_env)
+        img_type = UnknownType("AInsertFrontExpression",None)
+        expected_type1 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(img_type)))
+        atype0 = unify_equal(set_type, img_type, type_env)
         atype1 = unify_equal(seq_type, expected_type1, type_env)
-        assert atype0.data == atype1.data.data[1].data.data # Setname
+        if isinstance(atype0, SetType):
+            assert atype0.data == atype1.data.data[1].data.data # Setname
         return atype1
     elif isinstance(node, AInsertTailExpression):
         seq_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
-        expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(UnknownType("AInsertTailExpression",None))))
-        expected_type1 = SetType(None)
+        img_type = UnknownType("AInsertTailExpression",None)
+        expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(img_type)))
         atype0 = unify_equal(seq_type, expected_type0, type_env)
-        atype1 = unify_equal(set_type, expected_type1, type_env)
-        assert atype1.data == atype0.data.data[1].data.data # Setname
+        atype1 = unify_equal(set_type, img_type, type_env)
+        if isinstance(atype1, SetType):
+            assert atype1.data == atype0.data.data[1].data.data # Setname
         return atype0
     elif isinstance(node, ASequenceExtensionExpression):
         # Todo: s=[]

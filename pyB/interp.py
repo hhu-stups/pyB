@@ -1143,8 +1143,6 @@ def interpret(node, env):
         	assert temp < v_value
         	v_value = temp
         return
-        
-        return
 
 
 # **********************

@@ -46,7 +46,11 @@ public class ASTJSON extends DepthFirstAdapter{
 
     public void caseAStringExpression(AStringExpression node)
     {
-        String string = node.getContent().getText();
+    	String string;
+    	if (node.getContent()!=null)
+        	string = node.getContent().getText(); 
+        else
+        	string = ""; //else empty string ""
         out.append("[\"");
         out.append(getClassName(node));
         out.append("\",");
@@ -689,7 +693,6 @@ public class ASTJSON extends DepthFirstAdapter{
     
     public void caseAUsesMachineClause(AUsesMachineClause node)
     {
-        outAUsesMachineClause(node);
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineNames()!=null)
             children.addAll(node.getMachineNames());

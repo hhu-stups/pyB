@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 03.01.2013
+PyB: 31.08.2011 - 14.02.2013(last update of this file)
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -387,10 +387,15 @@ Index
     caseAUsesMachineClause
     caseAExtendsMachineClause
     caseAIntegerSetExpression
+    caseAWhileSubstitution **(Feature Request: Inside abst. Machine)
+    caseAExpressionParseUnit
+    caseANatural1SetExpression
+    caseAIntSetExpression
+    caseASuccessorExpression
+    caseAPredecessorExpression
     
 
  9.2 NOT IMPLEMENTED/TODO:
-    caseAExpressionParseUnit
     caseASubstitutionParseUnit
     caseAMachineClauseParseUnit
     caseAOppatternParseUnit
@@ -419,15 +424,11 @@ Index
     caseAFalsePredicate
     caseAFinitePredicate
     
-    caseANatural1SetExpression
-    caseAIntSetExpression
-    caseASuccessorExpression
-    caseAPredecessorExpression
     caseAProverComprehensionSetExpression (EventB ?)
     
     caseAFuncOpSubstitution             - impl sees first
     caseAOpWithReturnSubstitution       - impl sees first
-    caseAWhileSubstitution
+
 
 
  9.3 IMPLEMENTATION SOME DAY...(Tree Stuff)
@@ -524,4 +525,4 @@ java -cp ../jars/bparser-2.0.67.jar:../jars/prologlib-2.0.67.jar:../jars/parserb
 or
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 PATH for testing:
-export PYTHONPATH=/Users/johnwitulski/witulski/pyB:.John-Witulskis-MacBook-Pro:pyB    
+export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.John-Witulskis-MacBook-Pro:pyB    

@@ -16,6 +16,13 @@ public class ASTPython extends DepthFirstAdapter{
         out = new StringBuilder();
     }
 
+
+    public void defaultOut(@SuppressWarnings("unused") Node node)
+    {
+        System.out.println("Parsing Error! Unhandeld Node:"+getClassName(node));
+    }
+
+    
     private String getClassName(Node node)
     {
         String clsname = node.getClass().getName();
@@ -46,7 +53,10 @@ public class ASTPython extends DepthFirstAdapter{
     {
         out.append("id"+ (idCounter++) +"=");
         out.append("AStringExpression(\"");
-        out.append(node.getContent().getText()+ "\")\n");
+        if (node.getContent()!=null)
+        	out.append(node.getContent().getText()+ "\")\n");
+        else
+        	out.append("\")\n"); // empty string ""
     }
 
 
@@ -609,7 +619,6 @@ public class ASTPython extends DepthFirstAdapter{
     
     public void caseAUsesMachineClause(AUsesMachineClause node)
     {
-        outAUsesMachineClause(node);
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineNames()!=null)
             children.addAll(node.getMachineNames());
