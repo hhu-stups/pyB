@@ -1,1 +1,1 @@
-#PREDICATE T:POW(B) & R=S\/T 
+#PREDICATE A=bool(1<2)

@@ -14,15 +14,15 @@ class Environment():
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
         #self.definition_id_to_ast = {}
-        self.mch_operation_type = [] # rettype, opname, paratype
+        self.mch_operation_type = []      # rettype, opname, paratype
         self.state_space = StateSpace()   # statespace        
-        self.solutions = {}          # read by a solution-file
-        # from config 
-        # for possible modification after module import time (tests)
+        self.solutions = {}               # written by a solution-file
+        # from config.py 
+        # for possible modification after module import time (e.g. via tests)
         self._min_int = MIN_INT
         self._max_int = MAX_INT
         self.root_mch = None
-        self.current_mch = None              # current Working B-Machine
+        self.current_mch = None           # current Working B-Machine
 
 
     # This method should only(!) be used by the typechecking-tests.

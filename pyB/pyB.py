@@ -52,6 +52,8 @@ dh = DefinitionHandler()                                    # 5. replace defs if
 dh.repl_defs(root)
 #import cProfile
 #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
+
+
 parse_object = parse_ast(root, env)                         # 6. which kind of ast?
 if not isinstance(parse_object, BMachine):                  #PREDICATE or #EXPRESSION                   
 	interpret(parse_object.root, env)                       # eval predicate or expression
@@ -66,7 +68,7 @@ else:
 
     # TODO: Check with B spec
     # Schneider Book page 62-64:
-    # The parameters p make the constraints c True
+    # The parameters p make the constraints C True
     # #p.C
     init_mch_param(root, env, mch)
 

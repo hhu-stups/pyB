@@ -62,7 +62,7 @@ def check_properties(node, env, mch):
 		# find all constants like x=42 oder y={1,2,3}
 		learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
 		if learnd_vars:
-			print "leard constants(no enumeration): ", learnd_vars
+			print "leard constants (no enumeration): ", learnd_vars
 		# if there are constants
 		#TODO: Sets
 		if mch.aConstantsMachineClause:
@@ -70,13 +70,18 @@ def check_properties(node, env, mch):
 			# find all constants/sets which are still not set
 			for idNode in mch.aConstantsMachineClause.children:
 				assert isinstance(idNode, AIdentifierExpression)
-				if env.get_value(idNode.idName)==None:
-					const_nodes.append(idNode)
+				name = idNode.idName
+				if env.get_value(name)==None:
+				    try:
+				        value = env.solutions[name]
+				        env.set_value(name, value)
+				    except KeyError:
+					    const_nodes.append(idNode)
 			if const_nodes==[]:
 				prop_result = interpret(mch.aPropertiesMachineClause, env)
 			else:
 				# if there are unset constants/sets enumerate them
-				print "enum. vars:", [n.idName for n in const_nodes]
+				print "enum. constants:", [n.idName for n in const_nodes]
 				gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
 				prop_result = gen.next()
 			if not prop_result:
