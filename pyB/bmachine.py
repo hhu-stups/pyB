@@ -104,6 +104,9 @@ class BMachine:
         names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
         self.names = names
         bstate = env.state_space.get_state()
+        # if there are solutions (gotten form a solution file at startup time)
+        # than add them to your top level bstate. The reason for this indirection is
+        # the following problem: you dont know to which machine an id value belongs
         if env.solutions:
             bstate.add_mch_state(self, names, env.solutions)
         else:

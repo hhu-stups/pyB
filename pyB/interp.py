@@ -10,7 +10,7 @@ from quick_eval import quick_member_eval
 from constrainsolver import calc_possible_solutions
 
 # used in tests and child mchs(included, seen...)
-# TODO: also use solutionfiles for children. 
+# also uses solutionfiles for children (while mch creation) 
 def _init_machine(root, env, mch):
 	mch.init_include_mchs()
 	mch.init_seen_mchs()
@@ -99,12 +99,24 @@ def write_solutions_to_env(root, env):
             try:
                 #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32 (underscore bug)
                 if isinstance(node.children[0], AIdentifierExpression):
-                    expr = interpret(node.children[1], env)
-                    env.solutions[node.children[0].idName] = expr
+                    if isinstance(node.children[1], AIdentifierExpression):
+                        # This is a special case, generate by ProB at this time
+                        # it will be removed when defferd sets and enumerated sets 
+                        # are part of a solution file.
+                        # a reference to a enumerated set item can not be reolved at
+                        # this time. Solution files are read ahead of time before any mch startup.
+                        # TODO: remove when sets are part of the solution
+                        env.solutions[node.children[0].idName] = node.children[1].idName
+                    else:
+                        expr = interpret(node.children[1], env)
+                        env.solutions[node.children[0].idName] = expr
                     continue
                 elif isinstance(node.children[1], AIdentifierExpression):
-                    expr = interpret(node.children[0], env)
-                    env.solutions[node.children[1].idName] = expr
+                    if isinstance(node.children[0], AIdentifierExpression):
+                        env.solutions[node.children[1].idName] = node.children[0].idName
+                    else:
+                        expr = interpret(node.children[0], env)
+                        env.solutions[node.children[1].idName] = expr
                     continue
                 else:
                     continue

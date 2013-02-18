@@ -28,24 +28,19 @@ def run_with_pyb(bfile_name):
     env = Environment()
     ast_str = solution_file_to_AST_str("%s_values.txt" % (bfile_name))
     root = str_ast_to_python_ast(ast_str)
+    write_solutions_to_env(root, env)
 
     # Init B-mch
     dh = DefinitionHandler()                                   
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
     type_check_bmch(ast_root, mch) # also checks all included, seen, used and extend
-    mch.init_include_mchs()
-    mch.init_seen_mchs()
-    mch.init_used_mchs()
-    mch.init_extended_mchs()
     init_mch_param(ast_root, env, mch)
     set_up_sets(ast_root, env, mch)
     
-    # Write ProB Solution and check properties and invariant 
-    write_solutions_to_env(root, env)
+    # check properties and invariant 
     check_properties(ast_root, env, mch)
     # mch.eval_Assertions(env)
-    mch.eval_Init(env)
     return mch.eval_Invariant(env)
 
 

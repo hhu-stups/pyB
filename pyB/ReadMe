@@ -176,6 +176,7 @@ Index
     - 29. safe state to a file
     - 63: docu: write about typing system. Less powerfull than prob because of expr like dom(f) with
           f unknown at the moment. Problem: the typechecker needs a subtree witch doesnt exist 
+    - 64. Bug if solution values(from prob) idnames are identical in two machines
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names
     - 31. Check Includes, Sees, Uses, Extends rules 
@@ -194,6 +195,7 @@ Index
     - 45. Dont create new instances of IntegerType if not nec.
     - 46. seperate inperp-mode from interpretation-module
     - 47. refactor typing.py (spageticode nd use of temp-datastructures outside of typing.py)
+    - 64. buildscript build.sh is deprecated. Repository has moved to git and the javaparser is a "fork"
 8.3 Minor problems:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash
