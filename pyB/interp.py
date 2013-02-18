@@ -10,7 +10,8 @@ from quick_eval import quick_member_eval
 from constrainsolver import calc_possible_solutions
 
 # used in tests and child mchs(included, seen...)
-# also uses solutionfiles for children (while mch creation) 
+# The data from the solution-files has already been read at the mch creation time
+# If a solution file has been given to pyB , this method 'should' never been called 
 def _init_machine(root, env, mch):
 	mch.init_include_mchs()
 	mch.init_seen_mchs()

@@ -916,3 +916,26 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
+
+
+    def test_genAST_sub_enum_set_as(self):    
+        string = '''
+        MACHINE Test
+        SETS ID={aa,bb}
+        VARIABLES xx
+        INVARIANT xx:ID
+        INITIALISATION xx:=aa
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT       
+        assert isinstance(root.children[3], AInvariantMachineClause)
+        assert interpret(root.children[3], env)
+        assert env.get_value("xx")=="aa"
+        
