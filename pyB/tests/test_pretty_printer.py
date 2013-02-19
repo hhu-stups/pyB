@@ -8,13 +8,13 @@ file_name = "input.txt"
 class TestPrettyPrinter():
     def test_pp_numbers(self):
         # Build AST
-        string_to_file("#PREDICATE 1+2<3 & 4-5>6 & 7*8>=9 & 10/11<=12 & 13 mod 14=15 & 1/=1", file_name)
+        string_to_file("#PREDICATE 1+2<3 & 4-5>6 & 7*8>=9 & 10/11<=12 & 13 mod 14=15 & 1/=-1", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
 
         # PPrint
         out = pretty_print(root.children[0])
-        assert out=="1+2<3 & 4-5>6 & 7*8>=9 & 10/11<=12 & 13 mod 14=15 & 1/=1"
+        assert out=="1+2<3 & 4-5>6 & 7*8>=9 & 10/11<=12 & 13 mod 14=15 & 1/=-1"
 
 
     def test_pp_numbers2(self):
@@ -190,4 +190,49 @@ class TestPrettyPrinter():
     
         # PPrint
         out = pretty_print(root.children[0])
-        assert out=="conc(ss)=r & front(s)=tail(s)"     
+        assert out=="conc(ss)=r & front(s)=tail(s)" 
+
+
+    def test_pp_miscellaneous1(self): 
+        # Build AST
+        string_to_file("#PREDICATE MAXINT/=MIINT & TRUE:BOOL & FALSE/:STRING & x.y=5", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # PPrint
+        out = pretty_print(root.children[0])
+        assert out=="MAXINT/=MIINT & TRUE:BOOL & FALSE/:STRING & x.y=5"
+
+
+    def test_pp_miscellaneous2(self): 
+        # Build AST
+        string_to_file("#PREDICATE rel(f)=r & func(r)=f & bool(1<2)=TRUE & succ(s)=pred(t)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # PPrint
+        out = pretty_print(root.children[0])
+        assert out=="rel(f)=r & func(r)=f & bool(1<2)=TRUE & succ(s)=pred(t)"  
+  
+
+    def test_pp_miscellaneous3(self): 
+        # Build AST
+        string_to_file("#PREDICATE RES=rec(Mark:14,Good_enough:TRUE) & xx=RES'Mark", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # PPrint
+        out = pretty_print(root.children[0])
+        assert out=="RES=rec(Mark:14,Good_enough:TRUE) & xx=RES'Mark"       
+           
+
+    def test_pp_miscellaneous4(self): 
+        # Build AST
+        string_to_file("#PREDICATE RES:struct(Mark:NAT,Good_enough:BOOL)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # PPrint
+        out = pretty_print(root.children[0])
+        assert out=="RES:struct(Mark:NAT,Good_enough:BOOL)"            
+           

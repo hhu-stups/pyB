@@ -409,9 +409,16 @@ def pretty_print(node):
         out += ")"
         return out          
     elif isinstance(node, AFunctionExpression):
+        if isinstance(node.children[0], APredecessorExpression):
+            string = pretty_print(node.children[1])
+            return "pred("+string+")"
+        if isinstance(node.children[0], ASuccessorExpression):
+            string = pretty_print(node.children[1])
+            return "succ("+string+")"
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"("+string2+")"
+
 
 
 
@@ -444,7 +451,7 @@ def pretty_print(node):
     elif isinstance(node, AInsertFrontExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+"->"+string2 #TODO test
+        return string1+"->"+string2 
     elif isinstance(node, AInsertTailExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
@@ -495,7 +502,7 @@ def pretty_print(node):
 # ****************
     elif isinstance(node,AUnaryExpression):
         string = pretty_print(node.children[0])
-        return "- "+string
+        return "-"+string
     elif isinstance(node, AIntegerExpression):
         return str(node.intValue)
     elif isinstance(node, AMinIntExpression):
@@ -503,30 +510,49 @@ def pretty_print(node):
     elif isinstance(node, AMaxIntExpression):
         return "MAXINT"
     elif isinstance(node, AIdentifierExpression):
-        return node.idName
+        return str(node.idName).replace(",",".") # quickfix of java parser bug. creates , instead of .
     elif isinstance(node, APrimedIdentifierExpression):
-        return node.idName # TODO test
+        return node.idName # TODO test (e.g xx$0 (only allowed in become-such-substitutions))
     elif isinstance(node, ABoolSetExpression):
         return "BOOL"
     elif isinstance(node, ATrueExpression):
-        return "True"
+        return "TRUE"
     elif isinstance(node, AFalseExpression):
-        return "False"
+        return "FALSE"
     elif isinstance(node, AStructExpression):
-        return "" #TODO
+        out = ""
+        for i in range(len(node.children)):
+            out += pretty_print(node.children[i])
+            if i+1<len(node.children):
+                out +=","
+        return "struct("+out+")"
     elif isinstance(node, ARecExpression):
-        return "" #TODO
+        out = ""
+        for i in range(len(node.children)):
+            out += pretty_print(node.children[i])
+            if i+1<len(node.children):
+                out +=","
+        return "rec("+out+")" 
     elif isinstance(node, ARecordFieldExpression):
-        return "" #TODO
+        string1 = pretty_print(node.children[0])
+        string2 = pretty_print(node.children[1])
+        return string1+"'"+string2  
+    elif isinstance(node, ARecEntry):
+        string1 = pretty_print(node.children[0])
+        string2 = pretty_print(node.children[1])
+        return string1+":"+string2     
     elif isinstance(node, AStringSetExpression):
-        return "" # TODO: 
+        return "STRING" 
     elif isinstance(node, ATransRelationExpression):
         string = pretty_print(node.children[0])
-        return "rel("+string+")" #TODO test
+        return "rel("+string+")" 
     elif isinstance(node, ATransFunctionExpression):
         string = pretty_print(node.children[0])
-        return "func("+string+")" #TODO test
+        return "func("+string+")" 
     elif isinstance(node, AOpSubstitution):
-        return "" # TODO: 
+        return "" # TODO: impl
+    elif isinstance(node, AConvertBoolExpression):
+        string = pretty_print(node.children[0])
+        return "bool("+string+")" 
     else:
         raise Exception("PRETTYORINTBUG>>> Unknown Node: %s",node)
