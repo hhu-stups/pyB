@@ -29,6 +29,9 @@ def quick_member_eval(ast, env, element):
         elif isinstance(ast, AIntSetExpression):
             assert isinstance(element, int)
             return element >= env._min_int and element <= env._max_int
+        elif isinstance(ast, AStringSetExpression):
+            assert isinstance(element, str)
+            return True
     	# fallback: enumerate right side. This 'should' never happen...
         S = list(interpret(ast, env))
         #print element,S # DEBUG

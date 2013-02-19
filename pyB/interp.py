@@ -101,7 +101,8 @@ def print_prop_fail(env, mch):
     for p in pred_lst:
         result = interpret(p, env)
         if not result:
-            print "FALSE="+pretty_print(p)    
+            print "FALSE="+pretty_print(p)
+            #print p.children[0].idName, env.get_value(p.children[0].idName)    
 
 # assumes that every Variable/Constant/Set appears once 
 # TODO: Add typeinfo too
