@@ -8,6 +8,7 @@ from environment import Environment
 from enumeration import *
 from quick_eval import quick_member_eval
 from constrainsolver import calc_possible_solutions
+from pretty_printer import pretty_print
 
 # used in tests and child mchs(included, seen...)
 # The data from the solution-files has already been read at the mch creation time
@@ -87,9 +88,21 @@ def check_properties(node, env, mch):
 				prop_result = gen.next()
 			if not prop_result:
 				print "Properties FALSE!"
+				print_prop_fail(env, mch)
 			assert prop_result
 
- 
+
+def print_prop_fail(env, mch):
+    pred_lst = []
+    node = mch.aPropertiesMachineClause.children[0]
+    while isinstance(node, AConjunctPredicate):
+        pred_lst.append(node.children[1])
+        node = node.children[0]
+    for p in pred_lst:
+        result = interpret(p, env)
+        if not result:
+            print "FALSE="+pretty_print(p)    
+
 # assumes that every Variable/Constant/Set appears once 
 # TODO: Add typeinfo too
 def write_solutions_to_env(root, env):
