@@ -14,7 +14,7 @@ def pretty_print(node):
     elif isinstance(node, ADisjunctPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1 +" or "+ srt2
+        return string1 +" or "+ string2
     elif isinstance(node, AImplicationPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
@@ -25,7 +25,7 @@ def pretty_print(node):
         return string1 +" <=> " +string2 
     elif isinstance(node, ANegationPredicate):
         string0 = pretty_print(node.children[0])
-        return "not "+string0
+        return "not ("+string0+")"
     elif isinstance(node, AUniversalQuantificationPredicate):
         varList = node.children[:-1]
         pred = node.children[-1]
@@ -33,9 +33,9 @@ def pretty_print(node):
         out = "!("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
-        out +=")("+string+")"
+        out +=").("+string+")"
         return out
     elif isinstance(node, AExistentialQuantificationPredicate):
         varList = node.children[:-1]
@@ -44,9 +44,9 @@ def pretty_print(node):
         out = "#("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
-        out +=")("+string+")"
+        out +=").("+string+")"
         return out      
     elif isinstance(node, AEqualPredicate):
         string1 = pretty_print(node.children[0])
@@ -80,6 +80,7 @@ def pretty_print(node):
                 out += ","
         string = pretty_print(pred)
         out +="|"+string+"}"
+        return out
     elif isinstance(node, AUnionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
@@ -89,7 +90,9 @@ def pretty_print(node):
         string2 = pretty_print(node.children[1])
         return string1+"/\\"+string2
     elif isinstance(node, ACoupleExpression):
-        return "" #TODO
+        string1 = pretty_print(node.children[0])
+        string2 = pretty_print(node.children[1])
+        return string1+"|->"+string2
     elif isinstance(node, APowSubsetExpression):
         string = pretty_print(node.children[0])
         return "POW("+string+")"
@@ -112,11 +115,11 @@ def pretty_print(node):
         out = "UNION ("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
         out += ").("
         out += pretty_print(pred)
-        out += " | "
+        out += "|"
         out += pretty_print(expr)
         out += ")"
         return out
@@ -127,11 +130,11 @@ def pretty_print(node):
         out = "INTER ("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
         out += ").("
         out += pretty_print(pred)
-        out += " | "
+        out += "|"
         out += pretty_print(expr)
         out += ")"
         return out
@@ -145,27 +148,27 @@ def pretty_print(node):
     elif isinstance(node, ABelongPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" : "+string2
+        return string1+":"+string2
     elif isinstance(node, ANotBelongPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" /: "+string2
+        return string1+"/:"+string2
     elif isinstance(node, AIncludePredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <: "+string2
+        return string1+"<:"+string2
     elif isinstance(node, ANotIncludePredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" /<: "+string2
+        return string1+"/<:"+string2
     elif isinstance(node, AIncludeStrictlyPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <<: "+string2
+        return string1+"<<:"+string2
     elif isinstance(node, ANotIncludeStrictlyPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" /<<: "+string2
+        return string1+"/<<:"+string2
 
 
 # *****************
@@ -226,11 +229,11 @@ def pretty_print(node):
         out = "SIGMA("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
         out += ").("    
         out += pretty_print(pred)
-        out += " | "
+        out += "|"
         out += pretty_print(expr)
         out += ")"
         return out  
@@ -241,11 +244,11 @@ def pretty_print(node):
         out = "PI("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
         out += ").("    
         out += pretty_print(pred)
-        out += " | "
+        out += "|"
         out += pretty_print(expr)
         out += ")"
         return out  
@@ -283,7 +286,7 @@ def pretty_print(node):
     elif isinstance(node, ARelationsExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <-> "+string2
+        return string1+"<->"+string2
     elif isinstance(node, ADomainExpression):
         string = pretty_print(node.children[0])
         return "dom("+string+")"
@@ -293,25 +296,26 @@ def pretty_print(node):
     elif isinstance(node, ACompositionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" ; "+string2
+        return "("+string1+";"+string2+")"
     elif isinstance(node, AIdentityExpression):
         string = pretty_print(node.children[0])
         return "id("+string+")"
     elif isinstance(node, ADomainRestrictionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <| "+string2
+        return string1+"<|"+string2
+    elif isinstance(node, ADomainSubtractionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <<| "+string2
+        return string1+"<<|"+string2
     elif isinstance(node, ARangeRestrictionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" |> "+string2
+        return string1+"|>"+string2
     elif isinstance(node, ARangeSubtractionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" |>> "+string2
+        return string1+"|>>"+string2
     elif isinstance(node, AReverseExpression):
         string = pretty_print(node.children[0])
         return string+"~"
@@ -322,15 +326,15 @@ def pretty_print(node):
     elif isinstance(node, AOverwriteExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" <+ "+string2
+        return string1+"<+"+string2
     elif isinstance(node, ADirectProductExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" >< "+string2
+        return string1+"><"+string2
     elif isinstance(node, AParallelProductExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" || "+string2
+        return "("+string1+"||"+string2+")"
     elif isinstance(node, AIterationExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
@@ -340,7 +344,7 @@ def pretty_print(node):
         return "closure("+string+")"
     elif isinstance(node, AClosureExpression):
         string = pretty_print(node.children[0])
-        return "closure1("+string+")" #TODO test
+        return "closure1("+string+")"
     elif isinstance(node, AFirstProjectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
@@ -360,35 +364,35 @@ def pretty_print(node):
     elif isinstance(node, APartialFunctionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" +-> "+string2
+        return string1+"+->"+string2
     elif isinstance(node, ATotalFunctionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" --> "+string2
+        return string1+"-->"+string2
     elif isinstance(node, APartialInjectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" >+> "+string2
+        return string1+">+>"+string2
     elif isinstance(node, ATotalInjectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" >-> "+string2
+        return string1+">->"+string2
     elif isinstance(node, APartialSurjectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" +->> "+string2
+        return string1+"+->>"+string2
     elif isinstance(node, ATotalSurjectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" -->> "+string2
+        return string1+"-->>"+string2
     elif isinstance(node, ATotalBijectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" >->> "+string2
+        return string1+">->>"+string2
     elif isinstance(node, APartialBijectionExpression):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
-        return string1+" >->> "+string2 # TODO test
+        return string1+">+>>"+string2 
     elif isinstance(node, ALambdaExpression):
         varList = node.children[:-2]
         pred = node.children[-2]
@@ -396,11 +400,11 @@ def pretty_print(node):
         out = "%("
         for i in range(len(varList)):
             out += varList[i].idName
-            if i<len(varList):
+            if i+1<len(varList):
                 out += ","
         out += ").("
         out += pretty_print(pred)
-        out += " | "
+        out += "|"
         out += pretty_print(expr)
         out += ")"
         return out          
@@ -417,10 +421,10 @@ def pretty_print(node):
 #
 # ********************
     elif isinstance(node,AEmptySequenceExpression):
-        return "<>"
+        return "[]"
     elif isinstance(node,ASeqExpression):
         string = pretty_print(node.children[0])
-        return "seq "+string
+        return "seq("+string+")"
     elif isinstance(node,ASeq1Expression):
         string = pretty_print(node.children[0])
         return "seq1("+string+")"
@@ -446,9 +450,11 @@ def pretty_print(node):
         string2 = pretty_print(node.children[1])
         return string1+"<-"+string2
     elif isinstance(node, ASequenceExtensionExpression):
-        out + "["
-        for child in node.children:
-            out += pretty_print(child)
+        out = "["
+        for i in range(len(node.children)):
+            out += pretty_print(node.children[i])
+            if i+1<len(node.children):
+                out += ","
         return out+"]"
     elif isinstance(node, ASizeExpression):
         string = pretty_print(node.children[0])
@@ -506,7 +512,7 @@ def pretty_print(node):
         return "True"
     elif isinstance(node, AFalseExpression):
         return "False"
-    elif isinstance(node, AstringuctExpression):
+    elif isinstance(node, AStructExpression):
         return "" #TODO
     elif isinstance(node, ARecExpression):
         return "" #TODO
