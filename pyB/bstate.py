@@ -66,16 +66,6 @@ class BState():
         string = "state.get() LookupError: %s" % (id_Name)
         print string
         raise ValueNotInBStateException(string)
-        
-        # lookup included mch:
-		#         if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch==[] or not self.mch.extended_mch==[]):
-		#             for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
-		#                 try:
-		#                     value = m.bstate.get_value(id_Name)
-		#                     return value
-		#                 except KeyError:
-		#                     continue
-
 
 
     # TODO: (maybe) check if value has the correct type
@@ -93,17 +83,6 @@ class BState():
         string = "state.set() LookupError: %s" % (id_Name)
         print string
         raise ValueNotInBStateException(string)
-        
-        # lookup included mch, no seen mch!
-        # if id_Name is a variable which is part of a seen mch M than self must be the state of M!
-		#         if self.mch and (not self.mch.included_mch == [] or not self.mch.seen_mch ==[] or not self.mch.used_mch == [] or not self.mch.extended_mch==[]):
-		#             for m in self.mch.included_mch + self.mch.seen_mch + self.mch.used_mch + self.mch.extended_mch:
-		#                 try:
-		#                     m.bstate.set_value(id_Name, value)
-		#                     return
-		#                 except KeyError:
-		#                     continue
-
 
 
     # leave scope: throw all values of local vars away

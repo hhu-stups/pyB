@@ -1,5 +1,6 @@
 from bstate import BState
 
+# TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]

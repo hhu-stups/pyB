@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# This classes are used to map Java-AST Nodes to Python Objects
-# TODO: write a JSON-parser to avoid the string-eval
+# This classes are used to map Java-AST Nodes to Python-AST Nodes (Objects)
+# FIXME: A Parsing via "exec <String>" is not RPythong. 
+# Write a JSON-parser to avoid the string-eval
 
 class Node():
     def __init__(self):
         self.children = []
 
 # Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
-# inside the interpreter.
+# inside the interpreter. (node classification )
 class Predicate(Node):
     pass
 

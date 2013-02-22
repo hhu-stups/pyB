@@ -21,7 +21,7 @@ def print_state(bstate):
         for value_map in value_stack:
             string = ""
             for name in value_map:
-                string += name + "=" + _print_values_b_style(value_map[name]) + " "
+                string += name + "=" + print_values_b_style(value_map[name]) + " "
             print string
 
 
@@ -50,7 +50,7 @@ def _print_para_values(para_list):
     for pair in para_list:
         string += pair[0]
         string += "="
-        string += _print_values_b_style(pair[1])
+        string += print_values_b_style(pair[1])
         string += " "
     return string
 
@@ -62,19 +62,20 @@ def _print_ret_values(ret_list):
     for pair in ret_list:
         string += pair[0]
         string += "="
-        string += _print_values_b_style(pair[1])
+        string += print_values_b_style(pair[1])
         string += " "
     string += " <-- "
     return string
 
-# TODO: make b style
-def _print_values_b_style(value):
+
+# Prints frozensets like this: {a,b,c}
+def print_values_b_style(value):
     if isinstance(value, frozenset):
         string = "{"
         value = list(value)
         for i in range(len(value)):
             entry = value[i]
-            string += _print_values_b_style(entry)
+            string += print_values_b_style(entry)
             if i < len(value)-1:
                 string += ", "
         string += "}"

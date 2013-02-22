@@ -95,6 +95,10 @@ class BMachine:
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
+        #print self, "Bmachine created",self.name
+
+
+    def recursive_self_parsing(self):
         self.parse_parameters()
         self.parse_included()
         self.parse_extended()
@@ -103,15 +107,14 @@ class BMachine:
         # TODO: better name for "names"
         names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
         self.names = names
-        bstate = env.state_space.get_state()
+        bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
         # than add them to your top level bstate. The reason for this indirection is
-        # the following problem: you dont know to which machine an id value belongs
-        if env.solutions:
-            bstate.add_mch_state(self, names, env.solutions)
+        # the following problem: you dont know to which machine an id value (inside the sol-file) belongs
+        if self.env.solutions:
+            bstate.add_mch_state(self, names, self.env.solutions)
         else:
-            bstate.add_mch_state(self, names, {})
-        #print self, "Bmachine created",self.name
+            bstate.add_mch_state(self, names, {})        
 
 
     def _learn_names(self, cmc, vmc, smc):
@@ -178,6 +181,7 @@ class BMachine:
                     print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
+                mch.recursive_self_parsing()
                 self.included_mch.append(mch)
 
 
@@ -192,6 +196,7 @@ class BMachine:
                     print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
+                mch.recursive_self_parsing()
                 self.extended_mch.append(mch)
       
 
@@ -205,6 +210,7 @@ class BMachine:
                     print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
+                mch.recursive_self_parsing()
                 self.seen_mch.append(mch)
  
  
@@ -218,6 +224,7 @@ class BMachine:
                     print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
+                mch.recursive_self_parsing()
                 self.used_mch.append(mch)
                                
 

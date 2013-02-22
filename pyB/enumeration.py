@@ -208,15 +208,8 @@ def create_sequence(images, number, length):
     return result
 
 
-# TODO: remane
-# checks if some "hacks" are possible
 def quick_enum_possible(root, env):
-    possible = False
-    if isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate):
-        possible = True                                                                                            
-    if not possible:
-        return False
-    if not all_ids_known(root, env):
-        return False
-    return True
-    # TODO: more
+    if (isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate)) and all_ids_known(root, env):
+        return True                                                                                            
+    return False
+

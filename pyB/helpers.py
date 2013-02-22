@@ -10,7 +10,7 @@ command_str += ":../jars/parserbase-2.0.67.jar"
 command_str += ":../jars/cliparser-2.0.67.jar"
 command_str += ":examples/"
 command_str += ":. de.prob.cliparser.CliBParser %s %s"
-#option_str = " -ast"
+#option_str = " -json"
 option_str = " -python"
 
 

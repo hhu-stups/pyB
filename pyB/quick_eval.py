@@ -239,7 +239,7 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     else:
-        #XXX
+        #XXX no quick eval, can crash
         aSet = interpret(ast, env)
         if isinstance(element,str) and aSet=="":
             return True # FIXME: hack

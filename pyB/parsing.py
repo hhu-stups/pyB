@@ -27,7 +27,8 @@ def parse_ast(root, env):
         return ExpressionParseUnit(root)
     else:
         assert isinstance(root, AAbstractMachineParseUnit)
-        mch = BMachine(root, interpret, env) # recursive parsing of all included, seen, etc. ...
+        mch = BMachine(root, interpret, env) 
+        mch.recursive_self_parsing() # recursive parsing of all included, seen, etc. ...
         env.root_mch = mch
         env.current_mch = mch #current mch
         return mch
@@ -49,6 +50,7 @@ def parse_json(lst):
     node.children = children
     return node
 
+
 def add_sp_attr(node, dic):
     if isinstance(node, AStringExpression):
         node.string = dic["string"]
@@ -67,5 +69,5 @@ def str_to_node(string):
         return AIdentifierExpression(None)
     elif string==u'AIntegerExpression':
         return AIntegerExpression(None)
-    else: # TODO: metaprogramming at runtime
+    else: # TODO: metaprogramming at runtime (generate the other ~ 100 elifs)
         return eval(string+"()") 

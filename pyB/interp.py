@@ -9,6 +9,7 @@ from enumeration import *
 from quick_eval import quick_member_eval
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
+from animation_clui import print_values_b_style
 
 # used in tests and child mchs(included, seen...)
 # The data from the solution-files has already been read at the mch creation time
@@ -88,13 +89,12 @@ def check_properties(node, env, mch):
 				prop_result = gen.next()
 			if not prop_result:
 				print "Properties FALSE!"
-				print_prop_fail(env, mch)
+				print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
 			assert prop_result
 
 
-def print_prop_fail(env, mch):
+def print_predicate_fail(env, node):
     pred_lst = []
-    node = mch.aPropertiesMachineClause.children[0]
     while isinstance(node, AConjunctPredicate):
         pred_lst.append(node.children[1])
         node = node.children[0]
@@ -103,6 +103,7 @@ def print_prop_fail(env, mch):
         if not result:
             print "FALSE="+pretty_print(p)
             #print p.children[0].idName, env.get_value(p.children[0].idName)    
+
 
 # assumes that every Variable/Constant/Set appears once 
 # TODO: Add typeinfo too
@@ -209,14 +210,14 @@ def interpret(node, env):
                 gen = try_all_values(node.children[0], env, not_set)
                 if gen.next():
                     for i in idNames:
-                        print i,":", env.get_value(i)
+                        print i,"=", env.get_value(i)
                 else:
                     print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
                     print False
                     return
             else:
                 for i in idNames:
-                    print i,":", env.get_value(i)
+                    print i,"=", print_values_b_style(env.get_value(i))
                 result = interpret(node.children[0], env)
                 print result
                 return
@@ -229,7 +230,7 @@ def interpret(node, env):
         type_check_expression(node, env, idNames)
         if idNames ==[]: # variable free expression
             result = interpret(node.children[0], env)
-            print result
+            print print_values_b_style(result)
         else:
             print "Warning: Expressions with variables are not implemented now"
         return
@@ -278,7 +279,10 @@ def interpret(node, env):
         for child in node.children:
             interpret(child, env)
     elif isinstance(node, AInvariantMachineClause):
-        return interpret(node.children[0], env)
+        result = interpret(node.children[0], env)
+        if not result:
+            print_predicate_fail(env, node)
+        return result
     elif isinstance(node, AAssertionsMachineClause):
         if ENABLE_ASSERTIONS:
             print "checking assertions"
@@ -522,7 +526,6 @@ def interpret(node, env):
             return not quick_member_eval(node.children[1], env, elm)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        #TODO: string
         return not elm in aSet
     elif isinstance(node, AIncludePredicate):
         aSet1 = interpret(node.children[0], env)

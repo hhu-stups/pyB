@@ -28,6 +28,7 @@ class BoolType(BType):
 class IntegerType(BType):
     def __init__(self, number_or_None):
         # maybe this data is useless for typechecking
+        # TODO: Use this information for error messages
         self.data = number_or_None
 
 
@@ -44,8 +45,8 @@ class SetType(BType):
 # pairtype: Type x Type
 class CartType(BType):
     def __init__(self, setA, setB):
-        #assert isinstance(setA, PowerSetType)
-        #assert isinstance(setB, PowerSetType)
+        assert isinstance(setA, PowerSetType)
+        assert isinstance(setB, PowerSetType)
         self.data = (setA, setB)
 
 
