@@ -6,7 +6,7 @@ from helpers import find_var_nodes, find_var_names, flatten, is_flat, double_ele
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
-from quick_eval import quick_member_eval
+from quick_eval import quick_member_eval, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
@@ -281,7 +281,7 @@ def interpret(node, env):
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
         if not result:
-            print_predicate_fail(env, node)
+            print_predicate_fail(env, node.children[0])
         return result
     elif isinstance(node, AAssertionsMachineClause):
         if ENABLE_ASSERTIONS:
@@ -510,6 +510,9 @@ def interpret(node, env):
 #
 # *************************
     elif isinstance(node, ABelongPredicate):
+        if contains_infinit_enum(node, env):
+            result = infinity_belong_check(node, env)
+            return result
         if quick_enum_possible(node, env):
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)

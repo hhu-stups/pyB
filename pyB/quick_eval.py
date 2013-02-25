@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
+from pretty_printer import pretty_print
 
 # This function is used in an Belong(member)-Node. x : S
 # It recursively checks if the right side(S) can 'generate' the element(x) of the left side.
@@ -245,3 +246,17 @@ def quick_member_eval(ast, env, element):
             return True # FIXME: hack
         return element in aSet                                             
 
+
+# checks if the element (maybe a predicate) can generated of the infinite set on the right side
+def infinity_belong_check(node, env):
+    assert isinstance(node, ABelongPredicate)
+    if isinstance(node.children[1], APartialSurjectionExpression):
+        if isinstance(node.children[0], AEmptySetExpression):
+            return False
+        elif isinstance(node.children[0], AIdentifierExpression):
+            value = env.get_value(node.children[0].idName) # TODO: Later this could return "somthing infinite"
+            return False #TODO: eval infinite value (not implemented now)
+    string = pretty_print(node)
+    print "WARNING: CHECK OF INFINITE SET NOT IMPLEMENTED! CAN NOT EVAL:", string
+    print "default return: FALSE"
+    return False # XXX: not implemented

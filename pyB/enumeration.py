@@ -212,4 +212,23 @@ def quick_enum_possible(root, env):
     if (isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate)) and all_ids_known(root, env):
         return True                                                                                            
     return False
+    
+# the right side (or both) contain a infinit set
+# True  = no normal enumeration possible
+# False = Maybe
+def contains_infinit_enum(node, env):
+    if isinstance(node, ABelongPredicate):
+        if isinstance(node.children[1], APartialSurjectionExpression):
+            T = node.children[1].children[1]
+            isInf = contains_infinit_enum(T, env)
+            return isInf
+    elif isinstance(node, AIntegerSetExpression) or isinstance(node , ANaturalSetExpression) or isinstance(node, ANatural1SetExpression):
+        return True
+    elif isinstance(node, AIntSetExpression):
+        if (-1*env._min_int+ env._max_int)>TO_MANY_ITEMS:
+            return True
+    elif isinstance(node, ANat1SetExpression) or isinstance(node, ANatSetExpression):
+        if  env._max_int>TO_MANY_ITEMS:
+            return True
+    return False
 
