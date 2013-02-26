@@ -1421,6 +1421,9 @@ def interpret(node, env):
         env.current_mch = temp
         env.pop_frame()
         return result
+    elif isinstance(node, AExternalFunctionExpression):
+        arg = interpret(node.children[0], env)
+        return node.pyb_impl(arg)
     else:
         raise Exception("Unknown Node: %s",node)
 

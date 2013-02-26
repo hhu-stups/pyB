@@ -1148,6 +1148,8 @@ def typeit(node, env, type_env):
         if ret_type==[]:
             return
         return ret_type[1] # FIXME: more than one retval
+    elif isinstance(node, AExternalFunctionExpression):
+        return node.pyb_type
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node:", node

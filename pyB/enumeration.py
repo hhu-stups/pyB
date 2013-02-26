@@ -25,6 +25,8 @@ def all_values_by_type(atype, env):
         return range(env._min_int, env._max_int+1)
     elif isinstance(atype, BoolType):
         return [True, False]
+    elif isinstance(atype, StringType): # FIXME: only some strings are returned here
+        return frozenset(env.all_strings)
     elif isinstance(atype, SetType):
         type_name =  atype.data
         value = env.get_value(type_name)
@@ -43,6 +45,7 @@ def all_values_by_type(atype, env):
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
     string = "Unknown Type / Not Implemented: %s", atype
+    print string
     raise Exception(string)
 
 

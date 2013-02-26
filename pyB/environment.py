@@ -23,6 +23,7 @@ class Environment():
         self._max_int = MAX_INT
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
+        self.all_strings = []             # remember all strings seen (in this or other bmachines)
 
 
     # This method should only(!) be used by the typechecking-tests.

@@ -50,7 +50,9 @@ def calc_constraint_domain(env, varList, predicate):
         var_and_domain_lst.append(tup)
     problem = Problem() # import from "constraint"
     for tup in var_and_domain_lst:
-        problem.addVariable(tup[0], tup[1])
+        name = tup[0]
+        lst  = tup[1]
+        problem.addVariable(name, lst)
     constraint_string = pretty_print(env, varList, predicate)
     names = [x.idName for x in varList]
     expr = "lambda "
@@ -69,6 +71,8 @@ def function(env, func_name, key):
 # TODO: not, include and much more
 # only a list of special cases at the moment
 # helper-function for calc_constraint_domain
+# This pretty printer prints B python-style. 
+# The pretty printer in pretty_printer.py prints B B-style
 def pretty_print(env, varList, node):
     #print node
     if isinstance(node, AConjunctPredicate):
@@ -111,7 +115,12 @@ def pretty_print(env, varList, node):
         elif isinstance(node.children[1], ANat1SetExpression):
             name = str(node.children[0].idName)
             string = name+" in "+str(range(1,env._max_int+1))
-            return string       
+            return string 
+        elif isinstance(node.children[1], AStringSetExpression):
+            name = str(node.children[0].idName)
+            value = env.all_strings 
+            string = name+" in "+str(value)
+            return string     
     elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
         left = ""
         right = ""
@@ -154,3 +163,6 @@ def pretty_print(env, varList, node):
     #raise ConstraintNotImplementedException(node)
          
   
+def string_to_number(string):
+    result =0
+    return result # xx

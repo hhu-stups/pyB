@@ -114,7 +114,19 @@ class BMachine:
         if self.env.solutions:
             bstate.add_mch_state(self, names, self.env.solutions)
         else:
-            bstate.add_mch_state(self, names, {})        
+            bstate.add_mch_state(self, names, {}) 
+        self.get_all_strings(self.root)
+    
+    
+    def get_all_strings(self, node):
+        if isinstance(node, AStringExpression):
+            self.env.all_strings.append(node.string)
+        try:
+            for child in node.children:
+                self.get_all_strings(child)
+        except AttributeError:
+            return
+                   
 
 
     def _learn_names(self, cmc, vmc, smc):

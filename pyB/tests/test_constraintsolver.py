@@ -106,10 +106,37 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         domain = calc_constraint_domain(env, varList, P)
-        print domain
+        #print domain
         assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
 
-    
+
+
+    def test_constraint_lambda2(self):
+        # %x.(P|E)
+        # Build AST:
+        string_to_file("#PREDICATE length: STRING --> INTEGER & length = %x.(x:STRING|42)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        _test_typeit(root, env, [], ["length"])
+        assert isinstance(env.get_type("x"), StringType)
+        lambdaexpr = root.children[0].children[1].children[1] 
+        assert isinstance(lambdaexpr, ALambdaExpression)
+        varList = lambdaexpr.children[0:-2]		 
+        P = lambdaexpr.children[-2]
+        E = lambdaexpr.children[-1]
+        assert isinstance(P, Predicate)
+        assert isinstance(E, Expression)
+        env._min_int = -2**8
+        env._max_int = 2**8
+        env.all_strings = ['abc', '', 'hello']
+        #domain = calc_constraint_domain(env, varList, P)
+        #assert frozenset([x["x"] for x in domain])==frozenset(env.all_strings)    
+        
+         
+		      
     def test_constraint_set_comp(self):
         # {x|P}
         # Build AST:
