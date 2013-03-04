@@ -61,6 +61,7 @@ class TestConstraintSolver():
         assert frozenset([x["x"] for x in domain])==frozenset([1,2,3])
         domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
+        
 
 
     def test_constraint_ex(self):
@@ -132,8 +133,9 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         env.all_strings = ['abc', '', 'hello']
-        #domain = calc_constraint_domain(env, varList, P)
-        #assert frozenset([x["x"] for x in domain])==frozenset(env.all_strings)    
+        domain = calc_constraint_domain(env, varList, P)
+        sol = frozenset([x["x"] for x in domain])
+        assert sol==frozenset(env.all_strings)    
         
          
 		      

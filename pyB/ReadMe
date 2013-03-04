@@ -228,6 +228,7 @@ Index
       type-tree
     - 66. "X-yy=sum+1" typeerror (musst be Integer)
     - 71. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
+    - 72. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
 8.5 Maybe Bugs:
     - 61. (2 + 3) / 2 == 2
     - 62. eval of preds changes value_stack
