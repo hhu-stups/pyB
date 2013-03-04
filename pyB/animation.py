@@ -88,7 +88,14 @@ def calc_possible_operations(env, bmachine):
                             result.append([op, parameter_list, substitution])
                             break                          
                         domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
-                        solution = domain_generator.next()
+                        try: # no for loop - no solution is a problem here
+                            solution = domain_generator.next()
+                        except StopIteration:
+                            # SELECT: select next predicate
+                            index = index +1
+                            if index == len(select_lst):
+                                break
+                            continue # no solution
                         try:
                             # use values of solution:
                             # WARNING:
@@ -111,6 +118,10 @@ def calc_possible_operations(env, bmachine):
                                 k = k +1
                             # TODO: if states affect each other: !param.param := None
                         except ValueNotInDomainException:
+                            # SELECT: select next predicate
+                            index = index +1
+                            if index == len(select_lst):
+                                break
                             continue
 
                         # SELECT: select next predicate
@@ -189,8 +200,8 @@ def get_return_nodes(op):
 
 
 def add_return_values(env, varList_ret):
-	return_values = []
-	for ret_name in [x.idName for x in varList_ret]:
-		value = env.get_value(ret_name)
-		return_values.append(tuple([ret_name, value]))
-	return return_values
+    return_values = []
+    for ret_name in [x.idName for x in varList_ret]:
+        value = env.get_value(ret_name)
+        return_values.append(tuple([ret_name, value]))
+    return return_values

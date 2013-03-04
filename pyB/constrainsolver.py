@@ -8,8 +8,8 @@ from bexceptions import ConstraintNotImplementedException
 def calc_possible_solutions(env, varList, predicate):
     try:
         iterator = calc_constraint_domain(env, varList, predicate)
-        return iterator
-    except Exception: 
+        return iterator # TODO: should not generate lists, but frozensets
+    except ConstraintNotImplementedException: 
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
     
@@ -52,6 +52,8 @@ def calc_constraint_domain(env, varList, predicate):
     for tup in var_and_domain_lst:
         name = tup[0]
         lst  = tup[1]
+        if type(lst)==frozenset:
+            lst = _set_to_list(lst) 
         problem.addVariable(name, lst)
     constraint_string = pretty_print(env, varList, predicate)
     names = [x.idName for x in varList]
@@ -62,6 +64,9 @@ def calc_constraint_domain(env, varList, predicate):
     problem.addConstraint(eval(expr),names) # XXX not Rpython
     return problem.getSolutionIter()
 
+
+def _set_to_list(lst):
+    return list(lst) # TODO: list of lists
 
 def function(env, func_name, key):
     f = env.get_value(func_name)
@@ -116,6 +121,10 @@ def pretty_print(env, varList, node):
             name = str(node.children[0].idName)
             string = name+" in "+str(range(1,env._max_int+1))
             return string 
+        elif isinstance(node.children[1], AIntegerSetExpression): # XXX
+            name = str(node.children[0].idName)
+            string = name+" in "+str(range(env._min_int,env._max_int+1))
+            return string           
         elif isinstance(node.children[1], AStringSetExpression):
             name = str(node.children[0].idName)
             value = env.all_strings 
@@ -159,8 +168,8 @@ def pretty_print(env, varList, node):
         string = str(dict(env.get_value(func_name)))
         string += "["+node.children[1].idName +"]" # XXX more args
         return string
-    #print node
-    #raise ConstraintNotImplementedException(node)
+    #print node.children
+    raise ConstraintNotImplementedException(node)
          
   
 def string_to_number(string):
