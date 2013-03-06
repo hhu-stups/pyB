@@ -66,3 +66,13 @@ class TestTeam():
         run_with_prob("-init ", bfile_name="examples/Cruise_finite1")
         res = run_with_pyb(bfile_name="examples/Cruise_finite1")
         assert res
+
+
+    def test_team_alstom(self):
+        run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+        res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+        assert res
+        for i in range(18):
+			run_with_prob("-init animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+			res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+			assert res         
