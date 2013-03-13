@@ -1,0 +1,71 @@
+Date: 13.03.13 - PYB Case Study results
+by j. witulski hhu
+
+Rule_DB_Route_0001ori_modified.mch:
+
+ProB:
+Checking: 810
+Total Distinct States: 1644
+Total Transitions: 4672
+without Operation 'Rule_DB_Route_0001_0
+Total Distinct States: 32
+Total Transitions: 31
+
+PyB:
+Re-Checking: 41 States
+Time: 302.40 sec.
+
+-----------------------------
+Rule_DB_Route_0001ori.mch:
+
+ProB:
+Checking: 92
+Total Distinct States: 364
+Total Transitions: 544
+without Operation 'Rule_DB_Route_0001_0
+Total Distinct States: 32
+Total Transitions: 31
+
+PyB:
+Re-Checking: 41 States
+Time: 312.58 sec.
+
+--------------------------------
+Rule_DB_SIGAREA_0024_ori.mch:
+
+ProB:
+Checking: 810
+Total Distinct States:
+Total Transitions:
+
+PyB:
+Re-Checking: 31 States
+Time: 226.35 sec.
+
+--------------------------------
+Rule_TMS_ESA_TRIGGER_0009_ori.mch
+
+ProB:
+Checking: 810
+Total Distinct States:
+Total Transitions:
+
+PyB:
+None (Extern Functions not implemented)
+
+--------------------------------
+
+TODO: Rule_TMS_Overlap_0017_1.mch
+TODO: Rule_TMS_Overlap_0017_2.mch
+
+--------------------------------
+--------------------------------
+PyB Profiling with CProfile.py
+
+6% time:  interp.
+46% time: read file
+28% time: isinstance
+20% time: other
+
+average time of one (prob const/var file) check ~7.9 sec
+
