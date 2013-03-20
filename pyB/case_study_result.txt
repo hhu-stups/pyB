@@ -55,8 +55,8 @@ None (Extern Functions not implemented)
 
 --------------------------------
 
-TODO: Rule_TMS_Overlap_0017_1.mch
-TODO: Rule_TMS_Overlap_0017_2.mch
+TODO: Rule_TMS_Overlap_0017_1.mch - expected time after "String +-> INT" mod: 24 min. (183 States)
+TODO: Rule_TMS_Overlap_0017_2.mch - expected time after "String +-> INT" mod: 24 min.
 
 --------------------------------
 --------------------------------

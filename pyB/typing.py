@@ -238,6 +238,7 @@ class TypeCheck_Environment():
         raise BTypeException(string)
 
 
+    # FIXME: maybe this is nonsense :)
     def set_enumeration_hint(self, idName, hint_idName):
         id_to_enum_hint = self.id_to_enum_hint_stack[-1]
         try:
