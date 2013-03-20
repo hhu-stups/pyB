@@ -12,9 +12,10 @@ def calc_possible_solutions(env, varList, predicate):
         iterator = calc_constraint_domain(env, varList, predicate)
         # This generates a list and not a frozenset. 
         return iterator 
-    except ConstraintNotImplementedException, ImportError: 
+    except (ConstraintNotImplementedException, ImportError): 
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
+    	
     
 
 def gen_all_values(env, varList, dic):
