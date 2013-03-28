@@ -13,6 +13,8 @@ from typing import type_check_bmch
 file_name = "input.txt"
         
 class TestMCHAnimation():
+    
+    # also tests top-level Block_sub
     def test_ani_examples_simple_acounter(self):
         string = '''
         MACHINE Lift
@@ -44,6 +46,670 @@ class TestMCHAnimation():
         exec_op(env, op_and_state_list[1], mch)
         assert not interpret(root.children[2], env) # floor=-1
 
+# 
+#     def test_ani_toplevel_skip_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = skip
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_assert_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = ASSERT 1<2 THEN skip END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_choice_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = CHOICE xx := 0 OR xx := 1 END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_if_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = IF xx=0 THEN xx := 1 ELSE xx := 0 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 0 == env.get_value("xx")
+# 
+# 
+#     def test_ani_toplevel_select_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = SELECT xx=0 THEN xx := 1 ELSE xx := 0 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 0 == env.get_value("xx")
+# 
+# 
+#     def test_ani_toplevel_select_op2(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 ELSE xx := 0 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 2 == env.get_value("xx")
+# 
+# 
+#     def test_ani_toplevel_select_op3(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 2 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         assert op_and_state_list==[] # deadlock 
+# 
+# 
+# 
+#     def test_ani_toplevel_any_op(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op = ANY yy WHERE yy:NAT & yy*2=xx THEN xx := yy END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 8 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 4 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 2 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         assert op_and_state_list==[] # deadlock 
+# 
+# 
+#     def test_ani_toplevel_let_op(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op = LET yy BE yy*2=xx IN xx := yy END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 8 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 4 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 2 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         assert op_and_state_list==[] # deadlock 
+# 
+# 
+#     def test_ani_toplevel_become_el_op(self):
+#     	string ='''
+# 		MACHINE del_me
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = xx::0..1
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
+# 
+#     # kills ProB Performance :)
+#     def test_ani_toplevel_become_such_op(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = xx:(xx>=0 & xx<=1)
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
+# 
+# 
+#     def test_ani_toplevel_var_op(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op = VAR yy IN yy:= xx/2; xx:=yy END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 8 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 4 == env.get_value("xx") or 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+#         assert 2 == env.get_value("xx") or 0 == env.get_value("xx")
+#         # TODO xx=0 or deadlock?
+# 
+# 
+#     def test_ani_toplevel_assert_op_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = ASSERT -zz<zz THEN skip END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_choice_op_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = CHOICE xx := zz OR xx := -zz END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_if_op_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = IF xx=0 THEN xx := -zz ELSE xx := zz END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_select_op_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op = SELECT xx=zz THEN xx := 1 ELSE xx := 0 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_select_op2_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=-zz THEN xx:= 2 ELSE xx := 0 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_select_op3_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_any_op_args(self):
+#     	string ='''
+#     	MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op(zz) = ANY yy WHERE yy:NAT & yy*zz=xx THEN xx := yy END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch) 
+# 
+# 
+#     def test_ani_toplevel_let_op_args(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op(zz) = LET yy BE yy*2=zz IN xx := yy END 
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 8 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     def test_ani_toplevel_become_el_op_args(self):
+#     	string ='''
+# 		MACHINE del_me
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = xx::0..zz
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+# 
+#     # kills ProB Performance :)
+#     def test_ani_toplevel_become_such_op_args(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=0
+# 		OPERATIONS
+# 		  op(zz) = xx:(xx>=0+zz & xx<=1+zz)
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 0 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+# 
+#     def test_ani_toplevel_var_op_args(self):
+#     	string ='''
+# 		MACHINE Test
+# 		VARIABLES xx
+# 		INVARIANT
+# 		 xx:NAT
+# 		INITIALISATION xx:=8
+# 		OPERATIONS
+# 		  op(zz) = VAR yy IN yy:= zz/2; xx:=yy END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+#         assert isinstance(root.children[2], AInvariantMachineClause)
+#         assert interpret(root.children[2], env)
+#         assert 8 == env.get_value("xx")
+#         op_and_state_list = calc_possible_operations(env, mch)
+#         exec_op(env, op_and_state_list[0], mch)
+
 
     def test_ani_examples_simple_test(self):
         string ='''
@@ -69,6 +735,7 @@ class TestMCHAnimation():
         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
+        
 
 
     def test_ani_parameters(self):

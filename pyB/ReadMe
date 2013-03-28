@@ -208,6 +208,10 @@ Index
     - 56. parallel substitution is not parallel, but sequential (+ check) 
     - 11. fully seperate console output from other modules
     - 12. visibility: only one env and clause check what they can see 
+    - 75. Dont repeat yourself: duplicate code in animation an interpretation (SELECT, PRE, ...). 
+          Think of code like PRE X THEN PRE Y ...(first anim, second interp)
+    - 76. Write Testcases for WHILE, :() and <- op
+    - 77. Missing animation top preds. like any (maybe more)
 8.3 Bugs:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash
@@ -227,8 +231,8 @@ Index
     - 60. maybe there is a unify Bug. 'unify' unifies with the first POW in a 
       type-tree
     - 66. "X-yy=sum+1" typeerror (musst be Integer)
-    - 71. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
-    - 72. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
+    - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
+    - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
 8.5 Maybe Bugs:
     - 61. (2 + 3) / 2 == 2
     - 62. eval of preds changes value_stack
