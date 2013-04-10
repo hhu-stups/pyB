@@ -145,13 +145,17 @@ def calc_possible_operations(env, bmachine):
                         index = index +1
                         if index == len(select_lst):
                             break
+            elif isinstance(substitution, ASkipSubstitution):
+                # the operation is added to the op list (result) and may be chosen later
+                assert parameter_list==[]
+                result.append([op, parameter_list, substitution])
             else:
-                raise Exception("ERROR: Optype not implemented:", op.children[-1]) 
+                raise Exception("ERROR: Optype/Substitution not implemented:", op.children[-1]) 
             env.state_space.undo() # drop helper state
     return result
 
 
-def exec_op(env,  operation, bmachine):
+def exec_op(env, operation, bmachine):
         op_ast = operation[0]
         parameter_list = operation[1]
         substitution = operation[2]

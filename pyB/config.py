@@ -2,6 +2,7 @@
 MIN_INT = -1
 MAX_INT = 5
 MAX_OP_SOLUTIONS = 4    # negative = explore all!
+
 MAX_SELECT_BRANCHES = 4 # not implemented yet 
 ENABLE_ASSERTIONS = True
 DEFERRED_SET_ELEMENTS_NUM = 3

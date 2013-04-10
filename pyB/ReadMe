@@ -212,6 +212,8 @@ Index
           Think of code like PRE X THEN PRE Y ...(first anim, second interp)
     - 76. Write Testcases for WHILE, :() and <- op
     - 77. Missing animation top preds. like any (maybe more)
+    - 78. separate subst. eval and Pred/Expr. eval. Subst musst be an generator (later model checking)
+    - 79. The animation is wrong for all non-det. substitutions. It shows a operation/substitution as disabled if the choosen branch was not executable
 8.3 Bugs:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash
@@ -547,3 +549,14 @@ or
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 PATH for testing:
 export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.John-Witulskis-MacBook-Pro:pyB    
+
+kills proB:
+
+MACHINE del_me
+VARIABLES xx
+INVARIANT
+ xx:NAT
+INITIALISATION xx:=8
+OPERATIONS
+  op(ww,vv) = PRE ww:NAT & vv <= xx THEN PRE vv:NAT & vv>=xx THEN xx:= ww+vv END END
+END

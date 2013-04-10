@@ -46,32 +46,32 @@ class TestMCHAnimation():
         exec_op(env, op_and_state_list[1], mch)
         assert not interpret(root.children[2], env) # floor=-1
 
-# 
-#     def test_ani_toplevel_skip_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = skip
-# 		END'''
-#         # Build AST
-#         string_to_file(string, file_name)
-#         ast_string = file_to_AST_str(file_name)
-#         exec ast_string
-# 
-#         # Test
-#         env = Environment()
-#         mch = parse_ast(root, env)
-#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
-#         assert isinstance(root.children[2], AInvariantMachineClause)
-#         assert interpret(root.children[2], env)
-#         op_and_state_list = calc_possible_operations(env, mch)
-#         exec_op(env, op_and_state_list[0], mch)
-# 
+
+    def test_ani_toplevel_skip_op(self):
+    	string ='''
+    	MACHINE Test
+		VARIABLES xx
+		INVARIANT
+		 xx:NAT
+		INITIALISATION xx:=0
+		OPERATIONS
+		  op = skip
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        op_and_state_list = calc_possible_operations(env, mch)
+        exec_op(env, op_and_state_list[0], mch)
+
 # 
 #     def test_ani_toplevel_assert_op(self):
 #     	string ='''
