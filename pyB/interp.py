@@ -1284,7 +1284,7 @@ def interpret(node, env):
             # FIXME: if rand. has chosen a diabeld subst. that doesnt mean the select is not possible
             possible = interpret(nodes[0], env)
             return possible
-        elif node.hasElse: 
+        elif node.hasElse=="True": 
             possible = interpret(node.children[-1], env)
             return possible
         return False # This is only correct if all possibile branches have been checkt. So at the moment this is wrong for more than one branch!

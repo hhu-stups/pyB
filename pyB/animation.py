@@ -28,9 +28,10 @@ def calc_next_states(env, bmachine):
             
             # (3) find parameter names and add them to the frame
             parameter_idNodes = get_para_nodes(op)
+            varList_ret = get_return_nodes(op)
             op_has_no_parameters = parameter_idNodes==[]    
             env.add_ids_to_frame([n.idName for n in parameter_idNodes])
-            env.push_new_frame(parameter_idNodes)            
+            env.push_new_frame(parameter_idNodes + varList_ret)          
             #print "opname: \t", op.opName # DEBUG
             
             # (4.1) case one: no parameters
@@ -56,7 +57,7 @@ def calc_next_states(env, bmachine):
                     domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
                 # TODO: maybe more guesses elif... 
                 else: # no guess possible, try all values 
-                    domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
+                    domain_generator = calc_possible_solutions(env, parameter_idNodes, None)
                 assert not domain_generator==None
                 
                 # Try solutions

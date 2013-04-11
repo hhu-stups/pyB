@@ -98,7 +98,7 @@ def run_animation_mode():
 		while True:
 			print mch.name," - Invariant:", mch.eval_Invariant(env) # TODO: move print to animation_clui
 			op_list = calc_possible_operations(env, mch)            # List of lists
-			op_and_bstate_list = calc_bstates(env, op_list, mch)
+			op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
 			if op_list==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
 				show_env(env)
 				break

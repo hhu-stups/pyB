@@ -5,7 +5,7 @@ from environment import Environment
 from interp import interpret, _init_machine
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
-from animation import calc_possible_operations, exec_op
+from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -36,27 +36,34 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invatiant = root.children[2]
+        assert isinstance(invatiant, AInvariantMachineClause)
+        assert interpret(invatiant, env)
         for i in range(4):
-            op_and_state_list = calc_possible_operations(env, mch)
-            exec_op(env, op_and_state_list[1], mch)
-            assert interpret(root.children[2], env)
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[1], mch)
-        assert not interpret(root.children[2], env) # floor=-1
+            next_states = calc_next_states(env,mch)
+            assert next_states[1][0]=="dec"
+            bstate = next_states[1][3]
+            env.state_space.add_state(bstate)
+            assert interpret(invatiant, env)
+            #op_and_state_list = calc_possible_operations(env, mch)
+            #exec_op(env, op_and_state_list[1], mch)
+        next_states = calc_next_states(env,mch)
+        assert next_states[1][0]=="dec"
+        bstate = next_states[1][3]
+        env.state_space.add_state(bstate)
+        assert not interpret(invatiant, env) # floor=-1
 
 
     def test_ani_toplevel_skip_op(self):
-    	string ='''
-    	MACHINE Test
-		VARIABLES xx
-		INVARIANT
-		 xx:NAT
-		INITIALISATION xx:=0
-		OPERATIONS
-		  op = skip
-		END'''
+        string ='''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT
+         xx:NAT
+        INITIALISATION xx:=0
+        OPERATIONS
+          op = skip
+        END'''
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
@@ -69,20 +76,22 @@ class TestMCHAnimation():
         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
 
 # 
 #     def test_ani_toplevel_assert_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = ASSERT 1<2 THEN skip END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = ASSERT 1<2 THEN skip END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -100,15 +109,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_choice_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = CHOICE xx := 0 OR xx := 1 END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = CHOICE xx := 0 OR xx := 1 END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -126,15 +135,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_if_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = IF xx=0 THEN xx := 1 ELSE xx := 0 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = IF xx=0 THEN xx := 1 ELSE xx := 0 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -157,15 +166,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = SELECT xx=0 THEN xx := 1 ELSE xx := 0 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = SELECT xx=0 THEN xx := 1 ELSE xx := 0 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -188,15 +197,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op2(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 ELSE xx := 0 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 ELSE xx := 0 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -219,15 +228,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op3(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = SELECT xx=0 THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -253,15 +262,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_any_op(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op = ANY yy WHERE yy:NAT & yy*2=xx THEN xx := yy END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op = ANY yy WHERE yy:NAT & yy*2=xx THEN xx := yy END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -289,15 +298,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_let_op(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op = LET yy BE yy*2=xx IN xx := yy END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op = LET yy BE yy*2=xx IN xx := yy END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -325,15 +334,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_become_el_op(self):
-#     	string ='''
-# 		MACHINE del_me
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = xx::0..1
-# 		END'''
+#       string ='''
+#       MACHINE del_me
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = xx::0..1
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -356,15 +365,15 @@ class TestMCHAnimation():
 # 
 #     # kills ProB Performance :)
 #     def test_ani_toplevel_become_such_op(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = xx:(xx>=0 & xx<=1)
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = xx:(xx>=0 & xx<=1)
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -387,15 +396,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_var_op(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op = VAR yy IN yy:= xx/2; xx:=yy END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op = VAR yy IN yy:= xx/2; xx:=yy END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -419,15 +428,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_assert_op_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = ASSERT -zz<zz THEN skip END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = ASSERT -zz<zz THEN skip END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -445,15 +454,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_choice_op_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = CHOICE xx := zz OR xx := -zz END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = CHOICE xx := zz OR xx := -zz END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -471,15 +480,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_if_op_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = IF xx=0 THEN xx := -zz ELSE xx := zz END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = IF xx=0 THEN xx := -zz ELSE xx := zz END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -497,15 +506,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op = SELECT xx=zz THEN xx := 1 ELSE xx := 0 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op = SELECT xx=zz THEN xx := 1 ELSE xx := 0 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -524,15 +533,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op2_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=-zz THEN xx:= 2 ELSE xx := 0 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=-zz THEN xx:= 2 ELSE xx := 0 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -551,15 +560,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_select_op3_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = SELECT xx=zz THEN xx := 1 WHEN xx=1 THEN xx:= 2 END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -578,15 +587,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_any_op_args(self):
-#     	string ='''
-#     	MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op(zz) = ANY yy WHERE yy:NAT & yy*zz=xx THEN xx := yy END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op(zz) = ANY yy WHERE yy:NAT & yy*zz=xx THEN xx := yy END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -604,15 +613,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_let_op_args(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op(zz) = LET yy BE yy*2=zz IN xx := yy END 
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op(zz) = LET yy BE yy*2=zz IN xx := yy END 
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -631,15 +640,15 @@ class TestMCHAnimation():
 # 
 # 
 #     def test_ani_toplevel_become_el_op_args(self):
-#     	string ='''
-# 		MACHINE del_me
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = xx::0..zz
-# 		END'''
+#       string ='''
+#       MACHINE del_me
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = xx::0..zz
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -659,15 +668,15 @@ class TestMCHAnimation():
 # 
 #     # kills ProB Performance :)
 #     def test_ani_toplevel_become_such_op_args(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=0
-# 		OPERATIONS
-# 		  op(zz) = xx:(xx>=0+zz & xx<=1+zz)
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=0
+#       OPERATIONS
+#         op(zz) = xx:(xx>=0+zz & xx<=1+zz)
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -685,15 +694,15 @@ class TestMCHAnimation():
 #         exec_op(env, op_and_state_list[0], mch)
 # 
 #     def test_ani_toplevel_var_op_args(self):
-#     	string ='''
-# 		MACHINE Test
-# 		VARIABLES xx
-# 		INVARIANT
-# 		 xx:NAT
-# 		INITIALISATION xx:=8
-# 		OPERATIONS
-# 		  op(zz) = VAR yy IN yy:= zz/2; xx:=yy END
-# 		END'''
+#       string ='''
+#       MACHINE Test
+#       VARIABLES xx
+#       INVARIANT
+#        xx:NAT
+#       INITIALISATION xx:=8
+#       OPERATIONS
+#         op(zz) = VAR yy IN yy:= zz/2; xx:=yy END
+#       END'''
 #         # Build AST
 #         string_to_file(string, file_name)
 #         ast_string = file_to_AST_str(file_name)
@@ -763,24 +772,37 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
         _init_machine(root, env,mch)
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         atype = env.get_type("BOOK")
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
         empty = env.get_value("read")
         assert empty==frozenset([])
-        #BOOKS = env.get_value("BOOK")
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
+        #BOOKS = env.get_value("BOOK")       
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="newbook"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)       
+        #op_and_state_list = calc_possible_operations(env, mch)
+        #exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==1
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="newbook"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        #op_and_state_list = calc_possible_operations(env, mch)
+        #exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==2
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="newbook"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        #op_and_state_list = calc_possible_operations(env, mch)
+        #exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==3
 
@@ -840,9 +862,13 @@ class TestMCHAnimation():
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
         empty = env.get_value("keys")
-        assert empty==frozenset([])
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
+        assert empty==frozenset([])       
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="insertkey"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        #op_and_state_list = calc_possible_operations(env, mch)
+        #exec_op(env, op_and_state_list[0], mch)
         keys = env.get_value("keys")
         assert len(keys)==1
 
@@ -885,12 +911,21 @@ class TestMCHAnimation():
         _init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
-        op_and_state_list = calc_possible_operations(env, mch)
-        exec_op(env, op_and_state_list[0], mch)
-        op_and_state_list = calc_possible_operations(env, mch) #opening enabled
-        exec_op(env, op_and_state_list[0], mch)
-        # test PROMOTES:
-        names = [op[0].opName for op in op_and_state_list]
+
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="unlockdoor"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="opendoor"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)                
+        #op_and_state_list = calc_possible_operations(env, mch)
+        #exec_op(env, op_and_state_list[0], mch)
+        #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
+        #exec_op(env, op_and_state_list[0], mch)
+        # Test PROMOTES:
+        names = [op[0] for op in next_states]
         assert  "closedoor" in names
         # Vars in Locks: test if lookuperr.
         env.get_value("DOOR")
@@ -944,18 +979,23 @@ class TestMCHAnimation():
         _init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
-        op_and_state_list = calc_possible_operations(env, mch) #opening enabled
-        
+        #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="insert"
+        bstate = next_states[0][3]       
         # test PROMOTES:
-        names = [op[0].opName for op in op_and_state_list]
+        names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
         empty = env.get_value("keys")
         assert empty==frozenset([])
-        exec_op(env, op_and_state_list[0], mch) # insert
+        #exec_op(env, op_and_state_list[0], mch) # insert
+        env.state_space.add_state(bstate)
         one = env.get_value("keys")
         assert len(one)==1
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        next_states = calc_next_states(env,mch)
+        #print next_states
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock', 'unlock'])
         
 
@@ -987,8 +1027,12 @@ class TestMCHAnimation():
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        #names = [op[0].opName for op in op_and_state_list]
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="setprice"
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery'])
 
 
@@ -1019,8 +1063,11 @@ class TestMCHAnimation():
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
         assert env.get_value("takings")==0
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="sale"
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
         
@@ -1063,12 +1110,21 @@ class TestMCHAnimation():
         _init_machine(root, env, mch)
         value = env.get_value("marriage") 
         assert value==frozenset([])
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="born"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)  
+        names = [op[0] for op in next_states]        
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born'])
-        exec_op(env, op_and_state_list[0], mch) # born
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        #exec_op(env, op_and_state_list[0], mch) # born
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="born"
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['born', 'die'])
 
 
@@ -1091,8 +1147,12 @@ class TestMCHAnimation():
         _init_machine(root, env, mch)
         value = env.get_value("read") 
         assert value==frozenset([])
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="show"
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]         
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
         
 
@@ -1174,8 +1234,12 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        #names = [op[0].opName for op in op_and_state_list]
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="nr_ready"
+        bstate = next_states[0][3]
+        names = [op[0] for op in next_states]  
         assert frozenset(names)==frozenset(['new','nr_ready'])
 
 
@@ -1223,8 +1287,11 @@ class TestMCHAnimation():
         far = env.get_value("far") 
         assert near==frozenset(["farmer","fox","chicken","grain"]) 
         assert far==frozenset([])
-        op_and_state_list = calc_possible_operations(env, mch) 
-        names = [op[0].opName for op in op_and_state_list]
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="Move_far"
+        bstate = next_states[0][3]   
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        #names = [op[0].opName for op in op_and_state_list]
       
         
     # not B spec.    
@@ -1262,10 +1329,14 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, mch) # also checks all included, seen, used and extend
         interpret(root, env) # init VARIABLES and eval INVARIANT
-        op_and_state_list = calc_possible_operations(env, mch) 
-        assert op_and_state_list[0][0].opName=="op"
+        #op_and_state_list = calc_possible_operations(env, mch) 
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]      
+        #assert op_and_state_list[0][0].opName=="op"
         varLoc = env.get_value("varLoc") 
         assert varLoc ==0
-        exec_op(env, op_and_state_list[0], mch)
+        #exec_op(env, op_and_state_list[0], mch)
+        env.state_space.add_state(bstate)
         varLoc = env.get_value("varLoc") 
         assert varLoc ==10
