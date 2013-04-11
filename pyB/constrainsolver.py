@@ -44,6 +44,8 @@ def calc_constraint_domain(env, varList, predicate):
     # python setup.py build
     # python setup.py install
     from constraint import *
+    if predicate==None: # none = no pred. constraining parameter values
+    	raise ConstraintNotImplementedException(None) #TODO replace with exception matching problem
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
     # get domain 
