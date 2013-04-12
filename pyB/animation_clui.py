@@ -25,14 +25,14 @@ def print_state(bstate):
             print string
 
 
-def show_ops(op_list, env):
+def show_ops(next_states, env):
     i = 0
     string = "\n"
-    for entry in op_list:
-        op = entry[0]
+    for entry in next_states:
+        op_name = entry[0]
         string += "["+ str(i) +"]: "
-        string += _print_ret_values(entry[3])
-        string += op.opName
+        string += _print_ret_values(entry[2])
+        string += op_name
         string += "("
         string += _print_para_values(entry[1])
         string += ")"

@@ -6,7 +6,7 @@ from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
 from animation_clui import show_ui, show_env
-from animation import calc_possible_operations, exec_op, calc_bstates
+from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from ast_nodes import *
 from config import DEFAULT_INPUT_FILENAME
@@ -97,12 +97,14 @@ def run_animation_mode():
 		# DO-WHILE Loop
 		while True:
 			print mch.name," - Invariant:", mch.eval_Invariant(env) # TODO: move print to animation_clui
-			op_list = calc_possible_operations(env, mch)            # List of lists
-			op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
-			if op_list==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
+			#op_list = calc_possible_operations(env, mch)            # List of lists
+			#op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
+			next_states = calc_next_states(env,mch)
+			if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
 				show_env(env)
 				break
-			n = show_ui(env, mch, op_list)
+			#n = show_ui(env, mch, op_list)
+			n = show_ui(env, mch, next_states)
 			input_str = "Input (0-"+str(n)+"):"
 			number = raw_input(input_str)
 			number = int(number)
@@ -114,10 +116,13 @@ def run_animation_mode():
 			elif number == n:
 				break
 			else:
-				assert len(op_list)>number
+				#assert len(op_list)>number
+				assert len(next_states)>number
 				assert number >= 0
-				bstate = op_and_bstate_list[number][4]
-				env.state_space.add_state(bstate)
+				bstate = next_states[number][3]
+       			env.state_space.add_state(bstate)
+				#bstate = op_and_bstate_list[number][4]
+				#env.state_space.add_state(bstate)
 
 
 def run_checking_mode():
