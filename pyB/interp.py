@@ -1116,6 +1116,8 @@ def interpret(node, env):
         return True # assign(s) was successful 
     elif isinstance(node, ABecomesElementOfSubstitution):
         values = interpret(node.children[-1], env)
+        if list(values)==[]:
+            return False
         value = list(values)[0] # TODO: refactor this code to generator: yield all possibilities 
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
@@ -1132,7 +1134,7 @@ def interpret(node, env):
         gen = try_all_values(node.children[-1], env, nodes) 
         gen.next() # sideeffect: set values 
         #TODO: uses yield state here, if more than one solution
-        #TODO: return False if no solution found (False= subst. not possibel) 
+        #TODO: return False if no solution found (False= subst. not possible) 
         results = []
         for n in nodes:
             i = n.idName

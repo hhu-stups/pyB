@@ -721,38 +721,38 @@ class TestMCHAnimation():
             assert zz[1] in [0,2,4,6,8]
 
 
-#     def test_ani_toplevel_become_el_op_args(self):
-#         string ='''
-#         MACHINE del_me
-#         VARIABLES xx
-#         INVARIANT xx:NAT
-#         INITIALISATION xx:=0
-#         OPERATIONS
-#           op(zz) = xx::0..zz
-#         END'''
-#         # Build AST
-#         string_to_file(string, file_name)
-#         ast_string = file_to_AST_str(file_name)
-#         exec ast_string
-# 
-#         # Test
-#         env = Environment()
-#         mch = parse_ast(root, env)
-#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
-#         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
-#         assert isinstance(root.children[2], AInvariantMachineClause)
-#         assert interpret(root.children[2], env)
-#         assert 0 == env.get_value("xx")
-#         next_states = calc_next_states(env,mch)
-#         assert next_states[0][0]=="op"
-#         assert len(next_states)==5
-#         for op_and_state in next_states:
-#             bstate = op_and_state[3]
-#             zz = op_and_state[1][0]
-#             env.state_space.add_state(bstate) 
-#             xx = env.get_value("xx")
-#             assert xx in range(0,zz[1]+1)
-# 
+    def test_ani_toplevel_become_el_op_args(self):
+        string ='''
+        MACHINE del_me
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=0
+        OPERATIONS
+          op(zz) = xx::0..zz
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="op"
+        assert len(next_states)==env._max_int+1
+        for op_and_state in next_states:
+            bstate = op_and_state[3]
+            zz = op_and_state[1][0]
+            env.state_space.add_state(bstate) 
+            xx = env.get_value("xx")
+            assert xx in range(0,zz[1]+1)
+
 # 
 #     # kills ProB Performance :)
 #     def test_ani_toplevel_become_such_op_args(self):
