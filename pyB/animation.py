@@ -80,11 +80,13 @@ def calc_next_states(env, bmachine):
                                 parameter_list.append(tuple([name, para_value]))
                             bstate = env.state_space.get_state().clone()
                             return_value_list = add_return_values(env, varList_ret)
-                            result.append([op.opName, [], return_value_list, bstate])
+                            result.append([op.opName, parameter_list, return_value_list, bstate])
                     except ValueNotInDomainException:
                         pass
                     env.state_space.undo()
             env.state_space.undo()
+    if result==[]:
+        print "WARNING: Deadlock!"
     return result
 
 

@@ -1232,7 +1232,9 @@ def interpret(node, env):
     elif isinstance(node, AAssertionSubstitution):
         assert isinstance(node.children[0], Predicate)
         assert isinstance(node.children[1], Substitution)
-        assert interpret(node.children[0], env) #TODO: is this correct?
+        if not interpret(node.children[0], env):
+            print "ASSERT violated:", pretty_print(node.children[0])
+            return False  #TODO: What is correct: False or crash\Exception?
         possible = interpret(node.children[1], env)
         return possible
     elif isinstance(node, AIfSubstitution):
