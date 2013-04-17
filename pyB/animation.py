@@ -40,8 +40,9 @@ def calc_next_states(env, bmachine):
             if op_has_no_parameters:
                 exec_success = bmachine.interpreter_method(substitution, env)
                 if exec_success:
-                    bstate = env.state_space.get_state()
                     return_value_list = add_return_values(env, varList_ret)
+                    env.pop_frame()
+                    bstate = env.state_space.get_state()                
                     result.append([op.opName, [], return_value_list, bstate])
                     env.state_space.undo()
                     continue 
@@ -78,8 +79,9 @@ def calc_next_states(env, bmachine):
                             for name in [x.idName for x in parameter_idNodes]:
                                 para_value = env.get_value(name)
                                 parameter_list.append(tuple([name, para_value]))
-                            bstate = env.state_space.get_state().clone()
                             return_value_list = add_return_values(env, varList_ret)
+                            env.pop_frame()
+                            bstate = env.state_space.get_state().clone()
                             result.append([op.opName, parameter_list, return_value_list, bstate])
                     except ValueNotInDomainException:
                         pass
@@ -260,8 +262,7 @@ def calc_next_states(env, bmachine):
 #         # remember return values for ui
 #         return_values = add_return_values(env, varList_ret)
 #         operation.append(return_values)
-#         env.pop_frame()
-# 
+#         env.pop_frame()push_new_frame
 # 
 # def calc_bstates(env, op_list, bmachine):
 #     for operation in op_list:

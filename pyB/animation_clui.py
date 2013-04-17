@@ -11,6 +11,7 @@ def show_ui(env, mch, op_list):
 def show_env(env):
     bstate = env.state_space.get_state()
     print_state(bstate)
+    
 
 
 def print_state(bstate):
