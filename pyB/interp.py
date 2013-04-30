@@ -1108,6 +1108,7 @@ def interpret(node, env):
                 new_func = frozenset(lst)
                 # write to env
                 env.set_value(func_name, new_func)
+            # case (3) record: 3 # TODO
         while not used_ids==[]:
             name = used_ids.pop()
             if name in used_ids:

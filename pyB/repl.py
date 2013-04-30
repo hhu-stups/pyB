@@ -23,8 +23,13 @@ def run_repl():
             string_to_file("#PREDICATE "+string, "temp.b")
             ast_string, error = file_to_AST_str_no_print("temp.b")
             if error:
-                print error
-                exit()                
+                if "Error parsing input file" in error:
+                    print "PARSING ERROR on Java-LEVEL:"
+                    print error
+                    continue
+                else:
+                    print error
+                    exit()                
             root = str_ast_to_python_ast(ast_string)                                            
         result = interpret(root, env) #printing via sideeffect
     exit()

@@ -5,6 +5,7 @@ from ast_nodes import *
 from constrainsolver import calc_possible_solutions
 from bexceptions import ValueNotInDomainException
 from helpers import select_ast_to_list
+from execute import exec_substitution
 
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO: implement filter MAX_NEXT_EVENTS
