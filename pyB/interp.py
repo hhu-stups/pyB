@@ -1133,10 +1133,9 @@ def interpret(node, env):
         # new frame to enable primed-ids
         env.push_new_frame(nodes)
         gen = try_all_values(node.children[-1], env, nodes) 
+        #TODO: uses yield state here, if more than one solution
         if not gen.next(): # sideeffect: set values 
            return False
-        #TODO: uses yield state here, if more than one solution
-        #TODO: return False if no solution found (False= subst. not possible) 
         results = []
         for n in nodes:
             i = n.idName
