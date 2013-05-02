@@ -5,7 +5,8 @@ from ast_nodes import *
 from constrainsolver import calc_possible_solutions
 from bexceptions import ValueNotInDomainException
 from helpers import select_ast_to_list
-from execute import exec_substitution
+from interp import exec_substitution
+
 
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO: implement filter MAX_NEXT_EVENTS
@@ -39,7 +40,7 @@ def calc_next_states(env, bmachine):
             substitution = op.children[-1]
             assert isinstance(substitution, Substitution)
             if op_has_no_parameters:
-                exec_success = bmachine.interpreter_method(substitution, env)
+                exec_success = exec_substitution(substitution, env)
                 if exec_success:
                     return_value_list = add_return_values(env, varList_ret)
                     env.pop_frame()
@@ -72,7 +73,7 @@ def calc_next_states(env, bmachine):
                             value = solution[name]
                             env.set_value(name, value)
                         # try to exec
-                        exec_success = bmachine.interpreter_method(substitution, env)
+                        exec_success = exec_substitution(substitution, env)
                         if exec_success:
                             # Solution found!
                             parameter_list = []

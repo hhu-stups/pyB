@@ -180,8 +180,6 @@ def _learn_assigned_values(root, env, lst):
 # main interpreter-switch (sorted/grouped like b-toolkit list)
 # Predicate Nodes Return True/False
 # Expression Nodes Return Values (int, frozenset, boolean, string or composed)
-# Substituions return True/False if the substitution was possible
-# TODO: separate subst. eval and Pred/Expr. eval. Subst musst be an generator (later model checking)
 def interpret(node, env):
 
 # ******************************
@@ -190,6 +188,7 @@ def interpret(node, env):
 #
 # ******************************
     #print node 3 # DEBUG
+    assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
         idNodes = find_var_nodes(node.children[0]) 
         idNames = [n.idName for n in idNodes]
@@ -281,7 +280,7 @@ def interpret(node, env):
         return interpret(node.children[0], env) # True or False
     elif isinstance(node, AInitialisationMachineClause):
         for child in node.children:
-            subst_success = interpret(child, env)
+            subst_success = exec_substitution(child, env)
             if not subst_success:
             	print "WARNING: Problem while exec init"
             # TODO: eval subst_success to check if init was successful 
@@ -1062,292 +1061,6 @@ def interpret(node, env):
 
 # ****************
 #
-# 5. Substitutions
-#
-# ****************
-    elif isinstance(node, ASkipSubstitution):
-        return True # always possible
-    elif isinstance(node, AAssignSubstitution):
-        assert int(node.lhs_size) == int(node.rhs_size)     
-        used_ids = []
-        values = []
-        # get values of all expressions (rhs)
-        for i in range(int(node.rhs_size)):
-            rhs = node.children[i+int(node.rhs_size)]
-            value = interpret(rhs, env)
-            values.append(value)
-        for i in range(int(node.lhs_size)):
-            lhs_node = node.children[i]            
-            # BUG if the expression on the rhs has a sideeffect
-            value = values[i]
-            # case (1) lhs: no function
-            if isinstance(lhs_node, AIdentifierExpression):
-                used_ids.append(lhs_node.idName)
-                env.set_value(lhs_node.idName, value)
-            # case (2) lhs: is function 
-            else:
-                assert isinstance(lhs_node, AFunctionExpression)
-                assert isinstance(lhs_node.children[0], AIdentifierExpression)
-                func_name = lhs_node.children[0].idName
-                # get args and convert to dict
-                args = []
-                for child in lhs_node.children[1:]:
-                    arg = interpret(child, env)
-                    args.append(arg)
-                func = dict(env.get_value(func_name))
-                used_ids.append(func_name)
-                # mapping of func values
-                if len(args)==1:
-                    func[args[0]] = value
-                else:
-                    func[tuple(args)] = value
-                # convert back
-                lst = []
-                for key in func:
-                    lst.append(tuple([key,func[key]]))
-                new_func = frozenset(lst)
-                # write to env
-                env.set_value(func_name, new_func)
-            # case (3) record: 3 # TODO
-        while not used_ids==[]:
-            name = used_ids.pop()
-            if name in used_ids:
-                string = name + " modified twice in multiple assign-substitution!"
-                raise Exception(string)
-        return True # assign(s) was successful 
-    elif isinstance(node, ABecomesElementOfSubstitution):
-        values = interpret(node.children[-1], env)
-        if list(values)==[]:
-            return False
-        value = list(values)[0] # TODO: refactor this code to generator: yield all possibilities 
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            env.set_value(child.idName, value)
-        return True # assign was successful 
-    elif isinstance(node, ABecomesSuchSubstitution):
-        # TODO: more than on ID
-        nodes = []
-        for child in node.children[:-1]:
-            assert isinstance(child, AIdentifierExpression)
-            nodes.append(child)
-        # new frame to enable primed-ids
-        env.push_new_frame(nodes)
-        gen = try_all_values(node.children[-1], env, nodes) 
-        #TODO: uses yield state here, if more than one solution
-        if not gen.next(): # sideeffect: set values 
-           return False
-        results = []
-        for n in nodes:
-            i = n.idName
-            results.append(env.get_value(i))
-        env.pop_frame() # exit new frame
-        # write back
-        for i in range(len(nodes)):
-            env.set_value(nodes[i].idName, results[i])
-        return True
-    elif isinstance(node, AParallelSubstitution):
-        new_values = [] # values changed by this path
-        subst_was_possible = False
-        # 1. exec. every parallel path and remember changed values for late lookup
-        for child in node.children:
-            assignd_ids = find_assignd_vars(child)
-            assignd_ids = list(set(assignd_ids)) # remove double entrys
-            bstate = env.get_state().clone()
-            env.state_space.add_state(bstate) # TODO: write clean interface 
-            # 1.1 calc path
-            assert isinstance(child, Substitution)    
-            possible = interpret(child, env)
-            if possible:
-                subst_was_possible = possible
-            # 1.2. remember (possible) changes
-            possible_new_values = {}
-            for name in assignd_ids:
-                val = env.get_value(name)
-                possible_new_values[name] = val
-            env.state_space.undo() #set to old state and drop other state
-            # 1.3 test for changes
-            for name in assignd_ids:
-                new = possible_new_values[name]
-                old = env.get_value(name)
-                if not new==old: # change! - remember it
-                    new_values.append(tuple([name, new]))
-        # 2. test: no variable can be modified twice (see page 108)
-        # check for double entrys -> Error
-        id_names = [x[0] for x in new_values]
-        while not id_names==[]:
-            name = id_names.pop()
-            if name in id_names:
-                string = name + " modified twice in parallel substitution!"
-                raise Exception(string)
-        # 3. write changes to state
-        for pair in new_values:
-            name = pair[0]
-            value = pair[1]
-            env.set_value(name, value)
-        return subst_was_possible # False if no branch was executable 
-    elif isinstance(node, ASequenceSubstitution):
-        for child in node.children:
-            assert isinstance(child, Substitution) 
-            possible = interpret(child, env)
-            if not possible:
-            	return False
-        return True # only True if all subst. are True
-    elif isinstance(node, AWhileSubstitution):
-    	print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace warning
-    	condition = node.children[0]
-        doSubst   = node.children[1]
-        invariant = node.children[2]
-        variant   = node.children[3]
-        assert isinstance(doSubst, Substitution) 
-        v_value = interpret(variant, env)
-        while interpret(condition, env):
-        	assert interpret(invariant, env)
-        	possible = interpret(doSubst, env)
-        	if not possible:
-        	    return False
-        	temp = interpret(variant, env)
-        	assert temp < v_value
-        	v_value = temp
-        return True
-
-
-# **********************
-#
-# 5.1. Alternative Syntax
-#
-# ***********************
-    elif isinstance(node, ABlockSubstitution):
-        for child in node.children:
-            possible = interpret(child, env)
-            if not possible:
-            	return False
-        return True # only True if all subst. are True
-    elif isinstance(node, APreconditionSubstitution):
-        assert isinstance(node.children[0], Predicate)
-        assert isinstance(node.children[1], Substitution)
-        condition = interpret(node.children[0], env)
-        #print condition, node.children[0]
-        if condition:
-            possible = interpret(node.children[1], env)
-            return possible
-        else:
-        	return False
-    elif isinstance(node, AAssertionSubstitution):
-        assert isinstance(node.children[0], Predicate)
-        assert isinstance(node.children[1], Substitution)
-        if not interpret(node.children[0], env):
-            print "ASSERT violated:", pretty_print(node.children[0])
-            return False  #TODO: What is correct: False or crash\Exception?
-        possible = interpret(node.children[1], env)
-        return possible
-    elif isinstance(node, AIfSubstitution):
-        assert isinstance(node.children[0], Predicate)
-        assert isinstance(node.children[1], Substitution)
-        condition = interpret(node.children[0], env)
-        if condition:
-            possible = interpret(node.children[1], env)
-            return possible
-        for child in node.children[2:]:
-            if isinstance(child, AIfElsifSubstitution):
-                assert isinstance(child.children[0], Predicate)
-                assert isinstance(child.children[1], Substitution)
-                condition = interpret(child.children[0], env)
-                if condition:
-                    possible = interpret(child.children[1], env)
-                    return possible
-            else:
-                # ELSE (B Level)
-                assert isinstance(child, Substitution)
-                assert child==node.children[-1] # last child
-                possible = interpret(child, env)
-                return possible
-        return True # no Else, default: IF P THEN S ELSE skip END
-    elif isinstance(node, AChoiceSubstitution):
-        assert isinstance(node.children[0], Substitution)
-        for child in node.children[1:]:
-            assert isinstance(child, AChoiceOrSubstitution)
-        # TODO: random choice
-        possible = interpret(node.children[0], env)
-        return possible
-    elif isinstance(node, ASelectSubstitution):
-        nodes = []
-        assert isinstance(node.children[0], Predicate)
-        assert isinstance(node.children[1], Substitution)
-        if interpret(node.children[0], env):
-            nodes.append(node.children[1])
-        for child in node.children[2:]:
-            if isinstance(child, ASelectWhenSubstitution):
-                assert isinstance(child.children[0], Predicate)
-                assert isinstance(child.children[1], Substitution)
-                if interpret(child.children[0], env):
-                    nodes.append(child.children[1])
-            else:
-                assert isinstance(child, Substitution)
-                assert child==node.children[-1]
-        if not nodes == []:
-            # TODO: random choice
-            # FIXME: if rand. has chosen a diabeld subst. that doesnt mean the select is not possible
-            possible = interpret(nodes[0], env)
-            return possible
-        elif node.hasElse=="True": 
-            possible = interpret(node.children[-1], env)
-            return possible
-        return False # This is only correct if all possibile branches have been checkt. So at the moment this is wrong for more than one branch!
-    elif isinstance(node, ACaseSubstitution):
-        assert isinstance(node.children[0], Expression)
-        elem = interpret(node.children[0], env)
-        for child in node.children[1:1+node.expNum]:
-            assert isinstance(child, Expression)
-            value = interpret(child, env)
-            if elem == value:
-                assert isinstance(node.children[node.expNum+1], Substitution)
-                possible = interpret(node.children[node.expNum+1], env)
-                return possible
-        # EITHER E THEN S failed, check for OR-branches
-        for child in node.children[2+node.expNum:]:
-            if isinstance(child, ACaseOrSubstitution):
-                for expNode in child.children[:child.expNum]:
-                    assert isinstance(expNode, Expression)
-                    value = interpret(expNode, env)
-                    if elem == value:
-                        assert isinstance(child.children[-1], Substitution)
-                        possible = interpret(child.children[-1], env)
-                        return possible
-            else:
-                assert isinstance(child, Substitution)
-                assert child==node.children[-1]
-                possible = interpret(child, env)
-                return possible
-        return False # no branch possible TODO: check for IF THEN ELSE behavior with spec
-    elif isinstance(node, AVarSubstitution):
-        nodes = []
-        for idNode in node.children[:-1]:
-            assert isinstance(idNode, AIdentifierExpression)
-            nodes.append(idNode)
-        env.push_new_frame(nodes)
-        interpret(node.children[-1], env)
-        env.pop_frame()
-        return True
-    elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
-        nodes = []
-        for idNode in node.children[:node.idNum]:
-            assert isinstance(idNode, AIdentifierExpression)
-            nodes.append(idNode)
-        pred = node.children[-2]
-        assert isinstance(pred, Predicate)
-        assert isinstance(node.children[-1], Substitution)
-        env.push_new_frame(nodes)
-        gen = try_all_values(pred, env, nodes)
-        if gen.next():
-            possible = interpret(node.children[-1], env)
-            env.pop_frame()
-            return possible
-        env.pop_frame()
-        return False
-
-
-# ****************
-#
 # 6. Miscellaneous
 #
 # ****************
@@ -1450,14 +1163,320 @@ def interpret(node, env):
                     image.append(tup2[1])
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
-    elif isinstance(node, AOpSubstitution):
-        op_type = env.current_mch.get_includes_op_type(node.idName)
+    elif isinstance(node, AExternalFunctionExpression):
+        arg = interpret(node.children[0], env)
+        return node.pyb_impl(arg)
+    else:
+        raise Exception("Unknown Node: %s",node)
+
+
+# side-effect: changes state while exec.
+# returns True if substitution was possible
+# Substituions return True/False if the substitution was possible
+def exec_substitution(sub, env):
+    
+    
+# ****************
+#
+# 5. Substitutions
+#
+# ****************
+    assert isinstance(sub, Substitution)
+    if isinstance(sub, ASkipSubstitution):
+        return True # always possible
+    elif isinstance(sub, AAssignSubstitution):
+        assert int(sub.lhs_size) == int(sub.rhs_size)     
+        used_ids = []
+        values = []
+        # get values of all expressions (rhs)
+        for i in range(int(sub.rhs_size)):
+            rhs = sub.children[i+int(sub.rhs_size)]
+            if isinstance(rhs, AOpSubstitution):
+                possible = exec_substitution(rhs, env)
+                if not possible:
+                    print "WARNING: OP-Substitution not possible! %s" % rhs.idName
+                    # FIXME
+                result = env.get_op_substitution_value()
+                value = result[i][1] # TODO: not all cases implemented
+            else:
+                value = interpret(rhs, env)
+            values.append(value)
+        for i in range(int(sub.lhs_size)):
+            lhs_node = sub.children[i]            
+            # BUG if the expression on the rhs has a sideeffect
+            value = values[i]
+            # case (1) lhs: no function
+            if isinstance(lhs_node, AIdentifierExpression):
+                used_ids.append(lhs_node.idName)
+                env.set_value(lhs_node.idName, value)
+            # case (2) lhs: is function 
+            else:
+                assert isinstance(lhs_node, AFunctionExpression)
+                assert isinstance(lhs_node.children[0], AIdentifierExpression)
+                func_name = lhs_node.children[0].idName
+                # get args and convert to dict
+                args = []
+                for child in lhs_node.children[1:]:
+                    arg = interpret(child, env)
+                    args.append(arg)
+                func = dict(env.get_value(func_name))
+                used_ids.append(func_name)
+                # mapping of func values
+                if len(args)==1:
+                    func[args[0]] = value
+                else:
+                    func[tuple(args)] = value
+                # convert back
+                lst = []
+                for key in func:
+                    lst.append(tuple([key,func[key]]))
+                new_func = frozenset(lst)
+                # write to env
+                env.set_value(func_name, new_func)
+            # case (3) record: 3 # TODO
+        while not used_ids==[]:
+            name = used_ids.pop()
+            if name in used_ids:
+                string = name + " modified twice in multiple assign-substitution!"
+                raise Exception(string)
+        return True # assign(s) was successful 
+    elif isinstance(sub, ABecomesElementOfSubstitution):
+        values = interpret(sub.children[-1], env)
+        if list(values)==[]:
+            return False
+        value = list(values)[0] # TODO: refactor this code to generator: yield all possibilities 
+        for child in sub.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            env.set_value(child.idName, value)
+        return True # assign was successful 
+    elif isinstance(sub, ABecomesSuchSubstitution):
+        # TODO: more than on ID
+        nodes = []
+        for child in sub.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            nodes.append(child)
+        # new frame to enable primed-ids
+        env.push_new_frame(nodes)
+        gen = try_all_values(sub.children[-1], env, nodes) 
+        #TODO: uses yield state here, if more than one solution
+        if not gen.next(): # sideeffect: set values 
+           return False
+        results = []
+        for n in nodes:
+            i = n.idName
+            results.append(env.get_value(i))
+        env.pop_frame() # exit new frame
+        # write back
+        for i in range(len(nodes)):
+            env.set_value(nodes[i].idName, results[i])
+        return True
+    elif isinstance(sub, AParallelSubstitution):
+        new_values = [] # values changed by this path
+        subst_was_possible = False
+        # 1. exec. every parallel path and remember changed values for late lookup
+        for child in sub.children:
+            assignd_ids = find_assignd_vars(child)
+            assignd_ids = list(set(assignd_ids)) # remove double entrys
+            bstate = env.get_state().clone()
+            env.state_space.add_state(bstate) # TODO: write clean interface 
+            # 1.1 calc path
+            assert isinstance(child, Substitution)    
+            possible = exec_substitution(child, env)
+            if possible:
+                subst_was_possible = possible
+            # 1.2. remember (possible) changes
+            possible_new_values = {}
+            for name in assignd_ids:
+                val = env.get_value(name)
+                possible_new_values[name] = val
+            env.state_space.undo() #set to old state and drop other state
+            # 1.3 test for changes
+            for name in assignd_ids:
+                new = possible_new_values[name]
+                old = env.get_value(name)
+                if not new==old: # change! - remember it
+                    new_values.append(tuple([name, new]))
+        # 2. test: no variable can be modified twice (see page 108)
+        # check for double entrys -> Error
+        id_names = [x[0] for x in new_values]
+        while not id_names==[]:
+            name = id_names.pop()
+            if name in id_names:
+                string = name + " modified twice in parallel substitution!"
+                raise Exception(string)
+        # 3. write changes to state
+        for pair in new_values:
+            name = pair[0]
+            value = pair[1]
+            env.set_value(name, value)
+        return subst_was_possible # False if no branch was executable 
+    elif isinstance(sub, ASequenceSubstitution):
+        for child in sub.children:
+            assert isinstance(child, Substitution) 
+            possible = exec_substitution(child, env)
+            if not possible:
+            	return False
+        return True # only True if all subst. are True
+    elif isinstance(sub, AWhileSubstitution):
+    	print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace warning
+    	condition = sub.children[0]
+        doSubst   = sub.children[1]
+        invariant = sub.children[2]
+        variant   = sub.children[3]
+        assert isinstance(doSubst, Substitution) 
+        v_value = interpret(variant, env)
+        while interpret(condition, env):
+        	assert interpret(invariant, env)
+        	possible = exec_substitution(doSubst, env)
+        	if not possible:
+        	    return False
+        	temp = interpret(variant, env)
+        	assert temp < v_value
+        	v_value = temp
+        return True
+
+
+# **********************
+#
+# 5.1. Alternative Syntax
+#
+# ***********************
+    elif isinstance(sub, ABlockSubstitution):
+        for child in sub.children:
+            possible = exec_substitution(child, env)
+            if not possible:
+            	return False
+        return True # only True if all subst. are True
+    elif isinstance(sub, APreconditionSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        condition = interpret(sub.children[0], env)
+        #print condition, node.children[0]
+        if condition:
+            possible = exec_substitution(sub.children[1], env)
+            return possible
+        else:
+        	return False
+    elif isinstance(sub, AAssertionSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        if not interpret(sub.children[0], env):
+            print "ASSERT violated:", pretty_print(sub.children[0])
+            return False  #TODO: What is correct: False or crash\Exception?
+        possible = exec_substitution(sub.children[1], env)
+        return possible
+    elif isinstance(sub, AIfSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        condition = interpret(sub.children[0], env)
+        if condition:
+            possible = exec_substitution(sub.children[1], env)
+            return possible
+        for child in sub.children[2:]:
+            if isinstance(child, AIfElsifSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                condition = interpret(child.children[0], env)
+                if condition:
+                    possible = exec_substitution(child.children[1], env)
+                    return possible
+            else:
+                # ELSE (B Level)
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1] # last child
+                possible = exec_substitution(child, env)
+                return possible
+        return True # no Else, default: IF P THEN S ELSE skip END
+    elif isinstance(sub, AChoiceSubstitution):
+        assert isinstance(sub.children[0], Substitution)
+        for child in sub.children[1:]:
+            assert isinstance(child, AChoiceOrSubstitution)
+        # TODO: random choice
+        possible = exec_substitution(sub.children[0], env)
+        return possible
+    elif isinstance(sub, ASelectSubstitution):
+        nodes = []
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        if interpret(sub.children[0], env):
+            nodes.append(sub.children[1])
+        for child in sub.children[2:]:
+            if isinstance(child, ASelectWhenSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                if interpret(child.children[0], env):
+                    nodes.append(child.children[1])
+            else:
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1]
+        if not nodes == []:
+            # TODO: random choice
+            # FIXME: if rand. has chosen a disabled subst. that doesnt mean the select is not possible
+            possible = exec_substitution(nodes[0], env)
+            return possible
+        elif sub.hasElse=="True": 
+            possible = exec_substitution(sub.children[-1], env)
+            return possible
+        return False # This is only correct if all possibile branches have been checkt. So at the moment this is wrong for more than one branch!
+    elif isinstance(sub, ACaseSubstitution):
+        assert isinstance(sub.children[0], Expression)
+        elem = interpret(sub.children[0], env)
+        for child in sub.children[1:1+sub.expNum]:
+            assert isinstance(child, Expression)
+            value = interpret(child, env)
+            if elem == value:
+                assert isinstance(sub.children[sub.expNum+1], Substitution)
+                possible = exec_substitution(sub.children[sub.expNum+1], env)
+                return possible
+        # EITHER E THEN S failed, check for OR-branches
+        for child in sub.children[2+sub.expNum:]:
+            if isinstance(child, ACaseOrSubstitution):
+                for expNode in child.children[:child.expNum]:
+                    assert isinstance(expNode, Expression)
+                    value = interpret(expNode, env)
+                    if elem == value:
+                        assert isinstance(child.children[-1], Substitution)
+                        possible = exec_substitution(child.children[-1], env)
+                        return possible
+            else:
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1]
+                possible = exec_substitution(child, env)
+                return possible
+        return False # no branch possible TODO: check for IF THEN ELSE behavior with spec
+    elif isinstance(sub, AVarSubstitution):
+        nodes = []
+        for idNode in sub.children[:-1]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+        env.push_new_frame(nodes)
+        possible = exec_substitution(sub.children[-1], env)
+        env.pop_frame()
+        return possible
+    elif isinstance(sub, AAnySubstitution) or isinstance(sub, ALetSubstitution):
+        nodes = []
+        for idNode in sub.children[:sub.idNum]:
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+        pred = sub.children[-2]
+        assert isinstance(pred, Predicate)
+        assert isinstance(sub.children[-1], Substitution)
+        env.push_new_frame(nodes)
+        gen = try_all_values(pred, env, nodes)
+        if gen.next():
+            possible = exec_substitution(sub.children[-1], env)
+            env.pop_frame()
+            return possible
+        env.pop_frame()
+        return False
+    elif isinstance(sub, AOpSubstitution):
+        op_type = env.current_mch.get_includes_op_type(sub.idName)
         ret_types = op_type[0]
         para_types = op_type[1]
         id_nodes = [x[0] for x in ret_types] + [x[0] for x in para_types]
         values = []
         for i in range(len(para_types)):
-            value = interpret(node.children[i], env)
+            value = interpret(sub.children[i], env)
             values.append(value)
         op_node = op_type[3]
         env.push_new_frame(id_nodes)
@@ -1467,15 +1486,20 @@ def interpret(node, env):
         assert isinstance(op_node, AOperation)
         temp = env.current_mch
         env.current_mch = op_type[4]
-        result = interpret(op_node.children[-1], env)
+        possible = exec_substitution(op_node.children[-1], env)
+        if not possible:
+            return False
+        # indirect safe of return values
+        result = []
+        for tup in ret_types:
+            name = tup[0]
+            value = env.get_value(name)
+            result.append(tuple([name, value]))
         env.current_mch = temp
         env.pop_frame()
-        return result
-    elif isinstance(node, AExternalFunctionExpression):
-        arg = interpret(node.children[0], env)
-        return node.pyb_impl(arg)
-    else:
-        raise Exception("Unknown Node: %s",node)
+        env.set_op_substitution_value(result)
+        return True
+
 
 
 def replace_node(ast, idNode, replaceNode):
