@@ -9,7 +9,7 @@ from animation_clui import show_ui, show_env
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from ast_nodes import *
-from config import DEFAULT_INPUT_FILENAME
+from config import DEFAULT_INPUT_FILENAME, VERBOSE
 from parsing import parse_ast
 from typing import type_check_bmch
 from repl import run_repl
@@ -35,7 +35,7 @@ def read_solution_file(env, solution_file_name_str):
         print error
     exec ast_str # TODO: JSON
     write_solutions_to_env(root, env)
-    if env.solutions:
+    if env.solutions and VERBOSE:
         print "learnd from solution-file (constants and variables): ", [x for x in env.solutions] 
 
 
