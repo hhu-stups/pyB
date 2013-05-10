@@ -651,7 +651,8 @@ public class ASTJSON extends DepthFirstAdapter{
         {
             idName = node.getName().toString();
         }
-        out.append("{\"idName\":\""+idName+"\"}");
+        out.append("{\"idName\":\""+idName+"\"");
+        out.append(" \"parameter_Num\":"+node.getParameters().size()+"}");
         out.append("]");
     }
 
@@ -662,7 +663,6 @@ public class ASTJSON extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getResultIdentifiers()!=null)
             children.addAll(node.getResultIdentifiers());
-        printStdOut_manyChildren(node, children);
         
         String idName = "";
         for(TIdentifierLiteral e : node.getOperation())
@@ -672,12 +672,13 @@ public class ASTJSON extends DepthFirstAdapter{
             idName = idName + e.toString();
         }
         
-        List<Node> children2 = new ArrayList<Node>();
         if(node.getParameters()!=null)
-            children2.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children2);
+            children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
 
-        out.append("{\"idName\":\""+idName+"\"}");
+        out.append("{\"idName\":\""+idName+"\"");
+        out.append(" \"return_Num\":"+node.getResultIdentifiers().size()+",");
+        out.append(" \"parameter_Num\":"+node.getParameters().size()+"}");
         out.append("]");
     }
     

@@ -1121,7 +1121,7 @@ def typeit(node, env, type_env):
         atype = unify_equal(IntegerType(None), atype, type_env)
         return IntegerType(None)
     elif isinstance(node, AOperation):
-        print node.opName
+        #print node.opName
         names = []
         for i in range(0,node.return_Num+ node.parameter_Num):
             assert isinstance(node.children[i], AIdentifierExpression)
@@ -1148,6 +1148,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AOpSubstitution):
         op_type = env.current_mch.get_includes_op_type(node.idName)
         para_types = op_type[1]
+        assert len(para_types)==node.parameter_Num
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)
             p_type = para_types[i][1]
@@ -1157,18 +1158,19 @@ def typeit(node, env, type_env):
         return
     elif isinstance(node, AOpWithReturnSubstitution):
         op_type = env.current_mch.get_includes_op_type(node.idName)
-        para_types = op_type[1]
-        for i in range(len(node.children)):
-            atype = typeit(node.children[i], env, type_env)
-            p_type = para_types[i][1]
-            unify_equal(p_type, atype, type_env)
         ret_types =  op_type[0]
+        para_types = op_type[1]
+        assert len(para_types)==node.parameter_Num
+        assert len(ret_types)==node.return_Num
+        for i in range(node.return_Num, (node.return_Num+node.parameter_Num)):
+            atype = typeit(node.children[i], env, type_env)
+            p_type = para_types[i-node.return_Num][1]
+            unify_equal(p_type, atype, type_env)
         assert not ret_types==[]
-        for tup in ret_types:
-            name = tup[0].idName
-            atype = tup[1]
-            utype = type_env.get_current_type(name)
-            type_env.set_concrete_type(utype, atype)
+        for i in range(0, node.return_Num):
+            atype = typeit(node.children[i], env, type_env)
+            r_type = ret_types[i][1]
+            unify_equal(p_type, atype, type_env)
         return 
     elif isinstance(node, AExternalFunctionExpression):
         return node.pyb_type

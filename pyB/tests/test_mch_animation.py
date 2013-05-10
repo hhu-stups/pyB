@@ -1251,6 +1251,17 @@ class TestMCHAnimation():
         _init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
+        assert isinstance(root.children[5], AInvariantMachineClause)
+        assert interpret(root.children[5], env)
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="buy"
+        ret_value = next_states[0][2]
+        print ret_value
+        name = ret_value[0][0]
+        value = ret_value[0][1]  
+        assert name == "pp" 
+        assert value in range(env._min_int, env._max_int)   
+
      
                 
     def test_schneider_uses(self):        

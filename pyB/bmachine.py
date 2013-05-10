@@ -248,6 +248,7 @@ class BMachine:
             for op in self.env.mch_operation_type:
                 name = op[2]
                 mch = op[4]
+                #print name == idName
                 if idName == name:
                     return op
         raise Exception("unknown op",idName)

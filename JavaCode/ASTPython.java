@@ -579,6 +579,7 @@ public class ASTPython extends DepthFirstAdapter{
             idName = node.getName().toString();
         }
         out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
     }
 
 
@@ -587,7 +588,6 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getResultIdentifiers()!=null)
             children.addAll(node.getResultIdentifiers());
-        printStdOut_manyChildren(node, children);
         
         String idName = "";
         for(TIdentifierLiteral e : node.getOperation())
@@ -597,12 +597,13 @@ public class ASTPython extends DepthFirstAdapter{
             idName = idName + e.toString();
         }
         
-        List<Node> children2 = new ArrayList<Node>();
         if(node.getParameters()!=null)
-            children2.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children2);
+            children.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children);
 
         out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        out.append("id"+(idCounter-1)+".return_Num = "+node.getResultIdentifiers().size()+"\n");
+        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
     }
 
 

@@ -1,1 +1,14 @@
-#PREDICATE A=bool(1<2)
+
+        MACHINE           Customer
+		INCLUDES          Price, Goods /* FIXME: use SEES */
+		CONSTANTS         limit
+		PROPERTIES        limit : GOODS --> NAT1
+		VARIABLES         purchases
+		INVARIANT         purchases <: GOODS
+		INITIALISATION    purchases := {}
+		OPERATIONS
+		pp <-- buy(gg) =
+  			PRE gg : GOODS & price(gg) <= limit(gg)
+  			THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
+  			END
+		END
