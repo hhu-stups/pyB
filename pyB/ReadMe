@@ -215,6 +215,7 @@ Index
     - 78. separate subst. eval and Pred/Expr. eval. Subst musst be an generator (later model checking)
     - 79. The animation is wrong for all non-det. substitutions. It shows a operation/substitution as disabled if the chosen branch was not executable
     - 80. Fix uncommented test in test_mch_animation
+    - 81. Tool CAN NOT find query operations. Implement that by searching Op-ASTs for substitutions
 8.3 Bugs:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash

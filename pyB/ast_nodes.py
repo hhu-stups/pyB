@@ -425,6 +425,9 @@ class AImplicationPredicate(Predicate):
 class AOpSubstitution(Substitution):
     pass
 
+class AOpWithReturnSubstitution(Substitution):
+    pass
+
 class AAssignSubstitution(Substitution):
     pass
 

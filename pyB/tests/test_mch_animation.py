@@ -1222,7 +1222,37 @@ class TestMCHAnimation():
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
-        
+	#TODO: write mch without INCLUDES and write a checker which finds query operations
+    def test_schneider_sees3(self):
+        # side effect: loades examples/Goods.mch and Price.mch           
+        string = '''
+        MACHINE           Customer
+		INCLUDES          Price, Goods /* FIXME: use SEES */
+		CONSTANTS         limit
+		PROPERTIES        limit : GOODS --> NAT1
+		VARIABLES         purchases
+		INVARIANT         purchases <: GOODS
+		INITIALISATION    purchases := {}
+		OPERATIONS
+		pp <-- buy(gg) =
+  			PRE gg : GOODS & price(gg) <= limit(gg)
+  			THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
+  			END
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env, mch)
+        assert not env.get_value("GOODS")==None
+        assert not env.get_value("price")==None
+     
+                
     def test_schneider_uses(self):        
         string = '''
         MACHINE           Marriage

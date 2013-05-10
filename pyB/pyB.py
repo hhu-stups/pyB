@@ -93,10 +93,10 @@ def run_animation_mode():
         # TODO: init musst be an animation step
         if not solution_file_name_str:
             mch.eval_Init(env)
-                                                                # 9. animate if ops are present                                                    
+                                                               		 # 9. animate if ops are present                                                    
         # DO-WHILE Loop
         while True:
-            print mch.name," - Invariant:", mch.eval_Invariant(env) # TODO: move print to animation_clui
+            print mch.name," - Invariant:", mch.eval_Invariant(env)  # TODO: move print to animation_clui
             #op_list = calc_possible_operations(env, mch)            # List of lists
             #op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
             next_states = calc_next_states(env,mch)

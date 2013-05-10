@@ -240,6 +240,7 @@ class BMachine:
                 self.used_mch.append(mch)
                                
 
+    # maybe refactor this strange lookup some day 
     def get_includes_op_type(self, idName):
         for mch in self.included_mch:
             node = mch.root

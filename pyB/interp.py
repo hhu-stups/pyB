@@ -1489,16 +1489,12 @@ def exec_substitution(sub, env):
         possible = exec_substitution(op_node.children[-1], env)
         if not possible:
             return False
-        # indirect safe of return values
-        result = []
-        for tup in ret_types:
-            name = tup[0]
-            value = env.get_value(name)
-            result.append(tuple([name, value]))
         env.current_mch = temp
         env.pop_frame()
-        env.set_op_substitution_value(result)
+        #env.set_op_substitution_value(result)
         return True
+    elif isinstance(sub, AOpWithReturnSubstitution):
+    	pass # TODO
 
 
 

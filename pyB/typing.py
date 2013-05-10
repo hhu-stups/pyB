@@ -1121,6 +1121,7 @@ def typeit(node, env, type_env):
         atype = unify_equal(IntegerType(None), atype, type_env)
         return IntegerType(None)
     elif isinstance(node, AOperation):
+        print node.opName
         names = []
         for i in range(0,node.return_Num+ node.parameter_Num):
             assert isinstance(node.children[i], AIdentifierExpression)
@@ -1135,7 +1136,7 @@ def typeit(node, env, type_env):
             assert not isinstance(atype, UnknownType)
             ret_types.append(tuple([child, atype]))
         para_types = []
-        for child in node.children[node.return_Num:node.parameter_Num]:
+        for child in node.children[node.return_Num:(node.return_Num+node.parameter_Num)]:
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
@@ -1152,9 +1153,23 @@ def typeit(node, env, type_env):
             p_type = para_types[i][1]
             unify_equal(p_type, atype, type_env)
         ret_type =  op_type[0]
-        if ret_type==[]:
-            return
-        return ret_type[1] # FIXME: more than one retval
+        assert ret_type==[]
+        return
+    elif isinstance(node, AOpWithReturnSubstitution):
+        op_type = env.current_mch.get_includes_op_type(node.idName)
+        para_types = op_type[1]
+        for i in range(len(node.children)):
+            atype = typeit(node.children[i], env, type_env)
+            p_type = para_types[i][1]
+            unify_equal(p_type, atype, type_env)
+        ret_types =  op_type[0]
+        assert not ret_types==[]
+        for tup in ret_types:
+            name = tup[0].idName
+            atype = tup[1]
+            utype = type_env.get_current_type(name)
+            type_env.set_concrete_type(utype, atype)
+        return 
     elif isinstance(node, AExternalFunctionExpression):
         return node.pyb_type
     else:

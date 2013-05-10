@@ -656,6 +656,31 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
+    public void caseAOpWithReturnSubstitution(AOpWithReturnSubstitution node)
+    {
+    	out.append("[");
+        List<Node> children = new ArrayList<Node>();
+        if(node.getResultIdentifiers()!=null)
+            children.addAll(node.getResultIdentifiers());
+        printStdOut_manyChildren(node, children);
+        
+        String idName = "";
+        for(TIdentifierLiteral e : node.getOperation())
+        {
+            // XXX
+            e.apply(this);
+            idName = idName + e.toString();
+        }
+        
+        List<Node> children2 = new ArrayList<Node>();
+        if(node.getParameters()!=null)
+            children2.addAll(node.getParameters());
+        printStdOut_manyChildren(node, children2);
+
+        out.append("{\"idName\":\""+idName+"\"}");
+        out.append("]");
+    }
+    
     public void caseAPromotesMachineClause(APromotesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>();

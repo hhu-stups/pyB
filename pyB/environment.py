@@ -24,7 +24,7 @@ class Environment():
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = []             # remember all strings seen (in this or other bmachines)
-        self.op_substitution_value = None # Sores the last value of an op-substitution
+        #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 
     # This method should only(!) be used by the typechecking-tests.
@@ -117,9 +117,9 @@ class Environment():
     
     # the execution of a op-substitution musst return True or False
     # storing the result of it inside the env, is the best way
-    def get_op_substitution_value(self):
-        return self.op_substitution_value
-    
-    
-    def set_op_substitution_value(self, value):
-        self.op_substitution_value = value
+#     def get_op_substitution_value(self):
+#         return self.op_substitution_value
+#     
+#     
+#     def set_op_substitution_value(self, value):
+#         self.op_substitution_value = value
