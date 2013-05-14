@@ -1222,12 +1222,12 @@ class TestMCHAnimation():
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
-	#TODO: write mch without INCLUDES and write a checker which finds query operations
+        
     def test_schneider_sees3(self):
         # side effect: loades examples/Goods.mch and Price.mch           
         string = '''
         MACHINE           Customer
-		INCLUDES          Price, Goods /* FIXME: use SEES */
+		SEES         	  Price, Goods 
 		CONSTANTS         limit
 		PROPERTIES        limit : GOODS --> NAT1
 		VARIABLES         purchases

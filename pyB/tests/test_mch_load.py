@@ -35,6 +35,66 @@ class TestMCHLaod():
         assert interpret(root.children[2], env)
 
 
+    def test_examples_query_op(self):
+        string = '''
+        MACHINE Query
+
+		VARIABLES xx
+
+        INVARIANT  xx:NAT
+
+        INITIALISATION xx:=1
+        
+        OPERATIONS
+        
+        rr <-- query = rr:=xx
+
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        # TODO query check
+        
+
+    def test_examples_no_query_op(self):
+        string = '''
+        MACHINE Query
+
+		VARIABLES xx
+
+        INVARIANT  xx:NAT
+
+        INITIALISATION xx:=1
+        
+        OPERATIONS
+        
+        no_query = xx:=2
+
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        # TODO query check
     def test_examples_simple_bakery0(self):
         string ='''
         MACHINE Bakery0

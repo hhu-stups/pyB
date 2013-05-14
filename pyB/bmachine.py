@@ -8,6 +8,9 @@ from helpers import file_to_AST_str_no_print
 class BMachine:
     def __init__(self, node, interpreter_method, env):
         self.name = None
+        self.const_names = []
+        self.var_names = []
+        self.dset_names = []
         self.root = node
         self.env = env
         self.aMachineHeader = None
@@ -40,7 +43,7 @@ class BMachine:
         # TODO: sees, includes, promotes, extends, uses, abstract constants, abstract variables
 
         for child in node.children:
-            # 1. A clause may only appear at most once in an abstract machine
+            # A clause may only appear at most once in an abstract machine
             # B Language Reference Manual - Version 1.8.6 - Page 110
             # It must be None before assignment
             assert isinstance(child, Clause) or isinstance(child, AMachineHeader)
@@ -105,8 +108,8 @@ class BMachine:
         self.parse_seen()
         self.parse_used()
         # TODO: better name for "names"
-        names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
-        self.names = names
+        self.const_names, self.var_names, self.dset_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        names = self.const_names + self.var_names + self.dset_names
         bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
         # than add them to your top level bstate. The reason for this indirection is
@@ -115,7 +118,7 @@ class BMachine:
             bstate.add_mch_state(self, names, self.env.solutions)
         else:
             bstate.add_mch_state(self, names, {}) 
-        self.get_all_strings(self.root)
+        self.get_all_strings(self.root) #Stringexpr.  inside mch.
     
     
     def get_all_strings(self, node):
@@ -130,20 +133,22 @@ class BMachine:
 
 
     def _learn_names(self, cmc, vmc, smc):
-        names =[]
+        var_names = []
+        const_names = []
+        dset_names = []
         if cmc:
             for idNode in cmc.children:
                 assert isinstance(idNode, AIdentifierExpression)
-                names.append(idNode.idName)
+                const_names.append(idNode.idName)
         if vmc:
             for idNode in vmc.children:
                 assert isinstance(idNode, AIdentifierExpression)
-                names.append(idNode.idName)
+                var_names.append(idNode.idName)
         if smc:
             for dSet in smc.children:
                 if isinstance(dSet, ADeferredSet):
-                    names.append(dSet.idName)
-        return names
+                    dset_names.append(dSet.idName)
+        return const_names, var_names, dset_names
 
 
     def add_promoted_ops(self):
@@ -181,7 +186,7 @@ class BMachine:
                     for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
                         self.used_ops.append(op)                  
 
-
+    # TODO: Dont repeat yourself 
     def parse_included(self):
         if self.aIncludesMachineClause:
             for child in self.aIncludesMachineClause.children:

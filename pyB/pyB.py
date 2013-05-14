@@ -39,7 +39,7 @@ def read_solution_file(env, solution_file_name_str):
         print "learnd from solution-file (constants and variables): ", [x for x in env.solutions] 
 
 
-# can use a solution file to speed up the init or make it possible.
+# can use a solution file to speed up the init (or make it possible).
 # will go into animation mode if possible
 def run_animation_mode():
     env = Environment()                                         # 1. create env.
@@ -50,6 +50,7 @@ def run_animation_mode():
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
     dh = DefinitionHandler()                                    # 5. replace defs if present 
     dh.repl_defs(root)
+    # uncomment for profiling (e.g. performance tests)
     #import cProfile
     #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
     if solution_file_name_str:                                  # 6. parse solution-file and write to env.
@@ -112,7 +113,7 @@ def run_animation_mode():
                 if not env.state_space.empty():
                     env.state_space.undo()
                 else:
-                    print "No undo possible: init state"
+                    print "No undo possible: current state is init. state"
             elif number == n:
                 break
             else:
@@ -138,7 +139,7 @@ def run_checking_mode():
 
         
     parse_object = parse_ast(root, env)                         # 7. which kind of ast?
-    if not isinstance(parse_object, BMachine):                  #PREDICATE or #EXPRESSION                   
+    if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck

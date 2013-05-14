@@ -39,6 +39,27 @@ def get_arg_type_list(func_type):
     _get_arg_type_list(func_type, lst) # sideeffect: fill list with types
     return lst
     
+def check_if_query_op(sub, var_names):
+    assert isinstance(sub, Substitution)
+    if isinstance(sub, AAssignSubstitution):
+        for i in range(int(sub.lhs_size)):
+            lhs_node = sub.children[i]
+            if isinstance(lhs_node, AIdentifierExpression):
+                if lhs_node.idName in var_names:
+                   return False
+            else:
+                assert isinstance(lhs_node, AFunctionExpression)
+                assert isinstance(lhs_node.children[0], AIdentifierExpression)
+                if lhs_node.children[0].idName in var_names:
+                   return False
+    else:
+        for child in sub.children:
+            if isinstance(child, Substitution):
+                is_query_op = check_if_query_op(child, var_names)
+                if not is_query_op:
+                    return False            
+    return True 
+
 
 class BTypeException(Exception):
     def __init__(self, string):
@@ -388,6 +409,7 @@ def type_check_bmch(root, mch):
     const_idNames = find_var_names(mch.aConstantsMachineClause)
     var_idNames = find_var_names(mch.aVariablesMachineClause)
     idNames = set_idNames + const_idNames + var_idNames
+    #assert set(idNames)==set(mch.names)
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, mch.env, [], idNames) ## FIXME: replace
@@ -416,16 +438,12 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)    
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
-        # mch = BMachine(node, None, env)
-        # env.bstate = mch.bstate
-        #env.mch = mch
         mch = env.current_mch
         mch.type_included(type_check_bmch, type_env)
         mch.type_extended(type_check_bmch, type_env)
         mch.type_seen(type_check_bmch, type_env)
         mch.type_used(type_check_bmch, type_env)
-        #env.bstate = mch.bstate
-        #env.mch = mch
+
 
         # add para-nodes to map
         for idNode in mch.aMachineHeader.children:
@@ -1141,8 +1159,12 @@ def typeit(node, env, type_env):
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
+        # TODO:
+        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
+        print "DEBUG:",node.opName, ":", is_query_op
+        # Add query-operation test and add result to list
         # FIXME: adding the node is not a task of type_checking 
-        operation_type = [ret_types, para_types, node.opName, node, env.current_mch]
+        operation_type = [ret_types, para_types, node.opName, node, env.current_mch, is_query_op]
         env.mch_operation_type.append(operation_type)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
