@@ -52,6 +52,11 @@ def check_if_query_op(sub, var_names):
                 assert isinstance(lhs_node.children[0], AIdentifierExpression)
                 if lhs_node.children[0].idName in var_names:
                    return False
+    elif isinstance(sub, ABecomesElementOfSubstitution) or isinstance(sub, ABecomesSuchSubstitution):
+        for child in sub.children[:-1]:
+            assert isinstance(child, AIdentifierExpression)
+            if child.idName in var_names:
+                return False
     else:
         for child in sub.children:
             if isinstance(child, Substitution):
@@ -1161,7 +1166,7 @@ def typeit(node, env, type_env):
             para_types.append(tuple([child, atype]))
         # TODO:
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
-        print "DEBUG:",node.opName, ":", is_query_op
+        #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op
         # Add query-operation test and add result to list
         # FIXME: adding the node is not a task of type_checking 
         operation_type = [ret_types, para_types, node.opName, node, env.current_mch, is_query_op]
