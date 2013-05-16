@@ -19,6 +19,7 @@ def calc_next_states(env, bmachine):
     if bmachine.aOperationsMachineClause:
         # WARNING: assumes no vars/sets with the same name in two b machines 
         operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
+        #print env.all_operations
         for op in operations:
             assert isinstance(op, AOperation)
             # (1) create empty parameter_list

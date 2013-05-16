@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from helpers import file_to_AST_str_no_print
+from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION
 #from environment import Environment
 
 # -*- coding: utf-8 -*-
@@ -24,6 +25,7 @@ class BMachine:
         self.seen_ops     = []    # list of operations
         self.used_ops     = []    # list of operations 
         self.extended_ops = []    # list of operations
+        self.operations   = []    # list of operations
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
@@ -103,10 +105,10 @@ class BMachine:
 
     def recursive_self_parsing(self):
         self.parse_parameters()
-        self.parse_included()
-        self.parse_extended()
-        self.parse_seen()
-        self.parse_used()
+        self.parse_child_machines(self.aIncludesMachineClause, self.included_mch)
+        self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch)
+        self.parse_child_machines(self.aSeesMachineClause, self.seen_mch)
+        self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         # TODO: better name for "names"
         self.const_names, self.var_names, self.dset_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
         names = self.const_names + self.var_names + self.dset_names
@@ -186,63 +188,24 @@ class BMachine:
                     for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
                         self.used_ops.append(op)                  
 
-    # TODO: Dont repeat yourself 
-    def parse_included(self):
-        if self.aIncludesMachineClause:
-            for child in self.aIncludesMachineClause.children:
-                assert isinstance(child, AMachineReference)
+
+    
+    def parse_child_machines(self, mch_clause, mch_list):
+        if mch_clause:
+            for child in mch_clause.children:
+                if isinstance(child, AIdentifierExpression):
+                    assert isinstance(mch_clause, AUsesMachineClause) or isinstance(mch_clause, ASeesMachineClause)
+                else:
+                    assert isinstance(child, AMachineReference) 
                 # FIXME: impl search strategy
-                file_name = "examples/"+ child.idName + ".mch"
+                file_name = BMACHINE_SEARCH_DIR + child.idName + BFILE_EXTENSION
                 ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error
                 exec ast_string
                 mch = BMachine(root, self.interpreter_method, self.env)
                 mch.recursive_self_parsing()
-                self.included_mch.append(mch)
-
-
-    def parse_extended(self):
-        if self.aExtendsMachineClause:
-            for child in self.aExtendsMachineClause.children:
-                assert isinstance(child, AMachineReference)
-                # FIXME: impl search strategy
-                file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str_no_print(file_name)
-                if error:
-                    print error
-                exec ast_string
-                mch = BMachine(root, self.interpreter_method, self.env)
-                mch.recursive_self_parsing()
-                self.extended_mch.append(mch)
-      
-
-    def parse_seen(self):
-        if self.aSeesMachineClause:
-            for child in self.aSeesMachineClause.children:
-                assert isinstance(child, AIdentifierExpression)
-                file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str_no_print(file_name)
-                if error:
-                    print error
-                exec ast_string
-                mch = BMachine(root, self.interpreter_method, self.env)
-                mch.recursive_self_parsing()
-                self.seen_mch.append(mch)
- 
- 
-    def parse_used(self):
-        if self.aUsesMachineClause:
-            for child in self.aUsesMachineClause.children:
-                assert isinstance(child, AIdentifierExpression)
-                file_name = "examples/"+ child.idName + ".mch"
-                ast_string, error = file_to_AST_str_no_print(file_name)
-                if error:
-                    print error
-                exec ast_string
-                mch = BMachine(root, self.interpreter_method, self.env)
-                mch.recursive_self_parsing()
-                self.used_mch.append(mch)
+                mch_list.append(mch)
                                
 
     # maybe refactor this strange lookup some day 
@@ -258,7 +221,7 @@ class BMachine:
                     return op
         raise Exception("unknown op",idName)
 
-
+    # TODO: Dont repeat yourself 
     def type_included(self, type_check_bmch, root_type_env):
         for mch in self.included_mch:
             self.env.current_mch = mch

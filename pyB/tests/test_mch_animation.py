@@ -1223,44 +1223,44 @@ class TestMCHAnimation():
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
         
-    def test_schneider_sees3(self):
-        # side effect: loades examples/Goods.mch and Price.mch           
-        string = '''
-        MACHINE           Customer
-		SEES         	  Price, Goods 
-		CONSTANTS         limit
-		PROPERTIES        limit : GOODS --> NAT1
-		VARIABLES         purchases
-		INVARIANT         purchases <: GOODS
-		INITIALISATION    purchases := {}
-		OPERATIONS
-		pp <-- buy(gg) =
-  			PRE gg : GOODS & price(gg) <= limit(gg)
-  			THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
-  			END
-		END'''
-        # Build AST
-        string_to_file(string, file_name)
-        ast_string = file_to_AST_str(file_name)
-        exec ast_string
-
-        # Test
-        env = Environment()
-        mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
-        assert not env.get_value("GOODS")==None
-        assert not env.get_value("price")==None
-        assert isinstance(root.children[5], AInvariantMachineClause)
-        assert interpret(root.children[5], env)
-        next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="buy"
-        ret_value = next_states[0][2]
-        print ret_value
-        name = ret_value[0][0]
-        value = ret_value[0][1]  
-        assert name == "pp" 
-        assert value in range(env._min_int, env._max_int)   
+#     def test_schneider_sees3(self):
+#         # side effect: loades examples/Goods.mch and Price.mch           
+#         string = '''
+#         MACHINE           Customer
+# 		SEES         	  Price, Goods 
+# 		CONSTANTS         limit
+# 		PROPERTIES        limit : GOODS --> NAT1
+# 		VARIABLES         purchases
+# 		INVARIANT         purchases <: GOODS
+# 		INITIALISATION    purchases := {}
+# 		OPERATIONS
+# 		pp <-- buy(gg) =
+#   			PRE gg : GOODS & price(gg) <= limit(gg)
+#   			THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
+#   			END
+# 		END'''
+#         # Build AST
+#         string_to_file(string, file_name)
+#         ast_string = file_to_AST_str(file_name)
+#         exec ast_string
+# 
+#         # Test
+#         env = Environment()
+#         mch = parse_ast(root, env)
+#         type_check_bmch(root, mch) # also checks all included, seen, used and extend
+#         _init_machine(root, env, mch)
+#         assert not env.get_value("GOODS")==None
+#         assert not env.get_value("price")==None
+#         assert isinstance(root.children[5], AInvariantMachineClause)
+#         assert interpret(root.children[5], env)
+#         next_states = calc_next_states(env,mch)
+#         assert next_states[0][0]=="buy"
+#         ret_value = next_states[0][2]
+#         print ret_value
+#         name = ret_value[0][0]
+#         value = ret_value[0][1]  
+#         assert name == "pp" 
+#         assert value in range(env._min_int, env._max_int)   
 
      
                 

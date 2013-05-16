@@ -14,7 +14,7 @@ class Environment():
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
         #self.definition_id_to_ast = {}
-        self.mch_operation_type = []      # rettype, opname, paratype
+        self.mch_operation_type = []     
         self.state_space = StateSpace()   # statespace        
         self.solutions = {}               # written by a solution-file
         # from config.py 
@@ -24,6 +24,9 @@ class Environment():
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = []             # remember all strings seen (in this or other bmachines)
+        # This is a caching-list which contains all operations of all machines
+        # It should prevent from intensive lookup while animation and op_call substitutions
+        self.all_operations = [] 		  # rettype, opname, paratype, backlink: my_bmch, bool:is_query_op
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 

@@ -418,6 +418,12 @@ def type_check_bmch(root, mch):
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, mch.env, [], idNames) ## FIXME: replace
+    if mch.env.root_mch == mch:
+    	mch.env.all_operations += mch.operations
+    else:
+        for e in mch.operations:
+            new_name = mch.name +"."+e[2]
+            mch.env.all_operations.append([e[0], e[1], new_name, e[3], e[4]])
     return type_env
 
 
@@ -1164,13 +1170,13 @@ def typeit(node, env, type_env):
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
-        # TODO:
-        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
-        #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op
         # Add query-operation test and add result to list
+        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
+        #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op       
         # FIXME: adding the node is not a task of type_checking 
         operation_type = [ret_types, para_types, node.opName, node, env.current_mch, is_query_op]
         env.mch_operation_type.append(operation_type)
+        env.current_mch.operations.append(operation_type)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
         op_type = env.current_mch.get_includes_op_type(node.idName)
