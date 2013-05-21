@@ -29,7 +29,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
@@ -54,7 +54,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
@@ -81,7 +81,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -106,7 +106,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -131,7 +131,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -155,7 +155,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -178,7 +178,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
@@ -203,7 +203,7 @@ class TestInterpDefinitions():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)

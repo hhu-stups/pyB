@@ -41,7 +41,7 @@ class TestMCHAssert():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -82,7 +82,7 @@ class TestMCHAssert():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -137,7 +137,7 @@ class TestMCHAssert():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
@@ -190,7 +190,7 @@ class TestMCHAssert():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)

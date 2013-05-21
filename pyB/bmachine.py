@@ -214,45 +214,45 @@ class BMachine:
             node = mch.root
             name = mch.name
             for op in self.env.mch_operation_type:
-                name = op[2]
-                mch = op[4]
+                name = op["op_name"]
+                mch = op["owner_machine"]
                 #print name == idName
                 if idName == name:
                     return op
         raise Exception("unknown op",idName)
 
     # TODO: Dont repeat yourself 
-    def type_included(self, type_check_bmch, root_type_env):
+    def type_included(self, type_check_bmch, root_type_env, env):
         for mch in self.included_mch:
             self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, mch)
+            type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
         self.env.current_mch = self
 
 
-    def type_extended(self, type_check_bmch, root_type_env):
+    def type_extended(self, type_check_bmch, root_type_env, env):
         for mch in self.extended_mch:
             self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, mch)
+            type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
         self.env.current_mch = self
 
 
-    def type_seen(self, type_check_bmch, root_type_env):
+    def type_seen(self, type_check_bmch, root_type_env, env):
         for mch in self.seen_mch:
             self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, mch)
+            type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
         self.env.current_mch = self
 
 
-    def type_used(self, type_check_bmch, root_type_env):
+    def type_used(self, type_check_bmch, root_type_env, env):
         for mch in self.used_mch:
             self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, mch)
+            type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
         self.env.current_mch = self

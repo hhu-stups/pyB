@@ -62,7 +62,7 @@ def run_animation_mode():
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
-        type_check_bmch(root, parse_object) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
         if not solution_file_name_str:
             mch.init_include_mchs()
@@ -143,7 +143,7 @@ def run_checking_mode():
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
-        type_check_bmch(root, parse_object) # also checks all included, seen, used and extend
+        type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
         # no init of seen, used, extended and included B-machines
         init_mch_param(root, env, mch)

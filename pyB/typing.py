@@ -395,7 +395,7 @@ def _test_typeit(root, env, known_types_list, idNames):
     typeit(root, env, type_env)
     type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
     resolve_type(env) # throw away unknown types
-    return type_env # contains only knowladge about ids at global level
+    return type_env   # contains only knowladge about ids at global level
 
 
 def type_check_predicate(root, env, idNames):
@@ -407,7 +407,7 @@ def type_check_expression(root, env, idNames):
     type_env = _test_typeit(root.children[0], env, [], idNames)
 
 
-def type_check_bmch(root, mch):
+def type_check_bmch(root, env, mch):
     # TODO: abstr const/vars
     # TODO?: operations?
     set_idNames = find_var_names(mch.aSetsMachineClause) 
@@ -419,11 +419,7 @@ def type_check_bmch(root, mch):
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, mch.env, [], idNames) ## FIXME: replace
     if mch.env.root_mch == mch:
-    	mch.env.all_operations += mch.operations
-    else:
-        for e in mch.operations:
-            new_name = mch.name +"."+e[2]
-            mch.env.all_operations.append([e[0], e[1], new_name, e[3], e[4]])
+        pass # TODO add_all_visible_ops_to_env(mch, env)
     return type_env
 
 
@@ -450,10 +446,10 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
         mch = env.current_mch
-        mch.type_included(type_check_bmch, type_env)
-        mch.type_extended(type_check_bmch, type_env)
-        mch.type_seen(type_check_bmch, type_env)
-        mch.type_used(type_check_bmch, type_env)
+        mch.type_included(type_check_bmch, type_env, env)
+        mch.type_extended(type_check_bmch, type_env, env)
+        mch.type_seen(type_check_bmch, type_env, env)
+        mch.type_used(type_check_bmch, type_env, env)
 
 
         # add para-nodes to map
@@ -1174,25 +1170,32 @@ def typeit(node, env, type_env):
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
         #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op       
         # FIXME: adding the node is not a task of type_checking 
-        operation_type = [ret_types, para_types, node.opName, node, env.current_mch, is_query_op]
-        env.mch_operation_type.append(operation_type)
-        env.current_mch.operations.append(operation_type)
+        # TODO: think of making this an operation-object
+        operation_info = {}
+        operation_info["return_types"]    = ret_types
+        operation_info["parameter_types"] = para_types
+        operation_info["op_name"]         = node.opName
+        operation_info["ast"]             = node
+        operation_info["owner_machine"]   = env.current_mch
+        operation_info["is_query_op"]     = is_query_op
+        env.mch_operation_type.append(operation_info)
+        env.current_mch.operations.append(operation_info)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        op_type = env.current_mch.get_includes_op_type(node.idName)
-        para_types = op_type[1]
+        op_info = env.current_mch.get_includes_op_type(node.idName)
+        para_types = op_info["parameter_types"]
         assert len(para_types)==node.parameter_Num
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)
             p_type = para_types[i][1]
             unify_equal(p_type, atype, type_env)
-        ret_type =  op_type[0]
+        ret_type =  op_info["return_types"]
         assert ret_type==[]
         return
     elif isinstance(node, AOpWithReturnSubstitution):
-        op_type = env.current_mch.get_includes_op_type(node.idName)
-        ret_types =  op_type[0]
-        para_types = op_type[1]
+        op_info = env.current_mch.get_includes_op_type(node.idName)
+        ret_types =  op_info["return_types"]
+        para_types = op_info["parameter_types"]
         assert len(para_types)==node.parameter_Num
         assert len(ret_types)==node.return_Num
         for i in range(node.return_Num, (node.return_Num+node.parameter_Num)):

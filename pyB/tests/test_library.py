@@ -38,5 +38,5 @@ class TestLibrary():
         dh.repl_defs(root)
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, mch)
+        type_check_bmch(root, env, mch)
         #interpret(root, env) #performance: improve constraintsolving first

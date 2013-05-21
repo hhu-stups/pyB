@@ -36,7 +36,7 @@ def run_with_pyb(bfile_name):
     dh = DefinitionHandler()                                   
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
-    type_check_bmch(ast_root, mch) # also checks all included, seen, used and extend
+    type_check_bmch(ast_root, env, mch) # also checks all included, seen, used and extend
     init_mch_param(ast_root, env, mch)
     set_up_sets(ast_root, env, mch)
     

@@ -237,6 +237,16 @@ def all_ids_known(node, env):
     return True
 
 
+# this helper adds alle visible operations to the environment.
+# 1. All ops of the root-machine
+# 2. All promoted ops of seen, used or included machines.
+# 3. All Ops of extended machines
+# 4. All Ops of Used or seen machines (with prefix)
+# 5. PROMOTES, SEES, USES, and EXTENDS are not transitive. 
+# TODO: Check this an write test cases
+def add_all_visible_ops_to_env(root_mch, env):
+    pass
+
 def print_ast(root):
     print root
     __print_ast(root, 1)

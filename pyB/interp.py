@@ -1470,22 +1470,22 @@ def exec_substitution(sub, env):
         env.pop_frame()
         return False
     elif isinstance(sub, AOpSubstitution):
-        op_type = env.current_mch.get_includes_op_type(sub.idName)
-        ret_types = op_type[0]
-        para_types = op_type[1]
+        op_info = env.current_mch.get_includes_op_type(sub.idName)
+        ret_types = op_info["return_types"]
+        para_types = op_info["parameter_types"]
         id_nodes = [x[0] for x in para_types]
         values = []
         for i in range(len(para_types)):
             value = interpret(sub.children[i], env)
             values.append(value)
-        op_node = op_type[3]
+        op_node = op_info["ast"]
         env.push_new_frame(id_nodes)
         for i in range(len(para_types)):
             name = para_types[i][0].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         temp = env.current_mch
-        env.current_mch = op_type[4]
+        env.current_mch = op_info["owner_machine"]
         possible = exec_substitution(op_node.children[-1], env)
         if not possible:
             return False
@@ -1494,22 +1494,22 @@ def exec_substitution(sub, env):
         #env.set_op_substitution_value(result)
         return True
     elif isinstance(sub, AOpWithReturnSubstitution):
-        op_type = env.current_mch.get_includes_op_type(sub.idName)
-        ret_types = op_type[0]
-        para_types = op_type[1]
+        op_info = env.current_mch.get_includes_op_type(sub.idName)
+        ret_types = op_info["return_types"]
+        para_types = op_info["parameter_types"]
         id_nodes = [x[0] for x in para_types]
         values = []
         for i in range(len(para_types)):
             value = interpret(sub.children[i], env)
             values.append(value)
-        op_node = op_type[3]
+        op_node = op_info["ast"]
         env.push_new_frame(id_nodes)
         for i in range(len(para_types)):
             name = para_types[i][0].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         temp = env.current_mch
-        env.current_mch = op_type[4]
+        env.current_mch = op_info["owner_machine"]
         possible = exec_substitution(op_node.children[-1], env)
         if not possible:
             return False
