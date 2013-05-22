@@ -41,15 +41,15 @@ class TestMCHAnimation():
         assert interpret(invatiant, env)
         for i in range(4):
             next_states = calc_next_states(env,mch)
-            assert next_states[1][0]=="dec"
-            bstate = next_states[1][3]
+            assert next_states[0][0]=="dec"
+            bstate = next_states[0][3]
             env.state_space.add_state(bstate)
             assert interpret(invatiant, env)
             #op_and_state_list = calc_possible_operations(env, mch)
             #exec_op(env, op_and_state_list[1], mch)
         next_states = calc_next_states(env,mch)
-        assert next_states[1][0]=="dec"
-        bstate = next_states[1][3]
+        assert next_states[0][0]=="dec"
+        bstate = next_states[0][3]
         env.state_space.add_state(bstate)
         assert not interpret(invatiant, env) # floor=-1
 
@@ -1060,22 +1060,20 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        possible_ops = [op.op_name for op in env.all_operations]
+        assert sorted(possible_ops) == ['closedoor', 'lockdoor', 'opendoor', 'unlockdoor']
         _init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
 
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="unlockdoor"
-        bstate = next_states[0][3]
+        assert next_states[6][0]=="unlockdoor"
+        bstate = next_states[6][3]
         env.state_space.add_state(bstate)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="opendoor"
-        bstate = next_states[0][3]
+        assert next_states[6][0]=="opendoor"
+        bstate = next_states[6][3]
         env.state_space.add_state(bstate)                
-        #op_and_state_list = calc_possible_operations(env, mch)
-        #exec_op(env, op_and_state_list[0], mch)
-        #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
-        #exec_op(env, op_and_state_list[0], mch)
         # Test PROMOTES:
         names = [op[0] for op in next_states]
         assert  "closedoor" in names
@@ -1128,13 +1126,15 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        possible_ops = [op.op_name for op in env.all_operations]
+        assert sorted(possible_ops)== ['closedoor', 'extract', 'insert', 'lockdoor', 'opendoor', 'quicklock', 'unlock']
         _init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
         #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="insert"
-        bstate = next_states[0][3]       
+        assert next_states[6][0]=="insert"
+        bstate = next_states[6][3]       
         # test PROMOTES:
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
@@ -1145,8 +1145,6 @@ class TestMCHAnimation():
         one = env.get_value("keys")
         assert len(one)==1
         next_states = calc_next_states(env,mch)
-        #print next_states
-        bstate = next_states[0][3]
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock', 'unlock'])
         
@@ -1177,13 +1175,11 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        possible_ops = [op.op_name for op in env.all_operations]
+        assert sorted(possible_ops)== ['pricequery', 'setprice']
         _init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
-        #op_and_state_list = calc_possible_operations(env, mch) 
-        #names = [op[0].opName for op in op_and_state_list]
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="setprice"
-        bstate = next_states[0][3]
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery'])
 
@@ -1211,14 +1207,13 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        possible_ops = [op.op_name for op in env.all_operations]
+        assert sorted(possible_ops)== ['Price.pricequery', 'Price.setprice', 'sale', 'total']
         _init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
         assert env.get_value("takings")==0
-        #op_and_state_list = calc_possible_operations(env, mch) 
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="sale"
-        bstate = next_states[0][3]
         names = [op[0] for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
@@ -1300,6 +1295,8 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        possible_ops = [op.op_name for op in env.all_operations]
+        assert sorted(possible_ops)== ['Life.born', 'Life.die', 'part', 'partner', 'wed']
         _init_machine(root, env, mch)
         value = env.get_value("marriage") 
         assert value==frozenset([])
@@ -1341,8 +1338,8 @@ class TestMCHAnimation():
         value = env.get_value("read") 
         assert value==frozenset([])
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="show"
-        bstate = next_states[0][3]
+        assert next_states[1][0]=="show"
+        bstate = next_states[1][3]
         names = [op[0] for op in next_states]         
         #op_and_state_list = calc_possible_operations(env, mch) 
         #names = [op[0].opName for op in op_and_state_list]
@@ -1427,11 +1424,7 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)
-        #op_and_state_list = calc_possible_operations(env, mch) 
-        #names = [op[0].opName for op in op_and_state_list]
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="nr_ready"
-        bstate = next_states[0][3]
         names = [op[0] for op in next_states]  
         assert frozenset(names)==frozenset(['new','nr_ready'])
 

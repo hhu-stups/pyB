@@ -18,7 +18,8 @@ def calc_next_states(env, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
         # WARNING: assumes no vars/sets with the same name in two b machines 
-        operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
+        #operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
+        operations = env.all_operation_asts
         #print env.all_operations
         for op in operations:
             assert isinstance(op, AOperation)
@@ -92,6 +93,7 @@ def calc_next_states(env, bmachine):
             env.state_space.undo()
     if result==[]:
         print "WARNING: Deadlock!"
+    result = sorted(result, key = lambda state: state[0])
     return result
 
 
