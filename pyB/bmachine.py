@@ -25,7 +25,7 @@ class BMachine:
         self.seen_ops     = []    # list of operations
         self.used_ops     = []    # list of operations 
         self.extended_ops = []    # list of operations
-        self.operations   = []    # list of operations
+        self.operations   = frozenset([])    # set of operations (to easy avoid double entries)
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None

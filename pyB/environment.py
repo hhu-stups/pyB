@@ -26,7 +26,8 @@ class Environment():
         self.all_strings = []             # remember all strings seen (in this or other bmachines)
         # This is a caching-list which contains all operations of all machines
         # It should prevent from intensive lookup while animation and op_call substitutions
-        self.all_operations = [] 		  # rettype, opname, paratype, backlink: my_bmch, bool:is_query_op
+        self.all_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
+        self.all_operation_asts = []
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import find_var_names, print_ast
+from helpers import find_var_names, print_ast, add_all_visible_ops_to_env
 from bmachine import BMachine
+from boperation import BOperation
 
 
 
@@ -417,9 +418,9 @@ def type_check_bmch(root, env, mch):
     #assert set(idNames)==set(mch.names)
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
-    type_env = _test_typeit(root, mch.env, [], idNames) ## FIXME: replace
-    if mch.env.root_mch == mch:
-        pass # TODO add_all_visible_ops_to_env(mch, env)
+    type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
+    if env.root_mch == mch:
+        add_all_visible_ops_to_env(mch, env)
     return type_env
 
 
@@ -1170,7 +1171,7 @@ def typeit(node, env, type_env):
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
         #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op       
         # FIXME: adding the node is not a task of type_checking 
-        # TODO: think of making this an operation-object
+        # TODO: delete when refactoring done
         operation_info = {}
         operation_info["return_types"]    = ret_types
         operation_info["parameter_types"] = para_types
@@ -1179,7 +1180,14 @@ def typeit(node, env, type_env):
         operation_info["owner_machine"]   = env.current_mch
         operation_info["is_query_op"]     = is_query_op
         env.mch_operation_type.append(operation_info)
-        env.current_mch.operations.append(operation_info)
+        boperation= BOperation()
+        boperation.return_types    = ret_types
+        boperation.parameter_types = para_types
+        boperation.op_name         = node.opName
+        boperation.ast             = node
+        boperation.owner_machine   = env.current_mch
+        boperation.is_query_op     = is_query_op      
+        env.current_mch.operations = env.current_mch.operations.union(frozenset([boperation]))
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
         op_info = env.current_mch.get_includes_op_type(node.idName)
