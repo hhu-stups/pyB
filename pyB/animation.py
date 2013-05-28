@@ -17,45 +17,44 @@ from interp import exec_substitution
 def calc_next_states(env, bmachine):
     result = []
     if bmachine.aOperationsMachineClause:
-        # WARNING: assumes no vars/sets with the same name in two b machines 
-        #operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
+        # WARNING: assumes no vars/sets with the same name in two b machines
+        # TODO: write a method to check this 
         operations = env.all_operation_asts
-        #print env.all_operations
         for op in operations:
-            assert isinstance(op, AOperation)
-            # (1) create empty parameter_list
-            parameter_list = []
-            
-            # (2) add helper state to avoid sideeffects (dropped at the end of iteration) 
+            assert isinstance(op, AOperation)         
+            # (1) add helper state to avoid sideeffects (dropped at the end of each iteration) 
             bstate = env.state_space.get_state().clone()
             env.state_space.add_state(bstate)  
             
-            # (3) find parameter names and add them to the frame
-            parameter_idNodes = get_para_nodes(op)
-            varList_ret = get_return_nodes(op)
-            op_has_no_parameters = parameter_idNodes==[]    
-            env.add_ids_to_frame([n.idName for n in parameter_idNodes])
-            env.push_new_frame(parameter_idNodes + varList_ret)          
+            # (2) find parameter and return_val idNodes and add them to the frame
+            parameter_idNodes  = op.children[op.return_Num : op.return_Num+op.parameter_Num]
+            return_val_idNodes = op.children[0 : op.return_Num]
+            # check lists
+            for idNode in parameter_idNodes + return_val_idNodes:
+                assert isinstance(idNode, AIdentifierExpression) # AST corruption  
+            env.add_ids_to_frame([n.idName for n in parameter_idNodes + return_val_idNodes])
+            env.push_new_frame(parameter_idNodes + return_val_idNodes)          
             #print "opname: \t", op.opName # DEBUG
             
-            # (4.1) case one: no parameters
+            # (3.1) case one: no parameters
             substitution = op.children[-1]
             assert isinstance(substitution, Substitution)
+            op_has_no_parameters = parameter_idNodes==[]   
             if op_has_no_parameters:
                 exec_success = exec_substitution(substitution, env)
                 if exec_success:
-                    return_value_list = add_return_values(env, varList_ret)
+                    return_value_list = get_value_list(env, return_val_idNodes)
                     env.pop_frame()
                     bstate = env.state_space.get_state()                
                     result.append([op.opName, [], return_value_list, bstate])
                     env.state_space.undo()
                     continue 
-            # (4.2) case two: find parameter values
+            # (3.2) case two: find parameter values
             else:
                 # This code uses the constraint solver an the top_level predicate to guess 
                 # parameter values. Of course this guess can produce false values but it will 
                 # never drop possible values
-                # (4.2.1) find top_level predicate
+                # (3.2.1) find top_level predicate
                 domain_generator = None
                 if isinstance(substitution, APreconditionSubstitution):
                     predicate = substitution.children[0]
@@ -71,231 +70,37 @@ def calc_next_states(env, bmachine):
                         # use values of solution (iterations musst not affect each other):
                         bstate = env.state_space.get_state().clone()
                         env.state_space.add_state(bstate)  
-                        for name in [x.idName for x in parameter_idNodes]:
-                            value = solution[name]
-                            env.set_value(name, value)
+                        set_parameter_values(env, parameter_idNodes, solution)
                         # try to exec
                         exec_success = exec_substitution(substitution, env)
                         if exec_success:
-                            # Solution found!
-                            parameter_list = []
-                            # (3.2) add parameter-solutions
-                            for name in [x.idName for x in parameter_idNodes]:
-                                para_value = env.get_value(name)
-                                parameter_list.append(tuple([name, para_value]))
-                            return_value_list = add_return_values(env, varList_ret)
-                            env.pop_frame()
+                            # Solution found!                          
+                            # (3.2.2) get parameter and return-value solutions
+                            parameter_value_list = get_value_list(env, parameter_idNodes)
+                            return_value_list    = get_value_list(env, return_val_idNodes)
+                            env.pop_frame() # pop on the cloned state
                             bstate = env.state_space.get_state().clone()
-                            result.append([op.opName, parameter_list, return_value_list, bstate])
+                            result.append([op.opName, parameter_value_list, return_value_list, bstate])
                     except ValueNotInDomainException:
-                        pass
+                        pass #TODO: modify enumerator not to generate that "solutions" at all
                     env.state_space.undo()
             env.state_space.undo()
     if result==[]:
         print "WARNING: Deadlock!"
+    # alphabetic sort of results
     result = sorted(result, key = lambda state: state[0])
     return result
 
 
-# returns list of (op, parameter_list, substitution_body)
-#
-# Because the constraint-solver only can find approximations of correct parameters
-# every solution generated by calc_possible_solutions musst be tested before the
-# substitution can be added to the result list
-# def calc_possible_operations(env, bmachine):
-#     result = []
-#     if bmachine.aOperationsMachineClause:
-#         # WARNING: assumes no vars/sets with the same name in two b machines 
-#         operations = bmachine.aOperationsMachineClause.children + bmachine.promoted_ops + bmachine.seen_ops + bmachine.used_ops + bmachine.extended_ops
-#         for op in operations:
-#             # (1) create empty parameter_list
-#             parameter_list = []
-# 
-#             # (2) find parameter names and add them to the frame
-#             parameter_idNodes = get_para_nodes(op)
-#             bstate = env.state_space.get_state().clone()
-#             env.state_space.add_state(bstate) # add helper state to avoid sideeffects (dropped at the end of iteration)      
-#             env.add_ids_to_frame([n.idName for n in parameter_idNodes])
-#             env.push_new_frame(parameter_idNodes) 
-#             #print "opname: \t", op.opName # DEBUG
-# 
-#             # (3) Select Operation Type
-#             assert isinstance(op, AOperation) # FAIL => maybe parsing-error
-#             substitution = op.children[-1]
-#             assert isinstance(substitution, Substitution)
-#             if isinstance(substitution, APreconditionSubstitution):
-#                 predicate = substitution.children[0]
-#                 assert isinstance(predicate, Predicate)
-#                 if not parameter_idNodes==[]:
-#                     # (3.1a) enumerate operation-parameters 
-#                     k = 0 # number of found solutions 
-#                     domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
-#                     for solution in domain_generator:
-#                         if k==MAX_OP_SOLUTIONS-1:
-#                             break
-#                         try:
-#                             # use values of solution:
-#                             # WARNING:
-#                             # This should only affect the parameters, 
-#                             # otherwise this code contains a BUG because 
-#                             # calc. states affect each other 
-#                             for name in [x.idName for x in parameter_idNodes]:
-#                                 value = solution[name]
-#                                 env.set_value(name, value)
-#                             if bmachine.interpreter_method(predicate, env): # TEST
-#                                 # Solution found!
-#                                 parameter_list = []
-#                                 # (3.2) add parameter-solutions
-#                                 for name in [x.idName for x in parameter_idNodes]:
-#                                     para_value = env.get_value(name)
-#                                     parameter_list.append(tuple([name, para_value]))
-#                                 # (3.3) add op and parameter-values to result list
-#                                 result.append([op, parameter_list, substitution.children[-1]]) #TODO: -1
-#                                 k = k +1
-#                             # TODO: if states affect each other: !param.param := None
-#                         except ValueNotInDomainException:
-#                             continue
-#                 else: 
-#                     # (3.1b) no operation-parameters: no enumeration 
-#                     if bmachine.interpreter_method(predicate, env): # TEST
-#                         result.append([op, [], substitution.children[-1]])
-#             elif isinstance(substitution, ABlockSubstitution) or isinstance(substitution, AAssignSubstitution):
-#                 result.append([op, parameter_list, op.children[-1]]) # no condition
-#             elif isinstance(substitution, AIfSubstitution):
-#                 # TODO: if there is no else block, check condition
-#                 result.append([op, parameter_list, substitution])
-#             elif isinstance(substitution, ASelectSubstitution):
-#                 select_lst = select_ast_to_list(substitution)
-#                 k = 0 # number of found solutions 
-#                 index = 0   
-#                                   
-#                 if not parameter_idNodes==[]: 
-#                     # (3.1) enumerate parameters
-#                     while not k==MAX_OP_SOLUTIONS-1:
-#                         predicate = select_lst[index][0]
-#                         substitution = select_lst[index][1]
-#                         if predicate==None:
-#                             assert select_ast.hasElse=="True"
-#                             result.append([op, parameter_list, substitution])
-#                             break                          
-#                         domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
-#                         try: # no for loop - no solution is a problem here
-#                             solution = domain_generator.next()
-#                         except StopIteration:
-#                             # SELECT: select next predicate
-#                             index = index +1
-#                             if index == len(select_lst):
-#                                 break
-#                             continue # no solution
-#                         try:
-#                             # use values of solution:
-#                             # WARNING:
-#                             # This Code-Block should only affect the parameters of this operation, 
-#                             # otherwise this code contains a BUG because 
-#                             # calculated states affect each other 
-#                             for name in [x.idName for x in parameter_idNodes]:
-#                                 value = solution[name]
-#                                 env.set_value(name, value)
-#                             # TEST solution candidate 
-#                             if bmachine.interpreter_method(predicate, env): 
-#                                 # Solution found!
-#                                 parameter_list = []
-#                                 # (3.2) add parameter-solution-tuple
-#                                 for name in [x.idName for x in parameter_idNodes]:
-#                                     para_value = env.get_value(name)
-#                                     parameter_list.append(tuple([name, para_value]))
-#                                 # (3.3) add op and parameter-values to result list
-#                                 result.append([op, parameter_list, substitution]) 
-#                                 k = k +1
-#                             # TODO: if states affect each other: !param.param := None
-#                         except ValueNotInDomainException:
-#                             # SELECT: select next predicate
-#                             index = index +1
-#                             if index == len(select_lst):
-#                                 break
-#                             continue
-# 
-#                         # SELECT: select next predicate
-#                         index = index +1
-#                         if index == len(select_lst):
-#                             break
-#                 else:  # no operation-parameters: no enumeration 
-#                     while not k==MAX_OP_SOLUTIONS-1:
-#                         predicate = select_lst[index][0]
-#                         substitution = select_lst[index][1]
-#                         if predicate==None:
-#                             assert select_ast.hasElse=="True"
-#                             result.append([op, parameter_list, substitution])
-#                             break  
-#                         # CHECK: is the pred in this state true?
-#                         if bmachine.interpreter_method(predicate, env):
-#                             result.append([op, [], substitution])
-#                             k = k+1
-# 
-#                         # SELECT: select next predicate
-#                         index = index +1
-#                         if index == len(select_lst):
-#                             break
-#             elif isinstance(substitution, ASkipSubstitution):
-#                 # the operation is added to the op list (result) and may be chosen later
-#                 assert parameter_list==[]
-#                 result.append([op, parameter_list, substitution])
-#             else:
-#                 raise Exception("ERROR: Optype/Substitution not implemented:", op.children[-1]) 
-#             env.state_space.undo() # drop helper state
-#     return result
-# 
-# 
-# def exec_op(env, operation, bmachine):
-#         op_ast = operation[0]
-#         parameter_list = operation[1]
-#         substitution = operation[2]
-#         bstate = env.state_space.get_state().clone()
-#         env.state_space.add_state(bstate)
-# 
-#         # set parameters
-#         varList_par = get_para_nodes(op_ast)
-#         varList_ret = get_return_nodes(op_ast)
-#         env.push_new_frame(varList_par + varList_ret)
-#         # add empty return variables
-#         for p in parameter_list:
-#             name = p[0]
-#             value = p[1]
-#             env.set_value(name, value)
-#         # exec
-#         bmachine.interpreter_method(substitution, env)
-#         # remember return values for ui
-#         return_values = add_return_values(env, varList_ret)
-#         operation.append(return_values)
-#         env.pop_frame()push_new_frame
-# 
-# def calc_bstates(env, op_list, bmachine):
-#     for operation in op_list:
-#         exec_op(env, operation, bmachine)
-#         operation.append(env.get_state())
-#         env.state_space.undo()
-#     return op_list # with states, param- and return-values (after state exec)
+def set_parameter_values(env, parameter_idNodes, solution):
+	for name in [x.idName for x in parameter_idNodes]:
+		value = solution[name]
+		env.set_value(name, value)
 
 
-def get_para_nodes(op):
-    nodes = []
-    for i in range(op.return_Num, op.return_Num+op.parameter_Num):
-        assert isinstance(op.children[i], AIdentifierExpression)
-        nodes.append(op.children[i])
-    return nodes
-
-
-def get_return_nodes(op):
-    names = []
-    for i in range(op.return_Num):
-        assert isinstance(op.children[i], AIdentifierExpression)
-        names.append(op.children[i])
-    return names
-
-
-def add_return_values(env, varList_ret):
-    return_values = []
-    for ret_name in [x.idName for x in varList_ret]:
-        value = env.get_value(ret_name)
-        return_values.append(tuple([ret_name, value]))
-    return return_values
+def get_value_list(env, idNode_list):
+    value_list = []
+    for name in [x.idName for x in idNode_list]:
+        value = env.get_value(name)
+        value_list.append(tuple([name, value]))
+    return value_list
