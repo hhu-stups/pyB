@@ -1179,7 +1179,7 @@ def typeit(node, env, type_env):
         operation_info["ast"]             = node
         operation_info["owner_machine"]   = env.current_mch
         operation_info["is_query_op"]     = is_query_op
-        env.mch_operation_type.append(operation_info)
+        #env.mch_operation_type.append(operation_info)
         boperation= BOperation()
         boperation.return_types    = ret_types
         boperation.parameter_types = para_types
@@ -1188,22 +1188,23 @@ def typeit(node, env, type_env):
         boperation.owner_machine   = env.current_mch
         boperation.is_query_op     = is_query_op      
         env.current_mch.operations = env.current_mch.operations.union(frozenset([boperation]))
+        env.mch_operation_type.append(boperation)
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        op_info = env.current_mch.get_includes_op_type(node.idName)
-        para_types = op_info["parameter_types"]
+        boperation = env.find_operation_type(node.idName)
+        para_types = boperation.parameter_types
         assert len(para_types)==node.parameter_Num
         for i in range(len(node.children)):
             atype = typeit(node.children[i], env, type_env)
             p_type = para_types[i][1]
             unify_equal(p_type, atype, type_env)
-        ret_type =  op_info["return_types"]
+        ret_type =  boperation.return_types
         assert ret_type==[]
         return
     elif isinstance(node, AOpWithReturnSubstitution):
-        op_info = env.current_mch.get_includes_op_type(node.idName)
-        ret_types =  op_info["return_types"]
-        para_types = op_info["parameter_types"]
+        boperation = env.find_operation_type(node.idName)
+        ret_types =  boperation.return_types
+        para_types = boperation.parameter_types
         assert len(para_types)==node.parameter_Num
         assert len(ret_types)==node.return_Num
         for i in range(node.return_Num, (node.return_Num+node.parameter_Num)):

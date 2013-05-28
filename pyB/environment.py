@@ -13,8 +13,7 @@ class Environment():
         # and was created and filled by typeit of the module typing.
         self.node_to_type_map = {}
         # AST-SubTrees: ID(String)->AST
-        #self.definition_id_to_ast = {}
-        self.mch_operation_type = []     
+        #self.definition_id_to_ast = {}  
         self.state_space = StateSpace()   # statespace        
         self.solutions = {}               # written by a solution-file
         # from config.py 
@@ -27,6 +26,7 @@ class Environment():
         # This is a caching-list which contains all operations of all machines
         # It should prevent from intensive lookup while animation and op_call substitutions
         self.all_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
+        self.mch_operation_type = []   
         self.all_operation_asts = []
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
@@ -67,7 +67,8 @@ class Environment():
 
     def lookup_bmachine(self, idName, mch):
         for m in mch.included_mch + mch.seen_mch + mch.used_mch + mch.extended_mch:
-            if idName in m.names:
+            names = m.const_names + m.var_names + m.dset_names 
+            if idName in names:
                 return m
             else:
                 bmachine = self.lookup_bmachine(idName, m)
@@ -84,7 +85,7 @@ class Environment():
             bstate.set_value(id_Name, value, bmachine)
             return
         except ValueNotInBStateException:
-            assert id_Name not in bmachine.names
+            assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)
         bstate.set_value(id_Name, value, bmachine)
@@ -96,7 +97,7 @@ class Environment():
         try:
             return bstate.get_value(id_Name, bmachine)
         except ValueNotInBStateException:
-            assert id_Name not in bmachine.names
+            assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)
         return bstate.get_value(id_Name, bmachine)
@@ -119,11 +120,34 @@ class Environment():
         bmachine = self.root_mch # TODO lookup
         bstate.pop_frame(bmachine) 
     
-    # the execution of a op-substitution musst return True or False
-    # storing the result of it inside the env, is the best way
-#     def get_op_substitution_value(self):
-#         return self.op_substitution_value
-#     
-#     
-#     def set_op_substitution_value(self, value):
-#         self.op_substitution_value = value
+    
+    # This is called by a op-substitution only
+    # TODO: cache operations
+    def find_operation(self, idName):
+        # (1) operations of included or extended machines are under full control
+        # and can be executed via op-call-substitutions
+        # This is not transitive!
+        mchs = self.current_mch.included_mch + self.current_mch.extended_mch
+        for m in mchs:
+            for op in m.operations:
+                name = op.op_name
+                if idName == name:
+                    return op
+        # (2) call the query-op of a seen or used mch
+        mchs = self.current_mch.used_mch + self.current_mch.seen_mch
+        for m in mchs:
+            for op in m.operations:
+                name = op.op_name
+                if idName == name:
+                    assert op.is_query_op 
+                    return op    
+        # (3) fail
+        raise Exception("unknown op: ",idName)
+    
+    
+    def find_operation_type(self, idName):
+        for op in self.mch_operation_type:
+            name = op.op_name
+            if idName == name:
+                return op        
+    

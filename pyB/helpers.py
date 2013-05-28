@@ -176,6 +176,11 @@ def _find_assignd_vars(node, lst):
                 assert isinstance(idNode, AFunctionExpression)
                 assert isinstance(idNode.children[0], AIdentifierExpression)
                 lst.append(idNode.children[0].idName)
+    elif isinstance(node, AOpWithReturnSubstitution):
+        for i in range(node.return_Num):
+            idNode = node.children[i]
+            assert isinstance(idNode, AIdentifierExpression)
+            lst.append(idNode.idName)
     else:
         try:
             for n in node.children:

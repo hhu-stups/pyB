@@ -210,15 +210,15 @@ class BMachine:
 
     # maybe refactor this strange lookup some day 
     def get_includes_op_type(self, idName):
-        for mch in self.included_mch:
-            node = mch.root
-            name = mch.name
-            for op in self.env.mch_operation_type:
-                name = op["op_name"]
-                mch = op["owner_machine"]
-                #print name == idName
-                if idName == name:
-                    return op
+        #for mch in self.included_mch:
+        #    node = mch.root
+        #    name = mch.name
+        for op in self.env.mch_operation_type:
+            name = op["op_name"]
+            mch = op["owner_machine"]
+            #print name == idName
+            if idName == name:
+                return op
         raise Exception("unknown op",idName)
 
     # TODO: Dont repeat yourself 
