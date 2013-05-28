@@ -65,10 +65,7 @@ def run_animation_mode():
         type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
         if not solution_file_name_str:
-            mch.init_include_mchs()
-            mch.init_seen_mchs()
-            mch.init_used_mchs()
-            mch.init_extended_mchs()
+            mch.init_child_machines()
     
         # TODO: Check with B spec
         # Schneider Book page 62-64:

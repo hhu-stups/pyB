@@ -15,10 +15,7 @@ from animation_clui import print_values_b_style
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' never been called 
 def _init_machine(root, env, mch):
-	mch.init_include_mchs()
-	mch.init_seen_mchs()
-	mch.init_used_mchs()
-	mch.init_extended_mchs()
+	mch.init_child_machines()
 	init_mch_param(root, env, mch)
 	set_up_sets(root, env, mch)
 	set_up_constants(root, env, mch)

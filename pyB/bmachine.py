@@ -13,18 +13,14 @@ class BMachine:
         self.var_names = []
         self.dset_names = []
         self.root = node
-        self.env = env
+        self.env = env # TODO: Check if a elimination of this unclean backref is possible
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
-        self.set_params = []      # Set machine parameter
+        self.set_params    = []   # set machine parameter
         self.included_mch = []    # list of b-mchs
         self.extended_mch = []    # list of b-mchs
         self.seen_mch     = []    # list of b-mchs
         self.used_mch     = []    # list of b-mchs
-        self.promoted_ops = []    # list of operations
-        self.seen_ops     = []    # list of operations
-        self.used_ops     = []    # list of operations 
-        self.extended_ops = []    # list of operations
         self.operations   = frozenset([])    # set of operations (to easy avoid double entries)
         self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
@@ -103,6 +99,19 @@ class BMachine:
         #print self, "Bmachine created",self.name
 
 
+    # This method is a dirty solution to enumerate the set of all strings.
+    # It collects all string expressions inside the machine
+    def get_all_strings(self, node):
+        if isinstance(node, AStringExpression):
+            self.env.all_strings.append(node.string)
+        try:
+            for child in node.children:
+                self.get_all_strings(child)
+        except AttributeError:
+            return
+
+
+    # parse all child machines (constructs BMachine objects)
     def recursive_self_parsing(self):
         self.parse_parameters()
         self.parse_child_machines(self.aIncludesMachineClause, self.included_mch)
@@ -120,19 +129,41 @@ class BMachine:
             bstate.add_mch_state(self, names, self.env.solutions)
         else:
             bstate.add_mch_state(self, names, {}) 
-        self.get_all_strings(self.root) #Stringexpr.  inside mch.
-    
-    
-    def get_all_strings(self, node):
-        if isinstance(node, AStringExpression):
-            self.env.all_strings.append(node.string)
-        try:
-            for child in node.children:
-                self.get_all_strings(child)
-        except AttributeError:
-            return
-                   
+        self.get_all_strings(self.root) # get string expressions inside mch.
 
+
+    # parsing of the machines
+    def parse_child_machines(self, mch_clause, mch_list):
+        if mch_clause:
+            for child in mch_clause.children:
+                if isinstance(child, AIdentifierExpression):
+                    assert isinstance(mch_clause, AUsesMachineClause) or isinstance(mch_clause, ASeesMachineClause)
+                else:
+                    assert isinstance(child, AMachineReference) 
+                # TODO: impl search strategy
+                file_name = BMACHINE_SEARCH_DIR + child.idName + BFILE_EXTENSION
+                ast_string, error = file_to_AST_str_no_print(file_name)
+                if error:
+                    print error
+                exec ast_string
+                mch = BMachine(root, self.interpreter_method, self.env)
+                mch.recursive_self_parsing()
+                mch_list.append(mch)    
+
+
+    # get the parameters of the machine (if present)
+    def parse_parameters(self):
+        assert not self.aMachineHeader == None
+        self.name = self.aMachineHeader.idName
+        for idNode in self.aMachineHeader.children:
+            assert isinstance(idNode, AIdentifierExpression)
+            if str.islower(idNode.idName):
+                self.scalar_params.append(idNode)
+            else:
+                self.set_params.append(idNode)
+        if not self.scalar_params==[]:
+            assert not self.aConstraintsMachineClause==None
+                                   
 
     def _learn_names(self, cmc, vmc, smc):
         var_names = []
@@ -153,158 +184,35 @@ class BMachine:
         return const_names, var_names, dset_names
 
 
-    def add_promoted_ops(self):
-        if self.aPromotesMachineClause:
-            for idNode in self.aPromotesMachineClause.children:
-                assert isinstance(idNode, AIdentifierExpression)
-                name = idNode.idName
-                for mch in self.included_mch:
-                    if mch.aOperationsMachineClause:
-                        for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
-                            if op.opName==name:
-                                self.promoted_ops.append(op)
-
-
-    def add_extended_ops(self):
-        if self.aExtendsMachineClause:
-             for mch in self.extended_mch:
-                if mch.aOperationsMachineClause:
-                    for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
-                        self.extended_ops.append(op) 
-
-                                    
-    def add_seen_ops(self):
-        if self.aSeesMachineClause:
-            for mch in self.seen_mch:
-                if mch.aOperationsMachineClause:
-                    for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
-                        self.seen_ops.append(op) 
-            
-
-    def add_used_ops(self):
-        if self.aUsesMachineClause:
-            for mch in self.used_mch:
-                if mch.aOperationsMachineClause:
-                    for op in mch.aOperationsMachineClause.children+mch.promoted_ops:
-                        self.used_ops.append(op)                  
-
-
-    
-    def parse_child_machines(self, mch_clause, mch_list):
-        if mch_clause:
-            for child in mch_clause.children:
-                if isinstance(child, AIdentifierExpression):
-                    assert isinstance(mch_clause, AUsesMachineClause) or isinstance(mch_clause, ASeesMachineClause)
-                else:
-                    assert isinstance(child, AMachineReference) 
-                # FIXME: impl search strategy
-                file_name = BMACHINE_SEARCH_DIR + child.idName + BFILE_EXTENSION
-                ast_string, error = file_to_AST_str_no_print(file_name)
-                if error:
-                    print error
-                exec ast_string
-                mch = BMachine(root, self.interpreter_method, self.env)
-                mch.recursive_self_parsing()
-                mch_list.append(mch)
-                               
-
-    # maybe refactor this strange lookup some day 
-    def get_includes_op_type(self, idName):
-        #for mch in self.included_mch:
-        #    node = mch.root
-        #    name = mch.name
-        for op in self.env.mch_operation_type:
-            name = op["op_name"]
-            mch = op["owner_machine"]
-            #print name == idName
-            if idName == name:
-                return op
-        raise Exception("unknown op",idName)
-
-    # TODO: Dont repeat yourself 
-    def type_included(self, type_check_bmch, root_type_env, env):
-        for mch in self.included_mch:
+    # types included, extended, seen or used b machines
+    # only called by typing.py
+    # only called once
+    def type_child_machines(self, type_check_bmch, root_type_env, env):
+        machine_list = self.included_mch + self.extended_mch + self.seen_mch + self.used_mch
+        for mch in machine_list:
             self.env.current_mch = mch
             type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
         self.env.current_mch = self
-
-
-    def type_extended(self, type_check_bmch, root_type_env, env):
-        for mch in self.extended_mch:
-            self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, env, mch)
-            id_2_t = type_env.id_to_types_stack[0]
-            root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = self
-
-
-    def type_seen(self, type_check_bmch, root_type_env, env):
-        for mch in self.seen_mch:
-            self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, env, mch)
-            id_2_t = type_env.id_to_types_stack[0]
-            root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = self
-
-
-    def type_used(self, type_check_bmch, root_type_env, env):
-        for mch in self.used_mch:
-            self.env.current_mch = mch
-            type_env = type_check_bmch(mch.root, env, mch)
-            id_2_t = type_env.id_to_types_stack[0]
-            root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = self
-
-
-    def init_include_mchs(self):
-        if self.included_mch: # list of BMachines
-            for mch in self.included_mch:                
+         
+         
+    # inits included, extended, seen or used b machines
+    # only called by pyB.py (direct or indirect via. _init_machine)
+    # only called once
+    def init_child_machines(self):
+        self._init_child_machine(self.included_mch)
+        self._init_child_machine(self.extended_mch)
+        self._init_child_machine(self.seen_mch)
+        self._init_child_machine(self.used_mch)
+           
+           
+    def _init_child_machine(self, machine_list):
+        if machine_list:
+            for mch in machine_list:
                 self.env.current_mch = mch
                 self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = self
-        self.add_promoted_ops()
- 
- 
-    def init_extended_mchs(self):
-        if self.extended_mch: # list of BMachines 
-            for mch in self.extended_mch:
-                self.env.current_mch = mch
-                self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = self
-        self.add_extended_ops()       
-
-
-    def init_seen_mchs(self):
-        if self.seen_mch: # list of BMachines
-            for mch in self.seen_mch:
-                self.env.current_mch = mch
-                self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = self
-        self.add_seen_ops()
- 
- 
-    def init_used_mchs(self):
-        if self.used_mch: # list of BMachines 
-            for mch in self.used_mch:
-                self.env.current_mch = mch
-                mch = self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = self
-        self.add_used_ops()                   
-
-
-    def parse_parameters(self):
-        assert not self.aMachineHeader == None
-        self.name = self.aMachineHeader.idName
-        for idNode in self.aMachineHeader.children:
-            assert isinstance(idNode, AIdentifierExpression)
-            if str.islower(idNode.idName):
-                self.scalar_params.append(idNode)
-            else:
-                self.set_params.append(idNode)
-        if not self.scalar_params==[]:
-            assert not self.aConstraintsMachineClause==None
+            self.env.current_mch = self              
 
 
     def self_check(self):
@@ -315,6 +223,7 @@ class BMachine:
             assert self.aPropertiesMachineClause
         if self.aVariablesMachineClause: #TODO: ABSTRACT_VARIABLES
             assert self.aInvariantMachineClause and self.aInitialisationMachineClause
+        # TODO: much more self checking to do
 
 
     def eval_Variables(self, env):

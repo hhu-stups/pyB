@@ -447,11 +447,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AAbstractMachineParseUnit):
         # TODO: mch-parameters
         mch = env.current_mch
-        mch.type_included(type_check_bmch, type_env, env)
-        mch.type_extended(type_check_bmch, type_env, env)
-        mch.type_seen(type_check_bmch, type_env, env)
-        mch.type_used(type_check_bmch, type_env, env)
-
+        mch.type_child_machines(type_check_bmch, type_env, env)
 
         # add para-nodes to map
         for idNode in mch.aMachineHeader.children:
