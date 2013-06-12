@@ -39,19 +39,19 @@ def parse_json(lst):
     children = []
     for e in lst:
         if isinstance(e, str) or isinstance(e, unicode):
-            node = str_to_node(e)
+            node = __str_to_node(e)
         elif isinstance(e, list):
             child = parse_json(e)
             children.append(child)
         elif isinstance(e, dict):
-            add_sp_attr(node, e)
+            __add_sp_attr(node, e)
         else:
             raise Exception("Error while parsing json input! Check ASTJSON.java or parsing.py")
     node.children = children
     return node
 
 
-def add_sp_attr(node, dic):
+def __add_sp_attr(node, dic):
     if isinstance(node, AStringExpression):
         node.string = dic["string"]
     elif isinstance(node, AIdentifierExpression):
@@ -62,12 +62,12 @@ def add_sp_attr(node, dic):
         raise Exception("Error while parsing json input! Check ASTJSON.java or parsing.py")
 
 
-def str_to_node(string):
+def __str_to_node(string):
     if string==u'AStringExpression':
         return AStringExpression(None)
     elif string==u'AIdentifierExpression':
         return AIdentifierExpression(None)
     elif string==u'AIntegerExpression':
         return AIntegerExpression(None)
-    else: # TODO: metaprogramming at runtime (generate the other ~ 100 elifs)
+    else: # TODO: metaprogramming at import-time (generate the other ~ 100 elifs)
         return eval(string+"()") 

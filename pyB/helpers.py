@@ -160,6 +160,8 @@ def _find_var_nodes(node, lst, black_list):
             return #FIXME no children   
 
 
+# search for all substitutions which change a variable.
+# This is used in parallel-substitutions to detect modifications of the same vars.
 def find_assignd_vars(node):
     lst = []
     _find_assignd_vars(node, lst)  # side-effect: fills list
@@ -197,13 +199,6 @@ def flatten(lst, res):
         else:
             res = flatten(e, res)
     return res
-
-
-def is_flat(lst):
-    for e in lst:
-        if isinstance(e, list):
-            return False
-    return True
 
 
 # checks if a list contains a duplicate element
@@ -294,7 +289,8 @@ def _add_extended_and_promoted_ops(mch):
         for m in mch.extended_mch:
             mch.operations = mch.operations.union(m.operations)
     
-                    
+
+# Helper for debugging                     
 def print_ast(root):
     print root
     __print_ast(root, 1)

@@ -1,5 +1,6 @@
 from btypes import *
 
+# not used or implemented at the moment 
 def pyB_ext_length(b_string):
     return len(b_string)
 

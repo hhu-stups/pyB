@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import find_var_nodes, find_var_names, flatten, is_flat, double_element_check, find_assignd_vars, print_ast
+from helpers import find_var_nodes, find_var_names, flatten, double_element_check, find_assignd_vars, print_ast
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -11,9 +11,9 @@ from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 
-# used in tests and child mchs(included, seen...)
+# used in child mchs(included, seen...) and tests 
 # The data from the solution-files has already been read at the mch creation time
-# If a solution file has been given to pyB , this method 'should' never been called 
+# If a solution file has been given to pyB , this method 'should' NEVER been called 
 def _init_machine(root, env, mch):
 	mch.init_child_machines()
 	init_mch_param(root, env, mch)

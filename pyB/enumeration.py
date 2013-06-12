@@ -2,11 +2,11 @@
 from config import *
 from ast_nodes import *
 from btypes import *
-from helpers import flatten, is_flat, double_element_check, all_ids_known, print_ast
+from helpers import flatten, double_element_check, all_ids_known, print_ast
 from bexceptions import *
 
 # WARNING: most of the functions in this module should only be used
-# if the full set is needed in an expression. The functions are very slow 
+# if the full set is needed in an expression: The functions are very slow 
 
 # ** THE ENUMERATOR **
 # returns a list with "all" possible values of a type
@@ -215,6 +215,7 @@ def quick_enum_possible(root, env):
     if (isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate)) and all_ids_known(root, env):
         return True                                                                                            
     return False
+
     
 # the right side (or both) contain a infinit set
 # True  = no normal enumeration possible

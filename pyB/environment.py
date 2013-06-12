@@ -144,7 +144,7 @@ class Environment():
         # (3) fail
         raise Exception("unknown op: ",idName)
     
-    
+    # TODO: use dict (name->op)
     def find_operation_type(self, idName):
         for op in self.mch_operation_type:
             name = op.op_name
