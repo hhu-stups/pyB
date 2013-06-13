@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 # console user-interface
+
 def show_ui(env, mch, op_list):
     show_env(env)
     string, num_of_ops = show_ops(op_list, env)
@@ -12,7 +12,6 @@ def show_env(env):
     bstate = env.state_space.get_state()
     print_state(bstate)
     
-
 
 def print_state(bstate):
     for bmachine in bstate.bmch_dict:
