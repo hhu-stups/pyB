@@ -70,36 +70,36 @@ class TestTeam():
         assert res
 
     # every alstom-test runs about 5min.  
-    def test_team_alstom(self):
-        #run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-        #res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-        #assert res
-        #for i in range(43):
-		#	run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-		#	res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-		#	assert res
-		pass 
-		
-		
-    def test_team_alstom2(self):
-        #run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-        #res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-        #assert res
-        #for i in range(43):
-		#	run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-		#	res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-		#	assert res
-		pass   
-
-
-    def test_team_alstom3(self):
-        #run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-        #res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-        #assert res
-        ##import cProfile
-        ##cProfile.runctx('res = run_with_pyb(bfile_name=\"examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori\")', globals(),locals())
-        #for i in range(32):
-		#	run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-		#	res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-		#	assert res
-		pass             
+#     def test_team_alstom(self):
+#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+#         assert res
+#         for i in range(43):
+# 			run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+# 			res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+# 			assert res
+# 		#pass 
+# 		
+# 		
+#     def test_team_alstom2(self):
+#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+#         assert res
+#         for i in range(43):
+# 			run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+# 			res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+# 			assert res
+# 		#pass   
+# 
+# 
+#     def test_team_alstom3(self):
+#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+#         assert res
+#         #import cProfile
+#         #cProfile.runctx('res = run_with_pyb(bfile_name=\"examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori\")', globals(),locals())
+#         for i in range(32):
+# 			run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+# 			res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+# 			assert res
+# 		#pass             

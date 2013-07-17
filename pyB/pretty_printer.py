@@ -493,7 +493,7 @@ def pretty_print(node):
         string = pretty_print(node.children[0])
         return "conc("+string+")"
     elif isinstance(node, AStringExpression):
-        return node.stringing
+        return node.string
 
 # ****************
 #

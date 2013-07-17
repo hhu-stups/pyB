@@ -19,7 +19,7 @@ def run_repl():
             string_to_file("#EXPRESSION "+string, "temp.b")
             ast_string,error = file_to_AST_str_no_print("temp.b")
             root = str_ast_to_python_ast(ast_string)    
-        except NameError:
+        except NameError: #no expression
             string_to_file("#PREDICATE "+string, "temp.b")
             ast_string, error = file_to_AST_str_no_print("temp.b")
             if error:
