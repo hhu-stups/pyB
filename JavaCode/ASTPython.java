@@ -457,6 +457,7 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseACaseSubstitution(ACaseSubstitution node)
     {
         List<Node> children = new ArrayList<Node>();
+        String hasElse = "False";
         if(node.getExpression()!=null)
             children.add(node.getExpression());
         if(node.getEitherExpr()!=null)
@@ -466,10 +467,13 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getOrSubstitutions()!=null)
             children.addAll(node.getOrSubstitutions());
         if(node.getElse()!=null)
+        {
+            hasElse = "True";
             children.add(node.getElse());
+        }
         printStdOut_manyChildren(node, children);
-
         out.append("id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n");
+        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
     }
 
 

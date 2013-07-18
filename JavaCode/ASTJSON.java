@@ -505,6 +505,7 @@ public class ASTJSON extends DepthFirstAdapter{
     {
         out.append("[");
         List<Node> children = new ArrayList<Node>();
+        String hasElse = "False";
         if(node.getExpression()!=null)
             children.add(node.getExpression());
         if(node.getEitherExpr()!=null)
@@ -514,11 +515,15 @@ public class ASTJSON extends DepthFirstAdapter{
         if(node.getOrSubstitutions()!=null)
             children.addAll(node.getOrSubstitutions());
         if(node.getElse()!=null)
+        {
+            hasElse = "True";
             children.add(node.getElse());
+        }    
         printStdOut_manyChildren_nb(node, children);
         out.append(",");
 
         out.append("{\"expNum\":"+node.getEitherExpr().size()+"}");
+        out.append("{\"hasElse\":"+hasElse+"}");
         out.append("]");
     }
 

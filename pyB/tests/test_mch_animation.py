@@ -133,7 +133,7 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0==env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        #assert len(next_states)==2		#FIXME
+        assert len(next_states)==2		#FIXME
         assert next_states[0][0]=="op"
         bstate = next_states[0][3]
         env.state_space.add_state(bstate)
@@ -175,6 +175,36 @@ class TestMCHAnimation():
         env.state_space.add_state(bstate)
         assert 0 == env.get_value("xx")
 
+
+    def test_ani_toplevel_if_op2(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=0
+        OPERATIONS
+          op = IF xx>4 THEN xx := 4 ELSIF xx>3 THEN xx:=3 ELSE xx := 1 END 
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==1
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        assert 1 == env.get_value("xx")
+  
 
     def test_ani_toplevel_select_op(self):
         string ='''
@@ -286,6 +316,41 @@ class TestMCHAnimation():
 
 
 
+    def test_ani_toplevel_case_op(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=4
+        OPERATIONS
+          op = 
+	        CASE xx/2 OF 
+	        EITHER 0 THEN xx := 0 
+	        OR 2,4,8 THEN xx := 1 
+	        OR 3,9 THEN xx := 2 
+	        ELSE xx := -1 END
+	      END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 4 == env.get_value("xx")
+        next_states = calc_next_states(env,mch)
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
+        assert 1 == env.get_value("xx")
+        
+        
     def test_ani_toplevel_any_op(self):
         string ='''
         MACHINE Test
@@ -658,6 +723,95 @@ class TestMCHAnimation():
         env.state_space.add_state(bstate)
 
 
+
+    def test_ani_parallel_nondeterminism(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx, yy
+        INVARIANT xx:NAT & yy:NAT
+        INITIALISATION xx:=0; yy:=0
+        OPERATIONS
+          op = xx::{1,2,3} || yy::{4,5,6}
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        assert 0 == env.get_value("yy")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==9
+        assert env.get_value("xx") in [1,2,3]
+        assert env.get_value("yy") in [4,5,6]
+
+
+    def test_ani_sequence_nondeterminism(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx, yy, zz
+        INVARIANT xx:NAT & yy:NAT & zz:NAT
+        INITIALISATION xx:=0; yy:=0; zz:=0
+        OPERATIONS
+          op = BEGIN xx:=1 ; yy::{2,3,4} ; zz:= 5 END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        assert 0 == env.get_value("yy")
+        assert 0 == env.get_value("zz")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==3
+        assert env.get_value("xx")==1
+        assert env.get_value("yy") in [4,5,6]
+        assert env.get_value("zz")==5
+
+
+    def test_ani_sequence_nondeterminism2(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx, yy, zz
+        INVARIANT xx:NAT & yy:NAT & zz:NAT
+        INITIALISATION xx:=0; yy:=0; zz:=0
+        OPERATIONS
+          op = BEGIN xx:=1 ; yy:(yy>xx & yy<xx) ; zz:= 5 END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        assert 0 == env.get_value("yy")
+        assert 0 == env.get_value("zz")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==0
+ 
+        
     def test_ani_select_nondeterminism(self):
         string ='''
         MACHINE Test
@@ -1341,8 +1495,8 @@ class TestMCHAnimation():
         value = env.get_value("read") 
         assert value==frozenset([])
         next_states = calc_next_states(env,mch)
-        assert next_states[1][0]=="show"
-        bstate = next_states[1][3]
+        assert next_states[3][0]=="show"
+        bstate = next_states[3][3]
         names = [op[0] for op in next_states]         
         #op_and_state_list = calc_possible_operations(env, mch) 
         #names = [op[0].opName for op in op_and_state_list]
