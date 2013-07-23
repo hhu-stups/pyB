@@ -1684,9 +1684,47 @@ class TestMCHAnimation():
         varLoc = env.get_value("varLoc") 
         assert varLoc ==10
         
-        
-        
-        
+
+    # not B spec.    
+    def test_genAST_sub_while_nondeterminism(self):
+        string = '''        
+        MACHINE Test
+        VARIABLES rand, num
+        INVARIANT rand:NAT & num:INT
+        INITIALISATION rand:=1; num:=4
+        OPERATIONS
+        op = 
+		BEGIN
+	       num:=4;
+		   WHILE num-rand>0 DO
+				rand::{1,2};
+				num := num-rand 
+		   INVARIANT
+				num : INT & num:-1..4 & rand:NAT1 
+		   VARIANT 
+			  num
+		   END
+		END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==4
+        for lst in next_states:
+            bstate = lst[3]
+            env.state_space.add_state(bstate)
+            rand = env.get_value("rand")
+            num  = env.get_value("num")
+            assert (rand,num) in [(1,1),(2,0),(2,1),(2,2)] 
+ 
+       
     def test_genAST_sub_op_call_nondeterminism(self):
         # examples/Testcase.mch        
         #MACHINE Testcase
