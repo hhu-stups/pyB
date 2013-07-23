@@ -1211,7 +1211,7 @@ def typeit(node, env, type_env):
         for i in range(0, node.return_Num):
             atype = typeit(node.children[i], env, type_env)
             r_type = ret_types[i][1]
-            unify_equal(p_type, atype, type_env)
+            unify_equal(r_type, atype, type_env)
         return 
     elif isinstance(node, AExternalFunctionExpression):
         return node.pyb_type

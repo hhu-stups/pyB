@@ -1502,12 +1502,12 @@ def exec_substitution(sub, env):
         gen = try_all_values(pred, env, nodes)
         for possible in gen:
             if possible:
-				ex_generator = exec_substitution(sub.children[-1], env)
-				for also_possible in ex_generator:
-				    if also_possible:
-						env.pop_frame()
-						yield possible
-						env.push_new_frame(nodes)
+                ex_generator = exec_substitution(sub.children[-1], env)
+                for also_possible in ex_generator:
+                    if also_possible:
+                        env.pop_frame()
+                        yield possible
+                        env.push_new_frame(nodes)
         env.pop_frame()
         yield False
     elif isinstance(sub, AOpSubstitution):
@@ -1531,15 +1531,20 @@ def exec_substitution(sub, env):
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         ex_generator = exec_substitution(op_node.children[-1], env)
-        possible = ex_generator.next()
+        for possible in ex_generator:
+            # switch back machine
+            env.pop_frame()
+            env.current_mch = temp
+            yield possible
+            temp = env.current_mch
+            env.current_mch = boperation.owner_machine
+            env.push_new_frame(id_nodes)
+            for i in range(len(para_types)):
+                name = para_types[i][0].idName
+                env.set_value(name, values[i])
         # switch back machine
         env.pop_frame()
         env.current_mch = temp
-        # check if op was executable 
-        # TODO: yield possible?
-        if not possible:
-            yield False
-        yield True
     elif isinstance(sub, AOpWithReturnSubstitution):
         # set up
         boperation = env.find_operation(sub.idName)
@@ -1562,28 +1567,32 @@ def exec_substitution(sub, env):
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
         ex_generator = exec_substitution(op_node.children[-1], env)
-        possible = ex_generator.next()
-        if not possible:
+        for possible in ex_generator:
+            results = []
+            for r in ret_types:
+                name = r[0].idName
+                value = env.get_value(name)
+                results.append(value)
+            # restore old frame after remembering return values
             # switch back machine
             env.pop_frame()
             env.current_mch = temp
-            yield False
-        results = []
-        for r in ret_types:
-            name = r[0].idName
-            value = env.get_value(name)
-            results.append(value)
-        # restore old frame after remembering return values
-        # switch back machine
+            # write results to vars
+            for i in range(sub.return_Num):
+                ass_node = sub.children[i]
+                value = results[i]
+                name = ass_node.idName
+                env.set_value(name, value)
+            yield possible
+            temp = env.current_mch
+            env.current_mch = boperation.owner_machine
+            env.push_new_frame(id_nodes)
+            for i in range(len(para_types)):
+                name = para_types[i][0].idName
+                env.set_value(name, values[i])
         env.pop_frame()
         env.current_mch = temp
-        # write results to vars
-        for i in range(sub.return_Num):
-            ass_node = sub.children[i]
-            value = results[i]
-            name = ass_node.idName
-            env.set_value(name, value)
-        yield True
+
 
 
 

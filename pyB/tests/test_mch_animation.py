@@ -133,7 +133,7 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0==env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert len(next_states)==2		#FIXME
+        assert len(next_states)==2      #FIXME
         assert next_states[0][0]=="op"
         bstate = next_states[0][3]
         env.state_space.add_state(bstate)
@@ -324,12 +324,12 @@ class TestMCHAnimation():
         INITIALISATION xx:=4
         OPERATIONS
           op = 
-	        CASE xx/2 OF 
-	        EITHER 0 THEN xx := 0 
-	        OR 2,4,8 THEN xx := 1 
-	        OR 3,9 THEN xx := 2 
-	        ELSE xx := -1 END
-	      END
+            CASE xx/2 OF 
+            EITHER 0 THEN xx := 0 
+            OR 2,4,8 THEN xx := 1 
+            OR 3,9 THEN xx := 2 
+            ELSE xx := -1 END
+          END
         END'''
         # Build AST
         string_to_file(string, file_name)
@@ -632,8 +632,8 @@ class TestMCHAnimation():
             bstate = op_and_state[3]
             env.state_space.add_state(bstate) 
             if env.get_value("xx")<0:
-            	assert not interpret(root.children[2], env)
-            	false_num = false_num +1
+                assert not interpret(root.children[2], env)
+                false_num = false_num +1
             else:
                 assert interpret(root.children[2], env)
         assert false_num==env._max_int
@@ -1378,18 +1378,18 @@ class TestMCHAnimation():
         # side effect: loades examples/Goods.mch and Price.mch           
         string = '''
         MACHINE           Customer
-		SEES         	  Price, Goods 
-		CONSTANTS         limit
-		PROPERTIES        limit : GOODS --> NAT1
-		VARIABLES         purchases
-		INVARIANT         purchases <: GOODS
-		INITIALISATION    purchases := {}
-		OPERATIONS
-		pp <-- buy(gg) =
-  			PRE gg : GOODS & price(gg) <= limit(gg)
-  			THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
-  			END
-		END'''
+        SEES              Price, Goods 
+        CONSTANTS         limit
+        PROPERTIES        limit : GOODS --> NAT1
+        VARIABLES         purchases
+        INVARIANT         purchases <: GOODS
+        INITIALISATION    purchases := {}
+        OPERATIONS
+        pp <-- buy(gg) =
+            PRE gg : GOODS & price(gg) <= limit(gg)
+            THEN purchases := purchases \/ {gg} || pp <-- pricequery(gg)
+            END
+        END'''
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
@@ -1683,3 +1683,42 @@ class TestMCHAnimation():
         env.state_space.add_state(bstate)
         varLoc = env.get_value("varLoc") 
         assert varLoc ==10
+        
+        
+        
+        
+    def test_genAST_sub_op_call_nondeterminism(self):
+        # examples/Testcase.mch        
+        #MACHINE Testcase
+        #VARIABLES xx
+        #INVARIANT xx:NAT
+        #INITIALISATION xx:=4
+        #OPERATIONS
+        #  op1 = xx::{1,2,3};
+        #  op2(zz) = xx::{1,2,zz};
+        #  rr <-- op3 = rr::{1,2,3};
+        #  rr <-- op4(zz) = rr::{1,2,zz}
+        #END
+        string = '''
+        MACHINE           Test
+        INCLUDES          Testcase
+        VARIABLES         yy
+        INVARIANT         yy:NAT
+        INITIALISATION    yy := 1
+        OPERATIONS
+           opA = op1;
+           opB = op2(4);
+           opC = yy <-- op3;
+           opD = yy <-- op4(4)
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        interpret(root, env) # init VARIABLES and eval INVARIANT
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==3*4
