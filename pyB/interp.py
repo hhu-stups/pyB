@@ -1314,13 +1314,13 @@ def exec_substitution(sub, env):
             env.set_value(name, value)
         yield subst_was_possible # False if no branch was executable 
     elif isinstance(sub, ASequenceSubstitution):
+        subst_list = []
         for child in sub.children:
-            assert isinstance(child, Substitution) 
-            ex_generator = exec_substitution(child, env)
-            possible = ex_generator.next() #FIXME: loop
-            if not possible:
-                yield False
-        yield True # only True if all subst. are True
+            assert isinstance(child, Substitution)
+            subst_list.append(child)
+        # for explanation see function comments 
+        for possible in exec_sequence_substitution(subst_list, env):
+            yield possible
     elif isinstance(sub, AWhileSubstitution):
         print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace warning
         condition = sub.children[0]
@@ -1347,12 +1347,9 @@ def exec_substitution(sub, env):
 #
 # ***********************
     elif isinstance(sub, ABlockSubstitution):
-        for child in sub.children:
-            ex_generator = exec_substitution(child, env)
-            possible = ex_generator.next()
-            if not possible:
-                yield False
-        yield True # only True if all subst. are True
+        ex_generator = exec_substitution(sub.children[-1], env)
+        for possible in ex_generator:
+            yield possible
     elif isinstance(sub, APreconditionSubstitution):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
@@ -1593,7 +1590,22 @@ def exec_substitution(sub, env):
         env.pop_frame()
         env.current_mch = temp
 
-
+# a sequence substitution is only executable if every substitution it consist of is
+# executable. If these substitutions are nondeterministic there maybe different "paths"
+# of execution. Substituions may effect each other, so the order of execution musst be preserved
+def exec_sequence_substitution(subst_list, env):
+    ex_generator = exec_substitution(subst_list[0], env)
+    if len(subst_list)==1:
+        for possible in ex_generator:
+            yield possible
+    else:
+        assert len(subst_list)>1
+        for possible in ex_generator:
+            if possible:
+                ex_seq_generator = exec_sequence_substitution(subst_list[1:], env)
+                for others_possible in ex_seq_generator:
+                    yield others_possible
+    
 
 
 def replace_node(ast, idNode, replaceNode):

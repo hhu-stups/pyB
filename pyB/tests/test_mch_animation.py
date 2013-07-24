@@ -749,6 +749,9 @@ class TestMCHAnimation():
         assert 0 == env.get_value("yy")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==9
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
         assert env.get_value("xx") in [1,2,3]
         assert env.get_value("yy") in [4,5,6]
 
@@ -779,8 +782,11 @@ class TestMCHAnimation():
         assert 0 == env.get_value("zz")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3
+        assert next_states[0][0]=="op"
+        bstate = next_states[0][3]
+        env.state_space.add_state(bstate)
         assert env.get_value("xx")==1
-        assert env.get_value("yy") in [4,5,6]
+        assert env.get_value("yy") in [2,3,4]
         assert env.get_value("zz")==5
 
 

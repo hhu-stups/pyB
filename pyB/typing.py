@@ -1217,7 +1217,8 @@ def typeit(node, env, type_env):
         return node.pyb_type
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
-        #print "WARNING: unhandeld node:", node
+        #print "WARNING: unhandeld node:", node #DEBUG
+        # This case is used for all nodes which just perform depth-first-search 
         for child in node.children:
             typeit(child, env, type_env)
 
