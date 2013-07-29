@@ -97,7 +97,7 @@ def calc_next_states(env, bmachine):
                                 # (3.2.2) get parameter and return-value solutions
                                 parameter_value_list = get_value_list(env, parameter_idNodes)
                                 return_value_list    = get_value_list(env, return_val_idNodes)
-                                print parameter_value_list
+                                #print parameter_value_list
                                 env.pop_frame() # pop on the cloned state
                                 bstate2 = env.state_space.get_state().clone() #XXX: remove?
                                 result.append([op.opName, parameter_value_list, return_value_list, bstate2])

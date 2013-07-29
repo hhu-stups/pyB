@@ -1327,18 +1327,24 @@ def exec_substitution(sub, env):
         doSubst   = sub.children[1]
         invariant = sub.children[2]
         variant   = sub.children[3]
-        assert isinstance(doSubst, Substitution) 
+        assert isinstance(condition, Predicate) 
+        assert isinstance(doSubst, Substitution)
+        assert isinstance(invariant, Predicate)  
+        assert isinstance(variant, Expression) 
         v_value = interpret(variant, env)
-        while interpret(condition, env):
-            assert interpret(invariant, env)
-            ex_generator = exec_substitution(doSubst, env)
-            possible = ex_generator.next() #FIXME: loop
-            if not possible:
-                yield False
-            temp = interpret(variant, env)
-            assert temp < v_value
-            v_value = temp
-        yield True
+        ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+        for possible in ex_while_generator:
+            yield possible
+        #while interpret(condition, env):
+        #    assert interpret(invariant, env)
+        #    ex_generator = exec_substitution(doSubst, env)
+        #    possible = ex_generator.next() #FIXME: loop
+        #    if not possible:
+        #        yield False
+        #    temp = interpret(variant, env)
+        #    assert temp < v_value
+        #    v_value = temp
+        #yield True
 
 
 # **********************
@@ -1590,6 +1596,7 @@ def exec_substitution(sub, env):
         env.pop_frame()
         env.current_mch = temp
 
+
 # a sequence substitution is only executable if every substitution it consist of is
 # executable. If these substitutions are nondeterministic there maybe different "paths"
 # of execution. Substituions may effect each other, so the order of execution musst be preserved
@@ -1606,8 +1613,34 @@ def exec_sequence_substitution(subst_list, env):
                 for others_possible in ex_seq_generator:
                     yield others_possible
     
+    
+# same es exec_sequence_substitution (see above)
+def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
+    # always use the bstate of the last iteration 
+    # without this copy the state of the last iteration can not restored 
+    # after the first successful while-loop termination. 
+    # This code would only be correct for non-deterministic while-loops
+    bstate = env.state_space.get_state().clone()
+    if not interpret(condition, env):
+        yield True  #loop has already been entered. Not condition means success of "exec possible"
+    else: 
+        assert interpret(invariant, env)
+        ex_generator = exec_substitution(doSubst, env)
+        for possible in ex_generator:
+            #print possible
+            if possible:
+                temp = interpret(variant, env)
+                assert temp < v_value
+                ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, temp, env)
+                for other_possible in ex_while_generator:
+                     yield other_possible
+                env.state_space.undo() # pop last bstate
+                # restore the bstate of the last recursive call (python-level) 
+                # i.e the last loop iteration (B-level)
+                env.state_space.add_state(bstate) 
+        yield False
 
-
+                 
 def replace_node(ast, idNode, replaceNode):
     if isinstance(ast, AIdentifierExpression) or isinstance(ast, AStringExpression) or isinstance(ast, AIntegerExpression):
         return ast
