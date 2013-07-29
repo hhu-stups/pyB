@@ -843,6 +843,9 @@ public class ASTJSON extends DepthFirstAdapter{
         if (node.getPredicate()!=null)
             children.add(node.getPredicate());
         printStdOut_manyChildren(node, children);
+        
+        if(node.getIdentifiers()!=null)
+        	out.append("{\"idNum\":"+node.getIdentifiers().size()+"}");
     }
 
 
@@ -949,6 +952,9 @@ public class ASTJSON extends DepthFirstAdapter{
         if (node.getSet()!=null)
             children.add(node.getSet());
         printStdOut_manyChildren(node, children);
+        
+        if(node.getIdentifiers()!=null)
+        	out.append("{\"idNum\":"+node.getIdentifiers().size()+"}");
     }
 
 

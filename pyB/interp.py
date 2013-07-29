@@ -89,6 +89,7 @@ def check_properties(node, env, mch):
                 print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
             assert prop_result
 
+
 # search a conjunction of predicates for a false subpredicate and prints it.
 # This python function is used to get better error massages for failing properties or invariants
 def print_predicate_fail(env, node):
@@ -1273,46 +1274,37 @@ def exec_substitution(sub, env):
                 env.push_new_frame(nodes) #enum next value in next-interation
         env.pop_frame()
     elif isinstance(sub, AParallelSubstitution):
-        new_values = [] # values changed by this path
-        subst_was_possible = False
-        # 1. exec. every parallel path and remember changed values for late lookup
+        # 0. setup: get all substitutions 
+        subst_list = []      
         for child in sub.children:
-            assignd_ids = find_assignd_vars(child)
-            assignd_ids = list(set(assignd_ids)) # remove double entrys
-            bstate = env.get_state().clone()
-            env.state_space.add_state(bstate) # TODO: write clean interface 
-            # 1.1 calc path
-            assert isinstance(child, Substitution)    
-            ex_generator = exec_substitution(child, env) #FIXME: loop
-            possible = ex_generator.next()
-            if possible:
-                subst_was_possible = possible
-            # 1.2. remember (possible) changes
-            possible_new_values = {}
-            for name in assignd_ids:
-                val = env.get_value(name)
-                possible_new_values[name] = val
-            env.state_space.undo() #set to old state and drop other state
-            # 1.3 test for changes
-            for name in assignd_ids:
-                new = possible_new_values[name]
-                old = env.get_value(name)
-                if not new==old: # change! - remember it
-                    new_values.append(tuple([name, new]))
-        # 2. test: no variable can be modified twice (see page 108)
-        # check for double entrys -> Error
-        id_names = [x[0] for x in new_values]
-        while not id_names==[]:
-            name = id_names.pop()
-            if name in id_names:
-                string = name + " modified twice in parallel substitution!"
-                raise Exception(string)
-        # 3. write changes to state
-        for pair in new_values:
-            name = pair[0]
-            value = pair[1]
-            env.set_value(name, value)
-        yield subst_was_possible # False if no branch was executable 
+            assert isinstance(child, Substitution)
+            subst_list.append(child)
+        if subst_list==[]:
+            yield False
+        else:
+		    ref_state = env.get_state().clone()
+		    new_values = [] # values changed by this path
+		    # for explanation see function comments  
+		    ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, new_values)
+		    for possible in ex_pa_generator:
+		        # 1. possible combination found
+		        if possible:
+					# 2. test: no variable can be modified twice (see page 108)
+					# check for double entrys -> Error
+					id_names = [x[0] for x in new_values]
+					while not id_names==[]:
+						name = id_names.pop()
+						if name in id_names:
+							string = name + " modified twice in parallel substitution!"
+							raise Exception(string)
+					# 3. write changes to state
+					for pair in new_values:
+						name = pair[0]
+						value = pair[1]
+						env.set_value(name, value)
+					yield True # False if no branch was executable
+					# 4. reset for next loop
+					ref_state = env.get_state().clone()                  
     elif isinstance(sub, ASequenceSubstitution):
         subst_list = []
         for child in sub.children:
@@ -1322,7 +1314,7 @@ def exec_substitution(sub, env):
         for possible in exec_sequence_substitution(subst_list, env):
             yield possible
     elif isinstance(sub, AWhileSubstitution):
-        print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace warning
+        print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace/move warning
         condition = sub.children[0]
         doSubst   = sub.children[1]
         invariant = sub.children[2]
@@ -1335,16 +1327,6 @@ def exec_substitution(sub, env):
         ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
         for possible in ex_while_generator:
             yield possible
-        #while interpret(condition, env):
-        #    assert interpret(invariant, env)
-        #    ex_generator = exec_substitution(doSubst, env)
-        #    possible = ex_generator.next() #FIXME: loop
-        #    if not possible:
-        #        yield False
-        #    temp = interpret(variant, env)
-        #    assert temp < v_value
-        #    v_value = temp
-        #yield True
 
 
 # **********************
@@ -1613,7 +1595,49 @@ def exec_sequence_substitution(subst_list, env):
                 for others_possible in ex_seq_generator:
                     yield others_possible
     
-    
+            
+# same es exec_sequence_substitution (see above)
+def exec_parallel_substitution(subst_list, env, ref_state, new_values):
+    if len(subst_list)==0:
+        yield True            
+    else:
+        assert len(subst_list)>0
+        child = subst_list[0]
+        # 1.1 setup: find changed vars (for later checks)
+        # use ref_state (parallel substitutions musst not effect each other)
+        assignd_ids = find_assignd_vars(child)
+        assignd_ids = list(set(assignd_ids)) # remove double entries
+        bstate = ref_state.clone()
+        env.state_space.add_state(bstate)    # TODO: write clean interface          
+        ex_generator = exec_substitution(child, env)
+        for possible in ex_generator:
+            # This path is executable. Maybe it changes the same vars but this is checked later
+            if possible: 
+                # 1.2. remember (possible) changes
+                possible_new_values = {}
+                for name in assignd_ids:
+                    val = env.get_value(name)
+                    possible_new_values[name] = val
+                env.state_space.undo() #set to old state and drop other state
+                # 1.3 test for changes
+                pop_num = 0
+                for name in assignd_ids:
+                    new = possible_new_values[name]
+                    old = env.get_value(name)
+                    if not new==old: # change! - remember it
+                        pop_num = pop_num + 1
+                        new_values.append(tuple([name, new]))
+                ex_pa_generator = exec_parallel_substitution(subst_list[1:], env, ref_state, new_values)
+                for others_possible in ex_pa_generator:
+                    yield others_possible
+                # 1.4 revert. Different paths musst not effect each other
+                bstate = ref_state.clone()
+                env.state_space.add_state(bstate)
+                for i in range(pop_num):
+                    new_values.pop()
+        env.state_space.undo()
+                                         
+                                            
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
     # always use the bstate of the last iteration 
@@ -1627,7 +1651,6 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
         assert interpret(invariant, env)
         ex_generator = exec_substitution(doSubst, env)
         for possible in ex_generator:
-            #print possible
             if possible:
                 temp = interpret(variant, env)
                 assert temp < v_value

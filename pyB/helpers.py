@@ -183,6 +183,11 @@ def _find_assignd_vars(node, lst):
             idNode = node.children[i]
             assert isinstance(idNode, AIdentifierExpression)
             lst.append(idNode.idName)
+    elif isinstance(node, ABecomesElementOfSubstitution) or isinstance(node, ABecomesSuchSubstitution):
+        for i in range(node.idNum):
+            idNode = node.children[i]
+            assert isinstance(idNode, AIdentifierExpression)
+            lst.append(idNode.idName)            
     else:
         try:
             for n in node.children:
