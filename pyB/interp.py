@@ -176,7 +176,7 @@ def _learn_assigned_values(root, env, lst):
             _learn_assigned_values(node, env, lst)
 
 
-# sideeffect:
+# side-effect:
 # evals pred and sets var to values
 # main interpreter-switch (sorted/grouped like b-toolkit list)
 # Predicate Nodes Return True/False

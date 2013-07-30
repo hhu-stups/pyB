@@ -115,6 +115,23 @@ def calc_next_states(env, bmachine):
     result = sorted(result, key = lambda state: state[0])
     return result
 
+# NOT USED YET
+def calc_init_states(env, mch):
+    result = []
+    ref_bstate = env.state_space.get_state().clone()
+    env.state_space.add_state(ref_bstate)
+    substitution = mch.aInitialisationMachineClause.children[-1]
+    assert isinstance(substitution, Substitution)
+    ex_sub_generator = exec_substitution(substitution, env)
+    for possible in ex_sub_generator:
+        if possible:
+            bstate = env.state_space.get_state()       
+            result.append(["INITIALISATION", [], [], bstate])
+            env.state_space.undo()
+            env.state_space.add_state(ref_bstate)
+    env.state_space.undo()
+    return result
+      
 
 def set_parameter_values(env, parameter_idNodes, solution):
     for name in [x.idName for x in parameter_idNodes]:
