@@ -6,7 +6,7 @@ from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str
 from environment import Environment
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
-from interp import interpret, write_solutions_to_env, set_up_sets, set_up_constants, check_properties, init_mch_param
+from interp import interpret, write_solutions_to_env, init_sets, init_constants, check_properties, init_mch_param
 from definition_handler import DefinitionHandler
 
 
@@ -38,7 +38,7 @@ def run_with_pyb(bfile_name):
     mch = parse_ast(ast_root, env)    
     type_check_bmch(ast_root, env, mch) # also checks all included, seen, used and extend
     init_mch_param(ast_root, env, mch)
-    set_up_sets(ast_root, env, mch)
+    init_sets(ast_root, env, mch)
     
     # check properties and invariant 
     check_properties(ast_root, env, mch)

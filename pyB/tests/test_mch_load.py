@@ -237,7 +237,7 @@ class TestMCHLaod():
 
         CONSTANTS         total
 
-        PROPERTIES        card(NAME) > capacity & total : NAT1 & total > 2
+        PROPERTIES        total : NAT1 & total > 2
 
         VARIABLES         member, waiting
 

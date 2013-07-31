@@ -6,6 +6,7 @@ MAX_NEXT_STATES  = 20   # not implemented yet
 MAX_SELECT_BRANCHES = 4 # not implemented yet 
 ENABLE_ASSERTIONS = True
 DEFERRED_SET_ELEMENTS_NUM = 3
+SET_PARAMETER_NUM = 3
 TO_MANY_ITEMS = 2*16    # sets with more items are handeld like infinite sets
 DEFAULT_INPUT_FILENAME = "input.txt"
 VERBOSE = True

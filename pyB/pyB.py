@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env, set_up_sets, set_up_constants, check_properties,init_mch_param
+from interp import interpret, write_solutions_to_env, init_sets, init_constants, check_properties,init_mch_param
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
@@ -75,9 +75,9 @@ def run_animation_mode():
     
         # Sets St and constants k which meet the constraints c make the properties B True
         # C => #St,k.B
-        set_up_sets(root, env, mch)
+        init_sets(root, env, mch)
         if not solution_file_name_str:
-            set_up_constants(root, env, mch)
+            init_constants(root, env, mch)
         check_properties(root, env, mch)
         
         # If C and B is True there should be Variables v which make the Invaraiant I True
@@ -101,7 +101,6 @@ def run_animation_mode():
             if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
                 show_env(env)
                 break
-            #n = show_ui(env, mch, op_list)
             n = show_ui(env, mch, next_states)
             input_str = "Input (0-"+str(n)+"):"
             number = raw_input(input_str)
@@ -112,12 +111,14 @@ def run_animation_mode():
                 else:
                     print "No undo possible: current state is init. state"
             elif number == n:
+                # quit
                 break
-            else:
-                assert len(next_states)>number
-                assert number >= 0
+            elif len(next_states)>number and number >= 0:
+                # switch state
                 bstate = next_states[number][3]
                 env.state_space.add_state(bstate)
+            else:
+                print "Error! Wrong input:", number
 
 
 

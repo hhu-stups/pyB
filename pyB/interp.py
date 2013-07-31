@@ -16,41 +16,69 @@ from animation_clui import print_values_b_style
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
 def _init_machine(root, env, mch):
     mch.init_child_machines()
-    init_mch_param(root, env, mch)
-    set_up_sets(root, env, mch)
-    set_up_constants(root, env, mch)
-    check_properties(root, env, mch)
+    param_generator = init_mch_param(root, env, mch)
+    param_generator.next()
+    init_sets(root, env, mch)
+    init_constants(root, env, mch)
+    check_properties(root, env, mch)    
     mch.eval_Variables(env)
     mch.eval_Assertions(env)
     mch.eval_Init(env)
 
 
+def set_up_constants(root, env, mch):
+    # set up constants of children
+    #for 
+    #_init_child_machine(self.included_mch)
+    #    self._init_child_machine(self.extended_mch)
+    #    self._init_child_machine(self.seen_mch)
+    #    self._init_child_machine(self.used_mch)
+    param_generator = init_mch_param(root, env, mch)
+    param_generator.next()
+    init_sets(root, env, mch)
+    init_constants(root, env, mch)
+    check_properties(root, env, mch) 
+  
+
 # FIXME: dummy-init of mch-parameters
+# inconsistency between schneider-book page 61 and the table on manrefb page 110.
+# This implementation is compatible to manrefb: The Properties-clause is not used!
 def init_mch_param(root, env, mch):
     env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
-    # TODO: retry if no animation possible
+    # TODO: retry with different set elem. num if no animation possible
     for n in mch.set_params:
         atype = env.get_type_by_node(n)
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
+        elem_lst = []
         name = n.idName 
-        env.set_value(name, frozenset(["0_"+name,"1_"+name,"2_"+name]))
+        for i in range(SET_PARAMETER_NUM):
+            e_name = str(i)+"_"+name
+            elem_lst.append(e_name)      
+        env.set_value(name, frozenset(elem_lst))
     for n in mch.scalar_params:
         # page 126
         atype = env.get_type_by_node(n)
         assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
     if not mch.scalar_params==[]:
-        assert not mch.aConstraintsMachineClause==None
+        print "scalar_param", mch.name
+        if mch.aConstraintsMachineClause==None:
+            raise Exception("Missing ConstraintsMachineClause in %s" % mch.name)
         pred = mch.aConstraintsMachineClause
         gen = try_all_values(pred, env, mch.scalar_params)
-        assert gen.next()
+        for possible in gen:
+            if possible:
+                yield True
+        yield False
+    yield True
 
-def set_up_sets(node, env, mch):
+
+def init_sets(node, env, mch):
     if mch.aSetsMachineClause: # St
         interpret(mch.aSetsMachineClause, env)  
 
 # TODO: enable possibilities for animation and user choice 
-def set_up_constants(node, env, mch):
+def init_constants(node, env, mch):
     if mch.aConstantsMachineClause: # k
         interpret(mch.aConstantsMachineClause, env)
 
@@ -1282,29 +1310,29 @@ def exec_substitution(sub, env):
         if subst_list==[]:
             yield False
         else:
-		    ref_state = env.get_state().clone()
-		    new_values = [] # values changed by this path
-		    # for explanation see function comments  
-		    ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, new_values)
-		    for possible in ex_pa_generator:
-		        # 1. possible combination found
-		        if possible:
-					# 2. test: no variable can be modified twice (see page 108)
-					# check for double entrys -> Error
-					id_names = [x[0] for x in new_values]
-					while not id_names==[]:
-						name = id_names.pop()
-						if name in id_names:
-							string = name + " modified twice in parallel substitution!"
-							raise Exception(string)
-					# 3. write changes to state
-					for pair in new_values:
-						name = pair[0]
-						value = pair[1]
-						env.set_value(name, value)
-					yield True # False if no branch was executable
-					# 4. reset for next loop
-					ref_state = env.get_state().clone()                  
+            ref_state = env.get_state().clone()
+            new_values = [] # values changed by this path
+            # for explanation see function comments  
+            ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, new_values)
+            for possible in ex_pa_generator:
+                # 1. possible combination found
+                if possible:
+                    # 2. test: no variable can be modified twice (see page 108)
+                    # check for double entrys -> Error
+                    id_names = [x[0] for x in new_values]
+                    while not id_names==[]:
+                        name = id_names.pop()
+                        if name in id_names:
+                            string = name + " modified twice in parallel substitution!"
+                            raise Exception(string)
+                    # 3. write changes to state
+                    for pair in new_values:
+                        name = pair[0]
+                        value = pair[1]
+                        env.set_value(name, value)
+                    yield True # False if no branch was executable
+                    # 4. reset for next loop
+                    ref_state = env.get_state().clone()                  
     elif isinstance(sub, ASequenceSubstitution):
         subst_list = []
         for child in sub.children:
@@ -1462,7 +1490,7 @@ def exec_substitution(sub, env):
                 for possible in ex_generator:
                     yield possible
         if all_cond_false and sub.hasElse=="False":
-            yield True #invisible Else (page 95 manref)
+            yield True #invisible Else (page 95 manrefb)
     elif isinstance(sub, AVarSubstitution):
         nodes = []
         for idNode in sub.children[:-1]:
