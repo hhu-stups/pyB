@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env, init_sets, init_constants, check_properties,init_mch_param
+from interp import interpret, write_solutions_to_env, init_variables, init_sets, init_constants, check_properties, init_mch_param, eval_Invariant
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
@@ -65,7 +65,11 @@ def run_animation_mode():
         type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
         if not solution_file_name_str:
-            mch.init_child_machines()
+			for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
+				for m in machine_list:
+					env.current_mch = m
+					interpret(m.root, env)
+			env.current_mch = mch 
     
         # TODO: Check with B spec
         # Schneider Book page 62-64:
@@ -78,23 +82,26 @@ def run_animation_mode():
         init_sets(root, env, mch)
         if not solution_file_name_str:
             init_constants(root, env, mch)
-        check_properties(root, env, mch)
+        prop_generator = check_properties(root, env, mch)
+        prop_generator.next()
         
         # If C and B is True there should be Variables v which make the Invaraiant I True
         # TODO: B & C => #v.I
         if not solution_file_name_str:
-            mch.eval_Variables(env)
+            init_variables(root, env, mch)
         
     
         # Not in schneiders book:
-        mch.eval_Assertions(env)
+        if mch.aAssertionsMachineClause:
+            interpret(mch.aAssertionsMachineClause, env)
         # TODO: init musst be an animation step
         if not solution_file_name_str:
-            mch.eval_Init(env)
+			if mch.aInitialisationMachineClause:
+				interpret(mch.aInitialisationMachineClause, env)
                                                                		 # 9. animate if ops are present                                                    
         # DO-WHILE Loop
         while True:
-            print mch.name," - Invariant:", mch.eval_Invariant(env)  # TODO: move print to animation_clui
+            print mch.name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
             #op_list = calc_possible_operations(env, mch)            # List of lists
             #op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
             next_states = calc_next_states(env,mch)
@@ -146,9 +153,11 @@ def run_checking_mode():
         # no init of seen, used, extended and included B-machines
         init_mch_param(root, env, mch)
         set_up_sets(root, env, mch) # TODO: remove when sets are part of probsolutionfile
-        check_properties(root, env, mch)
-        mch.eval_Assertions(env)
-        return mch.eval_Invariant(env)   
+        prop_generator = check_properties(root, env, mch)
+        prop_generator.next()
+        if mch.aAssertionsMachineClause:
+            interpret(mch.aAssertionsMachineClause, env)
+        return eval_Invariant(root, env, mch)   
 
 
 ###### MAIN PROGRAM ######

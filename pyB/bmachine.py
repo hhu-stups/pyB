@@ -7,7 +7,7 @@ from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION
 # -*- coding: utf-8 -*-
 # abstract machine
 class BMachine:
-    def __init__(self, node, interpreter_method, env):
+    def __init__(self, node, env):
         self.name = None
         self.const_names = []
         self.var_names = []
@@ -22,7 +22,6 @@ class BMachine:
         self.seen_mch     = []    # list of b-mchs
         self.used_mch     = []    # list of b-mchs
         self.operations   = frozenset([])    # set of operations (to easy avoid double entries)
-        self.interpreter_method = interpreter_method
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
         self.aSetsMachineClause = None
@@ -146,7 +145,7 @@ class BMachine:
                 if error:
                     print error
                 exec ast_string
-                mch = BMachine(root, self.interpreter_method, self.env)
+                mch = BMachine(root, self.env)
                 mch.recursive_self_parsing()
                 mch_list.append(mch)    
 
@@ -194,25 +193,7 @@ class BMachine:
             type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = self
-         
-         
-    # inits included, extended, seen or used b machines
-    # only called by pyB.py (direct or indirect via. _init_machine)
-    # only called once
-    def init_child_machines(self):
-        self._init_child_machine(self.included_mch)
-        self._init_child_machine(self.extended_mch)
-        self._init_child_machine(self.seen_mch)
-        self._init_child_machine(self.used_mch)
-           
-           
-    def _init_child_machine(self, machine_list):
-        if machine_list:
-            for mch in machine_list:
-                self.env.current_mch = mch
-                self.interpreter_method(mch.root, self.env)
-            self.env.current_mch = self              
+        self.env.current_mch = self  
 
 
     def self_check(self):
@@ -223,27 +204,7 @@ class BMachine:
             assert self.aPropertiesMachineClause
         if self.aVariablesMachineClause: #TODO: ABSTRACT_VARIABLES
             assert self.aInvariantMachineClause and self.aInitialisationMachineClause
-        # TODO: much more self checking to do
+        # TODO: much more self checking to do e.g visibility 
 
 
-    def eval_Variables(self, env):
-        if self.aVariablesMachineClause:
-            self.interpreter_method(self.aVariablesMachineClause, env)
-
-
-    def eval_Init(self, env):
-        if self.aInitialisationMachineClause:
-            self.interpreter_method(self.aInitialisationMachineClause, env)
-
-
-    def eval_Invariant(self, env):
-        if self.aInvariantMachineClause:
-            return self.interpreter_method(self.aInvariantMachineClause, env)
-        else:
-            return None
-
-
-    def eval_Assertions(self, env):
-        if self.aAssertionsMachineClause:
-            self.interpreter_method(self.aAssertionsMachineClause, env)
 

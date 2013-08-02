@@ -11,34 +11,81 @@ from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 
+
+
+
+def eval_Invariant(root, env, mch):
+    if mch.aInvariantMachineClause:
+        return interpret(mch.aInvariantMachineClause, env)
+    else:
+        return None
+
+            
 # used in child mchs(included, seen...) and tests 
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
 def _init_machine(root, env, mch):
-    mch.init_child_machines()
+    # init children
+    for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
+        for m in machine_list:
+            env.current_mch = m
+            interpret(m.root, env)
+    env.current_mch = mch 
+     
+    # init mch
     param_generator = init_mch_param(root, env, mch)
     param_generator.next()
     init_sets(root, env, mch)
     init_constants(root, env, mch)
-    check_properties(root, env, mch)    
-    mch.eval_Variables(env)
-    mch.eval_Assertions(env)
-    mch.eval_Init(env)
+    prop_generator = check_properties(root, env, mch)   
+    prop_generator.next() 
+    init_variables(root, env, mch)
+    if mch.aAssertionsMachineClause:
+        interpret(mch.aAssertionsMachineClause, env)
+    if mch.aInitialisationMachineClause:
+        interpret(mch.aInitialisationMachineClause, env)
 
 
+# TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
+# TODO: Limit number of solutions via config.py
 def set_up_constants(root, env, mch):
     # set up constants of children
-    #for 
-    #_init_child_machine(self.included_mch)
-    #    self._init_child_machine(self.extended_mch)
-    #    self._init_child_machine(self.seen_mch)
-    #    self._init_child_machine(self.used_mch)
-    param_generator = init_mch_param(root, env, mch)
-    param_generator.next()
-    init_sets(root, env, mch)
-    init_constants(root, env, mch)
-    check_properties(root, env, mch) 
-  
+    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    set_names = init_sets(root, env, mch)
+    const_names = init_constants(root, env, mch)
+    # TODO: enable backtracking
+    for child in childern:
+        set_up_constants(child.root, env, child)
+    param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
+    for para_solution in param_generator:
+        if para_solution==True:
+            prop_generator = check_properties(root, env, mch)
+            for solution in prop_generator:
+                if solution:
+                    yield True
+    yield False  
+    
+
+# TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
+# TODO: Limit number of solutions via config.py
+def exec_initialisation(root, env, mch):
+    # init children
+    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    # TODO: enable backtracking
+    for child in childern:
+        exec_initialisation(child.root, env, child)  
+    init_variables(root, env, mch)
+    # TODO: nondeterminisim ?
+    if mch.aAssertionsMachineClause:
+        interpret(mch.aAssertionsMachineClause, env)
+    ex_sub_generator = exec_substitution(mch.AInitialisationMachineClause.children[-1], env)
+    for possible in ex_sub_generator:
+        if possible:
+            yield True
+    print "WARNING: Problem while exec init"
+    yield False
+
+    
 
 # FIXME: dummy-init of mch-parameters
 # inconsistency between schneider-book page 61 and the table on manrefb page 110.
@@ -61,7 +108,7 @@ def init_mch_param(root, env, mch):
         atype = env.get_type_by_node(n)
         assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
     if not mch.scalar_params==[]:
-        print "scalar_param", mch.name
+        #print "scalar_param", mch.name
         if mch.aConstraintsMachineClause==None:
             raise Exception("Missing ConstraintsMachineClause in %s" % mch.name)
         pred = mch.aConstraintsMachineClause
@@ -75,13 +122,43 @@ def init_mch_param(root, env, mch):
 
 def init_sets(node, env, mch):
     if mch.aSetsMachineClause: # St
-        interpret(mch.aSetsMachineClause, env)  
+        node = mch.aSetsMachineClause
+        for child in node.children:
+            if isinstance(child, AEnumeratedSet):
+                elm_lst = []
+                for elm in child.children:
+                    assert isinstance(elm, AIdentifierExpression)
+                    elm_lst.append(elm.idName)
+                    env.add_ids_to_frame([elm.idName])
+                    # The values of elements of enumerated sets are their names
+                    env.set_value(elm.idName, elm.idName)
+                env.add_ids_to_frame([child.idName])
+                env.set_value(child.idName, frozenset(elm_lst))
+            else:
+                init_deffered_set(child, env)
+
+
+# FixMe: Side-effect: add to frame
+def init_constants(node, env, mch):
+    const_names = []
+    if mch.aConstantsMachineClause: # k
+        node = mch.aConstantsMachineClause 
+        const_names = [n.idName for n in node.children if isinstance(n, AIdentifierExpression)]
+        env.add_ids_to_frame(const_names)
+    return const_names
+
+
+# FixMe: Side-effect: add to frame
+def init_variables(node, env, mch):
+    var_names = []
+    if mch.aVariablesMachineClause:
+        node = mch.aVariablesMachineClause
+        var_names = [n.idName for n in node.children if isinstance(n, AIdentifierExpression)]
+        env.add_ids_to_frame(var_names)
+    return var_names
+
 
 # TODO: enable possibilities for animation and user choice 
-def init_constants(node, env, mch):
-    if mch.aConstantsMachineClause: # k
-        interpret(mch.aConstantsMachineClause, env)
-
 def check_properties(node, env, mch):
     if mch.aPropertiesMachineClause: # B
         # set up constants
@@ -111,11 +188,17 @@ def check_properties(node, env, mch):
                 # if there are unset constants/sets enumerate them
                 print "enum. constants:", [n.idName for n in const_nodes]
                 gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                prop_result = gen.next()
-            if not prop_result:
+                for prop_result in gen:
+                    if prop_result:
+                        yield True
+                
                 print "Properties FALSE!"
                 print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
-            assert prop_result
+                yield False
+    if mch.aConstantsMachineClause:
+        yield False
+    else:
+        yield True
 
 
 # search a conjunction of predicates for a false subpredicate and prints it.
@@ -271,49 +354,44 @@ def interpret(node, env):
         mch = env.current_mch
         _init_machine(node, env, mch)
         return mch
-    elif isinstance(node, AConstantsMachineClause):
-        const_names = []
-        for idNode in node.children:
-            assert isinstance(idNode, AIdentifierExpression)
-            const_names.append(idNode.idName)
-            #atype = env.get_type_by_node(idNode)
-        env.add_ids_to_frame(const_names)
-    elif isinstance(node, AVariablesMachineClause):
-        var_names = []
-        for idNode in node.children:
-            assert isinstance(idNode, AIdentifierExpression)
-            var_names.append(idNode.idName)
-            #atype = env.get_type_by_node(idNode)
-        env.add_ids_to_frame(var_names)
-    elif isinstance(node, ASetsMachineClause):
-        for child in node.children:
-            if isinstance(child, AEnumeratedSet):
-                elm_lst = []
-                for elm in child.children:
-                    assert isinstance(elm, AIdentifierExpression)
-                    elm_lst.append(elm.idName)
-                    env.add_ids_to_frame([elm.idName])
-                    # The values of elements of enumerated sets are their names
-                    env.set_value(elm.idName, elm.idName)
-                env.add_ids_to_frame([child.idName])
-                env.set_value(child.idName, frozenset(elm_lst))
-            else:
-                init_deffered_set(child, env)
+#     elif isinstance(node, AConstantsMachineClause):
+#         const_names = []
+#         for idNode in node.children:
+#             assert isinstance(idNode, AIdentifierExpression)
+#             const_names.append(idNode.idName)
+#             #atype = env.get_type_by_node(idNode)
+#         env.add_ids_to_frame(const_names)
+#     elif isinstance(node, AVariablesMachineClause):
+#         var_names = []
+#         for idNode in node.children:
+#             assert isinstance(idNode, AIdentifierExpression)
+#             var_names.append(idNode.idName)
+#             #atype = env.get_type_by_node(idNode)
+#         env.add_ids_to_frame(var_names)
+#     elif isinstance(node, ASetsMachineClause):
+#         for child in node.children:
+#             if isinstance(child, AEnumeratedSet):
+#                 elm_lst = []
+#                 for elm in child.children:
+#                     assert isinstance(elm, AIdentifierExpression)
+#                     elm_lst.append(elm.idName)
+#                     env.add_ids_to_frame([elm.idName])
+#                     # The values of elements of enumerated sets are their names
+#                     env.set_value(elm.idName, elm.idName)
+#                 env.add_ids_to_frame([child.idName])
+#                 env.set_value(child.idName, frozenset(elm_lst))
+#             else:
+#                 init_deffered_set(child, env)
     elif isinstance(node, AConstraintsMachineClause):
-        for child in node.children:
-            if not interpret(child, env):
-                return False
-        return True
-    elif isinstance(node, APropertiesMachineClause):
-        assert len(node.children)==1
-        return interpret(node.children[0], env) # True or False
-    elif isinstance(node, AInitialisationMachineClause):
-        for child in node.children:
-            ex_sub_generator = exec_substitution(child, env)
-            possible = ex_sub_generator.next()
-            if not possible:
-                print "WARNING: Problem while exec init"
-            # TODO: eval subst_success to check if init was successful 
+        return interpret(node.children[-1], env)
+    elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
+        return interpret(node.children[-1], env) 
+    elif isinstance(node, AInitialisationMachineClause): #TODO: remove from interp
+        ex_sub_generator = exec_substitution(node.children[-1], env)
+        possible = ex_sub_generator.next()
+        if not possible:
+            print "WARNING: Problem while exec init"
+        # TODO: eval subst_success to check if init was successful 
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
         if not result:
