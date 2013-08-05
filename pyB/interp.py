@@ -25,21 +25,28 @@ def eval_Invariant(root, env, mch):
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
 def _init_machine(root, env, mch):
-    # init children
+    # 1. init children
     for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
         for m in machine_list:
             env.current_mch = m
             interpret(m.root, env)
     env.current_mch = mch 
      
-    # init mch
+    # 2. init b-machine
+    # 2.1 find parameter solutions
     param_generator = init_mch_param(root, env, mch)
     param_generator.next()
+    
+    # 2.2 push set- and constants-names to frame
     init_sets(root, env, mch)
-    init_constants(root, env, mch)
+    env.add_ids_to_frame(mch.const_names)
+    
+    # 2.3 solve properties
     prop_generator = check_properties(root, env, mch)   
     prop_generator.next() 
-    init_variables(root, env, mch)
+    
+    # 2.4 exec init
+    env.add_ids_to_frame(mch.var_names)
     if mch.aAssertionsMachineClause:
         interpret(mch.aAssertionsMachineClause, env)
     if mch.aInitialisationMachineClause:
@@ -48,11 +55,13 @@ def _init_machine(root, env, mch):
 
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
-def set_up_constants(root, env, mch):
-    # set up constants of children
+def set_up_constants(root, env, mch, solution_file_read=False):
+    # 1. set up constants of children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    # 2. push set- and constant-names to frame
     set_names = init_sets(root, env, mch)
-    const_names = init_constants(root, env, mch)
+    env.add_ids_to_frame(mch.const_names)
+    # 3. solve properties 
     # TODO: enable backtracking
     for child in childern:
         set_up_constants(child.root, env, child)
@@ -68,13 +77,13 @@ def set_up_constants(root, env, mch):
 
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
-def exec_initialisation(root, env, mch):
+def exec_initialisation(root, env, mch, solution_file_read=False):
     # init children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     # TODO: enable backtracking
     for child in childern:
         exec_initialisation(child.root, env, child)  
-    init_variables(root, env, mch)
+    env.add_ids_to_frame(mch.var_names)
     # TODO: nondeterminisim ?
     if mch.aAssertionsMachineClause:
         interpret(mch.aAssertionsMachineClause, env)
@@ -135,27 +144,8 @@ def init_sets(node, env, mch):
                 env.add_ids_to_frame([child.idName])
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
-                init_deffered_set(child, env)
+                init_deffered_set(child, env) #XXX
 
-
-# FixMe: Side-effect: add to frame
-def init_constants(node, env, mch):
-    const_names = []
-    if mch.aConstantsMachineClause: # k
-        node = mch.aConstantsMachineClause 
-        const_names = [n.idName for n in node.children if isinstance(n, AIdentifierExpression)]
-        env.add_ids_to_frame(const_names)
-    return const_names
-
-
-# FixMe: Side-effect: add to frame
-def init_variables(node, env, mch):
-    var_names = []
-    if mch.aVariablesMachineClause:
-        node = mch.aVariablesMachineClause
-        var_names = [n.idName for n in node.children if isinstance(n, AIdentifierExpression)]
-        env.add_ids_to_frame(var_names)
-    return var_names
 
 
 # TODO: enable possibilities for animation and user choice 
@@ -294,11 +284,11 @@ def _learn_assigned_values(root, env, lst):
 # Expression Nodes Return Values (int, frozenset, boolean, string or composed)
 def interpret(node, env):
 
-# ******************************
+# ********************************************
 #
-#        0. Interpretation-mode
+#        0. Interpretation-mode and Clauses
 #
-# ******************************
+# ********************************************
     #print node 3 # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
@@ -354,34 +344,6 @@ def interpret(node, env):
         mch = env.current_mch
         _init_machine(node, env, mch)
         return mch
-#     elif isinstance(node, AConstantsMachineClause):
-#         const_names = []
-#         for idNode in node.children:
-#             assert isinstance(idNode, AIdentifierExpression)
-#             const_names.append(idNode.idName)
-#             #atype = env.get_type_by_node(idNode)
-#         env.add_ids_to_frame(const_names)
-#     elif isinstance(node, AVariablesMachineClause):
-#         var_names = []
-#         for idNode in node.children:
-#             assert isinstance(idNode, AIdentifierExpression)
-#             var_names.append(idNode.idName)
-#             #atype = env.get_type_by_node(idNode)
-#         env.add_ids_to_frame(var_names)
-#     elif isinstance(node, ASetsMachineClause):
-#         for child in node.children:
-#             if isinstance(child, AEnumeratedSet):
-#                 elm_lst = []
-#                 for elm in child.children:
-#                     assert isinstance(elm, AIdentifierExpression)
-#                     elm_lst.append(elm.idName)
-#                     env.add_ids_to_frame([elm.idName])
-#                     # The values of elements of enumerated sets are their names
-#                     env.set_value(elm.idName, elm.idName)
-#                 env.add_ids_to_frame([child.idName])
-#                 env.set_value(child.idName, frozenset(elm_lst))
-#             else:
-#                 init_deffered_set(child, env)
     elif isinstance(node, AConstraintsMachineClause):
         return interpret(node.children[-1], env)
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env, init_variables, init_sets, init_constants, check_properties, init_mch_param, eval_Invariant
+from interp import interpret, write_solutions_to_env, init_sets, check_properties, init_mch_param, eval_Invariant
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
@@ -81,14 +81,14 @@ def run_animation_mode():
         # C => #St,k.B
         init_sets(root, env, mch)
         if not solution_file_name_str:
-            init_constants(root, env, mch)
+    			env.add_ids_to_frame(mch.const_names)
         prop_generator = check_properties(root, env, mch)
         prop_generator.next()
         
         # If C and B is True there should be Variables v which make the Invaraiant I True
         # TODO: B & C => #v.I
         if not solution_file_name_str:
-            init_variables(root, env, mch)
+            env.add_ids_to_frame(mch.var_names)
         
     
         # Not in schneiders book:

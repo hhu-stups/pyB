@@ -17,11 +17,11 @@ class BMachine:
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
         self.set_params    = []   # set machine parameter
-        self.included_mch = []    # list of b-mchs
-        self.extended_mch = []    # list of b-mchs
-        self.seen_mch     = []    # list of b-mchs
-        self.used_mch     = []    # list of b-mchs
-        self.operations   = frozenset([])    # set of operations (to easy avoid double entries)
+        self.included_mch  = []   # list of b-mchs
+        self.extended_mch  = []   # list of b-mchs
+        self.seen_mch      = []   # list of b-mchs
+        self.used_mch      = []   # list of b-mchs
+        self.operations    = frozenset([])    # set of operations (to easy avoid double entries)
         self.aConstantsMachineClause = None
         self.aConstraintsMachineClause = None
         self.aSetsMachineClause = None
@@ -169,17 +169,11 @@ class BMachine:
         const_names = []
         dset_names = []
         if cmc:
-            for idNode in cmc.children:
-                assert isinstance(idNode, AIdentifierExpression)
-                const_names.append(idNode.idName)
+            const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
-            for idNode in vmc.children:
-                assert isinstance(idNode, AIdentifierExpression)
-                var_names.append(idNode.idName)
+            var_names = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
         if smc:
-            for dSet in smc.children:
-                if isinstance(dSet, ADeferredSet):
-                    dset_names.append(dSet.idName)
+            dset_names = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
         return const_names, var_names, dset_names
 
 
