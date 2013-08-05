@@ -37,7 +37,7 @@ def _init_machine(root, env, mch):
     param_generator = init_mch_param(root, env, mch)
     param_generator.next()
     
-    # 2.2 push set- and constants-names to frame
+    # 2.2 init sets and push constant-names to frame
     init_sets(root, env, mch)
     env.add_ids_to_frame(mch.const_names)
     
@@ -58,13 +58,13 @@ def _init_machine(root, env, mch):
 def set_up_constants(root, env, mch, solution_file_read=False):
     # 1. set up constants of children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    # 2. push set- and constant-names to frame
-    set_names = init_sets(root, env, mch)
-    env.add_ids_to_frame(mch.const_names)
-    # 3. solve properties 
-    # TODO: enable backtracking
-    for child in childern:
-        set_up_constants(child.root, env, child)
+    for child in children:
+        suc_generator = set_up_constants(child.root, env, child)
+        suc_generator.next() # TODO: backtracking 
+    # 2. init sets and push constant-names to frame
+    init_sets(root, env, mch)
+    env.add_ids_to_frame(mch.const_names)  
+    # 3. solve constraints (bmch-param) and properties (bmch constants)
     param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
     for para_solution in param_generator:
         if para_solution==True:
@@ -78,15 +78,13 @@ def set_up_constants(root, env, mch, solution_file_read=False):
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
 def exec_initialisation(root, env, mch, solution_file_read=False):
-    # init children
+    # 1. init children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    # TODO: enable backtracking
     for child in childern:
-        exec_initialisation(child.root, env, child)  
+        init_generator = exec_initialisation(child.root, env, child)
+        init_generator.next() # TODO: backtracking
+    # 2. push variable-names to frame   
     env.add_ids_to_frame(mch.var_names)
-    # TODO: nondeterminisim ?
-    if mch.aAssertionsMachineClause:
-        interpret(mch.aAssertionsMachineClause, env)
     ex_sub_generator = exec_substitution(mch.AInitialisationMachineClause.children[-1], env)
     for possible in ex_sub_generator:
         if possible:
@@ -99,6 +97,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
 # FIXME: dummy-init of mch-parameters
 # inconsistency between schneider-book page 61 and the table on manrefb page 110.
 # This implementation is compatible to manrefb: The Properties-clause is not used!
+# TODO: enable backtracking with different bmch. parameter size
 def init_mch_param(root, env, mch):
     env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     # TODO: retry with different set elem. num if no animation possible
@@ -139,12 +138,12 @@ def init_sets(node, env, mch):
                     assert isinstance(elm, AIdentifierExpression)
                     elm_lst.append(elm.idName)
                     env.add_ids_to_frame([elm.idName])
-                    # The values of elements of enumerated sets are their names
+                    # values of elements of enumerated sets are their names
                     env.set_value(elm.idName, elm.idName)
                 env.add_ids_to_frame([child.idName])
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
-                init_deffered_set(child, env) #XXX
+                init_deffered_set(child, env) # done by enumeration.py
 
 
 

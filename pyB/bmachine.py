@@ -171,9 +171,9 @@ class BMachine:
         if cmc:
             const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
-            var_names = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
+            var_names   = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
         if smc:
-            dset_names = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
+            dset_names  = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
         return const_names, var_names, dset_names
 
 
