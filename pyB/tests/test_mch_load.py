@@ -432,6 +432,7 @@ class TestMCHLaod():
             num = bstate.get_value("num", mch)
             assert num in [0,1,2,3]
             env.state_space.undo()
+         
             
     def test_set_up_constants_nondeterministic(self):        
         string = '''
@@ -451,12 +452,13 @@ class TestMCHLaod():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)
-        #assert len(bstates)==4
+        assert len(bstates)==4
         for bstate in bstates:
             env.state_space.add_state(bstate)
             num = bstate.get_value("num", mch)
             assert num in [0,1,2,3]
             env.state_space.undo()
+
 
     def test_set_up_constants_nondeterministic2(self):        
         string = '''
@@ -477,7 +479,7 @@ class TestMCHLaod():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)
-        #assert len(bstates)==4
+        assert len(bstates)==4
         for bstate in bstates:
             env.state_space.add_state(bstate)
             num = bstate.get_value("num", mch)

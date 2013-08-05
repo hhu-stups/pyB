@@ -87,36 +87,68 @@ def _set_up_constants_generator(root, env, mch):
         suc_generator.next() # TODO: backtracking 
     # 2. init sets and push constant-names to frame
     init_sets(root, env, mch)
-    # 3. solve constraints (bmch-param) and properties (bmch constants)
-    param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
-    for para_solution in param_generator:
-        if para_solution==True:
-            if mch.aPropertiesMachineClause==None:
-                assert mch.aConstantsMachineClause==None
-                yield True
-            else:
-				prop_generator = check_properties(root, env, mch)
-				for solution in prop_generator:
-					yield solution
-    yield False  
+    # 3.1 solve properties (bmch constants)
+    if mch.aConstraintsMachineClause==None:
+        assert mch.scalar_params==[] and mch.set_params==[]
+        prop_generator = check_properties(root, env, mch)
+        for solution in prop_generator:
+            yield solution 
+    # 3.2 solve constraints (bmch-param) and properties (bmch constants)       
+    else:
+        param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
+        for para_solution in param_generator:
+            if para_solution==True:
+                if mch.aPropertiesMachineClause==None:
+                    assert mch.aConstantsMachineClause==None
+                    yield True
+                else:
+                    prop_generator = check_properties(root, env, mch)
+                    for solution in prop_generator:
+                        yield solution
+        yield False  
     
 
+def exec_initialisation(root, env, mch, solution_file_read=False):
+    # 1. set up frames and state
+    bstates = []
+    ref_bstate = env.state_space.get_state().clone()
+    env.state_space.add_state(ref_bstate)
+    env.add_ids_to_frame(mch.var_names)
+    bstate = ref_bstate.clone()
+    env.state_space.add_state(bstate) 
+    
+    # 2. search for solutions  
+    generator = exec_initialisation_generator(root, env, mch)
+    for solution in generator:
+        if solution:
+            bstates.append(bstate)
+            env.state_space.undo()
+            bstate = ref_bstate.clone()
+            env.state_space.add_state(bstate) 
+    env.state_space.undo() # bstate
+    env.state_space.undo() # refbstate
+    return bstates
+    
+    
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
-def exec_initialisation(root, env, mch, solution_file_read=False):
+def exec_initialisation_generator(root, env, mch):
     # 1. init children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    for child in childern:
-        init_generator = exec_initialisation(child.root, env, child)
+    for child in children:
+        init_generator = exec_initialisation_generator(child.root, env, child)
         init_generator.next() # TODO: backtracking
-    # 2. push variable-names to frame   
-    env.add_ids_to_frame(mch.var_names)
-    ex_sub_generator = exec_substitution(mch.AInitialisationMachineClause.children[-1], env)
+    
+    # 2. search for solutions  
+    at_least_one_possible = False
+    ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
     for possible in ex_sub_generator:
         if possible:
+            at_least_one_possible = True
             yield True
-    print "WARNING: Problem while exec init"
-    yield False
+    if not at_least_one_possible:
+        print "WARNING: Problem while exec init"
+        yield False
 
     
 
@@ -149,6 +181,7 @@ def init_mch_param(root, env, mch):
             yield possible
         yield False
     else:
+        # also yield True if no parameters are present 
         yield True # TODO: im nondet. for set_params is implemented, refactor this line
 
 

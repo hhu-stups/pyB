@@ -2,7 +2,7 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from interp import interpret, _init_machine
+from interp import interpret, _init_machine, set_up_constants, exec_initialisation
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states, calc_init_states
@@ -872,7 +872,34 @@ class TestMCHAnimation():
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==2
-  
+
+
+    def test_init_nondeterministic(self):        
+        string = '''
+        MACHINE         Test
+        INVARIANT       xx:NAT & xx <4
+        VARIABLES       xx
+        INITIALISATION  xx::{0,1,2,3}
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        assert len(bstates)==0
+        bstates = exec_initialisation(root, env, mch)
+        assert len(bstates)==4
+        for bstate in bstates:
+            env.state_space.add_state(bstate)
+            num = bstate.get_value("xx", mch)
+            assert num in [0,1,2,3]
+            env.state_space.undo()
+      
       
     # kills ProB Performance :)
     def test_ani_toplevel_any_op_args(self):
