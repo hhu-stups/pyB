@@ -34,6 +34,7 @@ def _init_machine(root, env, mch):
      
     # 2. init b-machine
     # 2.1 find parameter solutions
+    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     param_generator = init_mch_param(root, env, mch)
     param_generator.next()
     
@@ -53,25 +54,50 @@ def _init_machine(root, env, mch):
         interpret(mch.aInitialisationMachineClause, env)
 
 
+def set_up_constants(root, env, mch, solution_file_read=False):
+    # 1. set up frames and state
+    bstates = []
+    ref_bstate = env.state_space.get_state().clone()
+    env.state_space.add_state(ref_bstate)
+    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
+    env.add_ids_to_frame(mch.const_names)
+    bstate = ref_bstate.clone()
+    env.state_space.add_state(bstate) 
+    
+    # 2. search for solutions  
+    generator = _set_up_constants_generator(root, env, mch)
+    for solution in generator:
+        if solution:
+            bstates.append(bstate)
+            env.state_space.undo()
+            bstate = ref_bstate.clone()
+            env.state_space.add_state(bstate) 
+    env.state_space.undo() # bstate
+    env.state_space.undo() # refbstate
+    return bstates
+
+
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
-def set_up_constants(root, env, mch, solution_file_read=False):
+def _set_up_constants_generator(root, env, mch):
     # 1. set up constants of children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     for child in children:
-        suc_generator = set_up_constants(child.root, env, child)
+        suc_generator = _set_up_constants_generator(child.root, env, child)
         suc_generator.next() # TODO: backtracking 
     # 2. init sets and push constant-names to frame
     init_sets(root, env, mch)
-    env.add_ids_to_frame(mch.const_names)  
     # 3. solve constraints (bmch-param) and properties (bmch constants)
     param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
     for para_solution in param_generator:
         if para_solution==True:
-            prop_generator = check_properties(root, env, mch)
-            for solution in prop_generator:
-                if solution:
-                    yield True
+            if mch.aPropertiesMachineClause==None:
+                assert mch.aConstantsMachineClause==None
+                yield True
+            else:
+				prop_generator = check_properties(root, env, mch)
+				for solution in prop_generator:
+					yield solution
     yield False  
     
 
@@ -99,7 +125,6 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
 # This implementation is compatible to manrefb: The Properties-clause is not used!
 # TODO: enable backtracking with different bmch. parameter size
 def init_mch_param(root, env, mch):
-    env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
     # TODO: retry with different set elem. num if no animation possible
     for n in mch.set_params:
         atype = env.get_type_by_node(n)
@@ -116,16 +141,15 @@ def init_mch_param(root, env, mch):
         atype = env.get_type_by_node(n)
         assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
     if not mch.scalar_params==[]:
-        #print "scalar_param", mch.name
         if mch.aConstraintsMachineClause==None:
             raise Exception("Missing ConstraintsMachineClause in %s" % mch.name)
         pred = mch.aConstraintsMachineClause
         gen = try_all_values(pred, env, mch.scalar_params)
         for possible in gen:
-            if possible:
-                yield True
+            yield possible
         yield False
-    yield True
+    else:
+        yield True # TODO: im nondet. for set_params is implemented, refactor this line
 
 
 def init_sets(node, env, mch):
@@ -158,7 +182,6 @@ def check_properties(node, env, mch):
         if learnd_vars:
             print "leard constants (no enumeration): ", learnd_vars
         # if there are constants
-        #TODO: Sets
         if mch.aConstantsMachineClause:
             const_nodes = []
             # find all constants/sets which are still not set
@@ -173,21 +196,25 @@ def check_properties(node, env, mch):
                         const_nodes.append(idNode)
             if const_nodes==[]:
                 prop_result = interpret(mch.aPropertiesMachineClause, env)
+                yield prop_result
             else:
                 # if there are unset constants/sets enumerate them
+                at_least_one_solution = False
                 print "enum. constants:", [n.idName for n in const_nodes]
                 gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
                 for prop_result in gen:
                     if prop_result:
+                        at_least_one_solution = True
                         yield True
-                
-                print "Properties FALSE!"
-                print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
-                yield False
-    if mch.aConstantsMachineClause:
-        yield False
-    else:
-        yield True
+                if not at_least_one_solution:
+                    print "Properties FALSE!"
+                    print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
+                    yield False
+        #TODO: Sets-Clause
+        else:
+            yield False
+    yield False
+            
 
 
 # search a conjunction of predicates for a false subpredicate and prints it.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from environment import Environment
-from interp import interpret
+from interp import interpret, set_up_constants
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -39,7 +39,7 @@ class TestMCHLaod():
         string = '''
         MACHINE Query
 
-		VARIABLES xx
+        VARIABLES xx
 
         INVARIANT  xx:NAT
 
@@ -70,7 +70,7 @@ class TestMCHLaod():
         string = '''
         MACHINE Query
 
-		VARIABLES xx
+        VARIABLES xx
 
         INVARIANT  xx:NAT
 
@@ -382,19 +382,19 @@ class TestMCHLaod():
     def test_CartesianProductOverride(self):
         string = '''
         MACHINE CartesianProductOverride
-		SETS
-		 S;T
-		CONSTANTS a,b,c
-		PROPERTIES
-		 /* Rule Hypotheses */
-		 a :  S <-> T &
-		 dom(a) = b &
-		 c <: T & 
-		
-		 /* Rule Conclusion */
-		 not( a <+ b * c = b * c )
-		END'''
-		# Build AST
+        SETS
+         S;T
+        CONSTANTS a,b,c
+        PROPERTIES
+         /* Rule Hypotheses */
+         a :  S <-> T &
+         dom(a) = b &
+         c <: T & 
+        
+         /* Rule Conclusion */
+         not( a <+ b * c = b * c )
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -406,4 +406,81 @@ class TestMCHLaod():
         interpret(root, env) # eval CONSTANTS and PROPERTIES
         assert isinstance(root.children[3], APropertiesMachineClause)
         assert interpret(root.children[3], env)
+   
+     
+    def test_set_up_constants_nondeterministic(self):        
+        string = '''
+        MACHINE         Param(num)
+        CONSTRAINTS     num:NAT & num <4
+        VARIABLES       xx
+        INVARIANT       xx:NAT
+        INITIALISATION  xx:=num
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        #assert len(bstates)==4
+        for bstate in bstates:
+            env.state_space.add_state(bstate)
+            num = bstate.get_value("num", mch)
+            assert num in [0,1,2,3]
+            env.state_space.undo()
+            
+    def test_set_up_constants_nondeterministic(self):        
+        string = '''
+        MACHINE         Param(num)
+        CONSTRAINTS     num:NAT & num <4
+        VARIABLES       xx
+        INVARIANT       xx:NAT
+        INITIALISATION  xx:=num
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        #assert len(bstates)==4
+        for bstate in bstates:
+            env.state_space.add_state(bstate)
+            num = bstate.get_value("num", mch)
+            assert num in [0,1,2,3]
+            env.state_space.undo()
+
+    def test_set_up_constants_nondeterministic2(self):        
+        string = '''
+        MACHINE         Param2
+        PROPERTIES      num:NAT & num <4
+        CONSTANTS       num
+        VARIABLES       xx
+        INVARIANT       xx:NAT
+        INITIALISATION  xx:=num
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
         
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        #assert len(bstates)==4
+        for bstate in bstates:
+            env.state_space.add_state(bstate)
+            num = bstate.get_value("num", mch)
+            assert num in [0,1,2,3]
+            env.state_space.undo()
+            
