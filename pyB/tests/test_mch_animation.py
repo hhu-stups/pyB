@@ -820,8 +820,42 @@ class TestMCHAnimation():
         assert 0 == env.get_value("zz")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==0
- 
+
+
+    def test_ani_sequence_nondeterminism3(self):
+        string ='''
+        MACHINE Test
+        VARIABLES xx, yy, zz
+        INVARIANT xx:NAT & yy:NAT & zz:NAT
+        INITIALISATION xx:=0; yy:=0; zz:=0
+        OPERATIONS
+          op = BEGIN xx:=1 ; yy::{2,3,4} ; zz:= xx END
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string 
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("xx")
+        assert 0 == env.get_value("yy")
+        assert 0 == env.get_value("zz")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==3
+        assert next_states[1][0]=="op"
+        bstate = next_states[1][3]
+        env.state_space.add_state(bstate)
+        assert env.get_value("xx")==1
+        assert env.get_value("yy") in [2,3,4]
+        assert env.get_value("zz")==1 
         
+                
     def test_ani_select_nondeterminism(self):
         string ='''
         MACHINE Test

@@ -24,7 +24,7 @@ def eval_Invariant(root, env, mch):
 # used in child mchs(included, seen...) and tests 
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
-def _init_machine(root, env, mch):
+def _init_machine(root, env, mch, solution_file_read=False):
     # 1. init children
     for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
         for m in machine_list:
@@ -52,10 +52,20 @@ def _init_machine(root, env, mch):
         interpret(mch.aAssertionsMachineClause, env)
     if mch.aInitialisationMachineClause:
         interpret(mch.aInitialisationMachineClause, env)
+    #bstates = set_up_constants(root, env, mch)
+    #if len(bstates)>0:
+    #    env.state_space.add_state(bstates[0])
+    #bstates = exec_initialisation(root, env, mch)
+    #if len(bstates)>0:
+    #    env.state_space.add_state(bstates[0]) 
 
 
 def set_up_constants(root, env, mch, solution_file_read=False):
-    # 1. set up frames and state
+    # 1. init sets and push constant-names to frame
+    # If not present: this line has no effect
+    init_sets(root, env, mch)
+    
+    # 2. set up frames and state
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
     env.state_space.add_state(ref_bstate)
@@ -64,7 +74,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     bstate = ref_bstate.clone()
     env.state_space.add_state(bstate) 
     
-    # 2. search for solutions  
+    # 3. search for solutions  
     generator = _set_up_constants_generator(root, env, mch)
     for solution in generator:
         if solution:
@@ -85,11 +95,9 @@ def _set_up_constants_generator(root, env, mch):
     for child in children:
         suc_generator = _set_up_constants_generator(child.root, env, child)
         suc_generator.next() # TODO: backtracking 
-    # 2. init sets and push constant-names to frame
-    init_sets(root, env, mch)
     # 3.1 solve properties (bmch constants)
     if mch.aConstraintsMachineClause==None:
-        assert mch.scalar_params==[] and mch.set_params==[]
+        assert mch.scalar_params==[] #and mch.set_params==[]
         prop_generator = check_properties(root, env, mch)
         for solution in prop_generator:
             yield solution 
@@ -133,22 +141,25 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
 def exec_initialisation_generator(root, env, mch):
-    # 1. init children
-    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    for child in children:
-        init_generator = exec_initialisation_generator(child.root, env, child)
-        init_generator.next() # TODO: backtracking
-    
-    # 2. search for solutions  
-    at_least_one_possible = False
-    ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
-    for possible in ex_sub_generator:
-        if possible:
-            at_least_one_possible = True
-            yield True
-    if not at_least_one_possible:
-        print "WARNING: Problem while exec init"
-        yield False
+    if not mch.aInitialisationMachineClause: 
+        yield True
+    else:        
+        # 1. init children
+        children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+        for child in children:
+            init_generator = exec_initialisation_generator(child.root, env, child)
+            init_generator.next() # TODO: backtracking
+        
+        # 2. search for solutions  
+        at_least_one_possible = False
+        ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
+        for possible in ex_sub_generator:
+            if possible:
+                at_least_one_possible = True
+                yield True
+        if not at_least_one_possible:
+            print "WARNING: Problem while exec init"
+            yield False
 
     
 
@@ -198,6 +209,7 @@ def init_sets(node, env, mch):
                     # values of elements of enumerated sets are their names
                     env.set_value(elm.idName, elm.idName)
                 env.add_ids_to_frame([child.idName])
+                print child.idName
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
                 init_deffered_set(child, env) # done by enumeration.py
@@ -1718,9 +1730,14 @@ def exec_sequence_substitution(subst_list, env):
         assert len(subst_list)>1
         for possible in ex_generator:
             if possible:
+                bstate = env.state_space.get_state().clone() # save changes of recursion-levels above
                 ex_seq_generator = exec_sequence_substitution(subst_list[1:], env)
                 for others_possible in ex_seq_generator:
                     yield others_possible
+                    env.state_space.undo() #revert
+                    env.state_space.add_state(bstate) 
+                    
+                    
     
             
 # same es exec_sequence_substitution (see above)
