@@ -14,6 +14,15 @@ class BState():
         self.bmch_dict = {None:[{}]} # empty entry for states without Bmachine (Predicated and Expressions)
     
     
+    # debug-helper
+    def print_bstate(self):
+        for bmch in self.bmch_dict:
+            if bmch==None:
+                print "Predicate or Expression:", self.bmch_dict[bmch]
+            else:
+                print bmch.name, ":", self.bmch_dict[bmch]
+     
+                
     # TODO: implement me
     def equal(self, bstate):
         pass
@@ -47,8 +56,9 @@ class BState():
     
 
     def get_value(self, id_Name, bmachine):
-        if isinstance(id_Name, AIdentifierExpression): # debug
-            print id_Name.idName
+        #print "lookup of %s in %s" % (id_Name, bmachine.name)
+        #if isinstance(id_Name, AIdentifierExpression): # debug
+        #    print id_Name.idName
         assert isinstance(id_Name, str)
         assert isinstance(bmachine, BMachine) or bmachine==None
         value_stack = self.bmch_dict[bmachine]
@@ -62,9 +72,13 @@ class BState():
             except KeyError:
                 continue
         # No entry in the value_stack. The Variable with the name id_Name
-        # is unknown for the machine bmachine. 
-        string = "state.get() LookupError: %s" % (id_Name)
-        print string
+        # is unknown for the machine bmachine. This could be ok during lookup
+        if bmachine:
+            name = bmachine.name
+        else:
+            name = "Predicate or Expression"
+        string = "bstate.get() LookupError: %s in %s" % (id_Name, name)
+        #print string
         raise ValueNotInBStateException(string)
 
 
@@ -79,9 +93,13 @@ class BState():
                 top_map[id_Name] = value
                 return
         # No entry in the value_stack. The Variable with the name id_Name
-        # is unknown for the machine bmachine. 
-        string = "state.set() LookupError: %s" % (id_Name)
-        print string
+        # is unknown for the machine bmachine. This could be ok during lookup
+        if bmachine:
+            name = bmachine.name
+        else:
+            name = "Predicate or Expression"
+        string = "bstate.set() LookupError: %s in %s" % (id_Name, name)
+        #print string
         raise ValueNotInBStateException(string)
 
 

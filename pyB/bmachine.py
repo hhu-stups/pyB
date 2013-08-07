@@ -12,6 +12,7 @@ class BMachine:
         self.const_names = []
         self.var_names = []
         self.dset_names = []
+        self.eset_and_elem_names = []
         self.root = node
         self.env = env # TODO: Check if a elimination of this unclean backref is possible
         self.aMachineHeader = None
@@ -111,14 +112,17 @@ class BMachine:
 
 
     # parse all child machines (constructs BMachine objects)
-    def recursive_self_parsing(self):
+    def recursive_self_parsing(self):        
         self.parse_parameters()
+        # remember this to avoid double-parsing and enable later lookup by name
+        self.env.parsed_bmachines[self.name] = self
+        
         self.parse_child_machines(self.aIncludesMachineClause, self.included_mch)
         self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch)
         self.parse_child_machines(self.aSeesMachineClause, self.seen_mch)
         self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         # TODO: better name for "names"
-        self.const_names, self.var_names, self.dset_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        self.const_names, self.var_names, self.dset_names, self.eset_and_elem_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
         names = self.const_names + self.var_names + self.dset_names
         bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
@@ -135,6 +139,13 @@ class BMachine:
     def parse_child_machines(self, mch_clause, mch_list):
         if mch_clause:
             for child in mch_clause.children:
+                # avoid double parsing and two (or more) BMachine object for the same Machine
+                if child.idName in self.env.parsed_bmachines:
+                    mch = self.env.parsed_bmachines[child.idName]
+                    mch_list.append(mch) 
+                    continue
+
+				# BMachine unknown, continue parsing
                 if isinstance(child, AIdentifierExpression):
                     assert isinstance(mch_clause, AUsesMachineClause) or isinstance(mch_clause, ASeesMachineClause)
                 else:
@@ -168,13 +179,19 @@ class BMachine:
         var_names = []
         const_names = []
         dset_names = []
+        eset_and_elem_names = []
         if cmc:
             const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
             var_names   = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
         if smc:
             dset_names  = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
-        return const_names, var_names, dset_names
+            for set in smc.children:
+                if isinstance(set, AEnumeratedSet):
+                    eset_and_elem_names.append(set.idName)
+                    elem_names = [e.idName for e in set.children]
+                    eset_and_elem_names += elem_names
+        return const_names, var_names, dset_names, eset_and_elem_names
 
 
     # types included, extended, seen or used b machines

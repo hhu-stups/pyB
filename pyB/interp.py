@@ -24,7 +24,7 @@ def eval_Invariant(root, env, mch):
 # used in child mchs(included, seen...) and tests 
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
-def _init_machine(root, env, mch, solution_file_read=False):
+def _init_machine(root, env, mch, solution_file_read=False):       
     # 1. init children
     for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
         for m in machine_list:
@@ -60,7 +60,7 @@ def _init_machine(root, env, mch, solution_file_read=False):
     #    env.state_space.add_state(bstates[0]) 
 
 
-def set_up_constants(root, env, mch, solution_file_read=False):
+def set_up_constants(root, env, mch, solution_file_read=False):    
     # 1. init sets and push constant-names to frame
     # If not present: this line has no effect
     init_sets(root, env, mch)
@@ -93,8 +93,19 @@ def _set_up_constants_generator(root, env, mch):
     # 1. set up constants of children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     for child in children:
+        # avoid double set_up
+        if mch.name in env.set_up_bmachines:
+            continue
+        else:
+            env.set_up_bmachines[child.name] = child
+            
+        env.current_mch = child
+        init_sets(child.root, env, child) # FIXME: this is only correct for the first solution
+        env.add_ids_to_frame([n.idName for n in child.scalar_params + child.set_params])
         suc_generator = _set_up_constants_generator(child.root, env, child)
         suc_generator.next() # TODO: backtracking 
+    env.current_mch = mch
+    
     # 3.1 solve properties (bmch constants)
     if mch.aConstraintsMachineClause==None:
         assert mch.scalar_params==[] #and mch.set_params==[]
@@ -116,7 +127,7 @@ def _set_up_constants_generator(root, env, mch):
         yield False  
     
 
-def exec_initialisation(root, env, mch, solution_file_read=False):
+def exec_initialisation(root, env, mch, solution_file_read=False):       
     # 1. set up frames and state
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
@@ -141,15 +152,25 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
 # TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
 # TODO: Limit number of solutions via config.py
 def exec_initialisation_generator(root, env, mch):
+    # 1. init children
+    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    for child in children:
+        # avoid double init
+        if mch.name in env.init_bmachines:
+            continue
+        else:
+            env.init_bmachines[child.name] = child
+            
+        env.current_mch = child
+        env.add_ids_to_frame(child.var_names) # FIXME: not correct for all solutions
+        init_generator = exec_initialisation_generator(child.root, env, child)
+        init_generator.next() # TODO: backtracking
+        #print env.get_value("read"), child.name
+    env.current_mch = mch
+    
     if not mch.aInitialisationMachineClause: 
         yield True
-    else:        
-        # 1. init children
-        children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-        for child in children:
-            init_generator = exec_initialisation_generator(child.root, env, child)
-            init_generator.next() # TODO: backtracking
-        
+    else:                
         # 2. search for solutions  
         at_least_one_possible = False
         ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)

@@ -28,6 +28,9 @@ class Environment():
         self.all_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
         self.mch_operation_type = []   
         self.all_operation_asts = []
+        self.parsed_bmachines = {}
+        self.set_up_bmachines = {} # set up constants done
+        self.init_bmachines   = {} # init done
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 
@@ -67,7 +70,7 @@ class Environment():
 
     def lookup_bmachine(self, idName, mch):
         for m in mch.included_mch + mch.seen_mch + mch.used_mch + mch.extended_mch:
-            names = m.const_names + m.var_names + m.dset_names 
+            names = m.const_names + m.var_names + m.dset_names + m.eset_and_elem_names + [n.idName for n in m.scalar_params + m.set_params]
             if idName in names:
                 return m
             else:
@@ -78,7 +81,7 @@ class Environment():
 
 
     # encapsule kind of parse-unit and statespace
-    def set_value(self, id_Name, value):
+    def set_value(self, id_Name, value):   
         bstate = self.get_state()
         bmachine = self.root_mch 
         try:
@@ -105,19 +108,19 @@ class Environment():
     
     def add_ids_to_frame(self, ids):
         bstate = self.get_state()
-        bmachine = self.root_mch # TODO lookup
+        bmachine = self.current_mch
         bstate.add_ids_to_frame(ids, bmachine)   
 
     
     def push_new_frame(self, nodes):
         bstate = self.get_state()
-        bmachine = self.root_mch # TODO lookup
+        bmachine = self.root_mch # optimization to avoid lookup ( in get_value or set_value )
         bstate.push_new_frame(nodes, bmachine) 
 
     
     def pop_frame(self):
         bstate = self.get_state()
-        bmachine = self.root_mch # TODO lookup
+        bmachine = self.root_mch # optimization to avoid lookup ( in get_value or set_value )
         bstate.pop_frame(bmachine) 
     
     

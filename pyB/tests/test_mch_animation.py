@@ -1483,7 +1483,7 @@ class TestMCHAnimation():
         name = ret_value[0][0]
         value = ret_value[0][1]  
         assert name == "pp" 
-        assert value in range(env._min_int, env._max_int)   
+        assert value in range(env._min_int, env._max_int)
 
      
                 
@@ -1572,6 +1572,7 @@ class TestMCHAnimation():
         #op_and_state_list = calc_possible_operations(env, mch) 
         #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
+
         
 
     def test_scheduler(self):        
