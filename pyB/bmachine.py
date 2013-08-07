@@ -123,7 +123,7 @@ class BMachine:
         self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         # TODO: better name for "names"
         self.const_names, self.var_names, self.dset_names, self.eset_and_elem_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
-        names = self.const_names + self.var_names + self.dset_names
+        names = self.const_names + self.var_names + self.dset_names + self.eset_and_elem_names
         bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
         # than add them to your top level bstate. The reason for this indirection is

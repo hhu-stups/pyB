@@ -79,6 +79,7 @@ class BState():
             name = "Predicate or Expression"
         string = "bstate.get() LookupError: %s in %s" % (id_Name, name)
         #print string
+        #self.print_bstate()
         raise ValueNotInBStateException(string)
 
 

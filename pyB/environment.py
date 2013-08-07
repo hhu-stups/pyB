@@ -70,6 +70,7 @@ class Environment():
 
     def lookup_bmachine(self, idName, mch):
         for m in mch.included_mch + mch.seen_mch + mch.used_mch + mch.extended_mch:
+            # FIXME: What if param. or return ids have the same name? add them here?
             names = m.const_names + m.var_names + m.dset_names + m.eset_and_elem_names + [n.idName for n in m.scalar_params + m.set_params]
             if idName in names:
                 return m

@@ -24,7 +24,7 @@ def eval_Invariant(root, env, mch):
 # used in child mchs(included, seen...) and tests 
 # The data from the solution-files has already been read at the mch creation time
 # If a solution file has been given to pyB , this method 'should' NEVER been called 
-def _init_machine(root, env, mch, solution_file_read=False):       
+def _init_machine(root, env, mch, solution_file_read=False):    
     # 1. init children
     for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
         for m in machine_list:
@@ -100,18 +100,23 @@ def _set_up_constants_generator(root, env, mch):
             env.set_up_bmachines[child.name] = child
             
         env.current_mch = child
-        init_sets(child.root, env, child) # FIXME: this is only correct for the first solution
         env.add_ids_to_frame([n.idName for n in child.scalar_params + child.set_params])
+        init_sets(child.root, env, child) # FIXME: this is only correct for the first solution
+        env.state_space.get_state().print_bstate()
         suc_generator = _set_up_constants_generator(child.root, env, child)
         suc_generator.next() # TODO: backtracking 
     env.current_mch = mch
+    #ref_bstate = env.state_space.get_state().clone()
     
     # 3.1 solve properties (bmch constants)
     if mch.aConstraintsMachineClause==None:
         assert mch.scalar_params==[] #and mch.set_params==[]
         prop_generator = check_properties(root, env, mch)
         for solution in prop_generator:
-            yield solution 
+            yield solution
+            #env.state_space.undo()           # revert child set up
+            #bstate = ref_bstate.clone()
+            #env.state_space.add_state(bstate)  
     # 3.2 solve constraints (bmch-param) and properties (bmch constants)       
     else:
         param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
@@ -124,6 +129,9 @@ def _set_up_constants_generator(root, env, mch):
                     prop_generator = check_properties(root, env, mch)
                     for solution in prop_generator:
                         yield solution
+                        #env.state_space.undo()      # revert child set up
+                        #bstate = ref_bstate.clone()
+                        #env.state_space.add_state(bstate) 
         yield False  
     
 
@@ -165,8 +173,8 @@ def exec_initialisation_generator(root, env, mch):
         env.add_ids_to_frame(child.var_names) # FIXME: not correct for all solutions
         init_generator = exec_initialisation_generator(child.root, env, child)
         init_generator.next() # TODO: backtracking
-        #print env.get_value("read"), child.name
     env.current_mch = mch
+    #ref_bstate = env.state_space.get_state().clone()
     
     if not mch.aInitialisationMachineClause: 
         yield True
@@ -178,8 +186,11 @@ def exec_initialisation_generator(root, env, mch):
             if possible:
                 at_least_one_possible = True
                 yield True
+                #env.state_space.undo()       # revert child init
+                #bstate = ref_bstate.clone()
+                #env.state_space.add_state(bstate) 
         if not at_least_one_possible:
-            print "WARNING: Problem while exec init"
+            print "WARNING: Problem while exec init. No init found/possible!"
             yield False
 
     
@@ -230,7 +241,6 @@ def init_sets(node, env, mch):
                     # values of elements of enumerated sets are their names
                     env.set_value(elm.idName, elm.idName)
                 env.add_ids_to_frame([child.idName])
-                print child.idName
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
                 init_deffered_set(child, env) # done by enumeration.py

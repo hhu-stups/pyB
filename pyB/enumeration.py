@@ -29,6 +29,8 @@ def all_values_by_type(atype, env):
         return frozenset(env.all_strings)
     elif isinstance(atype, SetType):
         type_name =  atype.data
+        #print type_name
+        #env.state_space.get_state().print_bstate()
         value = env.get_value(type_name)
         assert isinstance(value, frozenset)
         return value
