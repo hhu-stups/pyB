@@ -1,1 +1,12 @@
-#PREDICATE A=bool(1<2)
+
+        MACHINE           Test
+        INCLUDES          Testcase
+        VARIABLES         yy
+        INVARIANT         yy:NAT
+        INITIALISATION    yy := 1
+        OPERATIONS
+           opA = op1;
+           opB = op2(4);
+           opC = yy <-- op3;
+           opD = yy <-- op4(4)
+        END

@@ -76,12 +76,17 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     
     # 3. search for solutions  
     generator = _set_up_constants_generator(root, env, mch)
+    sol_num = 0
     for solution in generator:
         if solution:
-            bstates.append(bstate)
+            solution_bstate = env.state_space.get_state()
+            bstates.append(solution_bstate)
             env.state_space.undo()
             bstate = ref_bstate.clone()
             env.state_space.add_state(bstate) 
+            sol_num = sol_num + 1
+            if sol_num==MAX_INIT:
+                break
     env.state_space.undo() # bstate
     env.state_space.undo() # refbstate
     return bstates
@@ -91,6 +96,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
 # TODO: Limit number of solutions via config.py
 def _set_up_constants_generator(root, env, mch):
     # 1. set up constants of children
+    child_set_up_done = False
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     for child in children:
         # avoid double set_up
@@ -102,37 +108,43 @@ def _set_up_constants_generator(root, env, mch):
         env.current_mch = child
         env.add_ids_to_frame([n.idName for n in child.scalar_params + child.set_params])
         init_sets(child.root, env, child) # FIXME: this is only correct for the first solution
-        env.state_space.get_state().print_bstate()
+        #env.state_space.get_state().print_bstate()
         suc_generator = _set_up_constants_generator(child.root, env, child)
-        suc_generator.next() # TODO: backtracking 
+        if suc_generator.next(): # TODO: backtracking 
+            child_set_up_done = True
     env.current_mch = mch
-    #ref_bstate = env.state_space.get_state().clone()
+    ref_bstate = env.state_space.get_state().clone() # save set up of children (this is a Bugfix and not the solution)
     
-    # 3.1 solve properties (bmch constants)
-    if mch.aConstraintsMachineClause==None:
-        assert mch.scalar_params==[] #and mch.set_params==[]
-        prop_generator = check_properties(root, env, mch)
-        for solution in prop_generator:
-            yield solution
-            #env.state_space.undo()           # revert child set up
-            #bstate = ref_bstate.clone()
-            #env.state_space.add_state(bstate)  
-    # 3.2 solve constraints (bmch-param) and properties (bmch constants)       
+    # 2. solve constraints (bmch-param) and properties (bmch constants)    
+    param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
+    for para_solution in param_generator: 
+            # case (1) 
+            # no constants to set up.
+            # so para_solution is the result of this set up     
+            if mch.aConstantsMachineClause==None:
+                assert mch.aPropertiesMachineClause==None
+                yield para_solution
+            # case (2)
+            # There are constants, but the set up of the parameters failed
+            elif not para_solution and (not mch.scalar_params==[] or not mch.set_params==[]):
+                yield False
+            # case (3)
+            # There are constants and the set up of the parameters was successful 
+            else: # para solution found or none possible
+                ref_bstate2 = env.state_space.get_state().clone() # save param set up (this is a Bugfix and not the solution) 
+                prop_generator = check_properties(root, env, mch)
+                for solution in prop_generator:
+                    yield solution # case (2) or case (4)
+                    env.state_space.undo()      # revert parameter set up
+                    bstate = ref_bstate2.clone()
+                    env.state_space.add_state(bstate) 
+                env.state_space.undo()      # revert child set up
+                bstate = ref_bstate.clone()
+                env.state_space.add_state(bstate)
+    if child_set_up_done and mch.aConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
+        yield True
     else:
-        param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
-        for para_solution in param_generator:
-            if para_solution==True:
-                if mch.aPropertiesMachineClause==None:
-                    assert mch.aConstantsMachineClause==None
-                    yield True
-                else:
-                    prop_generator = check_properties(root, env, mch)
-                    for solution in prop_generator:
-                        yield solution
-                        #env.state_space.undo()      # revert child set up
-                        #bstate = ref_bstate.clone()
-                        #env.state_space.add_state(bstate) 
-        yield False  
+        yield False
     
 
 def exec_initialisation(root, env, mch, solution_file_read=False):       
@@ -148,7 +160,8 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
     generator = exec_initialisation_generator(root, env, mch)
     for solution in generator:
         if solution:
-            bstates.append(bstate)
+            solution_bstate = env.state_space.get_state()
+            bstates.append(solution_bstate)
             env.state_space.undo()
             bstate = ref_bstate.clone()
             env.state_space.add_state(bstate) 
@@ -161,6 +174,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
 # TODO: Limit number of solutions via config.py
 def exec_initialisation_generator(root, env, mch):
     # 1. init children
+    child_init_done = False
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     for child in children:
         # avoid double init
@@ -172,12 +186,15 @@ def exec_initialisation_generator(root, env, mch):
         env.current_mch = child
         env.add_ids_to_frame(child.var_names) # FIXME: not correct for all solutions
         init_generator = exec_initialisation_generator(child.root, env, child)
-        init_generator.next() # TODO: backtracking
+        if init_generator.next(): # TODO: backtracking
+            child_init_done = True
     env.current_mch = mch
-    #ref_bstate = env.state_space.get_state().clone()
+    ref_bstate = env.state_space.get_state().clone() # save init of children (this is a Bugfix and not the solution)
     
-    if not mch.aInitialisationMachineClause: 
-        yield True
+    if not mch.aInitialisationMachineClause:
+        if not mch.aVariablesMachineClause==None:
+            raise Exception("Missing InitialisationMachineClause in %s!" % mch.name)
+        yield child_init_done # (no init = no bstate change) 
     else:                
         # 2. search for solutions  
         at_least_one_possible = False
@@ -186,9 +203,9 @@ def exec_initialisation_generator(root, env, mch):
             if possible:
                 at_least_one_possible = True
                 yield True
-                #env.state_space.undo()       # revert child init
-                #bstate = ref_bstate.clone()
-                #env.state_space.add_state(bstate) 
+                env.state_space.undo()       # revert child init
+                bstate = ref_bstate.clone()
+                env.state_space.add_state(bstate) 
         if not at_least_one_possible:
             print "WARNING: Problem while exec init. No init found/possible!"
             yield False
@@ -198,7 +215,6 @@ def exec_initialisation_generator(root, env, mch):
 # FIXME: dummy-init of mch-parameters
 # inconsistency between schneider-book page 61 and the table on manrefb page 110.
 # This implementation is compatible to manrefb: The Properties-clause is not used!
-# TODO: enable backtracking with different bmch. parameter size
 def init_mch_param(root, env, mch):
     # TODO: retry with different set elem. num if no animation possible
     for n in mch.set_params:
@@ -211,21 +227,25 @@ def init_mch_param(root, env, mch):
             e_name = str(i)+"_"+name
             elem_lst.append(e_name)      
         env.set_value(name, frozenset(elem_lst))
+    # TODO: move this code to type-checker
     for n in mch.scalar_params:
         # page 126
         atype = env.get_type_by_node(n)
         assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+    # case (1). scalar param. and maybe set param
     if not mch.scalar_params==[]:
         if mch.aConstraintsMachineClause==None:
-            raise Exception("Missing ConstraintsMachineClause in %s" % mch.name)
+            names = [n.idName for n in mch.scalar_params]
+            raise Exception("Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
         pred = mch.aConstraintsMachineClause
         gen = try_all_values(pred, env, mch.scalar_params)
         for possible in gen:
             yield possible
-        yield False
+    # case (2). no scalar param. and maybe set param
+    elif mch.scalar_params==[] and (not mch.set_params==[]):
+        yield True  # only set_up of set-parameters, set_up succeeds
     else:
-        # also yield True if no parameters are present 
-        yield True # TODO: im nondet. for set_params is implemented, refactor this line
+        yield False # If there is nothing to do set_up fails (no bstate change)  
 
 
 def init_sets(node, env, mch):
@@ -983,6 +1003,7 @@ def interpret(node, env):
     elif isinstance(node, ATotalFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        #env.state_space.get_state().print_bstate()
         relation_set = make_set_of_realtions(S,T) # S<-->T
         fun = filter_no_function(relation_set) # S+->T
         total_fun = filter_not_total(fun, S) # S-->T

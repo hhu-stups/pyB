@@ -8,6 +8,7 @@ ENABLE_ASSERTIONS = True
 DEFERRED_SET_ELEMENTS_NUM = 3
 SET_PARAMETER_NUM = 3   # default machine-parameter init: 3 elements 
 TO_MANY_ITEMS = 2*16    # sets with more items are handeld like infinite sets
+MAX_INIT      = 6       # Max number of Initialisations computed (see ProB)
 DEFAULT_INPUT_FILENAME = "input.txt"
 VERBOSE = True
 BMACHINE_SEARCH_DIR = "examples/"

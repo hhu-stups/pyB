@@ -930,8 +930,8 @@ class TestMCHAnimation():
         assert len(bstates)==4
         for bstate in bstates:
             env.state_space.add_state(bstate)
-            num = bstate.get_value("xx", mch)
-            assert num in [0,1,2,3]
+            xx = bstate.get_value("xx", mch)
+            assert xx in [0,1,2,3]
             env.state_space.undo()
       
       
