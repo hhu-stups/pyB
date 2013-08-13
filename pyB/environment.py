@@ -29,8 +29,8 @@ class Environment():
         self.mch_operation_type = []   
         self.all_operation_asts = []
         self.parsed_bmachines = {}
-        self.set_up_bmachines = {} # set up constants done
-        self.init_bmachines   = {} # init done
+        self.set_up_bmachines_names = [] # set up constants done
+        self.init_bmachines_names   = [] # init done
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 

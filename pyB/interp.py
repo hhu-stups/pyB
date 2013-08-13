@@ -75,7 +75,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     env.state_space.add_state(bstate) 
     
     # 3. search for solutions  
-    generator = _set_up_constants_generator(root, env, mch)
+    generator = __set_up_constants_generator(root, env, mch)
     sol_num = 0
     for solution in generator:
         if solution:
@@ -85,66 +85,70 @@ def set_up_constants(root, env, mch, solution_file_read=False):
             bstate = ref_bstate.clone()
             env.state_space.add_state(bstate) 
             sol_num = sol_num + 1
-            if sol_num==MAX_INIT:
+            if sol_num==MAX_SET_UP:
                 break
     env.state_space.undo() # bstate
     env.state_space.undo() # refbstate
     return bstates
 
 
-# TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
-# TODO: Limit number of solutions via config.py
-def _set_up_constants_generator(root, env, mch):
-    # 1. set up constants of children
-    child_set_up_done = False
-    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    for child in children:
-        # avoid double set_up
-        if mch.name in env.set_up_bmachines:
-            continue
-        else:
-            env.set_up_bmachines[child.name] = child
-            
-        env.current_mch = child
-        env.add_ids_to_frame([n.idName for n in child.scalar_params + child.set_params])
-        init_sets(child.root, env, child) # FIXME: this is only correct for the first solution
-        #env.state_space.get_state().print_bstate()
-        suc_generator = _set_up_constants_generator(child.root, env, child)
-        if suc_generator.next(): # TODO: backtracking 
-            child_set_up_done = True
-    env.current_mch = mch
-    ref_bstate = env.state_space.get_state().clone() # save set up of children (this is a Bugfix and not the solution)
-    
-    # 2. solve constraints (bmch-param) and properties (bmch constants)    
-    param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
-    for para_solution in param_generator: 
-            # case (1) 
-            # no constants to set up.
-            # so para_solution is the result of this set up     
-            if mch.aConstantsMachineClause==None:
-                assert mch.aPropertiesMachineClause==None
-                yield para_solution
-            # case (2)
-            # There are constants, but the set up of the parameters failed
-            elif not para_solution and (not mch.scalar_params==[] or not mch.set_params==[]):
-                yield False
-            # case (3)
-            # There are constants and the set up of the parameters was successful 
-            else: # para solution found or none possible
-                ref_bstate2 = env.state_space.get_state().clone() # save param set up (this is a Bugfix and not the solution) 
-                prop_generator = check_properties(root, env, mch)
-                for solution in prop_generator:
-                    yield solution # case (2) or case (4)
-                    env.state_space.undo()      # revert parameter set up
-                    bstate = ref_bstate2.clone()
-                    env.state_space.add_state(bstate) 
-                env.state_space.undo()      # revert child set up
-                bstate = ref_bstate.clone()
-                env.state_space.add_state(bstate)
-    if child_set_up_done and mch.aConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
-        yield True
-    else:
+def __set_up_constants_list_generator(root, env, mch_list):
+    if mch_list==[]:
         yield False
+    else:
+        mch = mch_list[0] 
+        suc_generator = __set_up_constants_generator(mch.root, env, mch)
+        for bstate_change in suc_generator:
+            suc_list_generator = __set_up_constants_list_generator(root, env, mch_list[1:])
+            for more_bstate_change in suc_list_generator:
+                yield bstate_change or more_bstate_change     
+
+                
+# yield Ture: change done
+# yield False: no change
+def __set_up_constants_generator(root, env, mch):
+    if mch.name in env.set_up_bmachines_names:
+        yield False
+    else:
+        env.set_up_bmachines_names.append(mch.name)
+        
+    # 1. set up constants of children    
+    mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    for child_set_up_done in __set_up_constants_list_generator(root, env, mch_list):		
+		env.current_mch = mch
+		env.add_ids_to_frame([n.idName for n in mch.scalar_params + mch.set_params])
+		ref_bstate = env.state_space.get_state().clone() # save set up of children (this is a Bugfix and not the solution)
+		
+		# 2. solve constraints (bmch-param) and properties (bmch constants)    
+		param_generator = init_mch_param(root, env, mch) # init mch-param using CONSTRAINTS-clause
+		for para_solution in param_generator: 
+				# case (1) 
+				# no constants to set up.
+				# so para_solution is the result of this set up     
+				if mch.aConstantsMachineClause==None:
+					assert mch.aPropertiesMachineClause==None
+					yield para_solution or child_set_up_done
+				# case (2)
+				# There are constants, but the set up of the parameters failed
+				elif not para_solution and (not mch.scalar_params==[] or not mch.set_params==[]):
+					yield False or child_set_up_done
+				# case (3)
+				# There are constants and the set up of the parameters was successful 
+				else: # para solution found or none possible
+					ref_bstate2 = env.state_space.get_state().clone() # save param set up (this is a Bugfix and not the solution) 
+					prop_generator = check_properties(root, env, mch)
+					for solution in prop_generator:
+						yield solution or child_set_up_done # case (2) or case (4)
+						env.state_space.undo()      # revert parameter set up
+						bstate = ref_bstate2.clone()
+						env.state_space.add_state(bstate) 
+					env.state_space.undo()      # revert child set up
+					bstate = ref_bstate.clone()
+					env.state_space.add_state(bstate)
+		if child_set_up_done and mch.aConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
+			yield True
+		else:
+			yield False or child_set_up_done
     
 
 def exec_initialisation(root, env, mch, solution_file_read=False):       
@@ -157,58 +161,70 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
     env.state_space.add_state(bstate) 
     
     # 2. search for solutions  
-    generator = exec_initialisation_generator(root, env, mch)
+    generator = __exec_initialisation_generator(root, env, mch)
+    sol_num = 0
     for solution in generator:
         if solution:
             solution_bstate = env.state_space.get_state()
             bstates.append(solution_bstate)
             env.state_space.undo()
             bstate = ref_bstate.clone()
-            env.state_space.add_state(bstate) 
+            env.state_space.add_state(bstate)
+            sol_num = sol_num +1
+            if sol_num==MAX_INIT:
+                break 
     env.state_space.undo() # bstate
     env.state_space.undo() # refbstate
     return bstates
-    
-    
-# TODO: prevent from double set up (e.g. A includes B and sees C, B sees C)
-# TODO: Limit number of solutions via config.py
-def exec_initialisation_generator(root, env, mch):
-    # 1. init children
-    child_init_done = False
-    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
-    for child in children:
-        # avoid double init
-        if mch.name in env.init_bmachines:
-            continue
-        else:
-            env.init_bmachines[child.name] = child
+
+# returns if bstate of one mch was changed (True/False)
+def __exec_initialisation_list_generator(root, env, mch_list):
+    if mch_list==[]:
+        yield False
+    else:
+        mch = mch_list[0] 
+        init_generator = __exec_initialisation_generator(mch.root, env, mch)
+        for bstate_change in init_generator:
+            init_list_generator = __exec_initialisation_list_generator(root, env, mch_list[1:])
+            for more_bstate_change in init_list_generator:
+                yield bstate_change or more_bstate_change        
+
+                
+
+def __exec_initialisation_generator(root, env, mch):
+    # 1. check if init already done to avoid double init
+    if mch.name in env.init_bmachines_names:
+        yield False
+    else:
+        env.init_bmachines_names.append(mch.name)
             
-        env.current_mch = child
-        env.add_ids_to_frame(child.var_names) # FIXME: not correct for all solutions
-        init_generator = exec_initialisation_generator(child.root, env, child)
-        if init_generator.next(): # TODO: backtracking
-            child_init_done = True
-    env.current_mch = mch
-    ref_bstate = env.state_space.get_state().clone() # save init of children (this is a Bugfix and not the solution)
-    
-    if not mch.aInitialisationMachineClause:
-        if not mch.aVariablesMachineClause==None:
-            raise Exception("Missing InitialisationMachineClause in %s!" % mch.name)
-        yield child_init_done # (no init = no bstate change) 
-    else:                
-        # 2. search for solutions  
-        at_least_one_possible = False
-        ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
-        for possible in ex_sub_generator:
-            if possible:
-                at_least_one_possible = True
-                yield True
-                env.state_space.undo()       # revert child init
-                bstate = ref_bstate.clone()
-                env.state_space.add_state(bstate) 
-        if not at_least_one_possible:
-            print "WARNING: Problem while exec init. No init found/possible!"
-            yield False
+    # 2. init children
+    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    init_list_generator = __exec_initialisation_list_generator(root, env, children)
+    # TODO state revert?
+    for child_bstate_change in init_list_generator:         
+        # 3. set up state and env. for init exec
+        env.current_mch = mch
+        env.add_ids_to_frame(mch.var_names)  
+        ref_bstate = env.state_space.get_state().clone() # save init of children (this is a Bugfix and not the solution)
+        
+        if not mch.aInitialisationMachineClause:
+            if not mch.aVariablesMachineClause==None:
+                raise Exception("Missing InitialisationMachineClause in %s!" % mch.name)
+            yield child_bstate_change 
+        else:                
+            # 4. search for solutions  
+            at_least_one_possible = False
+            ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
+            for bstate_change in ex_sub_generator:
+                if bstate_change:
+                    at_least_one_possible = True
+                    yield True
+                    env.state_space.undo()       # revert child init
+                    bstate = ref_bstate.clone()
+                    env.state_space.add_state(bstate) 
+            if not at_least_one_possible:
+                raise Exception("WARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
 
     
 
