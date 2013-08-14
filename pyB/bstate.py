@@ -86,6 +86,7 @@ class BState():
     # TODO: (maybe) check if value has the correct type
     # used by tests and enumeration and substitution
     def set_value(self, id_Name, value, bmachine):
+        #print value, id_Name
         assert isinstance(bmachine, BMachine) or bmachine==None
         value_stack = self.bmch_dict[bmachine]
         for i in range(len(value_stack)):

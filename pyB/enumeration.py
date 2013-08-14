@@ -29,7 +29,7 @@ def all_values_by_type(atype, env):
         return frozenset(env.all_strings)
     elif isinstance(atype, SetType):
         type_name =  atype.data
-        #print type_name
+        print type_name
         #env.state_space.get_state().print_bstate()
         value = env.get_value(type_name)
         assert isinstance(value, frozenset)
@@ -86,6 +86,7 @@ def init_deffered_set(def_set, env):
     lst = []
     for i in range(DEFERRED_SET_ELEMENTS_NUM):
         lst.append(str(i)+"_"+name)
+    #print name, lst
     env.set_value(name, frozenset(lst))
 
 

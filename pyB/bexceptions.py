@@ -10,3 +10,11 @@ class ConstraintNotImplementedException:
 class ValueNotInBStateException:
     def __init__(self, value):
         self.value = value
+        
+class INITNotPossibleException:
+    def __init__(self, string):
+        self.value = string
+
+class SETUPNotPossibleException:
+    def __init__(self, string):
+        self.value = string

@@ -7,6 +7,7 @@ from typing import _test_typeit, type_check_bmch
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
+from bexceptions import *
 
 file_name = "input.txt"
 
@@ -573,10 +574,10 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        #assert interpret(root.children[2], env) #not possible 
-        #assert env.get_value("xx")==1
+        try:
+            interpret(root, env) # init VARIABLES and eval INVARIANT
+        except INITNotPossibleException:
+            pass
 
 
     def test_genAST_sub_choice(self):
