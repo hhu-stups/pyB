@@ -421,8 +421,20 @@ def type_check_bmch(root, env, mch):
     type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
     if env.root_mch == mch:
         add_all_visible_ops_to_env(mch, env)
+    check_mch_parameter(root, env, mch)
     return type_env
 
+
+def check_mch_parameter(root, env, mch):
+    # TODO: move this code to type-checker
+    for n in mch.scalar_params:
+        # page 126
+        atype = env.get_type_by_node(n)
+        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+    for n in mch.set_params:
+        atype = env.get_type_by_node(n)
+        assert isinstance(atype, PowerSetType)
+        assert isinstance(atype.data, SetType)
 
 # returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
 # sideeffect: changes env

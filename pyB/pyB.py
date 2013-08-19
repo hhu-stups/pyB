@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env, init_sets, check_properties, init_mch_param, eval_Invariant
+from interp import interpret, write_solutions_to_env, set_up_constants, exec_initialisation, eval_Invariant
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
-from animation_clui import show_ui, show_env
+from animation_clui import show_ui, show_env, print_set_up_bstates, print_init_bstates
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from ast_nodes import *
@@ -62,48 +62,35 @@ def run_animation_mode():
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
-        type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
-        if not solution_file_name_str:
-			for machine_list in [mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch]:
-				for m in machine_list:
-					env.current_mch = m
-					interpret(m.root, env)
-			env.current_mch = mch 
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
     
         # TODO: Check with B spec
         # Schneider Book page 62-64:
         # The parameters p make the constraints C True
-        # #p.C
-        init_mch_param(root, env, mch)
-    
+        # #p.C    
         # Sets St and constants k which meet the constraints c make the properties B True
         # C => #St,k.B
-        init_sets(root, env, mch)
-        if not solution_file_name_str:
-    			env.add_ids_to_frame(mch.const_names)
-        prop_generator = check_properties(root, env, mch)
-        prop_generator.next()
+        bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")
+        #print_set_up_bstates(bstates, mch)
+        env.state_space.add_state(bstates[0]) #XXX
+        
         
         # If C and B is True there should be Variables v which make the Invaraiant I True
-        # TODO: B & C => #v.I
-        if not solution_file_name_str:
-            env.add_ids_to_frame(mch.var_names)
+        # B & C => #v.I
+        print solution_file_name_str
+        bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+        #print_init_bstates(bstates, mch)
+        env.state_space.add_state(bstates[0]) #XXX
         
-    
         # Not in schneiders book:
         if mch.aAssertionsMachineClause:
             interpret(mch.aAssertionsMachineClause, env)
-        # TODO: init musst be an animation step
-        if not solution_file_name_str:
-			if mch.aInitialisationMachineClause:
-				interpret(mch.aInitialisationMachineClause, env)
+
                                                                		 # 9. animate if ops are present                                                    
         # DO-WHILE Loop
         while True:
             print mch.name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
-            #op_list = calc_possible_operations(env, mch)            # List of lists
-            #op_and_bstate_list = calc_bstates(env, op_list, mch)    # TODO: replace with new version after long check
             next_states = calc_next_states(env,mch)
             if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
                 show_env(env)
@@ -128,7 +115,7 @@ def run_animation_mode():
                 print "Error! Wrong input:", number
 
 
-
+# check of init without animation
 def run_checking_mode():
     env = Environment()                                          # 1. create env.
     file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
@@ -150,11 +137,10 @@ def run_checking_mode():
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
-        # no init of seen, used, extended and included B-machines
-        init_mch_param(root, env, mch)
-        set_up_sets(root, env, mch) # TODO: remove when sets are part of probsolutionfile
-        prop_generator = check_properties(root, env, mch)
-        prop_generator.next()
+        bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")
+        env.state_space.add_state(bstates[0]) #XXX
+        bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+        env.state_space.add_state(bstates[0]) #XXX
         if mch.aAssertionsMachineClause:
             interpret(mch.aAssertionsMachineClause, env)
         return eval_Invariant(root, env, mch)   

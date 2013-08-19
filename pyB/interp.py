@@ -32,9 +32,24 @@ def _init_machine(root, env, mch, solution_file_read=False):
         env.state_space.add_state(bstates[0]) 
 
 
-def set_up_constants(root, env, mch, solution_file_read=False):        
+def set_up_constants(root, env, mch, solution_file_read=False): 
+    # 0. Use solution file if possible
+    if solution_file_read:
+        pre_set_up_state = env.state_space.get_state()
+        unset_lst = __find_unset_constants(mch, pre_set_up_state)
+        if unset_lst and VERBOSE:
+            print "WARNING: Set Up from solution file was not complete! unset:%s" % unset_lst
+        
+        env.state_space.add_state(pre_set_up_state)
+        init_sets(root, env, mch) #FIXME: modify generator for partial set up 
+        # TODO: Parameter set up
+        if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
+            raise SETUPNotPossibleException("Wrong solutions from file. Properties are false!")
+        env.state_space.undo()
+        return [pre_set_up_state] 
+               
     # 1. set up frame and B-state
-    # The reference B-state saves the status before the solution
+    # The reference B-state: save the status before the solutions
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
     bstate = ref_bstate.clone()
@@ -73,6 +88,8 @@ def __set_up_constants_list_generator(root, env, mch_list):
                 
 # yield True: B-state was successfully changed
 # yield False: no change
+# FIXME: IF M1 includes/sees M2 : Constants and set which satisfy 
+# M2-Properties but not M1-Properties are NOT a solution
 def __set_up_constants_generator(root, env, mch):
     # 0. set up already done?
     if mch.name in env.set_up_bmachines_names:
@@ -115,9 +132,124 @@ def __set_up_constants_generator(root, env, mch):
                 env.state_space.revert(ref_bstate) # revert child set up
         # 4. propagate set init or possible B-state-change of children
         yield child_bstate_change or set_init_done 
-    
 
-def exec_initialisation(root, env, mch, solution_file_read=False):       
+
+# TODO: non-determinisim init of mch-set-parameters 
+# inconsistency between schneider-book page 61 and the table on manrefb page 110.
+# This implementation is compatible to manrefb: The Properties-clause is not used!
+def init_mch_param(root, env, mch):
+    __init_set_mch_parameter(root, env, mch)
+    scalar_parameter_present = not mch.scalar_params==[]
+    # case (1). scalar param. and maybe set param
+    if scalar_parameter_present:
+        if mch.aConstraintsMachineClause==None:
+            names = [n.idName for n in mch.scalar_params]
+            raise SETUPNotPossibleException("Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
+        pred = mch.aConstraintsMachineClause
+        gen = try_all_values(pred, env, mch.scalar_params)
+        for possible in gen:
+            yield possible
+    # case (2). no scalar param. but set param
+    elif not mch.set_params==[] and not scalar_parameter_present:
+        yield True  # only set_up of set-parameters, set_up succeeds
+    # case (3) nothing present and nothing done
+    else:
+        assert mch.scalar_params==[] and not scalar_parameter_present
+        yield False # no bstate change 
+
+
+# helper of init_mch_param
+def __init_set_mch_parameter(root, env, mch):
+    # TODO: retry with different set elem. num if no animation possible
+    for n in mch.set_params:
+        elem_lst = []
+        name = n.idName 
+        for i in range(SET_PARAMETER_NUM):
+            e_name = str(i)+"_"+name
+            elem_lst.append(e_name)      
+        env.set_value(name, frozenset(elem_lst))
+
+                
+# returns if init was done
+def init_sets(node, env, mch):
+    if mch.aSetsMachineClause: # St
+        node = mch.aSetsMachineClause
+        for child in node.children:
+            if isinstance(child, AEnumeratedSet):
+                elm_lst = []
+                for elm in child.children:
+                    assert isinstance(elm, AIdentifierExpression)
+                    elm_lst.append(elm.idName)
+                    env.add_ids_to_frame([elm.idName])
+                    # values of elements of enumerated sets are their names
+                    env.set_value(elm.idName, elm.idName)
+                env.add_ids_to_frame([child.idName])
+                env.set_value(child.idName, frozenset(elm_lst))
+            else:
+                init_deffered_set(child, env) # done by enumeration.py
+        return True
+    return False
+
+
+# yield True if successful B-state change
+def check_properties(node, env, mch):
+    if mch.aPropertiesMachineClause: # B
+        # set up constants
+        # Some Constants/Sets are set via Prop. Preds
+        # TODO: give Blacklist of Variable Names
+        # find all constants like x=42 oder y={1,2,3}
+        learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
+        if learnd_vars and VERBOSE:
+            print "leard constants (no enumeration): ", learnd_vars
+        # if there are constants
+        if mch.aConstantsMachineClause:
+            const_nodes = []
+            # find all constants/sets which are still not set
+            for idNode in mch.aConstantsMachineClause.children:
+                assert isinstance(idNode, AIdentifierExpression)
+                name = idNode.idName
+                if env.get_value(name)==None:
+                    try:
+                        value = env.solutions[name]
+                        env.set_value(name, value)
+                    except KeyError:
+                        const_nodes.append(idNode)
+            if const_nodes==[]:
+                prop_result = interpret(mch.aPropertiesMachineClause, env)
+                assert prop_result # if this is False: there musst be a Bug inside the interpreter
+                yield prop_result 
+            else:
+                # if there are unset constants/sets enumerate them
+                at_least_one_solution = False
+                if VERBOSE:
+                    print "enum. constants:", [n.idName for n in const_nodes]
+                gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
+                for prop_result in gen:
+                    if prop_result:
+                        at_least_one_solution = True
+                        yield True
+                if not at_least_one_solution:
+                    print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
+                    raise SETUPNotPossibleException("Properties FALSE in %s!" % (mch.name))
+        #TODO: Sets-Clause
+    yield False # avoid stop iteration bug
+            
+            
+# calcs up to MAX_INIT init B-states
+def exec_initialisation(root, env, mch, solution_file_read=False):
+    # 0. Use solution file if possible
+    if solution_file_read:
+        pre_init_state = env.state_space.get_state()
+        unset_lst = __find_unset_variables(mch, pre_init_state)
+        if unset_lst and VERBOSE:
+            print "WARNING: Init from solution file was not complete! unset:%s" % unset_lst
+        
+        env.state_space.add_state(pre_init_state)
+        if not mch.aInvariantMachineClause==None and not interpret(mch.aInvariantMachineClause, env):
+            raise INITNotPossibleException("Wrong solutions from file. Invariant is false!")
+        env.state_space.undo()
+        return [pre_init_state] 
+               
     # 1. set up frames and state
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
@@ -190,120 +322,6 @@ def __exec_initialisation_generator(root, env, mch):
                 raise INITNotPossibleException("WARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
-# TODO: nondeterm. init of mch-set-parameters 
-# inconsistency between schneider-book page 61 and the table on manrefb page 110.
-# This implementation is compatible to manrefb: The Properties-clause is not used!
-def init_mch_param(root, env, mch):
-    __init_set_mch_parameter(root, env, mch)
-    __check_scalar_mch_parameter(root, env, mch)
-    scalar_parameter_present = not mch.scalar_params==[]
-    # case (1). scalar param. and maybe set param
-    if scalar_parameter_present:
-        if mch.aConstraintsMachineClause==None:
-            names = [n.idName for n in mch.scalar_params]
-            raise SETUPNotPossibleException("Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
-        pred = mch.aConstraintsMachineClause
-        gen = try_all_values(pred, env, mch.scalar_params)
-        for possible in gen:
-            yield possible
-    # case (2). no scalar param. but set param
-    elif not mch.set_params==[] and not scalar_parameter_present:
-        yield True  # only set_up of set-parameters, set_up succeeds
-    else:
-        assert mch.scalar_params==[] and not scalar_parameter_present
-        yield False # no bstate change 
-
-# helper of init_mch_param
-def __init_set_mch_parameter(root, env, mch):
-    # TODO: retry with different set elem. num if no animation possible
-    for n in mch.set_params:
-        atype = env.get_type_by_node(n)
-        assert isinstance(atype, PowerSetType)
-        assert isinstance(atype.data, SetType)
-        elem_lst = []
-        name = n.idName 
-        for i in range(SET_PARAMETER_NUM):
-            e_name = str(i)+"_"+name
-            elem_lst.append(e_name)      
-        env.set_value(name, frozenset(elem_lst))
-
-# helper of init_mch_param
-def __check_scalar_mch_parameter(root, env, mch):
-    # TODO: move this code to type-checker
-    for n in mch.scalar_params:
-        # page 126
-        atype = env.get_type_by_node(n)
-        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
-                
-
-def init_sets(node, env, mch):
-    if mch.aSetsMachineClause: # St
-        node = mch.aSetsMachineClause
-        for child in node.children:
-            if isinstance(child, AEnumeratedSet):
-                elm_lst = []
-                for elm in child.children:
-                    assert isinstance(elm, AIdentifierExpression)
-                    elm_lst.append(elm.idName)
-                    env.add_ids_to_frame([elm.idName])
-                    # values of elements of enumerated sets are their names
-                    env.set_value(elm.idName, elm.idName)
-                env.add_ids_to_frame([child.idName])
-                env.set_value(child.idName, frozenset(elm_lst))
-            else:
-                init_deffered_set(child, env) # done by enumeration.py
-        return True
-    return False
-
-
-
-# yield True if successful b-state change
-def check_properties(node, env, mch):
-    if mch.aPropertiesMachineClause: # B
-        # set up constants
-        # Some Constants/Sets are set via Prop. Preds
-        # TODO: give Blacklist of Variable Names
-        # find all constants like x=42 oder y={1,2,3}
-        learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
-        if learnd_vars and VERBOSE:
-            print "leard constants (no enumeration): ", learnd_vars
-        # if there are constants
-        if mch.aConstantsMachineClause:
-            const_nodes = []
-            # find all constants/sets which are still not set
-            for idNode in mch.aConstantsMachineClause.children:
-                assert isinstance(idNode, AIdentifierExpression)
-                name = idNode.idName
-                if env.get_value(name)==None:
-                    try:
-                        value = env.solutions[name]
-                        env.set_value(name, value)
-                    except KeyError:
-                        const_nodes.append(idNode)
-            if const_nodes==[]:
-                prop_result = interpret(mch.aPropertiesMachineClause, env)
-                assert prop_result # if this is False: there musst be a Bug inside the interpreter
-                yield prop_result 
-            else:
-                # if there are unset constants/sets enumerate them
-                at_least_one_solution = False
-                if VERBOSE:
-                    print "enum. constants:", [n.idName for n in const_nodes]
-                gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
-                for prop_result in gen:
-                    if prop_result:
-                        at_least_one_solution = True
-                        yield True
-                if not at_least_one_solution:
-                    print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
-                    raise SETUPNotPossibleException("Properties FALSE in %s!" % (mch.name))
-        #TODO: Sets-Clause
-        else:
-            yield False
-    yield False
-            
-
-
 # search a conjunction of predicates for a false subpredicate and prints it.
 # This python function is used to get better error massages for failing properties or invariants
 def print_predicate_fail(env, node):
@@ -355,6 +373,34 @@ def write_solutions_to_env(root, env):
                 continue 
            
 
+def __check_unset(names, bstate, mch):
+    fail_lst = []
+    for id_Name in names:
+        try:
+            value = bstate.get_value(id_Name, mch)
+            if value==None:
+                fail_lst.append(id_Name)    
+        except ValueNotInBStateException:
+            fail_lst.append(id_Name)
+    return fail_lst
+
+
+# checks if there are any unset variables
+def __find_unset_variables(mch, bstate):
+    # TODO: Find unset in child-mchs
+    var_lst = mch.var_names
+    fail_lst = __check_unset(var_lst, bstate, mch)
+    return fail_lst 
+
+
+# checks if there are any unset constants
+def __find_unset_constants(mch, bstate):
+     # TODO: Find unset in child-mchs
+    const_lst = mch.const_names #+ mch.eset_and_elem_names + mch.dset_names
+    fail_lst = __check_unset(const_lst, bstate, mch)
+    return fail_lst 
+    
+    
 def learn_assigned_values(root, env):
     lst = []
     _learn_assigned_values(root, env, lst)
@@ -399,7 +445,7 @@ def interpret(node, env):
 
 # ********************************************
 #
-#        0. Interpretation-mode and Clauses
+#        0. Interpretation-mode 
 #
 # ********************************************
     #print node 3 # DEBUG
@@ -415,7 +461,7 @@ def interpret(node, env):
         else:            # there are variables 
             env.add_ids_to_frame(idNames)
             learnd_vars = learn_assigned_values(node, env)
-            if learnd_vars:
+            if learnd_vars and VERBOSE:
                 print "learnd(no enumeration): ", learnd_vars
             not_set = []
             for n in idNodes:
@@ -424,11 +470,13 @@ def interpret(node, env):
             # enumerate only unknown vars
             # Dont enums quantified vars like !x.(P=>Q)
             if not_set:
-                print "enum. vars:", [n.idName for n in not_set]
+                if VERBOSE:
+                    print "enum. vars:", [n.idName for n in not_set]
                 gen = try_all_values(node.children[0], env, not_set)
                 if gen.next():
                     for i in idNames:
-                        print i,"=", env.get_value(i)
+                        if VERBOSE:
+                            print i,"=", env.get_value(i)
                 else:
                     print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
                     print False
@@ -457,16 +505,18 @@ def interpret(node, env):
         mch = env.current_mch
         _init_machine(node, env, mch)
         return mch
+# ********************************************
+#
+#        0. Clauses
+#
+# ********************************************
     elif isinstance(node, AConstraintsMachineClause):
         return interpret(node.children[-1], env)
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
-        return interpret(node.children[-1], env) 
-    elif isinstance(node, AInitialisationMachineClause): #TODO: remove from interp
-        ex_sub_generator = exec_substitution(node.children[-1], env)
-        possible = ex_sub_generator.next()
-        if not possible:
-            print "WARNING: Problem while exec init"
-        # TODO: eval subst_success to check if init was successful 
+        result = interpret(node.children[-1], env)
+        if not result:
+            print_predicate_fail(env, node.children[0])
+        return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
         if not result:

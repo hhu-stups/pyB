@@ -13,6 +13,38 @@ def show_env(env):
     print_state(bstate)
     
 
+def print_set_up_bstates(bstates, root_mch):
+    i=0
+    const_names = root_mch.const_names
+    for bstate in bstates:
+        string = "[%s]: SET_UP_CONSTANTS" % i
+        if not const_names==[]:
+            args = "("
+            for name in const_names:
+                value = print_values_b_style(bstate.get_value(name, root_mch))
+                args += "%s=%s " % (name, value)
+            args += ")"
+            string += args    
+        print string
+        i = i +1
+    
+
+def print_init_bstates(bstates, root_mch):
+    i=0
+    var_names = root_mch.var_names
+    for bstate in bstates:
+        string = "[%s]: INITIALISATION" % i
+        if not var_names==[]:
+            args = "("
+            for name in var_names:
+                value = print_values_b_style(bstate.get_value(name, root_mch))
+                args += "%s=%s " % (name, value)
+            args += ")"
+            string += args    
+        print string
+        i = i +1
+    
+
 def print_state(bstate):
     for bmachine in bstate.bmch_dict:
         if not bmachine==None:
