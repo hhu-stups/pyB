@@ -2,10 +2,10 @@
 # console user-interface
 
 def show_ui(env, mch, op_list):
-    show_env(env)
-    string, num_of_ops = show_ops(op_list, env)
-    print string
-    return num_of_ops
+	show_env(env)
+	string, num_of_ops = show_ops(op_list, env)
+	print string
+	return num_of_ops
 
 
 def show_env(env):
@@ -16,17 +16,20 @@ def show_env(env):
 def print_set_up_bstates(bstates, root_mch):
     i=0
     const_names = root_mch.const_names
+    set_names   = root_mch.dset_names + root_mch.eset_names
     for bstate in bstates:
         string = "[%s]: SET_UP_CONSTANTS" % i
-        if not const_names==[]:
+        if not const_names+set_names==[]:
             args = "("
-            for name in const_names:
+            for name in const_names + set_names:
                 value = print_values_b_style(bstate.get_value(name, root_mch))
-                args += "%s=%s " % (name, value)
+                args += "%s=%s " % (name, value)            
             args += ")"
             string += args    
         print string
         i = i +1
+    print "["+ str(i) +"]: leave pyB\n"
+    return i
     
 
 def print_init_bstates(bstates, root_mch):
@@ -43,6 +46,9 @@ def print_init_bstates(bstates, root_mch):
             string += args    
         print string
         i = i +1
+    print "["+ str(i) +"]: undo"
+    print "["+ str(i+1) +"]: leave pyB\n"
+    return i+1
     
 
 def print_state(bstate):

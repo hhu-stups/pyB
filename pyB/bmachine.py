@@ -10,9 +10,10 @@ class BMachine:
     def __init__(self, node, env):
         self.name = None
         self.const_names = []
-        self.var_names = []
-        self.dset_names = []
-        self.eset_and_elem_names = []
+        self.var_names   = []
+        self.dset_names  = []
+        self.eset_names  = []
+        self.eset_elem_names = []
         self.root = node
         self.env = env # TODO: Check if a elimination of this unclean backref is possible
         self.aMachineHeader = None
@@ -122,8 +123,8 @@ class BMachine:
         self.parse_child_machines(self.aSeesMachineClause, self.seen_mch)
         self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         # TODO: better name for "names"
-        self.const_names, self.var_names, self.dset_names, self.eset_and_elem_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
-        names = self.const_names + self.var_names + self.dset_names + self.eset_and_elem_names
+        self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        names = self.const_names + self.var_names + self.dset_names + self.eset_names + self.eset_elem_names
         bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
         # than add them to your top level bstate. The reason for this indirection is
@@ -179,7 +180,8 @@ class BMachine:
         var_names = []
         const_names = []
         dset_names = []
-        eset_and_elem_names = []
+        eset_names = []
+        eset_elem_names =[]
         if cmc:
             const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
@@ -188,10 +190,10 @@ class BMachine:
             dset_names  = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
             for set in smc.children:
                 if isinstance(set, AEnumeratedSet):
-                    eset_and_elem_names.append(set.idName)
+                    eset_names.append(set.idName)
                     elem_names = [e.idName for e in set.children]
-                    eset_and_elem_names += elem_names
-        return const_names, var_names, dset_names, eset_and_elem_names
+                    eset_elem_names += elem_names
+        return const_names, var_names, dset_names, eset_names, eset_elem_names
 
 
     # types included, extended, seen or used b machines

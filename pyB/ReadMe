@@ -219,6 +219,7 @@ Index
     - 82. implement and test b-machine renaming 
     - 83. check Manual Page 128. write testcase
     - 84. Write nondeterministic "correct" while-testcase
+    - 85. Enable use of partial solution from ProB
 8.3 Bugs:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash

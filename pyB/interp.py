@@ -396,7 +396,7 @@ def __find_unset_variables(mch, bstate):
 # checks if there are any unset constants
 def __find_unset_constants(mch, bstate):
      # TODO: Find unset in child-mchs
-    const_lst = mch.const_names #+ mch.eset_and_elem_names + mch.dset_names
+    const_lst = mch.const_names #+ mch.eset_names + mch.dset_names
     fail_lst = __check_unset(const_lst, bstate, mch)
     return fail_lst 
     
