@@ -17,6 +17,9 @@ class StateSpace:
     def add_state(self, bstate):
         self.stack.append(bstate)
     
+    def get_stack_size(self):
+        return len(self.stack)
+    
     # call by generators to reset to partial result.
     # doesn't change stack hight 
     def revert(self, revert_bstate):

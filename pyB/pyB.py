@@ -73,42 +73,54 @@ def run_animation_mode():
                                                                 # 9. animate if ops are present                                                    
         # DO-WHILE Loop
         while True:
-            n, next_states = __calc_states(root, env, mch, solution_file_present)
-            if env.set_up_done and env.init_done and next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
+            next_states = __calc_states_and_print_ui(root, env, mch, solution_file_present)
+            if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
                 show_env(env)
                 break
-            input_str = "Input (0-"+str(n)+"):"
+            undo_possible = not env.state_space.empty()
+            number_of_options = len(next_states)
+            if undo_possible: 
+                number_of_options = number_of_options + 1 
+            input_str = "Input (0-"+str(number_of_options)+"):"
             number = raw_input(input_str)
             number = int(number)
             
-            if number == n:
-                # quit
+            # quit
+            if number == number_of_options:
                 print "goodbye"
                 break
+            elif undo_possible and number == number_of_options-1:
+                x = env.state_space.get_stack_size()
+                x = x-1 # BUGFIX: empty state on stack
+                if 2==x and env.init_state_on_stack and env.set_up_state_on_stack:
+                    env.init_state_on_stack==False
+                    env.init_done = False
+                elif 1==x and env.init_state_on_stack and env.set_up_state_on_stack==False:
+                    env.init_state_on_stack==False
+                    env.init_done = False
+                elif 1==x and env.set_up_state_on_stack:
+                    env.set_up_done = False
+                    env.set_up_state_on_stack = False
+                env.state_space.undo()
             elif not env.set_up_done:
                 env.set_up_done = True
+                env.set_up_state_on_stack = True
                 bstate = next_states[number]
-                env.state_space.add_state(bstate)
-                env.set_up_state_num = 0
-            elif number == n-1:
-                if not env.state_space.empty() and env.set_up_state_num==None and env.init_state_num==None : #FIXME: UNDO
-                    env.state_space.undo()
-                else:
-                    print "No undo possible: current state is init. state"
+                env.state_space.add_state(bstate) 
             elif not env.init_done:
                 env.init_done = True
+                env.init_state_on_stack = True
                 bstate = next_states[number]
                 env.state_space.add_state(bstate)
-                env.init_state_num = env.set_up_state_num +1
             elif len(next_states)>number and number >= 0:
                 # switch state
-                bstate = next_states[number][3]
+                bstate = next_states[number]
                 env.state_space.add_state(bstate)
             else:
                 print "Error! Wrong input:", number
 
 
-def __calc_states(root, env, mch, solution_file_read):
+def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     # Schneider Book page 62-64:
     # The parameters p make the constraints C True
     # #p.C    
@@ -116,32 +128,33 @@ def __calc_states(root, env, mch, solution_file_read):
     # C => #St,k.B
     if not env.set_up_done:
         next_states = set_up_constants(root, env, mch, solution_file_read)
-        n = len(next_states)
-        if n>0:
+        if len(next_states)>0:
             print_set_up_bstates(next_states, mch)
-            return n, next_states
+            return next_states
         else:
             # no bstates and no exception: set up to do (e.g no constants)
-            assert n==0
             env.set_up_done = True 
+        
         
     # If C and B is True there should be Variables v which make the Invaraiant I True
     # B & C => #v.I
     if not env.init_done:
         next_states = exec_initialisation(root, env, mch, solution_file_read)
-        n = len(next_states)
-        if n>0:
-            print_init_bstates(next_states, mch)
-            return n+1, next_states
+        if len(next_states)>0:
+            undo_possible = not env.state_space.empty()
+            print_init_bstates(next_states, mch, undo_possible)
+            return next_states
         else:
             # no bstates and no exception: no init to do (e.g no variables)
-            assert n==0
             env.init_done = True
 
     print mch.name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
-    next_states = calc_next_states(env,mch)
-    n = show_ui(env, mch, next_states)
-    return n, next_states
+    bstate_lst = calc_next_states(env, mch)
+    show_ui(env, mch, bstate_lst)
+    next_states = []
+    for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
+        next_states.append(n[3])
+    return next_states
 
 
 # check of init without animation

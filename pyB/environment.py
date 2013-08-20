@@ -32,10 +32,10 @@ class Environment():
         self.set_up_bmachines_names = [] # set up constants done
         self.init_bmachines_names   = [] # init done
         # animation parameters
-        self.set_up_state_num       = None
-        self.init_state_num         = None
-        self.set_up_done       = False
-        self.init_done         = False
+        self.set_up_state_on_stack  = False
+        self.init_state_on_stack    = False
+        self.set_up_done            = False
+        self.init_done              = False
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 

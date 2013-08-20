@@ -2,10 +2,9 @@
 # console user-interface
 
 def show_ui(env, mch, op_list):
-	show_env(env)
-	string, num_of_ops = show_ops(op_list, env)
-	print string
-	return num_of_ops
+    show_env(env)
+    string = show_ops(op_list, env)
+    print string
 
 
 def show_env(env):
@@ -29,10 +28,9 @@ def print_set_up_bstates(bstates, root_mch):
         print string
         i = i +1
     print "["+ str(i) +"]: leave pyB\n"
-    return i
     
 
-def print_init_bstates(bstates, root_mch):
+def print_init_bstates(bstates, root_mch, undo_possible):
     i=0
     var_names = root_mch.var_names
     for bstate in bstates:
@@ -46,9 +44,10 @@ def print_init_bstates(bstates, root_mch):
             string += args    
         print string
         i = i +1
-    print "["+ str(i) +"]: undo"
-    print "["+ str(i+1) +"]: leave pyB\n"
-    return i+1
+    if undo_possible:
+        print "["+ str(i) +"]: undo"
+        i = i+1
+    print "["+ str(i) +"]: leave pyB\n"
     
 
 def print_state(bstate):
@@ -76,9 +75,11 @@ def show_ops(next_states, env):
         string += ")"
         i = i +1
         string += "\n"
-    string += "["+ str(i) +"]: undo\n"
-    string += "["+ str(i+1) +"]: leave pyB\n"
-    return string, i+1
+    if not env.state_space.empty():
+        string += "["+ str(i) +"]: undo\n"
+        i = i +1
+    string += "["+ str(i) +"]: leave pyB\n"
+    return string
 
 
 def _print_para_values(para_list):
