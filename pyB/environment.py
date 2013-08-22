@@ -29,8 +29,9 @@ class Environment():
         self.mch_operation_type = []   
         self.all_operation_asts = []
         self.parsed_bmachines = {}
-        self.set_up_bmachines_names = [] # set up constants done
-        self.init_bmachines_names   = [] # init done
+        self.init_sets_bmachnes_names = [] # names of all bmachines with set-init done
+        self.set_up_bmachines_names   = [] # set up constants done
+        self.init_bmachines_names     = [] # init done
         # animation parameters
         self.set_up_state_on_stack  = False
         self.init_state_on_stack    = False

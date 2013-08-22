@@ -32,8 +32,11 @@ def _init_machine(root, env, mch, solution_file_read=False):
         env.state_space.add_state(bstates[0]) 
 
 
-def set_up_constants(root, env, mch, solution_file_read=False): 
-    # 0. Use solution file if possible
+def set_up_constants(root, env, mch, solution_file_read=False):
+    # 0. init sets of all machines, side-effect: change current/reference-bstate
+    init_sets(root, env, mch) #FIXME: modify generator for partial set up 
+     
+    # 1. Use solution file if possible
     if solution_file_read:
         pre_set_up_state = env.state_space.get_state()
         unset_lst = __find_unset_constants(mch, pre_set_up_state)
@@ -41,21 +44,20 @@ def set_up_constants(root, env, mch, solution_file_read=False):
             print "WARNING: Set Up from solution file was not complete! unset:%s" % unset_lst
         
         env.state_space.add_state(pre_set_up_state)
-        init_sets(root, env, mch) #FIXME: modify generator for partial set up 
         # TODO: Parameter set up
         if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
             raise SETUPNotPossibleException("Wrong solutions from file. Properties are false!")
         env.state_space.undo()
         return [pre_set_up_state] 
                
-    # 1. set up frame and B-state
+    # 2. set up frame and B-state
     # The reference B-state: save the status before the solutions
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
     bstate = ref_bstate.clone()
     env.state_space.add_state(bstate) 
     
-    # 2. search for (MAX_SET_UP-)solutions  
+    # 3. search for (MAX_SET_UP-)solutions  
     generator = __set_up_constants_generator(root, env, mch)
     sol_num = 0
     for solution in generator:
@@ -105,7 +107,6 @@ def __set_up_constants_generator(root, env, mch):
         # 2. init sets and set up frames     
         parameter_names = [n.idName for n in mch.scalar_params + mch.set_params]               
         env.add_ids_to_frame(parameter_names)
-        set_init_done = init_sets(root, env, mch) # If no sets present: this line has no effect 
         ref_bstate = env.state_space.get_state().clone() # save set up of children and frames
         
         # 3. solve constraints (bmch-parameter) and properties (bmch constants)    
@@ -116,22 +117,36 @@ def __set_up_constants_generator(root, env, mch):
                 # so para_solution is the result of this set up     
                 if mch.aConstantsMachineClause==None:
                     assert mch.aPropertiesMachineClause==None
-                    yield para_solution or child_bstate_change or set_init_done
+                    # if mch_list is empty, child_bstate_change is False:
+                    if mch.scalar_params==[] and mch.set_params==[]:
+                        yield child_bstate_change
+                    elif mch_list==[]:  
+                        yield para_solution
+                    else:
+                        yield para_solution and child_bstate_change
                 # case (3.2)
                 # There are constants, but there was no set up of mch-parameters 
                 # because there is nothing to set up (no state-change by param_generator)
                 # OR There are constants and the set up was successful
                 elif para_solution or (not para_solution and mch.scalar_params==[] and mch.set_params==[]):
+                    # Some Constants/Sets are set via Prop. Preds
+                    # TODO: give Blacklist of Variable Names
+                    # find all constants (like x=42 or y={1,2,3}) and set them
+                    learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
+                    if learnd_vars and VERBOSE:
+                        print "leard constants (no enumeration): ", learnd_vars
                     ref_bstate2 = env.state_space.get_state().clone() # save param set up 
                     env.add_ids_to_frame(mch.const_names)
                     
                     prop_generator = check_properties(root, env, mch)
                     for solution in prop_generator:
-                        yield solution or child_bstate_change or set_init_done 
+                        yield solution 
                         env.state_space.revert(ref_bstate2) # revert parameter set up
                 env.state_space.revert(ref_bstate) # revert child set up
-        # 4. propagate set init or possible B-state-change of children
-        yield child_bstate_change or set_init_done 
+        if  mch.aConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
+            # 4. propagate set init or possible B-state-change of children
+            # if mch_list is empty, child_bstate_change is False: 
+            yield child_bstate_change 
 
 
 # TODO: non-determinisim init of mch-set-parameters 
@@ -170,8 +185,14 @@ def __init_set_mch_parameter(root, env, mch):
         env.set_value(name, frozenset(elem_lst))
 
                 
-# returns if init was done
+# inits sets of all machines
 def init_sets(node, env, mch):
+    if mch.name in env.init_sets_bmachnes_names:
+        return 
+    env.init_sets_bmachnes_names.append(mch.name)
+    mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    for m in mch_list:
+        init_sets(node, env, m)
     if mch.aSetsMachineClause: # St
         node = mch.aSetsMachineClause
         for child in node.children:
@@ -187,20 +208,12 @@ def init_sets(node, env, mch):
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
                 init_deffered_set(child, env) # done by enumeration.py
-        return True
-    return False
 
 
 # yield True if successful B-state change
 def check_properties(node, env, mch):
     if mch.aPropertiesMachineClause: # B
         # set up constants
-        # Some Constants/Sets are set via Prop. Preds
-        # TODO: give Blacklist of Variable Names
-        # find all constants like x=42 oder y={1,2,3}
-        learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
-        if learnd_vars and VERBOSE:
-            print "leard constants (no enumeration): ", learnd_vars
         # if there are constants
         if mch.aConstantsMachineClause:
             const_nodes = []
@@ -421,6 +434,7 @@ def _learn_assigned_values(root, env, lst):
                         continue
                     except Exception:
                         continue 
+            # symmetric other case. 'Expr = X' instead of 'X = Expr'
             elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
                 if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression) or isinstance(node.children[0], ABoolSetExpression) or isinstance(node.children[0], ATrueExpression) or isinstance(node.children[0], AFalseExpression):
                     try:

@@ -76,7 +76,7 @@ def run_animation_mode():
             next_states = __calc_states_and_print_ui(root, env, mch, solution_file_present)
             if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
                 show_env(env)
-                break
+                #break
             undo_possible = not env.state_space.empty()
             number_of_options = len(next_states)
             if undo_possible: 
@@ -112,14 +112,16 @@ def run_animation_mode():
                 env.init_state_on_stack = True
                 bstate = next_states[number]
                 env.state_space.add_state(bstate)
+            # init and set_up done. Exec operation:
             elif len(next_states)>number and number >= 0:
-                # switch state
+                # switch state (
                 bstate = next_states[number]
                 env.state_space.add_state(bstate)
             else:
                 print "Error! Wrong input:", number
+                
 
-
+# skips set_up or init if there is nothing to setup/init
 def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     # Schneider Book page 62-64:
     # The parameters p make the constraints C True
