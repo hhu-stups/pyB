@@ -16,11 +16,12 @@ def print_set_up_bstates(bstates, root_mch):
     i=0
     const_names = root_mch.const_names
     set_names   = root_mch.dset_names + root_mch.eset_names
+    para_names  = [n.idName for n in root_mch.scalar_params + root_mch.set_params] 
     for bstate in bstates:
         string = "[%s]: SET_UP_CONSTANTS" % i
-        if not const_names+set_names==[]:
+        if not const_names+set_names+para_names==[]:
             args = "("
-            for name in const_names + set_names:
+            for name in const_names + set_names + para_names:
                 value = print_values_b_style(bstate.get_value(name, root_mch))
                 args += "%s=%s " % (name, value)            
             args += ")"

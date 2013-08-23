@@ -236,7 +236,7 @@ def check_properties(node, env, mch):
                 at_least_one_solution = False
                 if VERBOSE:
                     print "enum. constants:", [n.idName for n in const_nodes]
-                gen = try_all_values(mch.aPropertiesMachineClause, env, const_nodes)
+                gen = try_all_values(mch.aPropertiesMachineClause.children[0], env, const_nodes)
                 for prop_result in gen:
                     if prop_result:
                         at_least_one_solution = True
