@@ -12,35 +12,64 @@ def show_env(env):
     print_state(bstate)
     
 
+
+def __get_child_set_up_names(mch, done):
+    lst = []
+    if mch.name in done:
+        return []
+    done.append(mch.name)
+    for m in mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch:
+        lst += __get_child_set_up_names(m, done)
+    const_names = mch.const_names
+    set_names   = mch.dset_names + mch.eset_names
+    para_names  = [n.idName for n in mch.scalar_params + mch.set_params]
+    all_names   = const_names + set_names + para_names
+    return lst + [(all_names, mch)] 
+    
+    
 def print_set_up_bstates(bstates, root_mch):
     i=0
-    const_names = root_mch.const_names
-    set_names   = root_mch.dset_names + root_mch.eset_names
-    para_names  = [n.idName for n in root_mch.scalar_params + root_mch.set_params] 
+    set_up_names = __get_child_set_up_names(root_mch, [])
     for bstate in bstates:
         string = "[%s]: SET_UP_CONSTANTS" % i
-        if not const_names+set_names+para_names==[]:
+        if not set_up_names==[]:
             args = "("
-            for name in const_names + set_names + para_names:
-                value = print_values_b_style(bstate.get_value(name, root_mch))
-                args += "%s=%s " % (name, value)            
+            for tup in set_up_names:
+                name_lst = tup[0]
+                owner    = tup[1]
+                for name in name_lst:
+                    value = print_values_b_style(bstate.get_value(name, owner))
+                    args += "%s=%s " % (name, value)            
             args += ")"
             string += args    
         print string
         i = i +1
     print "["+ str(i) +"]: leave pyB\n"
     
+    
+def __get_child_var_names(mch, done):
+    lst = []
+    if mch.name in done:
+        return []
+    done.append(mch.name)
+    for m in mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch:
+        lst += __get_child_var_names(m, done)
+    return lst + [(mch.var_names, mch)] 
+
 
 def print_init_bstates(bstates, root_mch, undo_possible):
     i=0
-    var_names = root_mch.var_names
+    var_lst = __get_child_var_names(root_mch, [])
     for bstate in bstates:
         string = "[%s]: INITIALISATION" % i
-        if not var_names==[]:
+        if not var_lst==[]:
             args = "("
-            for name in var_names:
-                value = print_values_b_style(bstate.get_value(name, root_mch))
-                args += "%s=%s " % (name, value)
+            for tup in var_lst:
+                var_names = tup[0]
+                owner     = tup[1]
+                for name in var_names:
+                    value = print_values_b_style(bstate.get_value(name, owner))
+                    args += "%s=%s " % (name, value)
             args += ")"
             string += args    
         print string

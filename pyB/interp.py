@@ -34,7 +34,8 @@ def _init_machine(root, env, mch, solution_file_read=False):
 
 def set_up_constants(root, env, mch, solution_file_read=False):
     # 0. init sets of all machines, side-effect: change current/reference-bstate
-    init_sets(root, env, mch) #FIXME: modify generator for partial set up 
+    init_sets(root, env, mch) #TODO: modify generator for partial set up 
+    #env.state_space.get_state().print_bstate()
      
     # 1. Use solution file if possible
     if solution_file_read:
@@ -193,6 +194,7 @@ def init_sets(node, env, mch):
     mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     for m in mch_list:
         init_sets(node, env, m)
+    env.current_mch = mch
     if mch.aSetsMachineClause: # St
         node = mch.aSetsMachineClause
         for child in node.children:
@@ -241,7 +243,9 @@ def check_properties(node, env, mch):
                     if prop_result:
                         at_least_one_solution = True
                         yield True
-                if not at_least_one_solution:
+                # This generator is only called when the Constraints are True.
+                # No Properties-solution means set_up fail
+                if not at_least_one_solution: 
                     print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
                     raise SETUPNotPossibleException("Properties FALSE in %s!" % (mch.name))
         #TODO: Sets-Clause
