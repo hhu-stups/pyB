@@ -183,12 +183,35 @@ def run_checking_mode():
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object
+        
         bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")
-        env.state_space.add_state(bstates[0]) #XXX
-        bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
-        env.state_space.add_state(bstates[0]) #XXX
-        if mch.aAssertionsMachineClause:
-            interpret(mch.aAssertionsMachineClause, env)
+        if not bstates==[]: 
+            result = None
+            for bstate in bstates:
+                env.state_space.add_state(bstate)
+                if mch.aPropertiesMachineClause:
+                    assert interpret(mch.aPropertiesMachineClause, env)
+                init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+                for init_bstate in init_bstates:
+                    env.state_space.add_state(init_bstate)
+                    if mch.aInvariantMachineClause:
+                        result = interpret(mch.aInvariantMachineClause, env)
+                    env.state_space.undo()                  
+                if mch.aAssertionsMachineClause:
+                    interpret(mch.aAssertionsMachineClause, env)
+                env.state_space.undo()  
+            return result
+        else: # TODO: dont repeat yourself 
+            init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+            for bstate in init_bstates:
+                env.state_space.add_state(bstate)
+                if mch.aInvariantMachineClause:
+                    assert interpret(mch.aInvariantMachineClause, env)        
+                if mch.aAssertionsMachineClause:
+                    interpret(mch.aAssertionsMachineClause, env)
+                env.state_space.undo() 
+            if not init_bstates==[]:  
+                env.state_space.add_state(init_bstates[0]) 
         return eval_Invariant(root, env, mch)   
 
 
@@ -197,6 +220,6 @@ if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
     run_repl()
 elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
     result = run_checking_mode()
-    print result
+    print "Invariant:", result
 else:
     run_animation_mode()

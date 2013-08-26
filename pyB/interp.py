@@ -548,7 +548,7 @@ def interpret(node, env):
         if ENABLE_ASSERTIONS:
             print "checking assertions"
             for child in node.children:
-                print "\t", interpret(child, env)
+                print interpret(child, env),": \t", pretty_print(child)
             print "checking done."
 
 
