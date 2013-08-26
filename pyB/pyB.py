@@ -101,6 +101,8 @@ def run_animation_mode():
                 elif 1==x and env.set_up_state_on_stack:
                     env.set_up_done = False
                     env.set_up_state_on_stack = False
+                    env.set_up_bmachines_names   = []
+                    
                 env.state_space.undo()
             elif not env.set_up_done:
                 env.set_up_done = True

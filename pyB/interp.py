@@ -65,7 +65,8 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         if solution:
             solution_bstate = env.state_space.get_state()
             bstates.append(solution_bstate)
-            env.state_space.revert(ref_bstate) 
+            env.state_space.revert(ref_bstate)
+            env.init_sets_bmachnes_names = []  
             
             sol_num = sol_num + 1
             if sol_num==MAX_SET_UP: # change config.py
@@ -270,7 +271,8 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
     # 1. set up frames and state
     bstates = []
     ref_bstate = env.state_space.get_state().clone()
-    env.state_space.add_state(ref_bstate) 
+    env.state_space.add_state(ref_bstate)
+     
     
     # 2. search for solutions  
     generator = __exec_initialisation_generator(root, env, mch)
@@ -280,6 +282,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
             solution_bstate = env.state_space.get_state()
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate) # revert to ref B-state
+            env.init_bmachines_names = []
             
             sol_num = sol_num +1
             if sol_num==MAX_INIT:
@@ -314,6 +317,7 @@ def __exec_initialisation_generator(root, env, mch):
     # 2. init children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     init_list_generator = __exec_initialisation_list_generator(root, env, children)
+
     # TODO state revert?
     for child_bstate_change in init_list_generator:         
         # 3. set up state and env. for init exec
