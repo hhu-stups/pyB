@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 MIN_INT = -1	
 MAX_INT = 5
-MAX_OP_SOLUTIONS = 4    # negative = explore all!
+MAX_OP_SOLUTIONS = 4    # not implemented yet
 MAX_NEXT_STATES  = 20   # not implemented yet
 MAX_SELECT_BRANCHES = 4 # not implemented yet 
 ENABLE_ASSERTIONS = True

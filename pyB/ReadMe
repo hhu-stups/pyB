@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 22.02.2013 (<3 last update of this file)
+PyB: 31.08.2011 - 27.08.2013 (<3 last update of this file)
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -160,6 +160,11 @@ Index
 	  f unknown at the moment. Problem: the typechecker needs a subtree witch doesnt exist 
     - 21. write JSON Codegen of javaparser 
     - 43. check if all astnodes return types (if they have to)
+    - 28. take care of nondeterministic points inside the code to enable modelchecking -> done
+    - 55. no good operation number (e.g. Farmer-example) -> implicit fix after animation refactoring
+    - 77. Missing animation top preds. like any (maybe more) -> implicit fix after animation refactoring
+    - 75. Dont repeat yourself: duplicate code in animation an interpretation (SELECT, PRE, ...). 
+          Think of code like PRE X THEN PRE Y ...(first anim, second interp) -> fixed
 
 
 8. TODO-LIST:
@@ -178,7 +183,6 @@ Index
     - *24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
     - 25. include init and set_constants step in animation
     - 26. generate dot output of statespace 
-    - 28. take care of nondeterministic points inside the code to enable modelchecking
     - 29. safe state to a file
     - 64. Bug if solution values(from prob) idnames are identical in two machines
     - 65. Problem with false Properties on ProB side. e.g. {}: String +->> INT
@@ -186,6 +190,8 @@ Index
           - pp only print predicates and expr. results at the moment.
     - 68. Use JSON Parser (needs metaprogramming for elifs)
     - 69. Impl. missing/incomplete substitution in animation module (e.g. If else)
+    - 90 enable external function like length, append, app, chars (prolog code in case of ProB)
+    - 91 run pyB with pypy
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names. "a"=a  with S={a} is True!
     - 31. Check Includes, Sees, Uses, Extends rules 
@@ -208,10 +214,7 @@ Index
     - 56. parallel substitution is not parallel, but sequential (+ check) 
     - 11. fully seperate console output from other modules
     - 12. visibility: only one env and clause check what they can see 
-    - 75. Dont repeat yourself: duplicate code in animation an interpretation (SELECT, PRE, ...). 
-          Think of code like PRE X THEN PRE Y ...(first anim, second interp)
     - 76. Write Testcases for WHILE, :() and <- op
-    - 77. Missing animation top preds. like any (maybe more)
     - 78. separate subst. eval and Pred/Expr. eval. Subst musst be an generator (later model checking)
     - 79. The animation is wrong for all non-det. substitutions. It shows a operation/substitution as disabled if the chosen branch was not executable
     - 80. Fix uncommented test in test_mch_animation
@@ -220,20 +223,25 @@ Index
     - 83. check Manual Page 128. write testcase
     - 84. Write nondeterministic "correct" while-testcase
     - 85. Enable use of partial solution from ProB
+    - 86. fix empty extra state on state-space stack
+    - 87. write more check and animation tests (currently only tested manually from console)
+    - 88. move init_sets out of set_up_constants 
+    - 92. write substitution enable tests
+    - 93. implement constraint-calculation caching
+    - 94. write more complicated sees, includes tests
 8.3 Bugs:
     - 48. Deepcopy inside 'record creation' is the performance problem
     - 49. Dont assume that all functions are 2-tuple: otherwise crash
-    - 50. typechecker and interpreter has undefined behavior if there is a error in 
+    - 50. type-checker and interpreter has undefined behavior if there is a error in 
       the java-Bparser
     - 51. Tests ignore Frames and Scopes.
     - 52. not tested: append/preprend more than one element - possible?
     - 53. no random choice in CHOICE and SELECT
     - 54. INTEGER is min_int to max_int
-    - 55. no good operation number (e.g. Farmer-example)
     - 71. Dont repeat yourself inside pyB
     - 72. Maybe an unimplemented case in set_concrete_type()
     - 57. Vars are added to a Frame at the wrong position!
-    - 58. typechecking the settype contains data, this data is not valid 
+    - 58. type-checking the settype contains data, this data is not valid 
       e.g. after set union, inters. diff.
     - 59. unknown-nodes create atype == atype.data
     - 60. maybe there is a unify Bug. 'unify' unifies with the first POW in a 
@@ -241,6 +249,7 @@ Index
     - 66. "X-yy=sum+1" typeerror (musst be Integer)
     - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
     - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
+    - 89. functions with more than two args are not impl. or tested
 8.5 Maybe Bugs:
     - 61. (2 + 3) / 2 == 2
     - 62. eval of preds changes value_stack
