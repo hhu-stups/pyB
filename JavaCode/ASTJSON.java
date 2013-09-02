@@ -886,6 +886,13 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
+    public void caseAAbstractConstantsMachineClause(AAbstractConstantsMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
+    }
+
+
     public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getPredicates());
@@ -894,6 +901,13 @@ public class ASTJSON extends DepthFirstAdapter{
 
 
     public void caseAVariablesMachineClause(AVariablesMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
+    }
+
+
+    public void caseAConcreteVariablesMachineClause(AConcreteVariablesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         printStdOut_manyChildren(node, children);

@@ -63,10 +63,20 @@ class AIncludesMachineClause(Clause):
 class AConstraintsMachineClause(Clause):
     pass
 
+# CONCRETE_CONSTANTS and CONSTANTS-clause
 class AConstantsMachineClause(Clause):
     pass
 
+# ABSTRACT_VARIABLES and VARIABLES-clause
 class AVariablesMachineClause(Clause):
+    pass
+    
+# CONCRETE_VARIABLES-clause
+class AConcreteVariablesMachineClause(Clause):
+    pass
+
+# ABSTRACT_CONSTANTS-clause
+class AAbstractConstantsMachineClause(Clause):
     pass
 
 class AInvariantMachineClause(Clause):

@@ -1,1 +1,5 @@
-#PREDICATE A=bool(1<2)
+
+        MACHINE         Tets
+        PROPERTIES      num:NAT & num <4
+        ABSTRACT_CONSTANTS       num
+        END

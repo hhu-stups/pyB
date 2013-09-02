@@ -19,7 +19,7 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void defaultOut(@SuppressWarnings("unused") Node node)
     {
-        System.out.println("Parsing Error! Unhandeld Node:"+getClassName(node));
+        System.out.println("Parsing Error!\n Unhandeld Node:"+getClassName(node));
     }
 
     
@@ -804,6 +804,13 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
+    public void caseAAbstractConstantsMachineClause(AAbstractConstantsMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
+    }
+
+
     public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getPredicates());
@@ -812,6 +819,13 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     public void caseAVariablesMachineClause(AVariablesMachineClause node)
+    {
+        List<Node> children = new ArrayList<Node>(node.getIdentifiers());
+        printStdOut_manyChildren(node, children);
+    }
+
+
+    public void caseAConcreteVariablesMachineClause(AConcreteVariablesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         printStdOut_manyChildren(node, children);

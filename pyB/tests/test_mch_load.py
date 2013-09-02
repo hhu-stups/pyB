@@ -95,6 +95,8 @@ class TestMCHLaod():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         # TODO query check
+
+
     def test_examples_simple_bakery0(self):
         string ='''
         MACHINE Bakery0
@@ -485,4 +487,31 @@ class TestMCHLaod():
             num = bstate.get_value("num", mch)
             assert num in [0,1,2,3]
             env.state_space.undo()
-            
+ 
+    def test_concrete_variables(self):        
+        string = '''
+        MACHINE         Test
+        CONCRETE_VARIABLES       xx
+        INVARIANT       xx:NAT
+        INITIALISATION  xx:=42
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        # TODO: more to test
+
+
+    def test_abstract_constants(self):        
+        string = '''
+        MACHINE         Tets
+        PROPERTIES      num:NAT & num <4
+        ABSTRACT_CONSTANTS       num
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+        # TODO: more to test        
+     
+       
