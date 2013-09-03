@@ -413,6 +413,7 @@ def type_check_bmch(root, env, mch):
     # TODO?: operations?
     set_idNames = find_var_names(mch.aSetsMachineClause) 
     const_idNames = find_var_names(mch.aConstantsMachineClause)
+    const_idNames += find_var_names(mch.aAbstractConstantsMachineClause)
     var_idNames = find_var_names(mch.aVariablesMachineClause)
     idNames = set_idNames + const_idNames + var_idNames
     #assert set(idNames)==set(mch.names)
@@ -490,6 +491,8 @@ def typeit(node, env, type_env):
                         unify_equal(atype, elm_type, type_env)
         if mch.aConstantsMachineClause: # k
             typeit(mch.aConstantsMachineClause, env, type_env)
+        if mch.aAbstractConstantsMachineClause:
+            typeit(mch.aAbstractConstantsMachineClause, env, type_env)
         if mch.aPropertiesMachineClause: # B
             typeit(mch.aPropertiesMachineClause, env, type_env)
         if mch.aVariablesMachineClause:

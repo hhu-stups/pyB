@@ -1832,3 +1832,36 @@ class TestMCHAnimation():
         interpret(root, env) # init VARIABLES and eval INVARIANT
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3*4
+        
+        
+    def test_concrete_variables(self):        
+        string = '''
+        MACHINE         Test
+        CONCRETE_VARIABLES       xx
+        INVARIANT       xx:NAT
+        INITIALISATION  xx:=42
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        # TODO: more to test
+
+
+    def test_abstract_constants(self):        
+        string = '''
+        MACHINE         Tets
+        PROPERTIES      num:NAT & num <4
+        ABSTRACT_CONSTANTS       num
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        assert len(bstates)==4

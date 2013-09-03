@@ -117,7 +117,7 @@ def __set_up_constants_generator(root, env, mch):
                 # case (3.1) 
                 # no constants to set up.
                 # so para_solution is the result of this set up     
-                if mch.aConstantsMachineClause==None:
+                if mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None:
                     assert mch.aPropertiesMachineClause==None
                     # if mch_list is empty, child_bstate_change is False:
                     if mch.scalar_params==[] and mch.set_params==[]:
@@ -145,7 +145,7 @@ def __set_up_constants_generator(root, env, mch):
                         yield solution 
                         env.state_space.revert(ref_bstate2) # revert parameter set up
                 env.state_space.revert(ref_bstate) # revert child set up
-        if  mch.aConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
+        if  mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
             # 4. propagate set init or possible B-state-change of children
             # if mch_list is empty, child_bstate_change is False: 
             yield child_bstate_change 
@@ -218,10 +218,15 @@ def check_properties(node, env, mch):
     if mch.aPropertiesMachineClause: # B
         # set up constants
         # if there are constants
-        if mch.aConstantsMachineClause:
+        if mch.aConstantsMachineClause or mch.aAbstractConstantsMachineClause:
             const_nodes = []
+            idNodes     = []
             # find all constants/sets which are still not set
-            for idNode in mch.aConstantsMachineClause.children:
+            if mch.aConstantsMachineClause:
+                idNodes = mch.aConstantsMachineClause.children
+            if mch.aAbstractConstantsMachineClause:
+                idNodes += mch.aAbstractConstantsMachineClause.children
+            for idNode in idNodes:
                 assert isinstance(idNode, AIdentifierExpression)
                 name = idNode.idName
                 if env.get_value(name)==None:

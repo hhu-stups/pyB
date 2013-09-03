@@ -25,6 +25,7 @@ class BMachine:
         self.used_mch      = []   # list of b-mchs
         self.operations    = frozenset([])    # set of operations (to easy avoid double entries)
         self.aConstantsMachineClause = None
+        self.aAbstractConstantsMachineClause = None
         self.aConstraintsMachineClause = None
         self.aSetsMachineClause = None
         self.aVariablesMachineClause = None
@@ -49,6 +50,9 @@ class BMachine:
             if isinstance(child, AConstantsMachineClause):
                 assert self.aConstantsMachineClause==None
                 self.aConstantsMachineClause = child
+            elif isinstance(child, AAbstractConstantsMachineClause):
+                assert self.aAbstractConstantsMachineClause==None
+                self.aAbstractConstantsMachineClause = child
             elif isinstance(child, AConstraintsMachineClause):
                 assert self.aConstraintsMachineClause==None
                 self.aConstraintsMachineClause = child
@@ -123,7 +127,7 @@ class BMachine:
         self.parse_child_machines(self.aSeesMachineClause, self.seen_mch)
         self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         # TODO: better name for "names"
-        self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names(self.aConstantsMachineClause, self.aVariablesMachineClause, self.aSetsMachineClause)
+        self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names()
         names = self.const_names + self.var_names + self.dset_names + self.eset_names + self.eset_elem_names
         bstate = self.env.state_space.get_state()
         # if there are solutions (gotten form a solution file at startup time)
@@ -176,7 +180,11 @@ class BMachine:
             assert not self.aConstraintsMachineClause==None
                                    
 
-    def _learn_names(self, cmc, vmc, smc):
+    def _learn_names(self):
+        cmc  = self.aConstantsMachineClause
+        acmc = self.aAbstractConstantsMachineClause
+        vmc  = self.aVariablesMachineClause
+        smc  = self.aSetsMachineClause 
         var_names = []
         const_names = []
         dset_names = []
@@ -184,6 +192,8 @@ class BMachine:
         eset_elem_names =[]
         if cmc:
             const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
+        if acmc:
+            const_names += [n.idName for n in acmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
             var_names   = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
         if smc:
@@ -213,9 +223,9 @@ class BMachine:
         # B Language Reference Manual - Version 1.8.6 - Page 110
         # 2. If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.
         # 3. If one of the CONCRETE_VARIABLES or ABSTRACT_VARIABLES clauses is present, then the INVARIANT and INITIALISATION clauses must be present.
-        if self.aConstantsMachineClause: #TODO: ABSTRACT_CONSTANTS
+        if self.aConstantsMachineClause or self.aAbstractConstantsMachineClause:
             assert self.aPropertiesMachineClause
-        if self.aVariablesMachineClause: #TODO: ABSTRACT_VARIABLES
+        if self.aVariablesMachineClause: #TODO: CONCRETE_VARIABLES
             assert self.aInvariantMachineClause and self.aInitialisationMachineClause
         # TODO: much more self checking to do e.g visibility 
 
