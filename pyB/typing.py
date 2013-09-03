@@ -411,10 +411,11 @@ def type_check_expression(root, env, idNames):
 def type_check_bmch(root, env, mch):
     # TODO: abstr const/vars
     # TODO?: operations?
-    set_idNames = find_var_names(mch.aSetsMachineClause) 
+    set_idNames   = find_var_names(mch.aSetsMachineClause) 
     const_idNames = find_var_names(mch.aConstantsMachineClause)
     const_idNames += find_var_names(mch.aAbstractConstantsMachineClause)
-    var_idNames = find_var_names(mch.aVariablesMachineClause)
+    var_idNames   = find_var_names(mch.aVariablesMachineClause)
+    var_idNames   += find_var_names(mch.aConcreteVariablesMachineClause)
     idNames = set_idNames + const_idNames + var_idNames
     #assert set(idNames)==set(mch.names)
     for node in mch.scalar_params + mch.set_params:
@@ -497,6 +498,8 @@ def typeit(node, env, type_env):
             typeit(mch.aPropertiesMachineClause, env, type_env)
         if mch.aVariablesMachineClause:
             typeit(mch.aVariablesMachineClause, env, type_env)
+        if mch.aConcreteVariablesMachineClause:
+            typeit(mch.aConcreteVariablesMachineClause, env, type_env)
         if mch.aInvariantMachineClause:
             typeit(mch.aInvariantMachineClause, env, type_env)
         if mch.aInitialisationMachineClause:

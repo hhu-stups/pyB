@@ -332,7 +332,7 @@ def __exec_initialisation_generator(root, env, mch):
         
         # 3.1 nothing to be init.        
         if not mch.aInitialisationMachineClause:
-            if not mch.aVariablesMachineClause==None:
+            if not mch.aVariablesMachineClause==None and not mch.aConcreteVariablesMachineClause==None:
                 raise INITNotPossibleException("Missing InitialisationMachineClause in %s!" % mch.name)
             yield child_bstate_change
         # 3.2. search for solutions  

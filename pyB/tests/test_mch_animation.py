@@ -1845,7 +1845,15 @@ class TestMCHAnimation():
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
-        # TODO: more to test
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        assert len(bstates)==0
+        bstates = exec_initialisation(root, env, mch)
+        assert len(bstates)==1
 
 
     def test_abstract_constants(self):        

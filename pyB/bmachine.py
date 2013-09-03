@@ -29,6 +29,7 @@ class BMachine:
         self.aConstraintsMachineClause = None
         self.aSetsMachineClause = None
         self.aVariablesMachineClause = None
+        self.aConcreteVariablesMachineClause = None
         self.aPropertiesMachineClause = None
         self.aAssertionsMachineClause = None
         self.aInvariantMachineClause = None
@@ -59,6 +60,9 @@ class BMachine:
             elif isinstance(child, ASetsMachineClause):
                 assert self.aSetsMachineClause==None
                 self.aSetsMachineClause = child
+            elif isinstance(child, AConcreteVariablesMachineClause):
+                assert self.aConcreteVariablesMachineClause==None
+                self.aConcreteVariablesMachineClause = child
             elif isinstance(child, AVariablesMachineClause):
                 assert self.aVariablesMachineClause==None
                 self.aVariablesMachineClause = child
@@ -184,6 +188,7 @@ class BMachine:
         cmc  = self.aConstantsMachineClause
         acmc = self.aAbstractConstantsMachineClause
         vmc  = self.aVariablesMachineClause
+        cvmc = self.aConcreteVariablesMachineClause
         smc  = self.aSetsMachineClause 
         var_names = []
         const_names = []
@@ -196,6 +201,8 @@ class BMachine:
             const_names += [n.idName for n in acmc.children if isinstance(n, AIdentifierExpression)]
         if vmc:
             var_names   = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
+        if cvmc:
+            var_names   += [n.idName for n in cvmc.children if isinstance(n, AIdentifierExpression)]
         if smc:
             dset_names  = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
             for set in smc.children:
@@ -225,7 +232,7 @@ class BMachine:
         # 3. If one of the CONCRETE_VARIABLES or ABSTRACT_VARIABLES clauses is present, then the INVARIANT and INITIALISATION clauses must be present.
         if self.aConstantsMachineClause or self.aAbstractConstantsMachineClause:
             assert self.aPropertiesMachineClause
-        if self.aVariablesMachineClause: #TODO: CONCRETE_VARIABLES
+        if self.aVariablesMachineClause or self.aConcreteVariablesMachineClause:
             assert self.aInvariantMachineClause and self.aInitialisationMachineClause
         # TODO: much more self checking to do e.g visibility 
 
