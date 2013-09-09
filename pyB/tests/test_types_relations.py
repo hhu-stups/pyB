@@ -2,7 +2,8 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit
+from typing import _test_typeit, type_check_bmch
+from parsing import parse_ast
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"
@@ -382,3 +383,85 @@ class TestTypesRelations():
         assert isinstance(env.get_type("r").data, CartType)
         assert isinstance(env.get_type("r").data.data[0].data, IntegerType)
         assert isinstance(env.get_type("r").data.data[1].data, IntegerType)
+
+
+    def test_types_couple_element(self):
+        string = '''
+        MACHINE          Test
+        VARIABLES        xx, aa, bb
+        INVARIANT        xx<:INTEGER*NATURAL1 & (aa,bb): xx
+        INITIALISATION   xx:={(1,2),(4,5)} ; aa:=1 ; bb:=2
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("xx"), PowerSetType)
+        assert isinstance(env.get_type("xx").data, CartType)
+        assert isinstance(env.get_type("xx").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("xx").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("xx").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("xx").data.data[1].data, IntegerType)
+        assert isinstance(env.get_type("aa"), IntegerType)
+        assert isinstance(env.get_type("bb"), IntegerType)
+
+
+    def test_types_couple_element2(self):
+        string = '''
+        MACHINE         Test
+		VARIABLES       xx, yy
+		INVARIANT       xx<:(INTEGER*NATURAL1) & yy<:NAT*INTEGER*NATURAL1
+		INITIALISATION  xx:={(1,2),(4,5)} ; yy:=%(n,d).((n,d) : xx| n+d)
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("xx"), PowerSetType)
+        assert isinstance(env.get_type("xx").data, CartType)
+        assert isinstance(env.get_type("xx").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("xx").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("xx").data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("xx").data.data[1].data, IntegerType)
+
+        
+    def test_types_complex_function_image(self):
+        string = '''
+        MACHINE         Test
+		VARIABLES       yy, xx
+		INVARIANT       yy<:%aa.(aa:xx | prj1(INTEGER, INTEGER)(aa)) & xx<:INTEGER * NATURAL1 
+		INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)		
+ 
+ 
+    def test_types_complex_function_image2(self):
+        string = '''
+        MACHINE         Test
+		VARIABLES       yy, xx
+		INVARIANT       yy<:%aa,bb.((aa,bb):xx | prj1(INTEGER, INTEGER)(aa,bb)) & xx<:INTEGER * NATURAL1 
+		INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)	      

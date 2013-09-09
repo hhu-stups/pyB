@@ -12,7 +12,7 @@ from definition_handler import DefinitionHandler
 
 def run_with_prob(option_str="", bfile_name="temp"):
     from subprocess import Popen, PIPE
-    p =  Popen("../ProB/probcli %s -sptxt %s_values.txt %s.mch" % (option_str, bfile_name, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+    p =  Popen("../ProB_2/probcli %s -sptxt %s_values.txt %s.mch" % (option_str, bfile_name, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     e = p.stderr
     err_out = e.read()
     print err_out
@@ -69,6 +69,15 @@ class TestTeam():
         run_with_prob("-init ", bfile_name="examples/Cruise_finite1")
         res = run_with_pyb(bfile_name="examples/Cruise_finite1")
         assert res
+
+
+#    def test_team_systerel(self):
+#        bfile_name="examples/not_public/Systerel/C578.EML.014/CF_LD_1"
+#        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
+#        res = run_with_pyb(bfile_name)
+#        assert res
+
+#   ../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 
     # every alstom-test runs about 5min.  
 #     def test_team_alstom(self):

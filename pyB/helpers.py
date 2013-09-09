@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 from ast_nodes import *
 #from boperation import BOperation
 
-command_str = "java -cp "
+command_str = "java -Xms64m -Xmx512m -cp "
 command_str += "../jars/bparser-2.0.67.jar"
 command_str += ":../jars/prologlib-2.0.67.jar"
 command_str += ":../jars/parserbase-2.0.67.jar"

@@ -4,6 +4,7 @@ from btypes import *
 from helpers import find_var_names, print_ast, add_all_visible_ops_to_env
 from bmachine import BMachine
 from boperation import BOperation
+from pretty_printer import pretty_print
 
 
 
@@ -24,6 +25,8 @@ def create_func_arg_type(num_args):
         arg_type = create_func_arg_type(num_args-1)
         return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
 
+
+# TODO: check if this is correct
 def _get_arg_type_list(type,lst):
     assert isinstance(type, PowerSetType)
     if isinstance(type.data, CartType):
@@ -534,7 +537,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
-        unify_equal(expr1_type, expr2_type, type_env)
+        unify_equal(expr1_type, expr2_type, type_env, node)
         return BoolType()
 
 
@@ -669,8 +672,10 @@ def typeit(node, env, type_env):
     elif isinstance(node, ABelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
-        unify_element_of(elm_type, set_type, type_env)
+        #print pretty_print(node)
+        unify_element_of(elm_type, set_type, type_env, node)
         #print elm_type, set_type, node.children[0].idName, node.children[1]
+        elm_type = unknown_closure(elm_type)
         if isinstance(elm_type, UnknownType) and isinstance(node.children[0], AIdentifierExpression) and isinstance(node.children[1], AIdentifierExpression):
             type_env.set_enumeration_hint(node.children[0].idName, node.children[1].idName)
         return BoolType()
@@ -678,7 +683,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, ANotBelongPredicate):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
-        unify_element_of(elm_type, set_type, type_env)
+        unify_element_of(elm_type, set_type, type_env, node)
         return BoolType()    
     elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate):
         expr1_type = typeit(node.children[0], env,type_env)
@@ -911,7 +916,10 @@ def typeit(node, env, type_env):
         # type args
         arg_type_list = get_arg_type_list(atype.data.data[0])
         arg_type_list2 = []
-        for i in range(len(node.children[1:])):
+        number_of_args_given = len(node.children[1:])
+        number_of_args_needed = len(arg_type_list)
+        assert number_of_args_given<= number_of_args_needed
+        for i in range(number_of_args_given):
             child = node.children[i+1]
             arg_type = typeit(child, env, type_env)
             # e.g f(x|->y) instead of (expected) f(x,y). 
@@ -921,13 +929,30 @@ def typeit(node, env, type_env):
                 arg_type_list2.append(arg_type.data[1].data)
             else: 
                 arg_type_list2.append(arg_type)
-        for i in range(len(arg_type_list2)): 
-            arg_type = arg_type_list2[i]
-            unify_equal(arg_type, arg_type_list[i], type_env)
+        #FIXME: may still be wrong for more than two args
+        #TODO: more test for this code
+        k = 0
+        for i in range(number_of_args_given): 
+            arg_type = unknown_closure(arg_type_list2[i])
+            
+            if isinstance(arg_type, UnknownType) and number_of_args_given< number_of_args_needed:
+                utype1 = UnknownType(None, None)
+                utype2 = UnknownType(None, None)
+                unify_equal(utype1, arg_type_list[k], type_env)
+                unify_equal(utype2, arg_type_list[k+1], type_env)
+                tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
+                unify_equal(arg_type, tuple_type, type_env)
+                number_of_args_given = number_of_args_given + 1
+                k = k + 1                
+            else:
+                unify_equal(arg_type, arg_type_list[k], type_env)
+            k = k + 1
+            
         
         # return imagetype
         return atype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
+        #print pretty_print(node)
         # TODO: unification 
         ids = []
         for n in node.children[:-2]:
@@ -1250,13 +1275,15 @@ def typeit(node, env, type_env):
 # AFTER this (in the returning phase of the recursion) it uses the subtypetree which 
 # has the same or more informations
 # TODO: This function is not full implemented!
-def unify_equal(maybe_type0, maybe_type1, type_env):
+# pred_node is used for error messages 
+def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
     assert isinstance(type_env, TypeCheck_Environment)
     #import inspect
     #print inspect.stack()[1] 
     #print "type 1/2",maybe_type0,maybe_type1
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
+    #__print__btype(maybe_type1)
     if maybe_type0==maybe_type1:
         return maybe_type0
 
@@ -1270,7 +1297,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
             # recursive unification-call
             # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):
-                atype = unify_equal(maybe_type0.data, maybe_type1.data, type_env)
+                atype = unify_equal(maybe_type0.data, maybe_type1.data, type_env, pred_node)
                 maybe_type0.data = atype
             elif isinstance(maybe_type0, StructType):
                 dictionary0 = maybe_type0.data
@@ -1281,7 +1308,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 lst1 = list(dictionary1.values())
                 assert len(lst0)==len(lst1)
                 for index in range(len(lst0)):
-                    unify_equal(lst0[index], lst1[index], type_env)
+                    unify_equal(lst0[index], lst1[index], type_env, pred_node)
             elif isinstance(maybe_type0, CartType):
                 t00 = unknown_closure(maybe_type0.data[0])
                 t10 = unknown_closure(maybe_type1.data[0])
@@ -1292,9 +1319,9 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
                 assert isinstance(t01, PowerSetType)
                 assert isinstance(t11, PowerSetType)
                 # (2) unify
-                atype = unify_equal(t00.data, t10.data, type_env)
+                atype = unify_equal(t00.data, t10.data, type_env, pred_node)
                 maybe_type0.data[0].data = atype
-                atype = unify_equal(t01.data, t11.data, type_env)
+                atype = unify_equal(t01.data, t11.data, type_env, pred_node)
                 maybe_type0.data[1].data = atype
             elif isinstance(maybe_type0, SetType):
                 # learn/set name
@@ -1310,6 +1337,10 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
         else:
             string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
             print string
+            if pred_node:
+                print "(maybe) caused by: " + pretty_print(pred_node)
+                #arrgs = type_env.get_current_type("ad")
+                #__print__btype(arrgs)
             raise BTypeException(string)
 
     # case 2: Unknown, Unknown
@@ -1335,7 +1366,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env):
 
 # called by (and only by) the Belong-Node
 # calls the unify_equal method with correct args
-def unify_element_of(elm_type, set_type, type_env):
+def unify_element_of(elm_type, set_type, type_env, pred_node=None):
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)
@@ -1345,10 +1376,10 @@ def unify_element_of(elm_type, set_type, type_env):
     if isinstance(elm_type, UnknownType):
         if isinstance(set_type, PowerSetType):
             # map elm_type (UnknownType) to set_type for all elm_type
-            unify_equal(elm_type, set_type.data, type_env)
+            unify_equal(elm_type, set_type.data, type_env, pred_node)
         elif isinstance(set_type, UnknownType):
             assert set_type.real_type == None
-            unify_equal(set_type, PowerSetType(elm_type), type_env)
+            unify_equal(set_type, PowerSetType(elm_type), type_env, pred_node)
         #TODO: add Type-exceptions: e.g. x:POW(42)
         else:
             # no UnknownType and no PowersetType:
@@ -1358,7 +1389,7 @@ def unify_element_of(elm_type, set_type, type_env):
             raise Exception("Typchecker Bug(?): no UnknownType and no PowersetType")
         return
     elif isinstance(elm_type, BType):
-        unify_equal(PowerSetType(elm_type), set_type, type_env)
+        unify_equal(PowerSetType(elm_type), set_type, type_env, pred_node)
         return
     else:
         # no Unknowntype and no Btype:
