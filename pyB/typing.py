@@ -10,6 +10,7 @@ from pretty_printer import pretty_print
 
 # helper for debugging
 def __print__btype(tree, t=0):
+    tree = unknown_closure(tree)
     print " "*t, tree
     if isinstance(tree, PowerSetType):
         __print__btype(tree.data,t+1)
@@ -17,6 +18,13 @@ def __print__btype(tree, t=0):
         __print__btype(tree.data[0],t+1)
         __print__btype(tree.data[1],t+1) 
 
+
+# used in function-expression to get the number of args given to a func call
+def calculate_num_args(node):
+    if isinstance(node, ACoupleExpression):
+        return calculate_num_args(node.children[0]) + calculate_num_args(node.children[1])
+    else:
+        return 1
 
 def create_func_arg_type(num_args):
     if num_args==2:
@@ -26,7 +34,7 @@ def create_func_arg_type(num_args):
         return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
 
 
-# TODO: check if this is correct
+
 def _get_arg_type_list(type,lst):
     assert isinstance(type, PowerSetType)
     if isinstance(type.data, CartType):
@@ -36,12 +44,21 @@ def _get_arg_type_list(type,lst):
         lst.append(type.data) # function-args have not the pow_set but the set type
         return
         
-        
-
 def get_arg_type_list(func_type):
     lst = []
     _get_arg_type_list(func_type, lst) # sideeffect: fill list with types
     return lst
+    
+    
+def remove_carttypes(arg_type):
+    result = []
+    if isinstance(arg_type, CartType): 
+        result += remove_carttypes(arg_type.data[0].data)
+        result += remove_carttypes(arg_type.data[1].data)
+    else:
+        result.append(arg_type)
+    return result
+    
     
 def check_if_query_op(sub, var_names):
     assert isinstance(sub, Substitution)
@@ -289,15 +306,15 @@ class TypeCheck_Environment():
 def resolve_type(env):
     for node in env.node_to_type_map:
         tree = env.node_to_type_map[node]
-        # print node.idName, tree
-        tree_without_unknown = throw_away_unknown(tree)
+        #print node.idName, tree
+        tree_without_unknown = throw_away_unknown(tree, node.idName)
         env.node_to_type_map[node] = tree_without_unknown
 
 
 
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
-def throw_away_unknown(tree):
+def throw_away_unknown(tree, idName=""):
     #print tree
     if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
         return tree
@@ -306,12 +323,12 @@ def throw_away_unknown(tree):
             atype = unknown_closure(tree.data)
             assert isinstance(atype, BType)
             tree.data = atype
-        throw_away_unknown(tree.data)
+        throw_away_unknown(tree.data, idName)
         return tree
     elif isinstance(tree, CartType): 
         if not isinstance(tree.data[0], UnknownType) and not isinstance(tree.data[1], UnknownType):
-            throw_away_unknown(tree.data[0])
-            throw_away_unknown(tree.data[1])
+            throw_away_unknown(tree.data[0], idName)
+            throw_away_unknown(tree.data[1], idName)
             return tree
         else: #TODO: implement me
             return tree
@@ -321,8 +338,8 @@ def throw_away_unknown(tree):
         data = tree.data
         arg1 = unknown_closure(data[0])
         arg2 = unknown_closure(data[1])
-        arg1 = throw_away_unknown(arg1)
-        arg2 = throw_away_unknown(arg2)
+        arg1 = throw_away_unknown(arg1, idName)
+        arg2 = throw_away_unknown(arg2, idName)
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
         if not arg1.__class__ == arg2.__class__:
@@ -338,8 +355,8 @@ def throw_away_unknown(tree):
         data = tree.data
         arg1 = unknown_closure(data[0])
         arg2 = unknown_closure(data[1])
-        arg1 = throw_away_unknown(arg1)
-        arg2 = throw_away_unknown(arg2)
+        arg1 = throw_away_unknown(arg1, idName)
+        arg2 = throw_away_unknown(arg2, idName)
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
         if not arg1.__class__ == arg2.__class__:
@@ -360,7 +377,7 @@ def throw_away_unknown(tree):
             string = "TypeError: can not resolve a Type of "+ str(tree.name)
             print string
             raise BTypeException(string)
-        tree = throw_away_unknown(tree)
+        tree = throw_away_unknown(tree, idName)
         return tree
     else:
         raise Exception("resolve fail: Not Implemented %s"+tree)
@@ -897,25 +914,34 @@ def typeit(node, env, type_env):
         atype1 = unify_equal(set_type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, AFunctionExpression):
+        # (1) determine the (incomplete) type of the function 
+        # represented by an id or a set-extension- , first/second projection-expression
         type0 = typeit(node.children[0], env, type_env) 
-        #print "enter"
-        #print_ast(node)
-        #__print__btype(type0)
-        if isinstance(type0, IntegerType): # special case (succ/pred)
-            assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
-            return type0
         
-        num_args = len(node.children[1:])
+        # special case: (succ/pred)-function
+        if isinstance(type0, IntegerType): 
+            assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
+            return type0 # done
+        
+        # (2) calculate the number of args (maybe a tree of couple-expressions)
+        num_args = 0
+        for arg in node.children[1:]:
+            num_args += calculate_num_args(arg)
+        
+        # (3) create a type tree to get out the maximum of later unifications 
+        # (as much informations as known at this point)
         if num_args==1:
             expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
         else:
             arg_type = create_func_arg_type(num_args)
             expected_type0 = PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
-        atype = unify_equal(type0, expected_type0, type_env) 
+        atype = unify_equal(type0, expected_type0, type_env, node) 
            
-        # type args
+        # (4) get types of the function (atype.data.data[1] = function image)
         arg_type_list = get_arg_type_list(atype.data.data[0])
-        arg_type_list2 = []
+        arg_type_list2 = [] 
+
+        # TODO: refactoring from this line. Maybe all of this is not necessary anymore 
         number_of_args_given = len(node.children[1:])
         number_of_args_needed = len(arg_type_list)
         assert number_of_args_given<= number_of_args_needed
@@ -924,31 +950,28 @@ def typeit(node, env, type_env):
             arg_type = typeit(child, env, type_env)
             # e.g f(x|->y) instead of (expected) f(x,y). 
             # This problem can be indirect! So only checking for the type is correct
-            if isinstance(arg_type, CartType): 
-                arg_type_list2.append(arg_type.data[0].data)
-                arg_type_list2.append(arg_type.data[1].data)
-            else: 
-                arg_type_list2.append(arg_type)
+            arg_list = remove_carttypes(arg_type)
+            arg_type_list2 += arg_list
+
         #FIXME: may still be wrong for more than two args
         #TODO: more test for this code
         k = 0
-        for i in range(number_of_args_given): 
+        for i in range(number_of_args_given):
             arg_type = unknown_closure(arg_type_list2[i])
             
             if isinstance(arg_type, UnknownType) and number_of_args_given< number_of_args_needed:
                 utype1 = UnknownType(None, None)
                 utype2 = UnknownType(None, None)
-                unify_equal(utype1, arg_type_list[k], type_env)
-                unify_equal(utype2, arg_type_list[k+1], type_env)
+                unify_equal(utype1, arg_type_list[k], type_env, node)
+                unify_equal(utype2, arg_type_list[k+1], type_env, node)
                 tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
-                unify_equal(arg_type, tuple_type, type_env)
+                unify_equal(arg_type, tuple_type, type_env, node)
                 number_of_args_given = number_of_args_given + 1
                 k = k + 1                
             else:
-                unify_equal(arg_type, arg_type_list[k], type_env)
+                unify_equal(arg_type, arg_type_list[k], type_env, node)
             k = k + 1
             
-        
         # return imagetype
         return atype.data.data[1].data
     elif isinstance(node, ALambdaExpression):

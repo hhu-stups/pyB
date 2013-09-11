@@ -65,8 +65,12 @@ def pretty_print(node):
 # **************
     elif isinstance(node, ASetExtensionExpression):
         out = ""
+        i = 1
         for child in node.children:
             out += pretty_print(child)
+            if i<len(node.children):
+                out += ","
+            i = i+1
         return "{"+out+"}"
     elif isinstance(node, AEmptySetExpression):
         return "{}"

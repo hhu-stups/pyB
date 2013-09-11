@@ -78,6 +78,19 @@ class TestTypesFunctions():
         assert env.get_type("y").data=="Y"
 
 
+    def test_types_function_app2(self):
+        # Build AST
+        string_to_file("#PREDICATE f= {1 |-> \"aa\", 2 |-> \"bb\"}(xx) & xx=1 ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Type
+        env = Environment()
+        _test_typeit(root, env, [], ["xx","f"])
+        assert isinstance(env.get_type("f"), StringType)
+        assert isinstance(env.get_type("xx"), IntegerType)
+                
+
     def test_types_lambda(self):
         # Build AST
         string_to_file("#PREDICATE f="+"%"+"x.(x>0 & x<10|x*x)", file_name)

@@ -69,7 +69,7 @@ class TestPrettyPrinter():
 
         # PPrint
         out = pretty_print(root.children[0])
-        assert out=="{}<:{a} & S\/T<:S/\T & S-T<:S*T & {ab}<:{x,|x<7}"
+        assert out=="{}<:{a} & S\/T<:S/\T & S-T<:S*T & {a,b}<:{x,|x<7}"
 
 
     def test_pp_sets3(self):

@@ -71,11 +71,7 @@ class TestTeam():
         assert res
 
 
-#    def test_team_systerel(self):
-#        bfile_name="examples/not_public/Systerel/C578.EML.014/CF_LD_1"
-#        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
-#        res = run_with_pyb(bfile_name)
-#        assert res
+
 
 #   ../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 

@@ -465,3 +465,72 @@ class TestTypesRelations():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)	      
+
+
+    def test_types_complex_function_image3(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,g
+		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc, aa, bb)) & f<: NAT * NAT1 * NAT * NAT  
+		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("g"), PowerSetType)
+        assert isinstance(env.get_type("g").data, CartType)
+        assert isinstance(env.get_type("g").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[0].data, CartType)
+        assert isinstance(env.get_type("g").data.data[1].data, IntegerType)
+        
+ 
+    def test_types_complex_function_image4(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,g
+		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc |-> aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
+		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) 
+        assert isinstance(env.get_type("g"), PowerSetType)
+        assert isinstance(env.get_type("g").data, CartType)
+        assert isinstance(env.get_type("g").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[0].data, CartType)
+        assert isinstance(env.get_type("g").data.data[1].data, IntegerType)      
+
+
+    def test_types_complex_function_image5(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,g
+		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc , aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
+		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) 
+        assert isinstance(env.get_type("g"), PowerSetType)
+        assert isinstance(env.get_type("g").data, CartType)
+        assert isinstance(env.get_type("g").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[0].data, CartType)
+        assert isinstance(env.get_type("g").data.data[1].data, IntegerType)  
