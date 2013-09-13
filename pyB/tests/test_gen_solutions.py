@@ -1300,7 +1300,7 @@ class TestGenSolutuion():
         #exec ast_string
 
         # Test
-        print "parsing done"
+        #print "parsing done"
         #env = Environment()
         #mch = interpret(root, env) # init VARIABLES and eval INVARIANT
         

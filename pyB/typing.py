@@ -914,8 +914,14 @@ def typeit(node, env, type_env):
         atype1 = unify_equal(set_type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, AFunctionExpression):
+        # At this point it is imposible to know always the number of arguments!
+        #
+        # - num_args: (number of arguments by ast walk of args-nodes) 
+        # if one of the args will be (later) unified to an Carttype, the num_args is less then the real_args
+        # - number_of_args_needed: (
+        
         # (1) determine the (incomplete) type of the function 
-        # represented by an id or a set-extension- , first/second projection-expression
+        # represented by a set-extension-, first/second projection- or id-expression
         type0 = typeit(node.children[0], env, type_env) 
         
         # special case: (succ/pred)-function
@@ -923,12 +929,13 @@ def typeit(node, env, type_env):
             assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
             return type0 # done
         
-        # (2) calculate the number of args (maybe a tree of couple-expressions)
+        # (2) calculate the number of args given 
+        # (a ast-tree of couple- and identifier-expressions)
         num_args = 0
         for arg in node.children[1:]:
             num_args += calculate_num_args(arg)
         
-        # (3) create a type tree to get out the maximum of later unifications 
+        # (3) create a type-tree to get out the maximum of later unifications 
         # (as much informations as known at this point)
         if num_args==1:
             expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AFunctionExpression",None)),PowerSetType(UnknownType("AFunctionExpression",None))))
@@ -937,12 +944,12 @@ def typeit(node, env, type_env):
             expected_type0 = PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
         atype = unify_equal(type0, expected_type0, type_env, node) 
            
-        # (4) get types of the function (atype.data.data[1] = function image)
+        # (4) get types of the function (atype.data.data[1] is the functions image)
         arg_type_list = get_arg_type_list(atype.data.data[0])
-        arg_type_list2 = [] 
+        arg_type_list2 = []
 
-        # TODO: refactoring from this line. Maybe all of this is not necessary anymore 
-        number_of_args_given = len(node.children[1:])
+        # (5) create list of primitive (no carttypes) of the given args
+        number_of_args_given = len(node.children[1:]) 
         number_of_args_needed = len(arg_type_list)
         assert number_of_args_given<= number_of_args_needed
         for i in range(number_of_args_given):
@@ -953,9 +960,9 @@ def typeit(node, env, type_env):
             arg_list = remove_carttypes(arg_type)
             arg_type_list2 += arg_list
 
-        #FIXME: may still be wrong for more than two args
         #TODO: more test for this code
-        k = 0
+        # (6) unification of needed and given args (may both be known at this point)
+        k = 0 # list may not be of the same length
         for i in range(number_of_args_given):
             arg_type = unknown_closure(arg_type_list2[i])
             
@@ -967,7 +974,7 @@ def typeit(node, env, type_env):
                 tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
                 unify_equal(arg_type, tuple_type, type_env, node)
                 number_of_args_given = number_of_args_given + 1
-                k = k + 1                
+                k = k + 1  # used two types: skip one intertation              
             else:
                 unify_equal(arg_type, arg_type_list[k], type_env, node)
             k = k + 1
