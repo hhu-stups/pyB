@@ -10,7 +10,8 @@ from pretty_printer import pretty_print
 
 # helper for debugging
 def __print__btype(tree, t=0):
-    tree = unknown_closure(tree)
+    # FIXME: sometimes endles-loops, maybe cyclic (buggy-)trees?
+    #tree = unknown_closure(tree)
     print " "*t, tree
     if isinstance(tree, PowerSetType):
         __print__btype(tree.data,t+1)
@@ -34,7 +35,8 @@ def create_func_arg_type(num_args):
         return PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
 
 
-
+# TODO: Refactoring 
+# remove_carttypes and get_arg_type_list are the same function :-D
 def _get_arg_type_list(type,lst):
     assert isinstance(type, PowerSetType)
     if isinstance(type.data, CartType):
@@ -917,8 +919,12 @@ def typeit(node, env, type_env):
         # At this point it is imposible to know always the number of arguments!
         #
         # - num_args: (number of arguments by ast walk of args-nodes) 
-        # if one of the args will be (later) unified to an Carttype, the num_args is less then the real_args
-        # - number_of_args_needed: (
+        # if one of this args will be (later) unified to an Carttype, 
+        # the num_args is less then or equal the number of primitive-args
+        # It is used to to construct a dummy-functype in step 3.
+        # - number_of_args_needed (number of direct node children)
+        # one of this args may be a Carttype or will later be unified to Carttype  
+        # - number_of_args_needed: the number of args known at this point (less or equal real arg-num)
         
         # (1) determine the (incomplete) type of the function 
         # represented by a set-extension-, first/second projection- or id-expression
@@ -942,10 +948,10 @@ def typeit(node, env, type_env):
         else:
             arg_type = create_func_arg_type(num_args)
             expected_type0 = PowerSetType(CartType(arg_type,PowerSetType(UnknownType("AFunctionExpression",None))))
-        atype = unify_equal(type0, expected_type0, type_env, node) 
+        functype = unify_equal(type0, expected_type0, type_env, node) 
            
         # (4) get types of the function (atype.data.data[1] is the functions image)
-        arg_type_list = get_arg_type_list(atype.data.data[0])
+        arg_type_list = get_arg_type_list(functype.data.data[0])
         arg_type_list2 = []
 
         # (5) create list of primitive (no carttypes) of the given args
@@ -959,6 +965,7 @@ def typeit(node, env, type_env):
             # This problem can be indirect! So only checking for the type is correct
             arg_list = remove_carttypes(arg_type)
             arg_type_list2 += arg_list
+        
 
         #TODO: more test for this code
         # (6) unification of needed and given args (may both be known at this point)
@@ -971,16 +978,17 @@ def typeit(node, env, type_env):
                 utype2 = UnknownType(None, None)
                 unify_equal(utype1, arg_type_list[k], type_env, node)
                 unify_equal(utype2, arg_type_list[k+1], type_env, node)
-                tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
-                unify_equal(arg_type, tuple_type, type_env, node)
+                #tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
+                # FIXME: wrong unification at this point
+                #unify_equal(arg_type, tuple_type, type_env, node)
                 number_of_args_given = number_of_args_given + 1
                 k = k + 1  # used two types: skip one intertation              
             else:
                 unify_equal(arg_type, arg_type_list[k], type_env, node)
             k = k + 1
             
-        # return imagetype
-        return atype.data.data[1].data
+        # return imagetype (pow(cart(arg_types, pow(imagetype))))
+        return functype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
         #print pretty_print(node)
         # TODO: unification 

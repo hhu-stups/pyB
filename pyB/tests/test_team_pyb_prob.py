@@ -72,7 +72,7 @@ class TestTeam():
 
 
     def test_team_systerel(self):
-        bfile_name="examples/not_public/Systerel/verdi/verdi"
+        bfile_name="examples/not_public/Systerel/C578.EML.014/620_001"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
         res = run_with_pyb(bfile_name)
         assert res

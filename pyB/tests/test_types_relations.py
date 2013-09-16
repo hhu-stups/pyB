@@ -534,3 +534,62 @@ class TestTypesRelations():
         assert isinstance(env.get_type("g").data.data[1], PowerSetType)
         assert isinstance(env.get_type("g").data.data[0].data, CartType)
         assert isinstance(env.get_type("g").data.data[1].data, IntegerType)  
+        
+
+    def test_types_complex_function_image6(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,g
+		INVARIANT       g<:%aa,bb,cc.(aa:NAT & bb:NAT & cc:NAT| f(aa |-> bb) |-> cc) & f<: NAT * NAT *NAT 
+		INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)         
+        assert isinstance(env.get_type("g"), PowerSetType)
+        assert isinstance(env.get_type("g").data, CartType)
+        assert isinstance(env.get_type("g").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("g").data.data[0].data, CartType)
+        assert isinstance(env.get_type("g").data.data[1].data, CartType)
+   
+        
+    def test_types_complex_function_image7(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,g
+		INVARIANT       g(f(1 |-> 1) |-> 1) /= 42 & f<: NAT * NAT *NAT
+		INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={(1,1,1)}
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) 
+                
+    
+    # POW(((INTEGER*(INTEGER*INTEGER))*INTEGER)*INTEGER) is type of f
+    def test_types_complex_function_image8(self):
+        string = '''
+		MACHINE         Test
+		VARIABLES       f,x,y,z
+		INVARIANT       f(x,y,z)=42 & x=1 & y = (1,1) & z=1
+		INITIALISATION  f:={((1,(1,1)),1,42),((1,(1,1)),1,42)} ; x:=1; z:=1 ; y:=(1,1)
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)    
+                
