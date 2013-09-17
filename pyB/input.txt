@@ -1,1 +1,1 @@
-#PREDICATE RES:struct(Mark:NAT,Good_enough:BOOL)
+#PREDICATE A=bool(1<2)

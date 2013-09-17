@@ -1295,7 +1295,9 @@ def typeit(node, env, type_env):
             unify_equal(r_type, atype, type_env)
         return 
     elif isinstance(node, AExternalFunctionExpression):
-        return node.pyb_type
+        atype =  typeit(node.type_node, env, type_env)
+        functype = atype.data
+        return functype.data.data[1].data #image
     else:
         # WARNING: Make sure that is only used when no typeinfo is needed
         #print "WARNING: unhandeld node:", node #DEBUG

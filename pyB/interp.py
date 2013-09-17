@@ -13,7 +13,6 @@ from animation_clui import print_values_b_style
 
 
 
-
 def eval_Invariant(root, env, mch):
     if mch.aInvariantMachineClause:
         return interpret(mch.aInvariantMachineClause, env)
@@ -1425,8 +1424,12 @@ def interpret(node, env):
             function.append(tuple([preimage,frozenset(image)]))
         return frozenset(function)
     elif isinstance(node, AExternalFunctionExpression):
-        arg = interpret(node.children[0], env)
-        return node.pyb_impl(arg)
+        args = []
+        for child in node.children:
+            arg = interpret(child, env)
+            args += arg
+        result = node.pyb_impl(args)
+        return result
     else:
         raise Exception("Unknown Node: %s",node)
 

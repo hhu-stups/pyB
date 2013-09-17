@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from external_functions import EXTERNAL_FUNCTIONS_DICT, EXTERNAL_FUNCTIONS_TYPE
+from external_functions import EXTERNAL_FUNCTIONS_DICT
 from pretty_printer import pretty_print
 
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)
@@ -9,6 +9,7 @@ class DefinitionHandler():
     def __init__(self):
         self.def_map = {}
         self.external_functions_found = []
+        self.external_functions_types_found = {}
         
 
     def repl_defs(self, root):
@@ -26,6 +27,9 @@ class DefinitionHandler():
                     # make sure only ext. funs. are replaced if definition entry is presend
                     if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():
                         self.external_functions_found.append(definition.idName)
+                    if definition.idName.startswith("EXTERNAL_FUNCTION_"):
+                        self.external_functions_types_found[definition.idName[18:]] = definition.children[0]
+                         
 
                         
 
@@ -39,9 +43,9 @@ class DefinitionHandler():
                     # replace with ext. fun node if necessary 
                     if child.idName in self.external_functions_found:
                        name = child.idName
-                       type = EXTERNAL_FUNCTIONS_TYPE[name]
+                       type_ast = self.external_functions_types_found[name]
                        func = EXTERNAL_FUNCTIONS_DICT[name]
-                       root.children[i] = AExternalFunctionExpression(name, type, func)
+                       root.children[i] = AExternalFunctionExpression(name, type_ast, func)
                        root.children[i].children = child.children
                        return 
                     def_free_ast = self._gen_def_free_ast(child)
