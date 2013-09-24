@@ -323,6 +323,8 @@ def throw_away_unknown(tree, idName=""):
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
             atype = unknown_closure(tree.data)
+            if not isinstance(atype, BType):
+                print "TypeError! Can not resolve type of %s \n" % idName
             assert isinstance(atype, BType)
             tree.data = atype
         throw_away_unknown(tree.data, idName)

@@ -160,7 +160,7 @@ class BMachine:
                 else:
                     assert isinstance(child, AMachineReference) 
                 # TODO: impl search strategy
-                file_name = BMACHINE_SEARCH_DIR + child.idName + BFILE_EXTENSION
+                file_name = self.env._bmachine_search_dir + child.idName + BFILE_EXTENSION
                 ast_string, error = file_to_AST_str_no_print(file_name)
                 if error:
                     print error

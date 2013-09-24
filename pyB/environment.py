@@ -20,6 +20,7 @@ class Environment():
         # for possible modification after module import time (e.g. via tests)
         self._min_int = MIN_INT
         self._max_int = MAX_INT
+        self._bmachine_search_dir = BMACHINE_SEARCH_DIR
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = []             # remember all strings seen (in this or other bmachines)
@@ -160,4 +161,12 @@ class Environment():
             name = op.op_name
             if idName == name:
                 return op        
+    
+    def set_search_dir(self, file_name_str):
+        import os
+        if os.name=='posix' and '/' in file_name_str:
+            self._bmachine_search_dir = file_name_str.rpartition("/")[0] + '/'
+        else:
+            print "WARNING: OS Type not testet. Search dir unknown"
+
     

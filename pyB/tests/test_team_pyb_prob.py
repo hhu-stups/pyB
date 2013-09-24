@@ -10,25 +10,26 @@ from interp import interpret, write_solutions_to_env, set_up_constants, exec_ini
 from definition_handler import DefinitionHandler
 
 
-def run_with_prob(option_str="", bfile_name="temp"):
+def run_with_prob(option_str="", bfile_name="temp", dir=""):
     from subprocess import Popen, PIPE
-    p =  Popen("../ProB_2/probcli %s -sptxt %s_values.txt %s.mch" % (option_str, bfile_name, bfile_name), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+    cmd_string = "../ProB/probcli %s -sptxt %s%s_values.txt %s%s.mch" % (option_str, dir, bfile_name, dir, bfile_name)
+    p =  Popen(cmd_string, shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     e = p.stderr
     err_out = e.read()
     print err_out
     e.close()
 
 
-def run_with_pyb(bfile_name):
+def run_with_pyb(bfile_name, dir=""):
     # Build AST
-    ast_string = file_to_AST_str("%s.mch" % bfile_name)
+    ast_string = file_to_AST_str("%s%s.mch" % (dir, bfile_name))
     ast_root = str_ast_to_python_ast(ast_string)
 
     # Get ProB Solution
     env = Environment()
     env._min_int = -2**31
     env._max_int = 2**31
-    ast_str = solution_file_to_AST_str("%s_values.txt" % (bfile_name))
+    ast_str = solution_file_to_AST_str("%s%s_values.txt" % (dir, bfile_name))
     root = str_ast_to_python_ast(ast_str)
     write_solutions_to_env(root, env)
 
@@ -66,50 +67,57 @@ class TestTeam():
 
 
     def test_team_volvo(self):
-        run_with_prob("-init ", bfile_name="examples/Cruise_finite1")
-        res = run_with_pyb(bfile_name="examples/Cruise_finite1")
+        run_with_prob("-init ", bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
+        res = run_with_pyb(bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
         assert res
 
 
-    def test_team_systerel(self):
-        bfile_name="examples/not_public/Systerel/C578_Urgent_Jul13/151_001"
-        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
-        res = run_with_pyb(bfile_name)
-        assert res
+#     def test_team_alstom_malaga(self):
+#         bfile_name="examples/not_public/malaga/ixl_ctx1"
+#         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
+#         res = run_with_pyb(bfile_name)
+#         assert res
+#         
+#         
+#     def test_team_systerel(self):
+#         bfile_name="examples/not_public/Systerel/C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001"
+#         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
+#         res = run_with_pyb(bfile_name)
+#         assert res
 
 #   ../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
-
-    # every alstom-test runs about 5min.  
+# 
+#     # every alstom-test runs about 5min.  
 #     def test_team_alstom(self):
-#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+#         run_with_prob("-init ", bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+#         res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
 #         assert res
 #         for i in range(43):
-#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
-#           res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori_modified")
+#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+#           res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
 #           assert res
 #       #pass 
 #       
 #       
 #     def test_team_alstom2(self):
-#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+#         run_with_prob("-init ", bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
+#         res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
 #         assert res
 #         for i in range(43):
-#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
-#           res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_Route_0001ori")
+#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
+#           res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
 #           assert res
 #       #pass   
 # 
 # 
 #     def test_team_alstom3(self):
-#         run_with_prob("-init ", bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-#         res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+#         run_with_prob("-init ", bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
+#         res = run_with_pyb(bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
 #         assert res
 #         #import cProfile
 #         #cProfile.runctx('res = run_with_pyb(bfile_name=\"examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori\")', globals(),locals())
 #         for i in range(32):
-#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
-#           res = run_with_pyb(bfile_name="examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori")
+#           run_with_prob("-timeout 30000 -init -animate"+str(i), bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
+#           res = run_with_pyb(bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
 #           assert res
 #       #pass             

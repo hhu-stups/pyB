@@ -165,6 +165,8 @@ Index
     - 77. Missing animation top preds. like any (maybe more) -> implicit fix after animation refactoring
     - 75. Dont repeat yourself: duplicate code in animation an interpretation (SELECT, PRE, ...). 
           Think of code like PRE X THEN PRE Y ...(first anim, second interp) -> fixed
+    - 53. no random choice in CHOICE and SELECT --> still none, but nondet animation state explore/calc
+    - 89. functions with more than two args are not impl. or tested -> 7. new complex_arg tests pass
 
 
 8. TODO-LIST:
@@ -190,8 +192,9 @@ Index
           - pp only print predicates and expr. results at the moment.
     - 68. Use JSON Parser (needs metaprogramming for elifs)
     - 69. Impl. missing/incomplete substitution in animation module (e.g. If else)
-    - 90 enable external function like length, append, app, chars (prolog code in case of ProB)
-    - 91 run pyB with pypy
+    - 90. enable external function like length, append, app, chars (prolog code in case of ProB)
+    - 91. run pyB with pypy
+    - 92. use symbolic solutions like ae = (INTEGER * NATURAL1)
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names. "a"=a  with S={a} is True!
     - 31. Check Includes, Sees, Uses, Extends rules 
@@ -236,7 +239,6 @@ Index
       the java-Bparser
     - 51. Tests ignore Frames and Scopes.
     - 52. not tested: append/preprend more than one element - possible?
-    - 53. no random choice in CHOICE and SELECT
     - 54. INTEGER is min_int to max_int
     - 71. Dont repeat yourself inside pyB
     - 72. Maybe an unimplemented case in set_concrete_type()
@@ -249,7 +251,6 @@ Index
     - 66. "X-yy=sum+1" typeerror (musst be Integer)
     - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
     - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
-    - 89. functions with more than two args are not impl. or tested
 8.5 Maybe Bugs:
     - 61. (2 + 3) / 2 == 2
     - 62. eval of preds changes value_stack

@@ -48,6 +48,7 @@ def run_animation_mode():
     ast_string, error = file_to_AST_str_no_print(file_name_str) # 3. parse input-file to string
     if error:
         print error
+    env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
     dh = DefinitionHandler()                                    # 5. replace defs if present 
     dh.repl_defs(root)
@@ -75,7 +76,8 @@ def run_animation_mode():
         while True:
             next_states = __calc_states_and_print_ui(root, env, mch, solution_file_present)
             if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
-                show_env(env)
+                pass
+                #show_env(env)
                 #break
             undo_possible = not env.state_space.empty()
             number_of_options = len(next_states)
@@ -168,6 +170,7 @@ def run_checking_mode():
     ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
     if error:
         print error
+    env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
     dh = DefinitionHandler()                                    # 5. replace defs if present 
     dh.repl_defs(root)

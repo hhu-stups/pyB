@@ -393,8 +393,11 @@ def write_solutions_to_env(root, env):
                         env.solutions[node.children[1].idName] = expr
                     continue
                 else:
+                    # TODO: use symbolic solutions like: ae = (INTEGER * NATURAL1)
                     continue
             except Exception:
+                if VERBOSE:
+                    print "WARNING: PyB failed to use solution: " + pretty_print(node)
                 continue 
            
 
@@ -819,10 +822,12 @@ def interpret(node, env):
 #
 # *****************
     elif isinstance(node, ANaturalSetExpression):
-        print "WARNING: NATURAL = 0.."+str(env._max_int)
+        if VERBOSE:
+            print "WARNING: NATURAL = 0.."+str(env._max_int)
         return frozenset(range(0,env._max_int+1)) #XXX
     elif isinstance(node, ANatural1SetExpression):
-        print "WARNING: NATURAL1 = 1.."+str(env._max_int)
+        if VERBOSE:
+            print "WARNING: NATURAL1 = 1.."+str(env._max_int)
         return frozenset(range(1,env._max_int+1)) #XXX
     elif isinstance(node, ANatSetExpression):
         return frozenset(range(0,env._max_int+1))
@@ -831,7 +836,8 @@ def interpret(node, env):
     elif isinstance(node, AIntSetExpression):
         return frozenset(range(env._min_int, env._max_int+1)) 
     elif isinstance(node, AIntegerSetExpression):
-        print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
+        if VERBOSE:
+            print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
         return frozenset(range(env._min_int,env._max_int+1)) #XXX
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
