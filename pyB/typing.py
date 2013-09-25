@@ -12,7 +12,10 @@ from pretty_printer import pretty_print
 def __print__btype(tree, t=0):
     # FIXME: sometimes endles-loops, maybe cyclic (buggy-)trees?
     #tree = unknown_closure(tree)
-    print " "*t, tree
+    if isinstance(tree, SetType):
+       print " "*t, tree, ": ", tree.data 
+    else:
+       print " "*t, tree
     if isinstance(tree, PowerSetType):
         __print__btype(tree.data,t+1)
     elif isinstance(tree, CartType):
@@ -309,6 +312,7 @@ def resolve_type(env):
     for node in env.node_to_type_map:
         tree = env.node_to_type_map[node]
         #print node.idName, tree
+        #__print__btype(tree)
         tree_without_unknown = throw_away_unknown(tree, node.idName)
         env.node_to_type_map[node] = tree_without_unknown
 
@@ -858,8 +862,9 @@ def typeit(node, env, type_env):
         rel_type1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AOverwriteExpression",None)),PowerSetType(UnknownType("AOverwriteExpression",None))))
         expected_type1 = PowerSetType(CartType(PowerSetType(UnknownType("AOverwriteExpression",None)),PowerSetType(UnknownType("AOverwriteExpression",None))))
-        atype = unify_equal(rel_type0, expected_type0, type_env)
+        unify_equal(rel_type0, expected_type0, type_env)
         unify_equal(rel_type1, expected_type1, type_env)
+        atype = unify_equal(rel_type0, rel_type1, type_env)
         return atype
     elif isinstance(node, AParallelProductExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
@@ -930,7 +935,7 @@ def typeit(node, env, type_env):
         
         # (1) determine the (incomplete) type of the function 
         # represented by a set-extension-, first/second projection- or id-expression
-        type0 = typeit(node.children[0], env, type_env) 
+        type0 = typeit(node.children[0], env, type_env)
         
         # special case: (succ/pred)-function
         if isinstance(type0, IntegerType): 

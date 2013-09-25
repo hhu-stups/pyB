@@ -486,7 +486,4 @@ class TestMCHLaod():
             env.state_space.add_state(bstate)
             num = bstate.get_value("num", mch)
             assert num in [0,1,2,3]
-            env.state_space.undo()
-       
-     
-       
+            env.state_space.undo()       

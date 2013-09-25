@@ -413,10 +413,10 @@ class TestTypesRelations():
     def test_types_couple_element2(self):
         string = '''
         MACHINE         Test
-		VARIABLES       xx, yy
-		INVARIANT       xx<:(INTEGER*NATURAL1) & yy<:NAT*INTEGER*NATURAL1
-		INITIALISATION  xx:={(1,2),(4,5)} ; yy:=%(n,d).((n,d) : xx| n+d)
-		END'''
+        VARIABLES       xx, yy
+        INVARIANT       xx<:(INTEGER*NATURAL1) & yy<:NAT*INTEGER*NATURAL1
+        INITIALISATION  xx:={(1,2),(4,5)} ; yy:=%(n,d).((n,d) : xx| n+d)
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -436,10 +436,10 @@ class TestTypesRelations():
     def test_types_complex_function_image(self):
         string = '''
         MACHINE         Test
-		VARIABLES       yy, xx
-		INVARIANT       yy<:%aa.(aa:xx | prj1(INTEGER, INTEGER)(aa)) & xx<:INTEGER * NATURAL1 
-		INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
-		END'''
+        VARIABLES       yy, xx
+        INVARIANT       yy<:%aa.(aa:xx | prj1(INTEGER, INTEGER)(aa)) & xx<:INTEGER * NATURAL1 
+        INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -447,16 +447,16 @@ class TestTypesRelations():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, env, mch)		
+        type_check_bmch(root, env, mch)     
  
  
     def test_types_complex_function_image2(self):
         string = '''
         MACHINE         Test
-		VARIABLES       yy, xx
-		INVARIANT       yy<:%aa,bb.((aa,bb):xx | prj1(INTEGER, INTEGER)(aa,bb)) & xx<:INTEGER * NATURAL1 
-		INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
-		END'''
+        VARIABLES       yy, xx
+        INVARIANT       yy<:%aa,bb.((aa,bb):xx | prj1(INTEGER, INTEGER)(aa,bb)) & xx<:INTEGER * NATURAL1 
+        INITIALISATION  xx:={(1,2),(2,2)} ; yy:={((1,2),1),((2,2),2)}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -464,16 +464,16 @@ class TestTypesRelations():
         # Test
         env = Environment()
         mch = parse_ast(root, env)
-        type_check_bmch(root, env, mch)	      
+        type_check_bmch(root, env, mch)       
 
 
     def test_types_complex_function_image3(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,g
-		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc, aa, bb)) & f<: NAT * NAT1 * NAT * NAT  
-		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
-		END'''
+        MACHINE         Test
+        VARIABLES       f,g
+        INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc, aa, bb)) & f<: NAT * NAT1 * NAT * NAT  
+        INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -492,11 +492,11 @@ class TestTypesRelations():
  
     def test_types_complex_function_image4(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,g
-		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc |-> aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
-		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
-		END'''
+        MACHINE         Test
+        VARIABLES       f,g
+        INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc |-> aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
+        INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -515,11 +515,11 @@ class TestTypesRelations():
 
     def test_types_complex_function_image5(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,g
-		INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc , aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
-		INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
-		END'''
+        MACHINE         Test
+        VARIABLES       f,g
+        INVARIANT       g<:%aa,bb,cc.((aa,bb):NAT1*NAT &cc:NAT| f(cc , aa |-> bb)) & f<: NAT * NAT1 * NAT * NAT 
+        INITIALISATION  f:={(1,1,1,1),(1,1,1,1)} ; g:={}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -538,11 +538,11 @@ class TestTypesRelations():
 
     def test_types_complex_function_image6(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,g
-		INVARIANT       g<:%aa,bb,cc.(aa:NAT & bb:NAT & cc:NAT| f(aa |-> bb) |-> cc) & f<: NAT * NAT *NAT 
-		INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={}
-		END'''
+        MACHINE         Test
+        VARIABLES       f,g
+        INVARIANT       g<:%aa,bb,cc.(aa:NAT & bb:NAT & cc:NAT| f(aa |-> bb) |-> cc) & f<: NAT * NAT *NAT 
+        INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -561,11 +561,11 @@ class TestTypesRelations():
         
     def test_types_complex_function_image7(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,g
-		INVARIANT       g(f(1 |-> 1) |-> 1) /= 42 & f<: NAT * NAT *NAT
-		INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={(1,1,1)}
-		END'''
+        MACHINE         Test
+        VARIABLES       f,g
+        INVARIANT       g(f(1 |-> 1) |-> 1) /= 42 & f<: NAT * NAT *NAT
+        INITIALISATION  f:={(1,1,1),(1,1,1)}  ; g:={(1,1,1)}
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -579,11 +579,11 @@ class TestTypesRelations():
     # POW(((INTEGER*(INTEGER*INTEGER))*INTEGER)*INTEGER) is type of f
     def test_types_complex_function_image8(self):
         string = '''
-		MACHINE         Test
-		VARIABLES       f,x,y,z
-		INVARIANT       f(x,y,z)=42 & x=1 & y = (1,1) & z=1
-		INITIALISATION  f:={((1,(1,1)),1,42),((1,(1,1)),1,42)} ; x:=1; z:=1 ; y:=(1,1)
-		END'''
+        MACHINE         Test
+        VARIABLES       f,x,y,z
+        INVARIANT       f(x,y,z)=42 & x=1 & y = (1,1) & z=1
+        INITIALISATION  f:={((1,(1,1)),1,42),((1,(1,1)),1,42)} ; x:=1; z:=1 ; y:=(1,1)
+        END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
@@ -592,4 +592,99 @@ class TestTypesRelations():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)    
-                
+
+
+
+    def test_types_complex_union_empty_set(self):          
+        string = '''MACHINE Test
+		SETS U = {g, h, i}; R={j,k,l}        
+		CONSTANTS gg
+		PROPERTIES
+		gg : U +-> (R >+> R) & gg = { g |-> {j |-> l}, h |-> {k |-> k}, i |-> {}} 
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string       
+     
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("gg"), PowerSetType)
+        assert isinstance(env.get_type("gg").data, CartType)
+        assert isinstance(env.get_type("gg").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("gg").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("gg").data.data[0].data, SetType)
+        assert env.get_type("gg").data.data[0].data.data =="U"
+        image_type = env.get_type("gg").data.data[1].data.data
+        assert isinstance(image_type, CartType)
+        assert isinstance(image_type.data[0].data, SetType)
+        assert isinstance(image_type.data[1].data, SetType)
+        assert image_type.data[0].data.data=="R"
+        assert image_type.data[1].data.data=="R"
+        
+        		
+    def test_types_complex_union_empty_set2(self):          
+        string = '''
+        MACHINE Test
+        SETS U = {g, h, i}; R={j,k,l}        
+        CONSTANTS ff, gg
+        PROPERTIES
+        gg : U +-> (R >+> R) & gg = { g |-> {j |-> l}, h |-> {k |-> k}, i |-> {}} &
+        ff = (U * {{}} <+ gg) (g) 
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string       
+     
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("gg"), PowerSetType)
+        assert isinstance(env.get_type("gg").data, CartType)
+        assert isinstance(env.get_type("gg").data.data[0], PowerSetType)
+        assert isinstance(env.get_type("gg").data.data[1], PowerSetType)
+        assert isinstance(env.get_type("gg").data.data[0].data, SetType)
+        assert env.get_type("gg").data.data[0].data.data =="U"
+        image_type = env.get_type("gg").data.data[1].data.data
+        assert isinstance(image_type, CartType)
+        assert isinstance(image_type.data[0].data, SetType)
+        assert isinstance(image_type.data[1].data, SetType)
+        assert image_type.data[0].data.data=="R"
+        assert image_type.data[1].data.data=="R"
+        
+        image_type = env.get_type("ff").data
+        assert isinstance(image_type, CartType)
+        assert isinstance(image_type.data[0].data, SetType)
+        assert isinstance(image_type.data[1].data, SetType)
+        assert image_type.data[0].data.data=="R"
+        assert image_type.data[1].data.data=="R"
+        
+
+    def test_types_complex_union_empty_set3(self):    
+        string = '''
+        MACHINE Test
+        SETS S={a, b}; T={d, e}; U = {g, h, i}; R={j,k,l}        
+        CONSTANTS ff, gg, hh
+        PROPERTIES
+        gg : U +-> (R >+> R) & gg = { g |-> {j |-> l}, h |-> {k |-> k}, i |-> {}} &
+        hh : S * T --> (U +-> (R >+> R)) & hh={(a|->d) |-> {}, (a|->e)|->{}, (b|->d) |-> {}, (b|->e)|->{}} &
+        ff = %(xx, yy).(xx : S +-> T & yy : U |   
+             (U * {{}} <+ gg) (yy) \/  union (((U * {{}}) <+ union (hh[xx])) [{yy}]))
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string       
+     
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        
+
+
+                        
