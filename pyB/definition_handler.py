@@ -2,6 +2,7 @@
 from ast_nodes import *
 from external_functions import EXTERNAL_FUNCTIONS_DICT
 from pretty_printer import pretty_print
+from helpers import file_to_AST_str_no_print
 
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)
 class DefinitionHandler():
@@ -10,28 +11,47 @@ class DefinitionHandler():
         self.def_map = {}
         self.external_functions_found = []
         self.external_functions_types_found = {}
+        self.used_def_files = []
         
 
     def repl_defs(self, root):
-        self.save_definitions(root)
+        for clause in root.children:
+            if isinstance(clause, ADefinitionsMachineClause):
+                self.save_definitions(clause)
         self.replace_definitions(root)
 
 
     # fill def_map with "definition-definitions"
-    def save_definitions(self, root):
-        for clause in root.children:
-            if isinstance(clause, ADefinitionsMachineClause):
-                for definition in clause.children:
-                    assert isinstance(definition, AExpressionDefinition) or isinstance(definition, APredicateDefinition) or isinstance(definition, ASubstitutionDefinition)
-                    self.def_map[definition.idName] = definition
-                    # make sure only ext. funs. are replaced if definition entry is presend
-                    if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():
-                        self.external_functions_found.append(definition.idName)
-                    if definition.idName.startswith("EXTERNAL_FUNCTION_"):
-                        self.external_functions_types_found[definition.idName[18:]] = definition.children[0]
+    def save_definitions(self, clause):
+        assert isinstance(clause, ADefinitionsMachineClause)
+        self.process_definition_files(clause)
+        for definition in clause.children:
+            if isinstance(definition, AFileDefinition):
+                continue
+            assert isinstance(definition, AExpressionDefinition) or isinstance(definition, APredicateDefinition) or isinstance(definition, ASubstitutionDefinition)
+            self.def_map[definition.idName] = definition
+            # make sure only ext. funs. are replaced if definition entry is presend
+            if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():
+                self.external_functions_found.append(definition.idName)
+            if definition.idName.startswith("EXTERNAL_FUNCTION_"):
+                self.external_functions_types_found[definition.idName[18:]] = definition.children[0]
                          
 
-                        
+    # Defs can use definitions from these files. 
+    # All of them musst be processed before any def in this file                    
+    def process_definition_files(self, clause):
+        for definition in clause.children :
+            if isinstance(definition, AFileDefinition): #TODO: implement me
+                if definition.idName in self.used_def_files: # avoid def-file loops
+                    continue
+                self.used_def_files.append(definition.idName)
+                # get def-file ast
+                ast_string, error = file_to_AST_str_no_print(definition.idName) 
+                exec ast_string 
+                assert isinstance(root, ADefinitionFileParseUnit)  
+                assert isinstance(root.children[0], ADefinitionsMachineClause)
+                # used definitions
+                self.save_definitions(root.children[0])                   
 
  
     # side-effect: change definitions to def free Asts

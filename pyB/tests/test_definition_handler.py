@@ -18,7 +18,7 @@ class TestDefinitionHandler():
         exec ast_string
         
         dh = DefinitionHandler()
-        dh.save_definitions(root)
+        dh.save_definitions(root.children[4])
         assert isinstance(dh.def_map["Assign"], ASubstitutionDefinition)
 
 
@@ -40,7 +40,7 @@ class TestDefinitionHandler():
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
         dh = DefinitionHandler()
-        dh.save_definitions(root)
+        dh.save_definitions(root.children[4])
         def_free_ast = dh.replace_definitions(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
         assert isinstance(subst.children[2], AAssignSubstitution)
@@ -81,5 +81,8 @@ class TestDefinitionHandler():
 		END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string  
+        exec ast_string 
+        
+        dh = DefinitionHandler()                                    # 5. replace defs if present 
+        dh.repl_defs(root) 
    

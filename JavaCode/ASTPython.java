@@ -5,6 +5,7 @@ import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Method;
 // walks the tree and prints a pythonlike AST
 
 public class ASTPython extends DepthFirstAdapter{
@@ -86,6 +87,73 @@ public class ASTPython extends DepthFirstAdapter{
             out.append("AFileDefinition(\""+node.toString());
 			out.append("\")\n");
         }
+        else if (getClassName(node).equals("ADefinitionFileParseUnit"))
+        {
+            /*
+            Name: toString
+			   Return Type: java.lang.String
+			   Parameter Types:
+			Name: clone
+			   Return Type: java.lang.Object
+			   Parameter Types:
+			Name: apply
+			   Return Type: void
+			   Parameter Types: de.be4.classicalb.core.parser.node.Switch
+			Name: getDefinitionsClauses
+			   Return Type: de.be4.classicalb.core.parser.node.PMachineClause
+			   Parameter Types:
+			Name: setDefinitionsClauses
+			   Return Type: void
+			   Parameter Types: de.be4.classicalb.core.parser.node.PMachineClause
+			Name: parent
+			   Return Type: de.be4.classicalb.core.parser.node.Node
+			   Parameter Types:
+			Name: replaceBy
+			   Return Type: void
+			   Parameter Types: de.be4.classicalb.core.parser.node.Node
+			Name: getStartPos
+			   Return Type: de.hhu.stups.sablecc.patch.SourcePosition
+			   Parameter Types:
+			Name: getEndPos
+			   Return Type: de.hhu.stups.sablecc.patch.SourcePosition
+			   Parameter Types:
+			Name: setStartPos
+			   Return Type: void
+			   Parameter Types: de.hhu.stups.sablecc.patch.SourcePosition
+			Name: setEndPos
+			   Return Type: void
+			   Parameter Types: de.hhu.stups.sablecc.patch.SourcePosition
+			Name: wait
+			   Return Type: void
+			   Parameter Types:
+			Name: wait
+			   Return Type: void
+			   Parameter Types: long
+			Name: wait
+			   Return Type: void
+			   Parameter Types: long int
+			Name: equals
+			   Return Type: boolean
+			   Parameter Types: java.lang.Object
+			Name: hashCode
+			   Return Type: int
+			   Parameter Types:
+			Name: getClass
+			   Return Type: java.lang.Class
+			   Parameter Types:
+			Name: notify
+			   Return Type: void
+			   Parameter Types:
+			Name: notifyAll
+			   Return Type: void
+			   Parameter Types:
+			*/
+			// assumption: last node
+            out.append("id"+ (idCounter) +"=");
+            out.append("ADefinitionFileParseUnit()\n");
+			out.append("id"+(idCounter)+ ".children.append(id"+(idCounter-1)+")\n");
+			out.append("root = id"+(idCounter)+ "\n");
+		}
         else
         {
             System.out.println("Parsing Error!\n Unhandeld Node:"+getClassName(node));

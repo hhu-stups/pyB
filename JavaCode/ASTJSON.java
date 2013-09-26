@@ -27,12 +27,26 @@ public class ASTJSON extends DepthFirstAdapter{
         if(getClassName(node).equals("AFileDefinition"))
         {   
 			out.append("[\"");
-            out.append("AFileDefinition");
+            out.append("AFileDefinition\",");
             out.append("{\"idName\":\""+node.toString()+"\"}");
-            out.append("\"]");
+            out.append("]");
+		}
+		else if (getClassName(node).equals("ADefinitionFileParseUnit"))
+        {
+			// assumption: last node
+            out.append("]");
 		}
     }
     
+    public void defaultIn(@SuppressWarnings("unused") Node node)
+    {
+        if (getClassName(node).equals("ADefinitionFileParseUnit"))
+        {
+            // assumption: first node
+        	out.append("[\"");
+            out.append("ADefinitionFileParseUnit\",");
+        }
+    }
 
     public void outAIntegerExpression(AIntegerExpression node)
     {
