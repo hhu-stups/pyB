@@ -69,4 +69,17 @@ class TestDefinitionHandler():
         assert isinstance(subst.children[2], AAssignSubstitution)
         assert subst.children[1].children[0].idName  == "z" 
         assert subst.children[2].children[0].idName  == "b"        
-        
+  
+
+    def test_def_files(self):
+        string='''
+        MACHINE Test
+		DEFINITIONS 
+		  "common1.def" ; 
+		  begin==-2*UNIT ; 
+		  end == 10 * UNIT
+		END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string  
+   

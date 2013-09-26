@@ -21,6 +21,18 @@ public class ASTJSON extends DepthFirstAdapter{
         int mid= clsname.lastIndexOf ('.') + 1;
         return clsname.substring(mid);
     }
+    
+    public void defaultOut(@SuppressWarnings("unused") Node node)
+    {
+        if(getClassName(node).equals("AFileDefinition"))
+        {   
+			out.append("[\"");
+            out.append("AFileDefinition");
+            out.append("{\"idName\":\""+node.toString()+"\"}");
+            out.append("\"]");
+		}
+    }
+    
 
     public void outAIntegerExpression(AIntegerExpression node)
     {
