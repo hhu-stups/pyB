@@ -548,13 +548,13 @@ class TestTypesNumbers():
         _test_typeit(root, env, [], [])
   
         
-    def test_types_equal_number(self):
+    def test_types_set_or_integer(self):
         string = '''
         MACHINE Test
-		CONSTANTS X,yy,sum
-		PROPERTIES X-yy=sum+1
-		END'''
-		# Build AST
+        CONSTANTS X,yy,sum
+        PROPERTIES X-yy=sum+1
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string   
@@ -566,3 +566,48 @@ class TestTypesNumbers():
         assert isinstance(env.get_type("X"), IntegerType)
         assert isinstance(env.get_type("yy"), IntegerType)
         assert isinstance(env.get_type("sum"), IntegerType)
+
+
+    def test_types_set_or_integer2(self):
+        string = '''        
+        MACHINE Test
+        SETS S ={a,b,c}
+        CONSTANTS X,yy,sum
+        PROPERTIES X-yy=sum-{a,b,c}
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("X").data, SetType)
+        assert isinstance(env.get_type("yy").data, SetType)
+        assert isinstance(env.get_type("sum").data, SetType)
+
+
+    def test_types_set_or_integer3(self):
+        string = '''        
+        MACHINE Test
+		SETS S ={a,b,c}
+		CONSTANTS x,y,z,w,sum
+		PROPERTIES x-y-z=sum-{a,b,c}-w
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("x").data, SetType)
+        assert isinstance(env.get_type("y").data, SetType)
+        assert isinstance(env.get_type("z").data, SetType)
+        assert isinstance(env.get_type("w").data, SetType)
+        assert isinstance(env.get_type("sum").data, SetType)
+                

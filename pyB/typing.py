@@ -230,7 +230,10 @@ class TypeCheck_Environment():
                 return IntegerType(None)
             else:
                 assert isinstance(ctype, PowerSetType)
-                # TODO: implement set subtr.
+                if isinstance(u0, UnknownType):
+                    self.set_concrete_type(u0, ctype)
+                else:
+                    assert isinstance(u0, PowerSetType)
         else:
             assert utype.real_type==None
             utype.real_type = ctype
