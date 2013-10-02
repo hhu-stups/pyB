@@ -74,7 +74,9 @@ class PowCartORIntegerType(UnknownType):
 
 
 # will be decided in resolve()
+# arg1 and arg2 have both the type IntegerType OR the type 
+# PowerSetType (of something known at resolve phase)
 class PowORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, None,None)
-        self.data = (arg1, arg2)
+        self.data = (arg1, arg2) 

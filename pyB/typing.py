@@ -218,15 +218,15 @@ class TypeCheck_Environment():
         elif isinstance(utype, PowORIntegerType):
             u0 = unknown_closure(utype.data[0])
             u1 = unknown_closure(utype.data[1])
-            if isinstance(ctype, IntegerType):
+            # a PowORIntegerType will only be created if both operands of a
+            # setsubtraction are unknown. They have the same type as result of the
+            # unification of two unknown-types so they point on the same unknown-type object
+            assert u0==u1 
+            if isinstance(ctype, IntegerType): # u0 and u1 are IntegerTypes
                 if isinstance(u0, UnknownType):
                     self.set_concrete_type(u0, ctype)
                 else:
                     assert isinstance(u0, IntegerType)
-                if isinstance(u1, UnknownType):
-                    self.set_concrete_type(u1, ctype)
-                else:
-                    assert isinstance(u1, IntegerType)
                 return IntegerType(None)
             else:
                 assert isinstance(ctype, PowerSetType)

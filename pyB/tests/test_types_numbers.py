@@ -2,8 +2,9 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit
+from typing import _test_typeit, type_check_bmch
 from helpers import file_to_AST_str, string_to_file
+from parsing import parse_ast
 
 file_name = "input.txt"
 
@@ -545,3 +546,23 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         _test_typeit(root, env, [], [])
+  
+        
+    def test_types_equal_number(self):
+        string = '''
+        MACHINE Test
+		CONSTANTS X,yy,sum
+		PROPERTIES X-yy=sum+1
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("X"), IntegerType)
+        assert isinstance(env.get_type("yy"), IntegerType)
+        assert isinstance(env.get_type("sum"), IntegerType)
