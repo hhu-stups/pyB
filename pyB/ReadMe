@@ -168,6 +168,7 @@ Index
     - 53. no random choice in CHOICE and SELECT --> still none, but nondet animation state explore/calc
     - 89. functions with more than two args are not impl. or tested -> 7. new complex_arg tests pass
     - 66. "X-yy=sum+1" typeerror (musst be Integer) --> resolved by commit 334
+    - 61. (2 + 3) / 2 == 2 --> same result as prob. maybe never was a problem
 
 
 8. TODO-LIST:
@@ -252,7 +253,6 @@ Index
     - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
     - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
 8.5 Maybe Bugs:
-    - 61. (2 + 3) / 2 == 2
     - 62. eval of preds changes value_stack
 
 

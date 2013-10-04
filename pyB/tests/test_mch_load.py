@@ -486,4 +486,44 @@ class TestMCHLaod():
             env.state_space.add_state(bstate)
             num = bstate.get_value("num", mch)
             assert num in [0,1,2,3]
-            env.state_space.undo()       
+            env.state_space.undo()
+
+
+    def test_ProB_vs_pyB_num_rounding(self):
+        string = '''
+		MACHINE Test
+		VARIABLES xx
+		INVARIANT xx:NAT
+		INITIALISATION xx:=(2 + 3) / 2
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        assert env.get_value("xx") == 2   
+
+
+    def test_ProB_vs_pyB_num_rounding2(self):
+        string = '''
+		MACHINE Test
+		VARIABLES xx
+		INVARIANT xx:NAT
+		INITIALISATION xx:=(99) / 100
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        assert env.get_value("xx") == 0    

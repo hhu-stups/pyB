@@ -7,11 +7,12 @@ from helpers import file_to_AST_str_no_print
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)
 class DefinitionHandler():
     
-    def __init__(self):
+    def __init__(self, env):
         self.def_map = {}
         self.external_functions_found = []
         self.external_functions_types_found = {}
         self.used_def_files = []
+        self.env = env # need for search path of definition-files
         
 
     def repl_defs(self, root):
@@ -46,7 +47,8 @@ class DefinitionHandler():
                     continue
                 self.used_def_files.append(definition.idName)
                 # get def-file ast
-                ast_string, error = file_to_AST_str_no_print(definition.idName) 
+                file_path_and_name = self.env._bmachine_search_dir + definition.idName
+                ast_string, error = file_to_AST_str_no_print(file_path_and_name) 
                 exec ast_string 
                 assert isinstance(root, ADefinitionFileParseUnit)  
                 assert isinstance(root.children[0], ADefinitionsMachineClause)

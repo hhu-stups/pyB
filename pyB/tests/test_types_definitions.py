@@ -24,9 +24,9 @@ class TestTypesDefinitions():
         exec ast_string
 
         # Type
-        dh = DefinitionHandler()
-        dh.repl_defs(root)
         env = Environment()
+        dh = DefinitionHandler(env)
+        dh.repl_defs(root)
         parse_ast(root,env)
         lst = []
         _test_typeit(root, env, lst, ["z"])
@@ -47,9 +47,9 @@ class TestTypesDefinitions():
         exec ast_string
 
         # Type
-        dh = DefinitionHandler()
-        dh.repl_defs(root)
         env = Environment()
+        dh = DefinitionHandler(env)
+        dh.repl_defs(root)
         parse_ast(root, env)
         lst = []
         _test_typeit(root, env, lst, ["z"])

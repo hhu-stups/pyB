@@ -9,7 +9,8 @@ from bexceptions import ResolveFailedException, BTypeException
 
 
 
-# helper for debugging
+# helper for debugging.
+# prints a type-tree.
 def __print__btype(tree, t=0):
     # FIXME: sometimes endles-loops, maybe cyclic (buggy-)trees?
     #tree = unknown_closure(tree)
@@ -65,7 +66,10 @@ def remove_carttypes(arg_type):
         result.append(arg_type)
     return result
     
-    
+
+# helper function to check if a substitution (also operation and a machine)
+# uses substituions which change the state. 
+# False if any state-change is possible.    
 def check_if_query_op(sub, var_names):
     assert isinstance(sub, Substitution)
     if isinstance(sub, AAssignSubstitution):
@@ -84,7 +88,7 @@ def check_if_query_op(sub, var_names):
             assert isinstance(child, AIdentifierExpression)
             if child.idName in var_names:
                 return False
-    else:
+    else: # df-search 
         for child in sub.children:
             if isinstance(child, Substitution):
                 is_query_op = check_if_query_op(child, var_names)
@@ -320,11 +324,11 @@ def resolve_type(env):
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
 # assumption: if unification was successful, the leafs of this tree (of type-classes)
-# are only BTypes and no UnknownTypes 
+# are only BTypes and no UnknownTypes. Before function app, inner-nodes may be UnknownTypes 
 def throw_away_unknown(tree, idName=""):
     #print tree
     if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
-        return tree
+        return tree # leaf found.
     elif isinstance(tree, PowerSetType):
         if isinstance(tree.data, UnknownType):
             atype = unknown_closure(tree.data)
@@ -379,7 +383,7 @@ def throw_away_unknown(tree, idName=""):
         elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
             tree = arg1
         return tree
-    elif tree==None:
+    elif tree==None: # UnknownTypes point at None, if the are not set to something while unification
         raise BTypeException("TypeError: can not resolve a Type of: %s" % idName)
     elif isinstance(tree, UnknownType):
         tree = unknown_closure(tree)
@@ -388,6 +392,7 @@ def throw_away_unknown(tree, idName=""):
             string = "TypeError: can not resolve a Type of: %s" % str(tree.name)
             print string
             raise BTypeException(string)
+        # skip chain-of UnknownTypes
         tree = throw_away_unknown(tree, idName)
         return tree
     else:
@@ -404,7 +409,7 @@ def unknown_closure(atype):
     i = 0
     while True:
         i = i +1
-        if i==100: #DEBUG
+        if i==100: #DEBUG: maybe endles loop
             assert 2==1
         if not isinstance(atype.real_type, UnknownType):
             break

@@ -50,7 +50,7 @@ def run_animation_mode():
         print error
     env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    dh = DefinitionHandler()                                    # 5. replace defs if present 
+    dh = DefinitionHandler(env)                                 # 5. replace defs if present 
     dh.repl_defs(root)
     # uncomment for profiling (e.g. performance tests)
     #import cProfile
@@ -172,7 +172,7 @@ def run_checking_mode():
         print error
     env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    dh = DefinitionHandler()                                    # 5. replace defs if present 
+    dh = DefinitionHandler(env)                                 # 5. replace defs if present 
     dh.repl_defs(root)
     if solution_file_name_str:                                  # 6. parse solution-file and write to env.
         read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 

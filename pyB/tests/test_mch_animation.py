@@ -1647,9 +1647,9 @@ class TestMCHAnimation():
         exec ast_string
         
         # Test
-        dh = DefinitionHandler()
-        dh.repl_defs(root)
         env = Environment()
+        dh = DefinitionHandler(env)
+        dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)
@@ -1690,9 +1690,9 @@ class TestMCHAnimation():
         exec ast_string
         
         # Test
-        dh = DefinitionHandler()
-        dh.repl_defs(root)
         env = Environment()
+        dh = DefinitionHandler(env)
+        dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env, mch)

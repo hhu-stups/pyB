@@ -35,6 +35,7 @@ def create_file(b_str, bfile_name):
     e.close()
 
 
+# no print of error-messages
 def file_to_AST_str_no_print(file_name_str): 
     p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)
@@ -46,8 +47,8 @@ def file_to_AST_str_no_print(file_name_str):
     return del_spaces(out), err_out
 
 
-def file_to_AST_str(file_name_str):
-    p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+def file_to_AST_str(file_name_str, path=""):
+    p =  Popen(command_str % (option_str ,path+file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
     w, r, e = (p.stdin, p.stdout, p.stderr)
     out = r.read()
     err_out = e.read()
@@ -94,8 +95,8 @@ def del_spaces(string):
     return out
 
 
-def string_to_file(string, file_name):
-    f = open(file_name,"w")
+def string_to_file(string, file_name, path=""):
+    f = open(path+file_name,"w")
     f.write(string)
     f.close
     return f

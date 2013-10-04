@@ -1,6 +1,7 @@
 from ast_nodes import *
 from helpers import file_to_AST_str, string_to_file
 from definition_handler import DefinitionHandler
+from environment import Environment
 
 file_name = "input.txt"
 
@@ -17,7 +18,8 @@ class TestDefinitionHandler():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
         
-        dh = DefinitionHandler()
+        env = Environment()
+        dh = DefinitionHandler(env)
         dh.save_definitions(root.children[4])
         assert isinstance(dh.def_map["Assign"], ASubstitutionDefinition)
 
@@ -34,12 +36,13 @@ class TestDefinitionHandler():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
         
+        env = Environment()
         init = root.children[3]
         assert isinstance(init, AInitialisationMachineClause)
         subst = init.children[0]
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
-        dh = DefinitionHandler()
+        dh = DefinitionHandler(env)
         dh.save_definitions(root.children[4])
         def_free_ast = dh.replace_definitions(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
@@ -58,12 +61,13 @@ class TestDefinitionHandler():
         ast_string = file_to_AST_str(file_name)
         exec ast_string
         
+        env = Environment()
         init = root.children[3]
         assert isinstance(init, AInitialisationMachineClause)
         subst = init.children[0]
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
-        dh = DefinitionHandler()
+        dh = DefinitionHandler(env)
         dh.repl_defs(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
         assert isinstance(subst.children[2], AAssignSubstitution)
@@ -79,10 +83,12 @@ class TestDefinitionHandler():
 		  begin==-2*UNIT ; 
 		  end == 10 * UNIT
 		END'''
-        string_to_file(string, file_name)
-        ast_string = file_to_AST_str(file_name)
+        string_to_file(string, file_name, path="examples/")
+        ast_string = file_to_AST_str(file_name, path="examples/")
         exec ast_string 
         
-        dh = DefinitionHandler()                                    # 5. replace defs if present 
+        env = Environment()
+        dh = DefinitionHandler(env)                                    # 5. replace defs if present 
         dh.repl_defs(root) 
+        # test is successful if no exception occurred 
    

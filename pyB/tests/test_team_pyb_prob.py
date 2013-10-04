@@ -34,7 +34,7 @@ def run_with_pyb(bfile_name, dir=""):
     write_solutions_to_env(root, env)
 
     # Init B-mch
-    dh = DefinitionHandler()                                   
+    dh = DefinitionHandler(env)                                   
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
     type_check_bmch(ast_root, env, mch) # also checks all included, seen, used and extend    
