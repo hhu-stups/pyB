@@ -18,3 +18,11 @@ class INITNotPossibleException:
 class SETUPNotPossibleException:
     def __init__(self, string):
         self.value = string
+
+class BTypeException(Exception):
+    def __init__(self, string):
+        self.string = string
+
+class ResolveFailedException(BTypeException):
+    def __init__(self, string):
+        self.value = string

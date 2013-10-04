@@ -5,6 +5,7 @@ from helpers import find_var_names, print_ast, add_all_visible_ops_to_env
 from bmachine import BMachine
 from boperation import BOperation
 from pretty_printer import pretty_print
+from bexceptions import ResolveFailedException, BTypeException
 
 
 
@@ -90,11 +91,6 @@ def check_if_query_op(sub, var_names):
                 if not is_query_op:
                     return False            
     return True 
-
-
-class BTypeException(Exception):
-    def __init__(self, string):
-        self.string = string
 
 
 # Helper env: will be thrown away after Typechecking
@@ -323,6 +319,8 @@ def resolve_type(env):
 
 # it is a list an becomes a tree when carttype is implemented
 # It uses the data attr of BTypes as pointers
+# assumption: if unification was successful, the leafs of this tree (of type-classes)
+# are only BTypes and no UnknownTypes 
 def throw_away_unknown(tree, idName=""):
     #print tree
     if isinstance(tree, SetType) or isinstance(tree, IntegerType) or isinstance(tree, StringType) or isinstance(tree, BoolType):
@@ -331,7 +329,9 @@ def throw_away_unknown(tree, idName=""):
         if isinstance(tree.data, UnknownType):
             atype = unknown_closure(tree.data)
             if not isinstance(atype, BType):
-                print "TypeError! Can not resolve type of %s \n" % idName
+                string = "TypeError! Can not resolve type of %s \n" % idName
+                print string
+                raise ResolveFailedException(string)
             assert isinstance(atype, BType)
             tree.data = atype
         throw_away_unknown(tree.data, idName)
@@ -380,18 +380,18 @@ def throw_away_unknown(tree, idName=""):
             tree = arg1
         return tree
     elif tree==None:
-        raise BTypeException("TypeError: can not resolve a Type")
+        raise BTypeException("TypeError: can not resolve a Type of: %s" % idName)
     elif isinstance(tree, UnknownType):
         tree = unknown_closure(tree)
         if isinstance(tree, UnknownType):
             print tree
-            string = "TypeError: can not resolve a Type of "+ str(tree.name)
+            string = "TypeError: can not resolve a Type of: %s" % str(tree.name)
             print string
             raise BTypeException(string)
         tree = throw_away_unknown(tree, idName)
         return tree
     else:
-        raise Exception("resolve fail: Not Implemented %s"+tree)
+        raise Exception("resolve fail: Not Implemented %s %s" % (tree, idName))
 
 
 # follows an UnknownType pointer chain:

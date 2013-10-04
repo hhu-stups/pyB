@@ -3,9 +3,10 @@ import py.test
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit, BTypeException
+from typing import _test_typeit, type_check_bmch, BTypeException
 from helpers import file_to_AST_str, string_to_file
-
+from parsing import parse_ast
+from bexceptions import ResolveFailedException, BTypeException
 file_name = "input.txt"
 
 class TestTypesTypeExceptions():
@@ -96,3 +97,21 @@ class TestTypesTypeExceptions():
         env = Environment()
         #_test_typeit(root, env, [], ["a","b","c"])
         py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\",\"c\"])")
+
+
+    def test_types_impossible_resolve(self):
+        string = '''
+        MACHINE Test
+        SETS S ={a,b,c}
+        CONSTANTS xx,yy,zz
+        PROPERTIES xx-yy=zz*{a,b,c}
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env) 
+        py.test.raises(ResolveFailedException, "type_check_bmch(root, env, mch)")

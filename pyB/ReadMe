@@ -167,6 +167,7 @@ Index
           Think of code like PRE X THEN PRE Y ...(first anim, second interp) -> fixed
     - 53. no random choice in CHOICE and SELECT --> still none, but nondet animation state explore/calc
     - 89. functions with more than two args are not impl. or tested -> 7. new complex_arg tests pass
+    - 66. "X-yy=sum+1" typeerror (musst be Integer) --> resolved by commit 334
 
 
 8. TODO-LIST:
@@ -248,7 +249,6 @@ Index
     - 59. unknown-nodes create atype == atype.data
     - 60. maybe there is a unify Bug. 'unify' unifies with the first POW in a 
       type-tree
-    - 66. "X-yy=sum+1" typeerror (musst be Integer)
     - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
     - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
 8.5 Maybe Bugs:

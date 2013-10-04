@@ -1,6 +1,1 @@
-        
-        MACHINE Test
-		SETS S ={a,b,c}
-		CONSTANTS x,y,z,w,sum
-		PROPERTIES x-y-z=sum-{a,b,c}-w
-		END
+#PREDICATE A=bool(1<2)
