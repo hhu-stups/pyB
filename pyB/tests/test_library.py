@@ -44,7 +44,7 @@ class TestLibrary():
         assert isinstance(env.get_type("length").data, CartType)
         assert isinstance(env.get_type("length").data.data[0].data, StringType)
         assert isinstance(env.get_type("length").data.data[1].data, IntegerType)
-        #interpret(root, env) #performance: improve constraintsolving first
+        interpret(root, env) #performance: improve constraintsolving first
 
 
     def test_library_append(self):        
@@ -75,4 +75,4 @@ class TestLibrary():
         assert isinstance(env.get_type("aa").data.data[0].data.data[0].data, StringType)
         assert isinstance(env.get_type("aa").data.data[0].data.data[1].data, StringType)
         assert isinstance(env.get_type("aa").data.data[1].data, StringType)
-        interpret(root, env) #performance: improve constraintsolving first
+        interpret(root, env) 

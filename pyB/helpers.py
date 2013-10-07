@@ -158,7 +158,7 @@ def _find_var_nodes(node, lst, black_list):
             for n in node.children:
                 _find_var_nodes(n, lst, black_list)
         except AttributeError:
-            return #FIXME no children   
+            return #FIXME: no children   
 
 
 # search for all substitutions which change a variable.

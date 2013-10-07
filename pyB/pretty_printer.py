@@ -558,5 +558,7 @@ def pretty_print(node):
     elif isinstance(node, AConvertBoolExpression):
         string = pretty_print(node.children[0])
         return "bool("+string+")" 
+    elif isinstance(node, AExternalFunctionExpression):
+        return node.fName
     else:
         raise Exception("PRETTYORINTBUG>>> Unknown Node: %s",node)

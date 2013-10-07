@@ -435,32 +435,47 @@ def learn_assigned_values(root, env):
     return lst
     
 
-# node is an "side-effect-free" AST (no assignments := )
+# node is an "side-effect-free" AST (no assignments ':=' )
 def _learn_assigned_values(root, env, lst):
     for node in root.children:
         if isinstance(node, AEqualPredicate):
+            expression_node = None
+            idNode          = None
             # special case: learn values if None (optimization)
             if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
-                if isinstance(node.children[1], AIntegerExpression) or isinstance(node.children[1], ASetExtensionExpression) or isinstance(node.children[1], ABoolSetExpression) or isinstance(node.children[1], ATrueExpression) or isinstance(node.children[1], AFalseExpression):
-                    try:
-                        expr = interpret(node.children[1], env)
-                        env.set_value(node.children[0].idName, expr)
-                        lst.append(node.children[0].idName)
-                        continue
-                    except Exception:
-                        continue 
+                expression_node = node.children[1]
+                idNode          = node.children[0]
             # symmetric other case. 'Expr = X' instead of 'X = Expr'
             elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
-                if isinstance(node.children[0], AIntegerExpression) or isinstance(node.children[0], ASetExtensionExpression) or isinstance(node.children[0], ABoolSetExpression) or isinstance(node.children[0], ATrueExpression) or isinstance(node.children[0], AFalseExpression):
-                    try:
-                        expr = interpret(node.children[0], env)
-                        env.set_value(node.children[1].idName, expr)
-                        lst.append(node.children[1].idName)
-                        continue
-                    except Exception:
-                        continue 
+                expression_node = node.children[0]
+                idNode          = node.children[1]
             else:
-                continue
+                continue # case not implemented: skip
+            
+            assert not expression_node==None
+            idNodes = find_var_nodes(expression_node)
+            # TODO: use idNodes-result to check if an eval of expression node is possible
+            # maybe this enum of node-classes becomes unnecessary
+            
+            if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ATrueExpression) or isinstance(expression_node, AFalseExpression):
+                try:
+                    expr = interpret(expression_node, env)
+                    env.set_value(idNode.idName, expr)
+                    lst.append(idNode.idName)
+                    continue
+                except Exception:
+                    continue 
+            # only uses lambda which can be solved instantly 
+            elif isinstance(expression_node, ALambdaExpression) and idNodes==[]:
+                try:
+                    expr = interpret(expression_node, env)
+                    env.set_value(idNode.idName, expr)
+                    lst.append(idNode.idName)
+                    continue
+                except Exception:
+                    continue 
+
+        # df-search for equations 
         elif isinstance(node, AConjunctPredicate):
             _learn_assigned_values(node, env, lst)
 
@@ -1413,7 +1428,7 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("wrong entry:", name)
     elif isinstance(node, AStringSetExpression):
-        return "" # TODO: return set of "all" strings ;-)
+        return env.all_strings # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         relation = []
