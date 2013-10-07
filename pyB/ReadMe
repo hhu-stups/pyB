@@ -169,6 +169,7 @@ Index
     - 89. functions with more than two args are not impl. or tested -> 7. new complex_arg tests pass
     - 66. "X-yy=sum+1" typeerror (musst be Integer) --> resolved by commit 334
     - 61. (2 + 3) / 2 == 2 --> same result as prob. maybe never was a problem
+    - *24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint) -> can not reproduce error, maybe fixed
 
 
 8. TODO-LIST:
@@ -184,7 +185,6 @@ Index
       unify_equal()
     - 22. renaming with '.' (e.g. INCLUDES)
     - 23. typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
-    - *24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint)
     - 25. include init and set_constants step in animation
     - 26. generate dot output of statespace 
     - 29. safe state to a file

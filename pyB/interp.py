@@ -1136,7 +1136,9 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         domain_generator = calc_possible_solutions(env, varList, pred)
+        # for every solution-entry found:
         for entry in domain_generator:
+            # set all vars (of new frame/scope) to this solution
             i = 0
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -1146,8 +1148,10 @@ def interpret(node, env):
                     arg = value
                 else:
                     arg = tuple([arg, value])
+            # test if it is really a solution
             try:
-                if interpret(pred, env):  # test       
+                if interpret(pred, env):  # test
+                    # yes it is! calculate lambda-fun image an add this tuple to func_list       
                     image = interpret(expr, env)
                     tup = tuple([arg, image])
                     func_list.append(tup) 
@@ -1433,7 +1437,7 @@ def interpret(node, env):
         args = []
         for child in node.children:
             arg = interpret(child, env)
-            args += arg
+            args.append(arg)
         result = node.pyb_impl(args)
         return result
     else:

@@ -388,10 +388,10 @@ def throw_away_unknown(tree, idName=""):
     elif isinstance(tree, UnknownType):
         tree = unknown_closure(tree)
         if isinstance(tree, UnknownType):
-            print tree
+            #print tree
             string = "TypeError: can not resolve a Type of: %s" % str(tree.name)
             print string
-            raise BTypeException(string)
+            raise ResolveFailedException(string)
         # skip chain-of UnknownTypes
         tree = throw_away_unknown(tree, idName)
         return tree

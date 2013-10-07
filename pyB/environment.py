@@ -23,7 +23,7 @@ class Environment():
         self._bmachine_search_dir = BMACHINE_SEARCH_DIR
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
-        self.all_strings = []             # remember all strings seen (in this or other bmachines)
+        self.all_strings = [""]           # remember all strings seen (in this or other bmachines). used to enumerate 'STRING'
         # This is a caching-list which contains all operations of all machines
         # It should prevent from intensive lookup while animation and op_call substitutions
         self.all_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
