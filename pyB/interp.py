@@ -570,7 +570,9 @@ def interpret(node, env):
         if ENABLE_ASSERTIONS:
             print "checking assertions"
             for child in node.children:
-                print interpret(child, env),": \t", pretty_print(child)
+                #print_ast(child)
+                result = interpret(child, env)
+                print result,": \t", pretty_print(child)
             print "checking done."
 
 
@@ -606,7 +608,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred.children[0])
+        domain_generator = calc_possible_solutions(env, varList, pred.children[0]) # use left side of implication
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -624,7 +626,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred.children[0])
+        domain_generator = calc_possible_solutions(env, varList, pred)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -640,6 +642,7 @@ def interpret(node, env):
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        #print expr1,"=",expr2
         # special case: learn values if None (optimization)
         if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
             env.set_value(node.children[0].idName, expr2)

@@ -419,8 +419,14 @@ def pretty_print(node):
         if isinstance(node.children[0], ASuccessorExpression):
             string = pretty_print(node.children[1])
             return "succ("+string+")"
+        # FIXME: maybe string1 is not the function-name. e.g. set-extentions
         string1 = pretty_print(node.children[0])
-        string2 = pretty_print(node.children[1])
+        string2 = ""
+        for i in range(len(node.children[1:])):
+            child    = node.children[i+1]
+            string2 += pretty_print(child)
+            if i<len(node.children[1:])-1:
+               string2 += "," 
         return string1+"("+string2+")"
 
 
@@ -497,7 +503,7 @@ def pretty_print(node):
         string = pretty_print(node.children[0])
         return "conc("+string+")"
     elif isinstance(node, AStringExpression):
-        return node.string
+        return "\""+node.string+"\""
 
 # ****************
 #
