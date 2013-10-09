@@ -77,6 +77,8 @@ class TestLibrary():
             {y|y/="" & #(x,z).(append(append(x,y),z)="abc" & length(x)+length(z)>0)} = 
 		 	/* compute true substrings */ {"a","ab","b","bc","c"}
         END'''
+        # TODO: prolog-style args
+        # {x|x:{"abc","abcabc","hello"} & #(prefx).(append(prefx,"c")=x)} = {"abcabc","abc"};
         # Build AST    
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
@@ -137,6 +139,64 @@ class TestLibrary():
         assert isinstance(env.get_type("split").data.data[1].data.data, CartType)  
         assert isinstance(env.get_type("split").data.data[1].data.data.data[0].data, IntegerType)
         assert isinstance(env.get_type("split").data.data[1].data.data.data[1].data, StringType)      
+        interpret(root, env) 
+        assert isinstance(root.children[4], AAssertionsMachineClause)
+        interpret(root.children[4], env)
+
+                
+    def test_library_chars(self):
+        string = '''
+        MACHINE LibraryStrings
+        CONSTANTS chars, length, append
+        PROPERTIES
+          append = %(x,y).(x: STRING & y: STRING | STRING_APPEND(x,y)) & 
+		  /* obtain the characters of a string as a B sequence of strings of length 1 */
+		  chars: STRING --> (INTEGER <-> STRING) &
+		  chars = %(s).(s:STRING|STRING_CHARS(s)) &
+		  /* compute the length of a string */
+          length: STRING --> INTEGER &
+          length = %x.(x:STRING|STRING_LENGTH(x)) 
+        DEFINITIONS
+          EXTERNAL_FUNCTION_STRING_APPEND == STRING*STRING --> STRING;
+          STRING_APPEND(x,y) == append(x,y);
+		  STRING_CHARS(x) == chars(x);
+		  EXTERNAL_FUNCTION_STRING_CHARS == (STRING --> (INTEGER<->STRING));
+		  STRING_LENGTH(x) == length(x);
+          EXTERNAL_FUNCTION_STRING_LENGTH == STRING --> INTEGER
+        ASSERTIONS
+		  chars("") = <>;
+		  chars("abc") = ["a","b","c"];
+		  /* find strings with b as character: */
+		  {x|x:{"abc","abcabc","hello"} & "b" : ran(chars(x))} = {"abc", "abcabc"};
+		  /* now find strings which have the same character set */
+		  {x|x:{"abc","abcabc","hello"} & 
+			#y.(y:{"abc","abcabc","hello"} & ran(chars(x))=ran(chars(y)) & x/=y)} = {"abc", "abcabc"};
+			!(x,y).(x:{"abc","hello",""} & y:{"abc","hello",""}
+			  => chars(append(x,y)) = chars(x)^chars(y))
+
+        END
+        '''
+        # TODO: performance		  
+		#  /* now find permutations */
+		#  {x|x:{"abc","hello","cba",""} & #(y,p).(y:{"abc","hello","cba",""} & p:perm(1..size(chars(x))) &  x/=y & length(x)=length(y) & /* a bit slower without this condition */
+		#  (p;chars(x)) = chars(y))} = {"abc","cba"}
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        dh = DefinitionHandler(env)                                   
+        dh.repl_defs(root)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("chars"), PowerSetType)
+        assert isinstance(env.get_type("chars").data, CartType)
+        assert isinstance(env.get_type("chars").data.data[0].data, StringType)
+        assert isinstance(env.get_type("chars").data.data[1].data.data, CartType)  
+        assert isinstance(env.get_type("chars").data.data[1].data.data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("chars").data.data[1].data.data.data[1].data, StringType) 
         interpret(root, env) 
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
