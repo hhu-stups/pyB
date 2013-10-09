@@ -39,5 +39,16 @@ def pyB_ext_chars(args):
         i = i+1
     return frozenset(result)   
 
-EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append, "STRING_SPLIT": pyB_ext_split, "STRING_CHARS": pyB_ext_chars}
+
+def pyB_ext_codes(args):
+    b_string = args[0]
+    result = []
+    i = 1
+    for c in b_string:
+        t = tuple([i,ord(c)])
+        result.append(t)
+        i = i+1
+    return frozenset(result)       
+    
+EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append, "STRING_SPLIT": pyB_ext_split, "STRING_CHARS": pyB_ext_chars, "STRING_CODES": pyB_ext_codes}
 

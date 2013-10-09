@@ -180,6 +180,11 @@ class TestLibrary():
 		#  /* now find permutations */
 		#  {x|x:{"abc","hello","cba",""} & #(y,p).(y:{"abc","hello","cba",""} & p:perm(1..size(chars(x))) &  x/=y & length(x)=length(y) & /* a bit slower without this condition */
 		#  (p;chars(x)) = chars(y))} = {"abc","cba"}
+		# TODO: performance (30 sec)
+		#  card({x,y,z,v| x: {"abc","abcabcd","filename.ext","/usr/local/lib"} & 
+        #      y:ran(chars(x)) & z:ran(chars(x)) & y/=z & 
+        #      v:ran(chars(x)) & y/=v & z/=v &
+        #      length(x)+length(y)+length(z)+length(v)=6 }) = 6;
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
@@ -200,3 +205,57 @@ class TestLibrary():
         interpret(root, env) 
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
+ 
+      
+    def test_library_codes(self):
+        string = '''
+        MACHINE LibraryStrings
+        CONSTANTS codes, append
+        PROPERTIES
+          append = %(x,y).(x: STRING & y: STRING | STRING_APPEND(x,y)) &
+          /* obtain the characters of a string as a B sequence of Ascii codes; it is reversible */
+		  codes: STRING --> (INTEGER <-> INTEGER) &
+		  codes = %(s).(s:STRING|STRING_CODES(s))
+        DEFINITIONS
+		  STRING_CODES(x) == codes(x);
+		  EXTERNAL_FUNCTION_STRING_CODES == (STRING --> (INTEGER<->INTEGER));
+          EXTERNAL_FUNCTION_STRING_APPEND == STRING*STRING --> STRING;
+          STRING_APPEND(x,y) == append(x,y)		  
+        ASSERTIONS
+		  codes("") = <>;
+		  /* codes(" ") = [32]; the Java parser currently swallows whitespace within strings */
+		  codes("abc") = [97,98,99];
+		  {x| codes(x) = codes("abc") ^ codes("abc")} = {"abcabc"};
+		  !(x,y).(x:{"abc","hello",""} & y:{"abc","hello",""}
+			  => codes(append(x,y)) = codes(x)^codes(y))
+        END
+        '''	  
+		# FIXME: composition typechecking bug
+		#		  {x| codes(x) = (codes("abc") ; succ) } = {"bcd"};
+		# TODO: prolog style args
+		# {x| codes(x) = %i.(i:1..26|96+i)} = {"abcdefghijklmnopqrstuvwxyz"}
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+        
+        # Test
+        env = Environment()
+        dh = DefinitionHandler(env)                                   
+        dh.repl_defs(root)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("codes"), PowerSetType)
+        assert isinstance(env.get_type("codes").data, CartType)
+        assert isinstance(env.get_type("codes").data.data[0].data, StringType)
+        assert isinstance(env.get_type("codes").data.data[1].data.data, CartType)  
+        assert isinstance(env.get_type("codes").data.data[1].data.data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("codes").data.data[1].data.data.data[1].data, IntegerType) 
+        interpret(root, env) 
+        assert isinstance(root.children[4], AAssertionsMachineClause)
+        interpret(root.children[4], env)
+                
+
+  
+
+  
