@@ -50,6 +50,7 @@ class TestLibrary():
 
 
     # TODO: find args for append-function
+    # TODO: {x|x:{"abc","abcabc","hello"} & #(prefx).(append(prefx,"c")=x)} = {"abcabc","abc"};
     def test_library_append(self):        
         string = '''
         MACHINE m
@@ -93,6 +94,49 @@ class TestLibrary():
         assert isinstance(env.get_type("append").data.data[0].data.data[0].data, StringType)
         assert isinstance(env.get_type("append").data.data[0].data.data[1].data, StringType)
         assert isinstance(env.get_type("append").data.data[1].data, StringType)
+        interpret(root, env) 
+        assert isinstance(root.children[4], AAssertionsMachineClause)
+        interpret(root.children[4], env)
+        
+
+    def test_library_split(self):
+        string = '''
+        MACHINE LibraryStrings
+        CONSTANTS split
+        PROPERTIES
+          /* split a string according to a delimiter string into a sequence of strings */
+		  split: STRING * STRING --> (INTEGER<->STRING) & 
+		  split = %(x,y).(x:STRING & y:STRING|STRING_SPLIT(x,y)) 
+        DEFINITIONS
+		  STRING_SPLIT(x,y) == split(x,y);
+		  EXTERNAL_FUNCTION_STRING_SPLIT == ((STRING*STRING) --> (INTEGER<->STRING));
+        ASSERTIONS
+		  split("filename.ext",".") = ["filename","ext"];
+		  split("filename.ext","/") = ["filename.ext"];
+		  split("/usr/local/lib","/") = ["","usr","local","lib"];
+		  split("/","/") = ["",""];
+		  split("abcabc","bc") = ["a","a",""]
+        END
+        '''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        dh = DefinitionHandler(env)                                   
+        dh.repl_defs(root)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(env.get_type("split"), PowerSetType)
+        assert isinstance(env.get_type("split").data, CartType)
+        assert isinstance(env.get_type("split").data.data[0].data, CartType)
+        assert isinstance(env.get_type("split").data.data[0].data.data[0].data, StringType)
+        assert isinstance(env.get_type("split").data.data[0].data.data[1].data, StringType)
+        assert isinstance(env.get_type("split").data.data[1].data.data, CartType)  
+        assert isinstance(env.get_type("split").data.data[1].data.data.data[0].data, IntegerType)
+        assert isinstance(env.get_type("split").data.data[1].data.data.data[1].data, StringType)      
         interpret(root, env) 
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)

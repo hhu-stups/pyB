@@ -1,4 +1,5 @@
 from btypes import *
+from bexceptions import ValueNotInDomainException
 
 # not tested at the moment 
 def pyB_ext_length(args):
@@ -10,5 +11,22 @@ def pyB_ext_append(args):
     b_string1 = args[1]
     return b_string0 + b_string1
 
-EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append}
+# split is a total function => every input musst create a result    
+def pyB_ext_split(args):
+    b_string0 = args[0]
+    sep = args[1]
+    if sep=="":
+        return frozenset([])
+    #    raise ValueNotInDomainException("empty seperator in ext. function split")
+    if b_string0=="":
+    #    raise ValueNotInDomainException("empty string in ext. function split")
+        return frozenset([])
+    lst = b_string0.split(sep)
+    result = []
+    for i in range(len(lst)):
+        result.append(tuple([i+1, lst[i]]))
+    return frozenset(result)
+    
+
+EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append, "STRING_SPLIT": pyB_ext_split}
 

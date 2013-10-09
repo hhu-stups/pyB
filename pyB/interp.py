@@ -454,7 +454,7 @@ def _learn_assigned_values(root, env, lst):
             
             assert not expression_node==None
             idNodes = find_var_nodes(expression_node)
-            # TODO: use idNodes-result to check if an eval of expression node is possible
+            # TODO: use idNodes-result to check if an eval. of expression node is possible
             # maybe this enum of node-classes becomes unnecessary
             
             if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ATrueExpression) or isinstance(expression_node, AFalseExpression):
@@ -472,7 +472,8 @@ def _learn_assigned_values(root, env, lst):
                     env.set_value(idNode.idName, expr)
                     lst.append(idNode.idName)
                     continue
-                except Exception:
+                except Exception as e:
+                    print e
                     continue 
 
         # df-search for equations 
@@ -1431,7 +1432,7 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("wrong entry:", name)
     elif isinstance(node, AStringSetExpression):
-        return env.all_strings # TODO: return set of "all" strings ;-)
+        return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         relation = []

@@ -253,6 +253,7 @@ Index
     - 73. problem.addVariable: frozenset not in domain, works with test_scheduler(?): test_case: test_constraint_lambda2 
     - 74. Enum hints create BUGs: e.g. "S<:NAT & x:S" create enum_hint=S "T<:NAT & S/\T={} & x:T" ->fail
     - 94. external functions only work if all args are bound. E.g. append(x,"c")=y doesnt work. (python vs. prolog)
+    - 95. missing external functions create infinite loops (remove some py_ext from dict in external_functions.py to reproduce error)
 8.5 Maybe Bugs:
     - 62. eval of preds changes value_stack
 
