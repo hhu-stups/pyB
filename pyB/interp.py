@@ -367,7 +367,7 @@ def print_predicate_fail(env, node):
 # TODO: Add typeinfo too
 def write_solutions_to_env(root, env):
     for node in root.children:
-        if isinstance(node, AConjunctPredicate):
+        if isinstance(node, AConjunctPredicate): #loop
             write_solutions_to_env(node, env)
         elif isinstance(node, AEqualPredicate):
             try:
