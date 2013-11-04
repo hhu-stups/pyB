@@ -73,6 +73,12 @@ class TestTeam():
         assert res
 
 
+    def test_team_whokilledagatha(self):
+        run_with_prob("-init ", bfile_name="JobsPuzzle", dir="examples/")
+        res = run_with_pyb(bfile_name="JobsPuzzle", dir="examples/")
+        assert res==None # no invariant but also no exception until this line
+
+
 #     def test_team_alstom_malaga(self):
 #         bfile_name="examples/not_public/malaga/ixl_ctx1"
 #         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
@@ -86,7 +92,7 @@ class TestTeam():
 #         res = run_with_pyb(bfile_name)
 #         assert res
 
-#   ../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
+#   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 # 
 #    # every alstom-test runs about 15min.  
 #     def test_team_alstom(self):
