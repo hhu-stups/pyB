@@ -255,8 +255,12 @@ Index
     - 94. external functions only work if all args are bound. E.g. append(x,"c")=y doesnt work. (python vs. prolog)
     - 95. missing external functions create infinite loops (remove some py_ext from dict in external_functions.py to reproduce error)
 	- 96. Fix solution file usage bug
+	- 97. Price.price = {(GOODS1|->1),(GOODS2|->3)}
 8.5 Maybe Bugs:
     - 62. eval of preds changes value_stack
+8.6 Case Study:
+    - Eval this result: probcli produces a error message "!setup_constants_fails" for the model "Rule_DB_Route_0001ori_modified"
+      while producing a correct value file. The processing of this solution generates the result True by pyB
 
 
 

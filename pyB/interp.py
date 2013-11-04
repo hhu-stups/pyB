@@ -31,6 +31,7 @@ def _init_machine(root, env, mch, solution_file_read=False):
         env.state_space.add_state(bstates[0]) 
 
 
+# if ProB found a "full solution". This shouldn't do anything, except checking the solution   
 def set_up_constants(root, env, mch, solution_file_read=False):
     # 0. init sets of all machines, side-effect: change current/reference-bstate
     init_sets(root, env, mch) #TODO: modify generator for partial set up 
@@ -38,6 +39,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
      
     # 1. Use solution file if possible
     if solution_file_read:
+        use_prob_solutions(env, mch.const_names)
         pre_set_up_state = env.state_space.get_state()
         unset_lst = __find_unset_constants(mch, pre_set_up_state)
         if unset_lst and VERBOSE:
@@ -72,6 +74,8 @@ def set_up_constants(root, env, mch, solution_file_read=False):
                 break
     env.state_space.undo() # pop ref_bstate
     return bstates
+
+
 
 
 # yields False if the state was not changed
@@ -186,15 +190,20 @@ def __init_set_mch_parameter(root, env, mch):
         env.set_value(name, frozenset(elem_lst))
 
                 
-# inits sets of all machines
+# only(!) inits sets of all machines
+# TODO: When the ProB-Solution-file also contains set-solutions, this
+#       code will need a refactoring (Uses this solutions)
 def init_sets(node, env, mch):
+    # (1) avoid double set-init
     if mch.name in env.init_sets_bmachnes_names:
         return 
     env.init_sets_bmachnes_names.append(mch.name)
     mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    # (2) init-sets of child-bmch
     for m in mch_list:
         init_sets(node, env, m)
     env.current_mch = mch
+    # (3) init sets if present
     if mch.aSetsMachineClause: # St
         node = mch.aSetsMachineClause
         for child in node.children:
@@ -256,11 +265,13 @@ def check_properties(node, env, mch):
         #TODO: Sets-Clause
     yield False # avoid stop iteration bug
             
-            
+
+# if ProB found a "full solution". This shouldn't do anything, except checking the solution            
 # calcs up to MAX_INIT init B-states
 def exec_initialisation(root, env, mch, solution_file_read=False):
     # 0. Use solution file if possible
     if solution_file_read:
+        use_prob_solutions(env, mch.var_names)
         pre_init_state = env.state_space.get_state()
         unset_lst = __find_unset_variables(mch, pre_init_state)
         if unset_lst and VERBOSE:
@@ -347,6 +358,20 @@ def __exec_initialisation_generator(root, env, mch):
                 raise INITNotPossibleException("WARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
+# TODO: use solutions of child mch
+def use_prob_solutions(env, id_names):
+    #bstate = env.get_state()
+    # calc name and solution
+    #bmachine = bstate.get_bmachine_by_name(name)
+    for name in env.solutions:
+        # TODO: ordering of solutions (important!)
+        if name in id_names:
+			node = env.solutions[name] 
+			value = interpret(node, env)
+			env.set_value(name, value)
+        
+
+
 # search a conjunction of predicates for a false subpredicate and prints it.
 # This python function is used to get better error massages for failing properties or invariants
 def print_predicate_fail(env, node):
@@ -361,44 +386,6 @@ def print_predicate_fail(env, node):
         if not result:
             print "FALSE="+pretty_print(p)
             #print p.children[0].idName, env.get_value(p.children[0].idName)    
-
-
-# assumes that every Variable/Constant/Set appears once 
-# TODO: Add typeinfo too
-def write_solutions_to_env(root, env):
-    for node in root.children:
-        if isinstance(node, AConjunctPredicate): #loop
-            write_solutions_to_env(node, env)
-        elif isinstance(node, AEqualPredicate):
-            try:
-                #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32 (underscore bug)
-                if isinstance(node.children[0], AIdentifierExpression):
-                    if isinstance(node.children[1], AIdentifierExpression):
-                        # This is a special case, generate by ProB at this time
-                        # it will be removed when defferd sets and enumerated sets 
-                        # are part of a solution file.
-                        # a reference to a enumerated set item can not be reolved at
-                        # this time. Solution files are read ahead of time before any mch startup.
-                        # TODO: remove when sets are part of the solution
-                        env.solutions[node.children[0].idName] = node.children[1].idName
-                    else:
-                        expr = interpret(node.children[1], env)
-                        env.solutions[node.children[0].idName] = expr
-                    continue
-                elif isinstance(node.children[1], AIdentifierExpression):
-                    if isinstance(node.children[0], AIdentifierExpression):
-                        env.solutions[node.children[1].idName] = node.children[0].idName
-                    else:
-                        expr = interpret(node.children[0], env)
-                        env.solutions[node.children[1].idName] = expr
-                    continue
-                else:
-                    # TODO: use symbolic solutions like: ae = (INTEGER * NATURAL1)
-                    continue
-            except Exception:
-                if VERBOSE:
-                    print "WARNING: PyB failed to use solution: " + pretty_print(node)
-                continue 
            
 
 def __check_unset(names, bstate, mch):

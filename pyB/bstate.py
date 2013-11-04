@@ -39,20 +39,26 @@ class BState():
             c.bmch_dict[key] = vs
         return c
     
-    
-    def add_mch_state(self, bmachine, names=[], solutions={}):
-        value_stack = self._write_solutions(names, solutions, bmachine)
-        self.bmch_dict[bmachine] = value_stack 
+    # called only once (per b-machine) after successful parsing
+    def register_new_bmachine(self, bmachine, all_names):
+        value_stack = {}
+        for name in all_names:
+            value_stack[name] = None  # default init
+        self.bmch_dict[bmachine] = [value_stack]
  
-    
-    def _write_solutions(self, names, solutions, bmachine):
-        vstack = {}
-        for name in names:
-            if name in solutions or bmachine.name+"."+name in solutions:
-                vstack[name] = solutions[name]
-            else:
-                vstack[name] = None # default init
-        return [vstack]
+#     def add_mch_state(self, bmachine, names=[], solutions={}):
+#         value_stack = self._write_solutions(names, solutions, bmachine)
+#         self.bmch_dict[bmachine] = value_stack 
+#  
+#     
+#     def _write_solutions(self, names, solutions, bmachine):
+#         vstack = {}
+#         for name in names:
+#             if name in solutions or bmachine.name+"."+name in solutions:
+#                 vstack[name] = solutions[name]
+#             else:
+#                 vstack[name] = None # default init
+#         return [vstack]
     
 
     def get_value(self, id_Name, bmachine):
@@ -132,3 +138,11 @@ class BState():
             assert isinstance(i,str)
             if not top_map.has_key(i):
                 top_map[i] = None
+    
+    # used in use_constants_solutions and use_variables_solutions
+    # to "manually" write to the correct entry 
+    def get_bmachine_by_name(self, name):
+        for bmachine in self.bmch_dict:
+            if bmachine.name==name:
+                return bmachine
+        raise Exception("BUG! unknown: %s" % name) 

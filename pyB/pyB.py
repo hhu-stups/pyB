@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, write_solutions_to_env, set_up_constants, exec_initialisation, eval_Invariant
+from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from bmachine import BMachine
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
@@ -35,7 +35,7 @@ def read_solution_file(env, solution_file_name_str):
     if error:
         print error
     exec ast_str # TODO: JSON instead of dynamic 'exec' call
-    write_solutions_to_env(root, env)
+    env.write_solution_nodes_to_env(root)
     if env.solutions and VERBOSE:
         print "learnd from solution-file (constants and variables): ", [x for x in env.solutions] 
 

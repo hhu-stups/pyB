@@ -4,6 +4,7 @@ from btypes import *
 from statespace import StateSpace
 from config import *
 from bexceptions import ValueNotInBStateException
+from pretty_printer import pretty_print
 
 # TODO: This must be a singelton object
 class Environment():
@@ -170,3 +171,22 @@ class Environment():
             print "WARNING: OS Type not testet. Search dir unknown"
 
     
+    # assumes that every Variable/Constant/Set appears once 
+    # TODO: Add typeinfo too
+    # This function only maps the solution-expression-node to the id-name.
+    # It does not change the env. or execute something. 
+    # This will happen in the set_up_constants or exec_init methods
+    def write_solution_nodes_to_env(self, root):
+        for node in root.children:
+            if isinstance(node, AConjunctPredicate): #loop
+                self.write_solution_nodes_to_env(node)
+            elif isinstance(node, AEqualPredicate):
+                try:
+                    #TODO: utlb_srv_mrtk__var_e32 --> utlb_srv_mrtk.var_e32 (underscore bug)
+                    if isinstance(node.children[0], AIdentifierExpression):
+                        self.solutions[node.children[0].idName] = node.children[1]
+                        #print "DEBUG: used:",node.children[0].idName ,"=" + pretty_print(node)
+                except Exception:
+                    if VERBOSE:
+                        print "WARNING: PyB failed to use solution: " + pretty_print(node)
+                    continue 
