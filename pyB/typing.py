@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import find_var_names, print_ast, add_all_visible_ops_to_env
+from helpers import find_var_names, print_ast, add_all_visible_ops_to_env, find_var_nodes
 from bmachine import BMachine
 from boperation import BOperation
 from pretty_printer import pretty_print
@@ -443,6 +443,16 @@ def type_check_expression(root, env, idNames):
     ## FIXME: replace this call someday
     type_env = _test_typeit(root.children[0], env, [], idNames)
 
+
+def type_check_root_bmch(root, env, mch):
+    type_env = type_check_bmch(root, env, mch)
+    # type check solution file when all mch are typed
+    if env.solution_root:
+        typeit(env.solution_root, env, type_env)
+        #idNodes = find_var_nodes(env.solution_root.children[0]) 
+        #idNames = [n.idName for n in idNodes]
+        #type_check_predicate(env.solution_root, env, idNames)   
+    
 
 def type_check_bmch(root, env, mch):
     # TODO: abstr const/vars

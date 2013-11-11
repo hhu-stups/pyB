@@ -22,6 +22,7 @@ class Environment():
         self._min_int = MIN_INT
         self._max_int = MAX_INT
         self._bmachine_search_dir = BMACHINE_SEARCH_DIR
+        self.solution_root = None         # predicateparseunit of solution-ast
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = [""]           # remember all strings seen (in this or other bmachines). used to enumerate 'STRING'
@@ -60,7 +61,7 @@ class Environment():
     # Used by the eumerator: all_values
     def get_type_by_node(self, node):
         assert isinstance(node, AIdentifierExpression)
-        #print "XXX:",node.idName, node, self
+        #print "XXX:",node.idName, node
         assert node in self.node_to_type_map
         atype = self.node_to_type_map[node]
         assert isinstance(atype, BType)

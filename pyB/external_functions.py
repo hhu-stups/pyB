@@ -1,7 +1,7 @@
 from btypes import *
 from bexceptions import ValueNotInDomainException
 
-# not tested at the moment 
+# implementation of extern functions
 def pyB_ext_length(args):
     b_string = args[0]
     return len(b_string)

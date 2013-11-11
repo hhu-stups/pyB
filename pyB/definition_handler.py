@@ -12,7 +12,7 @@ class DefinitionHandler():
         self.external_functions_found = []
         self.external_functions_types_found = {}
         self.used_def_files = []
-        self.env = env # need for search path of definition-files
+        self.env = env # needed for search path of definition-files
         
 
     def repl_defs(self, root):
@@ -20,7 +20,8 @@ class DefinitionHandler():
             if isinstance(clause, ADefinitionsMachineClause):
                 self.save_definitions(clause)
         self.replace_definitions(root)
-
+        self.replace_ext_funcs_in_solution_file(self.env.solution_root)
+        
 
     # fill def_map with "definition-definitions"
     def save_definitions(self, clause):
@@ -68,7 +69,7 @@ class DefinitionHandler():
                        type_ast = self.external_functions_types_found[name]
                        func = EXTERNAL_FUNCTIONS_DICT[name]
                        root.children[i] = AExternalFunctionExpression(name, type_ast, func)
-                       root.children[i].children = child.children
+                       root.children[i].children = child.children # args of the function
                        return 
                     def_free_ast = self._gen_def_free_ast(child)
                     root.children[i] = def_free_ast
@@ -77,6 +78,29 @@ class DefinitionHandler():
         except AttributeError: # leaf:no children
             return
 
+
+    # solution files dont know they use extern functions.
+    # comments like /*EXT:*/ are removed by the parser. 
+    def replace_ext_funcs_in_solution_file(self, root):
+        if root==None: # e.g. no solution file present
+            return
+        try:
+            for i in range(len(root.children)):
+                child = root.children[i]
+                if isinstance(child, AFunctionExpression):
+                    try:
+                        name = child.children[0].idName
+                        type_ast = self.external_functions_types_found[name]
+                        func = EXTERNAL_FUNCTIONS_DICT[name]
+                        root.children[i] = AExternalFunctionExpression(name, type_ast, func)
+                        root.children[i].children = child.children[1:] # args of the function, first id is function name
+                    except KeyError:
+                        return
+                else:
+                    self.replace_ext_funcs_in_solution_file(child)
+        except AttributeError:
+            return
+        
     
     def _gen_def_free_ast(self, def_node):
         ast = self.def_map[def_node.idName]

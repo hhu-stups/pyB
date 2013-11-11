@@ -358,17 +358,14 @@ def __exec_initialisation_generator(root, env, mch):
                 raise INITNotPossibleException("WARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
-# TODO: use solutions of child mch
-def use_prob_solutions(env, id_names):
-    #bstate = env.get_state()
-    # calc name and solution
-    #bmachine = bstate.get_bmachine_by_name(name)
+# TODO: use solutions of child mch (seen, used mch)
+def use_prob_solutions(env, idNames):
     for name in env.solutions:
         # TODO: ordering of solutions (important!)
-        if name in id_names:
-			node = env.solutions[name] 
-			value = interpret(node, env)
-			env.set_value(name, value)
+        if name in idNames:
+            node = env.solutions[name] 
+            value = interpret(node, env)
+            env.set_value(name, value)
         
 
 

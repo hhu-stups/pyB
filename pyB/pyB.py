@@ -3,7 +3,7 @@ import sys
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from bmachine import BMachine
 from environment import Environment
-from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
+from helpers import file_to_AST_str_no_print, solution_file_to_AST_str, find_var_nodes
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
 from animation_clui import show_ui, show_env, print_set_up_bstates, print_init_bstates
 from animation import calc_next_states
@@ -11,7 +11,7 @@ from definition_handler import DefinitionHandler
 from ast_nodes import *
 from config import DEFAULT_INPUT_FILENAME, VERBOSE
 from parsing import parse_ast
-from typing import type_check_bmch
+from typing import type_check_root_bmch, type_check_predicate
 from repl import run_repl
 
 
@@ -35,6 +35,7 @@ def read_solution_file(env, solution_file_name_str):
     if error:
         print error
     exec ast_str # TODO: JSON instead of dynamic 'exec' call
+    env.solution_root = root
     env.write_solution_nodes_to_env(root)
     if env.solutions and VERBOSE:
         print "learnd from solution-file (constants and variables): ", [x for x in env.solutions] 
@@ -69,7 +70,11 @@ def run_animation_mode():
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         mch = parse_object
-        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend     
+        type_check_root_bmch(root, env, mch) # also checks all included, seen, used and extend 
+        #if env.solution_root:
+        #    idNodes = find_var_nodes(root.children[0]) 
+        #    idNames = [n.idName for n in idNodes]
+        #    type_check_predicate(env.solution_root, env, idNames)    
         # TODO: Check with B spec
                                                                 # 9. animate if ops are present                                                    
         # DO-WHILE Loop
@@ -184,7 +189,11 @@ def run_checking_mode():
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
-        type_check_bmch(root, env, parse_object) # also checks all included, seen, used and extend
+        type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
+        if env.solution_root:
+            idNodes = find_var_nodes(root.children[0]) 
+            idNames = [n.idName for n in idNodes]
+            type_check_predicate(env.solution_root, env, idNames)
         mch = parse_object
         
         bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")

@@ -2,10 +2,10 @@
 
 from ast_nodes import *
 from btypes import *
-from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str
+from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str, find_var_nodes
 from environment import Environment
 from parsing import parse_ast, str_ast_to_python_ast
-from typing import type_check_bmch
+from typing import type_check_root_bmch, type_check_predicate
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from definition_handler import DefinitionHandler
 
@@ -32,13 +32,18 @@ def run_with_pyb(bfile_name, dir=""):
     env._max_int = 2**31
     ast_str = solution_file_to_AST_str("%s%s_values.txt" % (dir, bfile_name))
     root = str_ast_to_python_ast(ast_str)
+    env.solution_root = root
     env.write_solution_nodes_to_env(root)
 
     # Init B-mch
     dh = DefinitionHandler(env)                                   
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
-    type_check_bmch(ast_root, env, mch) # also checks all included, seen, used and extend    
+    type_check_root_bmch(ast_root, env, mch) # also checks all included, seen, used and extend 
+    #if env.solution_root:
+    #    idNodes = find_var_nodes(root.children[0]) 
+    #    idNames = [n.idName for n in idNodes]
+    #    type_check_predicate(env.solution_root, env, idNames)   
     # side-effect: check properties and invariant 
     bstates = set_up_constants(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
@@ -76,7 +81,7 @@ class TestTeam():
     def test_team_whokilledagatha(self):
         run_with_prob("-init ", bfile_name="JobsPuzzle", dir="examples/")
         res = run_with_pyb(bfile_name="JobsPuzzle", dir="examples/")
-        assert res==None # no invariant but also no exception until this line
+        assert res==None # no invariant, but also no exception until this line
 
 
 #     def test_team_alstom_malaga(self):
@@ -85,12 +90,12 @@ class TestTeam():
 #         res = run_with_pyb(bfile_name)
 #         assert res
 #         
-#         
-#     def test_team_systerel(self):
-#         bfile_name="examples/not_public/Systerel/C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001"
-#         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
-#         res = run_with_pyb(bfile_name)
-#         assert res
+        
+#    def test_team_systerel(self):
+#        bfile_name="examples/not_public/Systerel/C578_Final_Jul13/m-PROP_SCL_VTT_0304_001"
+#        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
+#        res = run_with_pyb(bfile_name)
+#        assert res
 
 #   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 # 
