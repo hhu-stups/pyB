@@ -90,13 +90,13 @@ class TestTeam():
 #         res = run_with_pyb(bfile_name)
 #         assert res
 #         
-        
+#        
 #    def test_team_systerel(self):
-#        bfile_name="examples/not_public/Systerel/C578_Final_Jul13/m-PROP_SCL_VTT_0304_001"
+#        bfile_name="examples/not_public/Systerel/C578_Urgent_Jul13/151_001"
 #        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
 #        res = run_with_pyb(bfile_name)
 #        assert res
-
+#
 #   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 # 
 #    # every alstom-test runs about 15min.  

@@ -10,6 +10,7 @@ from quick_eval import quick_member_eval, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
+from fake_sets import *
 
 
 
@@ -139,7 +140,7 @@ def __set_up_constants_generator(root, env, mch):
                     # find all constants (like x=42 or y={1,2,3}) and set them
                     learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
                     if learnd_vars and VERBOSE:
-                        print "leard constants (no enumeration): ", learnd_vars
+                        print "learnd constants (no enumeration): ", learnd_vars
                     ref_bstate2 = env.state_space.get_state().clone() # save param set up 
                     env.add_ids_to_frame(mch.const_names)
                     
@@ -363,7 +364,10 @@ def use_prob_solutions(env, idNames):
     for name in env.solutions:
         # TODO: ordering of solutions (important!)
         if name in idNames:
-            node = env.solutions[name] 
+            node = env.solutions[name]
+            print
+            print
+            print pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
         
@@ -825,23 +829,29 @@ def interpret(node, env):
 #
 # *****************
     elif isinstance(node, ANaturalSetExpression):
-        if VERBOSE:
-            print "WARNING: NATURAL = 0.."+str(env._max_int)
-        return frozenset(range(0,env._max_int+1)) #XXX
+        #if VERBOSE:
+        #    print "WARNING: NATURAL = 0.."+str(env._max_int)
+        #return frozenset(range(0,env._max_int+1)) #XXX
+        return NaturalSet(env)
     elif isinstance(node, ANatural1SetExpression):
-        if VERBOSE:
-            print "WARNING: NATURAL1 = 1.."+str(env._max_int)
-        return frozenset(range(1,env._max_int+1)) #XXX
+        #if VERBOSE:
+        #    print "WARNING: NATURAL1 = 1.."+str(env._max_int)
+        #return frozenset(range(1,env._max_int+1)) #XXX
+        return Natural1Set(env)
     elif isinstance(node, ANatSetExpression):
-        return frozenset(range(0,env._max_int+1))
+        return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
+        #return NatSet(env)
     elif isinstance(node, ANat1SetExpression):
-        return frozenset(range(1,env._max_int+1))
+        return frozenset(range(1,env._max_int+1))# TODO: Problem if to large
+        #return Nat1Set(env)
     elif isinstance(node, AIntSetExpression):
-        return frozenset(range(env._min_int, env._max_int+1)) 
+        return frozenset(range(env._min_int, env._max_int+1)) # TODO: Problem if to large
+        #return IntSet(env)
     elif isinstance(node, AIntegerSetExpression):
-        if VERBOSE:
-            print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
-        return frozenset(range(env._min_int,env._max_int+1)) #XXX
+        #if VERBOSE:
+        #    print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
+        #return frozenset(range(env._min_int,env._max_int+1)) #XXX
+        return IntegerSet(env)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         return min(list(aSet))
@@ -879,7 +889,7 @@ def interpret(node, env):
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
-        return frozenset(range(left, right+1))
+        return frozenset(range(left, right+1)) # TODO: Problem if to large
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
