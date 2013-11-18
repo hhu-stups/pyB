@@ -365,9 +365,9 @@ def use_prob_solutions(env, idNames):
         # TODO: ordering of solutions (important!)
         if name in idNames:
             node = env.solutions[name]
-            print
-            print
-            print pretty_print(node) 
+            #print
+            #print
+            #print pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
         
@@ -986,6 +986,8 @@ def interpret(node, env):
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
+        print aSet
+        print pretty_print(node)
         new_rel = [x for x in rel if x[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ADomainSubtractionExpression):
