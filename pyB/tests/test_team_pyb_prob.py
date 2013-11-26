@@ -51,7 +51,12 @@ def run_with_pyb(bfile_name, dir=""):
     env.state_space.add_state(bstates[0]) 
     #if mch.aAssertionsMachineClause:
     #   interpret(mch.aAssertionsMachineClause, env)
-    return eval_Invariant(root, env, mch)  
+    if mch.aPropertiesMachineClause:
+        assert interpret(mch.aPropertiesMachineClause, env)
+    if mch.aInvariantMachineClause:
+        assert interpret(mch.aInvariantMachineClause, env)
+
+    
 
 
 class TestTeam():
@@ -68,20 +73,18 @@ class TestTeam():
         '''
         string_to_file(string, "temp.mch")
         run_with_prob("-init ", bfile_name="temp")
-        res = run_with_pyb(bfile_name="temp")
-        assert res
+        run_with_pyb(bfile_name="temp")
+ 
 
 
     def test_team_volvo(self):
         run_with_prob("-init ", bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
-        res = run_with_pyb(bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
-        assert res
+        run_with_pyb(bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
 
 
     def test_team_whokilledagatha(self):
         run_with_prob("-init ", bfile_name="JobsPuzzle", dir="examples/")
         res = run_with_pyb(bfile_name="JobsPuzzle", dir="examples/")
-        assert res==None # no invariant, but also no exception until this line
 
 
 #     def test_team_alstom_malaga(self):
@@ -91,11 +94,11 @@ class TestTeam():
 #         assert res
 #         
 #        
-#    def test_team_systerel(self):
-#        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_27082013/R_07_001"
-#        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
-#        res = run_with_pyb(bfile_name)
-#        assert res
+    def test_team_systerel(self):
+        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
+        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
+        run_with_pyb(bfile_name)
+
 #
 #   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 # 

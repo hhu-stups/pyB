@@ -20,6 +20,11 @@ def eval_Invariant(root, env, mch):
     else:
         return None
 
+def eval_Properties(root, env, mch):
+    if mch.aPropertiesMachineClause:
+        return intperpet(mch.aPropertiesMachineClause, env)
+    else:
+        return None
             
 # Should ONLY be used in tests! 
 # The data from the solution-files has already been read at the mch creation time
@@ -377,7 +382,8 @@ def use_prob_solutions(env, idNames):
 # This python function is used to get better error massages for failing properties or invariants
 def print_predicate_fail(env, node):
     pred_lst = []
-    if not (isinstance(node, AConjunctPredicate) and isinstance(node, ADisjunctPredicate)):
+    # if the input node is a pro
+    if not (isinstance(node, AConjunctPredicate) or isinstance(node, ADisjunctPredicate)):
         pred_lst.append(node)
     while isinstance(node, AConjunctPredicate):
         pred_lst.append(node.children[1])
@@ -481,7 +487,7 @@ def interpret(node, env):
 #        0. Interpretation-mode 
 #
 # ********************************************
-    #print node 3 # DEBUG
+    #print pretty_print(node)  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
         idNodes = find_var_nodes(node.children[0]) 
@@ -662,6 +668,7 @@ def interpret(node, env):
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
     elif isinstance(node, AComprehensionSetExpression):
+        #print pretty_print(node) 
         result = []
         # new scope
         varList = node.children[:-1]
@@ -986,8 +993,6 @@ def interpret(node, env):
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
-        print aSet
-        print pretty_print(node)
         new_rel = [x for x in rel if x[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ADomainSubtractionExpression):
@@ -1144,6 +1149,7 @@ def interpret(node, env):
         bij_fun = filter_not_surjective(inj_fun,T)
         return bij_fun
     elif isinstance(node, ALambdaExpression):
+        #print pretty_print(node) 
         func_list = []
         # new scope
         varList = node.children[:-2]

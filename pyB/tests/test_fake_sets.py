@@ -80,3 +80,19 @@ class TestFakeSets():
         assert env._min_int in large_set
         assert -1 in large_set
         assert env._max_int+1 not in large_set
+        cart_set = large_set * inf_set
+        assert (1,1) in cart_set
+   
+        
+    def test_fake_set_compare(self):
+        env = Environment()
+        inf_set = IntegerSet(env)
+        inf_set2 = IntegerSet(env)
+        assert inf_set == inf_set2
+        inf_set3 = Natural1Set(env)
+        assert not inf_set == inf_set3
+        acartSet = inf_set * inf_set3
+        acartSet2 = IntegerSet(env) * Natural1Set(env)
+        acartSet3 = inf_set3 * inf_set
+        assert acartSet==acartSet2
+        assert not acartSet==acartSet3

@@ -2,7 +2,7 @@
 from ast_nodes import *
 from external_functions import EXTERNAL_FUNCTIONS_DICT
 from pretty_printer import pretty_print
-from helpers import file_to_AST_str_no_print
+from helpers import file_to_AST_str_no_print, print_ast
 
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)
 class DefinitionHandler():
@@ -87,15 +87,15 @@ class DefinitionHandler():
         try:
             for i in range(len(root.children)):
                 child = root.children[i]
-                if isinstance(child, AFunctionExpression):
+                if isinstance(child, AFunctionExpression) and isinstance(child.children[0], AIdentifierExpression):
                     try:
-                        name = child.children[0].idName
-                        type_ast = self.external_functions_types_found[name]
-                        func = EXTERNAL_FUNCTIONS_DICT[name]
-                        root.children[i] = AExternalFunctionExpression(name, type_ast, func)
-                        root.children[i].children = child.children[1:] # args of the function, first id is function name
+						name = child.children[0].idName
+						type_ast = self.external_functions_types_found[name]
+						func = EXTERNAL_FUNCTIONS_DICT[name]
+						root.children[i] = AExternalFunctionExpression(name, type_ast, func)
+						root.children[i].children = child.children[1:] # args of the function, first id is function name
                     except KeyError:
-                        return
+                        continue
                 else:
                     self.replace_ext_funcs_in_solution_file(child)
         except AttributeError:

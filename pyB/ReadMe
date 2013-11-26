@@ -256,6 +256,7 @@ Index
     - 95. missing external functions create infinite loops (remove some py_ext from dict in external_functions.py to reproduce error)
 	- 96. Fix solution file usage bug
 	- 97. Price.price = {(GOODS1|->1),(GOODS2|->3)}
+	- 98. fixe GCD ext func BUG
 8.5 Maybe Bugs:
     - 62. eval of preds changes value_stack
 8.6 Case Study:

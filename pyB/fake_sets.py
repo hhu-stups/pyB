@@ -12,6 +12,11 @@ class FakeSet:
     
     def __rmul__(self, aset):
         return FakeCartSet(aset, self)
+    
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
 
 
 class LargeSet(FakeSet):
@@ -58,7 +63,22 @@ class FakeCartSet(FakeSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
         self.right_set = aset1
+    
+    def __contains__(self, element):
+        if isinstance(element, tuple):
+            l = element[0]
+            r = element[1]
+        else:
+            raise NotImplementedError()
+        return l in self.left_set and r in self.right_set
+    
+    def __eq__(self, aset):
+        if not isinstance(aset, FakeCartSet):
+            return False
+        elif (self.left_set==aset.left_set) and (self.right_set==aset.right_set):
+            return True
+        return False
 
 
 class FakePowerSet(FakeSet):
-    pass
+    pass #TODO: implement me

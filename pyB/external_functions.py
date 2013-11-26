@@ -48,7 +48,14 @@ def pyB_ext_codes(args):
         t = tuple([i,ord(c)])
         result.append(t)
         i = i+1
-    return frozenset(result)       
+    return frozenset(result) 
+
+
+def pyB_ext_gcd(args):
+    import fractions
+    a = args[0]
+    b = args[1]
+    return fractions.gcd(a, b)      
     
-EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append, "STRING_SPLIT": pyB_ext_split, "STRING_CHARS": pyB_ext_chars, "STRING_CODES": pyB_ext_codes}
+EXTERNAL_FUNCTIONS_DICT = {"STRING_LENGTH": pyB_ext_length, "STRING_APPEND": pyB_ext_append, "STRING_SPLIT": pyB_ext_split, "STRING_CHARS": pyB_ext_chars, "STRING_CODES": pyB_ext_codes, "GCD": pyB_ext_gcd}
 

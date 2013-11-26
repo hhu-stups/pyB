@@ -1015,7 +1015,7 @@ def typeit(node, env, type_env):
         # return imagetype (pow(cart(arg_types, pow(imagetype))))
         return functype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
-        #print pretty_print(node)
+        # print pretty_print(node)
         # TODO: unification 
         ids = []
         for n in node.children[:-2]:
