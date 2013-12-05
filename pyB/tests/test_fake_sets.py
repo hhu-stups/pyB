@@ -82,6 +82,7 @@ class TestFakeSets():
         assert env._max_int+1 not in large_set
         cart_set = large_set * inf_set
         assert (1,1) in cart_set
+        assert (-1,-1) not in cart_set
    
         
     def test_fake_set_compare(self):
@@ -96,3 +97,83 @@ class TestFakeSets():
         acartSet3 = inf_set3 * inf_set
         assert acartSet==acartSet2
         assert not acartSet==acartSet3
+    
+    
+    def test_fake_set_len(self):
+        env = Environment()
+        large_set = NatSet(env)
+        assert len(large_set)== env._max_int +1
+        large_set = Nat1Set(env)
+        assert len(large_set)== env._max_int 
+        large_set = IntSet(env)
+        assert len(large_set)== env._max_int + (-1)*env._min_int + 1 
+        # no impl. for inf_sets possible with __len__
+    
+    
+    def test_fake_set_subset(self):
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        nat_set = NatSet(env)
+        nat1_set = Nat1Set(env)
+        int_set = IntSet(env)
+        
+        assert not nat_set<=nat1_set
+        assert nat_set<=int_set
+        assert nat_set<=nat_set
+        assert not nat_set<nat_set
+        assert nat_set>=nat_set
+        
+        assert nat1_set<=nat_set
+        assert nat1_set<=int_set
+        assert nat1_set<=nat1_set
+        assert not nat1_set<nat1_set
+        assert nat1_set>=nat1_set
+        
+        assert not int_set<=nat_set
+        assert not int_set<=nat1_set
+        assert int_set<=int_set
+        assert not int_set<int_set
+        assert int_set>=int_set
+        
+        natural_set = NaturalSet(env)
+        natural1_set = Natural1Set(env)
+        integer_set = IntegerSet(env)
+        
+        assert not natural_set<=natural1_set
+        assert natural_set<=integer_set
+        assert natural_set<=natural_set
+        assert not natural_set<natural_set
+        assert natural_set>=natural_set
+        
+        assert natural1_set<=natural_set
+        assert natural1_set<=integer_set
+        assert natural1_set<=natural1_set
+        assert not natural1_set<natural1_set
+        assert natural1_set>=natural1_set
+        
+        assert not integer_set<=natural_set
+        assert integer_set<=integer_set
+        assert not integer_set<=natural1_set
+        assert not integer_set<integer_set
+        assert integer_set>=integer_set
+
+
+    def test_fake_set_union(self):
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        nat_set = NatSet(env)
+        nat1_set = Nat1Set(env)
+        int_set = IntSet(env)
+        natural_set = NaturalSet(env)
+        natural1_set = Natural1Set(env)
+        integer_set = IntegerSet(env)
+        
+        assert (nat_set | nat_set) ==nat_set
+        assert (nat_set | nat1_set)==nat1_set
+        assert (nat_set | int_set) ==int_set
+        assert (nat_set | natural_set) ==natural_set
+        assert (nat_set | natural1_set) ==natural1_set
+        assert (nat_set | integer_set) ==integer_set
+        
