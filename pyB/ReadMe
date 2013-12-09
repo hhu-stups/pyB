@@ -257,6 +257,7 @@ Index
 	- 96. Fix solution file usage bug
 	- 97. Price.price = {(GOODS1|->1),(GOODS2|->3)}
 	- 98. fixe GCD ext func BUG
+	- 99. C578/2013_08_14/machines_14082013/410_002_simple: assertion pass in pyb mode but not in team mode
 8.5 Maybe Bugs:
     - 62. eval of preds changes value_stack
 8.6 Case Study:

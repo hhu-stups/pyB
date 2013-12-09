@@ -22,15 +22,16 @@ def run_with_prob(option_str="", bfile_name="temp", dir=""):
 
 
 def run_with_pyb(bfile_name, dir=""):
-    # Build AST
+    # Build b-mch AST
     ast_string = file_to_AST_str("%s%s.mch" % (dir, bfile_name))
     ast_root = str_ast_to_python_ast(ast_string)
 
-    # Get ProB Solution
+    # Get ProB Solution, write to env
     env = Environment()
     env._min_int = -2**31
     env._max_int = 2**31
-    ast_str = solution_file_to_AST_str("%s%s_values.txt" % (dir, bfile_name))
+    ast_str, err = solution_file_to_AST_str("%s%s_values.txt" % (dir, bfile_name))
+    assert err==''
     root = str_ast_to_python_ast(ast_str)
     env.solution_root = root
     env.write_solution_nodes_to_env(root)
@@ -95,7 +96,7 @@ class TestTeam():
 #         
 #        
     def test_team_systerel(self):
-        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_27082013/0021_002"
+        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
         run_with_pyb(bfile_name)
 

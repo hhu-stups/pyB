@@ -49,12 +49,14 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         pre_set_up_state = env.state_space.get_state()
         unset_lst = __find_unset_constants(mch, pre_set_up_state)
         if unset_lst and VERBOSE:
-            print "WARNING: Set Up from solution file was not complete! unset:%s" % unset_lst
+            print "WARNING: Set Up from solution file was not complete! \nunset:%s" % unset_lst
         
         env.state_space.add_state(pre_set_up_state)
         # TODO: Parameter set up
         if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
             raise SETUPNotPossibleException("Wrong solutions from file. Properties are false!")
+        elif not mch.aPropertiesMachineClause==None:
+            print "Properties: True"
         env.state_space.undo()
         return [pre_set_up_state] 
                

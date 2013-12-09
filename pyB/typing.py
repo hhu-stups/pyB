@@ -163,7 +163,7 @@ class TypeCheck_Environment():
                 return
             except KeyError:
                 continue
-        string = "TypeError: %s not found while adding node: %s! Maybe %s is unkown. IdName not added to type_env (typing.py)?", node.idName, node, node.idName
+        string = "TypeError: %s not found while adding node %s to type-env! Maybe %s is unknown to type-env. IdName not added to type-env..." % (node.idName, node, node.idName)
         print string
         raise BTypeException(string)
 
@@ -288,7 +288,7 @@ class TypeCheck_Environment():
             except KeyError:
                 continue
         # error
-        string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?",idName
+        string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?" % idName
         print string
         raise BTypeException(string)
 

@@ -23,7 +23,8 @@ def solution_file_to_AST_str(file_name_str):
     f.write(string)
     f.close()
     print "reading solution file "+file_name_str+" ..."
-    return file_to_AST_str("solution.tmp")
+    result, err = file_to_AST_str_no_print("solution.tmp")
+    return result, err
 
 
 def create_file(b_str, bfile_name):
@@ -60,7 +61,7 @@ def file_to_AST_str(file_name_str, path=""):
     return del_spaces(out)
 
 
-# returns list of 2-tuples (predicate, substitution)
+# returns list of 2-tuples (predicate, substitution) for every select-branch
 def select_ast_to_list(select_ast):
     assert isinstance(select_ast, ASelectSubstitution)
     result = []

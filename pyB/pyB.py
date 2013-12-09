@@ -31,7 +31,7 @@ def read_input_string(offset=0):
 
 # assumes "#PREDICATE" header present 
 def read_solution_file(env, solution_file_name_str):
-    ast_str, error = file_to_AST_str_no_print(solution_file_name_str)
+    ast_str, error = solution_file_to_AST_str(solution_file_name_str)
     if error:
         print error
     exec ast_str # TODO: JSON instead of dynamic 'exec' call
@@ -51,16 +51,16 @@ def run_animation_mode():
         print error
     env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    dh = DefinitionHandler(env)                                 # 5. replace defs if present 
-    dh.repl_defs(root)
     # uncomment for profiling (e.g. performance tests)
     #import cProfile
     #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
     solution_file_present = not solution_file_name_str==""
-    if solution_file_present:                                  # 6. parse solution-file and write to env.
+    if solution_file_present:                                   # 5. parse solution-file and write to env.
         read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
                                                                 # the bmachine object-init time to the respective mch
     
+    dh = DefinitionHandler(env)                                 # 6. replace defs and extern-functions inside mch and solution-file (if present) 
+    dh.repl_defs(root)
     parse_object = parse_ast(root, env)                         # 7. which kind of ast?
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
@@ -177,23 +177,22 @@ def run_checking_mode():
         print error
     env.set_search_dir(file_name_str)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    dh = DefinitionHandler(env)                                 # 5. replace defs if present 
-    dh.repl_defs(root)
-    if solution_file_name_str:                                  # 6. parse solution-file and write to env.
+    if solution_file_name_str:                                  # 5. parse solution-file and write to env.
         read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
                                                                 # the bmachine object-init time to the respective mch
 
-        
+    dh = DefinitionHandler(env)                                 # 6. replace defs and extern-functions inside mch and solution-file (if present)
+    dh.repl_defs(root)    
     parse_object = parse_ast(root, env)                         # 7. which kind of ast?
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         interpret(parse_object.root, env)                       # eval predicate or expression
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
-        if env.solution_root:
-            idNodes = find_var_nodes(root.children[0]) 
-            idNames = [n.idName for n in idNodes]
-            type_check_predicate(env.solution_root, env, idNames)
+        #if env.solution_root:
+        #    idNodes = find_var_nodes(root.children[0]) 
+        #    idNames = [n.idName for n in idNodes]
+        #    type_check_predicate(env.solution_root, env, idNames)
         mch = parse_object
         
         bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")
