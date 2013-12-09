@@ -2,6 +2,7 @@
 import sys
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from bmachine import BMachine
+from bexceptions import *
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str, find_var_nodes
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
@@ -29,7 +30,7 @@ def read_input_string(offset=0):
     return file_name_str, solution_file_name_str
 
 
-# assumes "#PREDICATE" header present 
+# add "#PREDICATE" header and read solution 
 def read_solution_file(env, solution_file_name_str):
     ast_str, error = solution_file_to_AST_str(solution_file_name_str)
     if error:
@@ -227,10 +228,13 @@ def run_checking_mode():
 
 
 ###### MAIN PROGRAM ######
-if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
-    run_repl()
-elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
-    result = run_checking_mode()
-    print "Invariant:", result
-else:
-    run_animation_mode()
+try:
+	if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
+		run_repl()
+	elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
+		result = run_checking_mode()
+		print "Invariant:", result
+	else:
+		run_animation_mode()
+except Exception as e:
+    print e.value

@@ -54,7 +54,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         env.state_space.add_state(pre_set_up_state)
         # TODO: Parameter set up
         if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
-            raise SETUPNotPossibleException("Wrong solutions from file. Properties are false!")
+            raise SETUPNotPossibleException("\nError: Values from solution-file caused an PROPERTIES-violation (wrong predicated above)")            
         elif not mch.aPropertiesMachineClause==None:
             print "Properties: True"
         env.state_space.undo()
@@ -172,7 +172,7 @@ def init_mch_param(root, env, mch):
     if scalar_parameter_present:
         if mch.aConstraintsMachineClause==None:
             names = [n.idName for n in mch.scalar_params]
-            raise SETUPNotPossibleException("Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
+            raise SETUPNotPossibleException("\nError: Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
         pred = mch.aConstraintsMachineClause
         gen = try_all_values(pred, env, mch.scalar_params)
         for possible in gen:
@@ -268,8 +268,9 @@ def check_properties(node, env, mch):
                 # This generator is only called when the Constraints are True.
                 # No Properties-solution means set_up fail
                 if not at_least_one_solution: 
+                    print "\nFALSE Predicates:"
                     print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
-                    raise SETUPNotPossibleException("Properties FALSE in %s!" % (mch.name))
+                    raise SETUPNotPossibleException("\nError: Properties FALSE in machine: %s!" % (mch.name))
         #TODO: Sets-Clause
     yield False # avoid stop iteration bug
             
@@ -287,7 +288,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
         
         env.state_space.add_state(pre_init_state)
         if not mch.aInvariantMachineClause==None and not interpret(mch.aInvariantMachineClause, env):
-            raise INITNotPossibleException("Wrong solutions from file. Invariant is false!")
+            raise INITNotPossibleException("\nError: INITIALISATION unsuccessfully. Values from solution-file caused an INVARIANT-violation")
         env.state_space.undo()
         return [pre_init_state] 
                
@@ -351,7 +352,7 @@ def __exec_initialisation_generator(root, env, mch):
         # 3.1 nothing to be init.        
         if not mch.aInitialisationMachineClause:
             if not mch.aVariablesMachineClause==None and not mch.aConcreteVariablesMachineClause==None:
-                raise INITNotPossibleException("Missing InitialisationMachineClause in %s!" % mch.name)
+                raise INITNotPossibleException("\nError: Missing InitialisationMachineClause in %s!" % mch.name)
             yield child_bstate_change
         # 3.2. search for solutions  
         else:                 
@@ -363,7 +364,7 @@ def __exec_initialisation_generator(root, env, mch):
                     yield True
                     env.state_space.revert(ref_bstate) # revert to current child-init-solution
             if not at_least_one_possible:
-                raise INITNotPossibleException("WARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
+                raise INITNotPossibleException("\nWARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
 # TODO: use solutions of child mch (seen, used mch)
@@ -393,7 +394,7 @@ def print_predicate_fail(env, node):
     for p in pred_lst:
         result = interpret(p, env)
         if not result:
-            print "FALSE="+pretty_print(p)
+            print "FALSE = ("+pretty_print(p)+")"
             #print p.children[0].idName, env.get_value(p.children[0].idName)    
            
 
@@ -556,11 +557,13 @@ def interpret(node, env):
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
         result = interpret(node.children[-1], env)
         if not result:
+            print "\nFALSE Predicates:"
             print_predicate_fail(env, node.children[0])
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
         if not result:
+            print "\nFALSE Predicates:"
             print_predicate_fail(env, node.children[0])
         return result
     elif isinstance(node, AAssertionsMachineClause):
@@ -1434,7 +1437,7 @@ def interpret(node, env):
         for entry in record:
             if entry[0]==name:
                 return entry[1]
-        raise Exception("wrong entry:", name)
+        raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
         return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
@@ -1464,7 +1467,7 @@ def interpret(node, env):
         result = node.pyb_impl(args)
         return result
     else:
-        raise Exception("Unknown Node: %s",node)
+        raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
 
 
 # side-effect: changes state while exec.
@@ -1526,8 +1529,7 @@ def exec_substitution(sub, env):
         while not used_ids==[]:
             name = used_ids.pop()
             if name in used_ids:
-                string = name + " modified twice in multiple assign-substitution!"
-                raise Exception(string)
+                raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
         yield True # assign(s) was/were  successful 
     elif isinstance(sub, ABecomesElementOfSubstitution):
         values = interpret(sub.children[-1], env)
@@ -1590,8 +1592,7 @@ def exec_substitution(sub, env):
                     while not id_names==[]:
                         name = id_names.pop()
                         if name in id_names:
-                            string = name + " modified twice in parallel substitution!"
-                            raise Exception(string)
+                            raise Exception("\nError: modified twice in parallel substitution: " % s)
                     # 3. write changes to state
                     for pair in new_values:
                         name = pair[0]
