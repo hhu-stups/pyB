@@ -1425,7 +1425,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
         # inside the typechecker: Every unifiable expression
         # must be a BType or an UnknownType!
         print maybe_type0, maybe_type1
-        raise Exception("Typchecker Bug: no Unknowntype and no Btype!")
+        raise BTypeException("Typchecker Bug: no Unknowntype and no Btype!\nUnification fail: %s != %s" % (maybe_type0, maybe_type1))
 
 
 

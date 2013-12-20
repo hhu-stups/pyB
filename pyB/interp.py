@@ -54,7 +54,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         env.state_space.add_state(pre_set_up_state)
         # TODO: Parameter set up
         if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
-            raise SETUPNotPossibleException("\nError: Values from solution-file caused an PROPERTIES-violation (wrong predicated above)")            
+            raise SETUPNotPossibleException("\nError: Values from solution-file caused an PROPERTIES-violation (wrong predicates above).\nMIN_INT: %s MAX_INT: %s" % (env._min_int, env._max_int))            
         elif not mch.aPropertiesMachineClause==None:
             print "Properties: True"
         env.state_space.undo()

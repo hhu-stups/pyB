@@ -1,7 +1,7 @@
 
 class BTypeException(Exception):
     def __init__(self, string):
-        self.string = string
+        self.value = string
 
 # e.g: f={(1,42)} & x=f[5] 
 class ValueNotInDomainException(BTypeException):   

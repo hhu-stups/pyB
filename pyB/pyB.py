@@ -237,4 +237,5 @@ try:
 	else:
 		run_animation_mode()
 except Exception as e:
+    print e
     print e.value
