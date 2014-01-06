@@ -39,7 +39,8 @@ def test_performance_cart_prod():
 	print string 
 	print "card(S) and card(T)"
 	# Test
-	for i in range(501):   
+	for i in range(1):
+	#for i in range(501):   
 		env = Environment()
 		env.add_ids_to_frame(["T","S"])
 		env.set_value("S", frozenset(range(i)))
@@ -83,7 +84,8 @@ def test_performance_cart_prod():
 	print string 
 	print "card(S)"
 	# Test
-	for i in range(22):   
+	for i in range(1):
+	#for i in range(22):   
 		env = Environment()
 		env.add_ids_to_frame(["T","S"])
 		env.set_value("S", frozenset(range(i)))

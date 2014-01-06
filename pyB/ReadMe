@@ -1,4 +1,4 @@
-PyB: 31.08.2011 - 27.08.2013 (<3 last update of this file)
+PyB: 31.08.2011 - 06.01.2014 (last update of this file)
 by John Witulski:
  HHU Duesseldorf Germany
  www.stups.uni-duesseldorf.de
@@ -21,6 +21,9 @@ Index
 ------------------------
 
 1. Config:
+A config. is only needed if the project doesn't find the jars.
+Prebuild jars are inside the jars folder. Python 2.7 needed
+
     WAY A: Build jars 
     1.0: Checkout the Bparser 
         get clone https://github.com/bendisposto/probparsers.git
@@ -59,7 +62,8 @@ Index
 
 3. Run Tests:
     py.test
-    the "tests" are in the tests folder
+    the "tests" are in the tests folder. py.test must be installed.
+   Some test fail if examples or an extern constrain solver is missing.
 
 
 4. Features:
@@ -140,7 +144,7 @@ Index
     - !, # set-comp and pi dont use correct enum
     - rename quantified variables in helper-funcs -solved by scoping
     - Maybe a BUG: there are no local vars. all vars are global
-    - TODO: quantiefed vars must be added to the frame
+    - TODO: quantified vars must be added to the frame
     - Typing maybe fails if vars have the same name (unify)
     - TODO: Typing must throw "Typing-error" if after "one run" a var has an 
     "unknown-type"
@@ -170,6 +174,7 @@ Index
     - 66. "X-yy=sum+1" typeerror (musst be Integer) --> resolved by commit 334
     - 61. (2 + 3) / 2 == 2 --> same result as prob. maybe never was a problem
     - *24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint) -> can not reproduce error, maybe fixed
+    - 90. enable external function like length, append, app, chars (prolog code in case of ProB)
 
 
 8. TODO-LIST:
@@ -179,12 +184,12 @@ Index
     - 15. enable infinite sets
     - 16. Implement Rodin interface
     - 17. Implement Definitions FILES
-    - 18. set mch-para to "good" values
+    - 18. set machine-parameter to "good" values
     - 19. enum set which have no expl. elements
-    - 20. Maybe all asserts inside the typechecker must be replaced by 
+    - 20. Maybe all asserts inside the type checker must be replaced by 
       unify_equal()
     - 22. renaming with '.' (e.g. INCLUDES)
-    - 23. typechecker: some substitutions are not alowed inside an abstract mch other not inside an implemenation
+    - 23. type checker: some substitutions are not allowed inside an abstract mch other not inside an implementation
     - 25. include init and set_constants step in animation
     - 26. generate dot output of statespace 
     - 29. safe state to a file
@@ -194,7 +199,6 @@ Index
           - pp only print predicates and expr. results at the moment.
     - 68. Use JSON Parser (needs metaprogramming for elifs)
     - 69. Impl. missing/incomplete substitution in animation module (e.g. If else)
-    - 90. enable external function like length, append, app, chars (prolog code in case of ProB)
     - 91. run pyB with pypy
     - 92. use symbolic solutions like ae = (INTEGER * NATURAL1)
 8.2 Refactoring / small fixes:
