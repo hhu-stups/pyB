@@ -628,3 +628,14 @@ class TestInterpFunctions():
         env.add_ids_to_frame(["R1","f"])
         assert interpret(root.children[0],env)
         assert env.get_value("f") == frozenset([(0,frozenset([1,2])),(1,frozenset([1,7])),(2,frozenset([3]))])
+
+
+    def test_large_function(self):
+        # Build AST
+        string_to_file("#PREDICATE {}:INT+->>INT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        exec ast_string
+
+        # Test
+        env = Environment()
+        assert not interpret(root.children[0], env)
