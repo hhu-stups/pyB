@@ -5,7 +5,7 @@ from environment import Environment
 from interp import interpret, _init_machine, set_up_constants, exec_initialisation
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
-from animation import calc_next_states, calc_init_states
+from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -36,10 +36,6 @@ class TestMCHAnimation():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
-        #init_states = calc_init_states(env,mch)
-        #assert init_states[0][0]=="INITIALISATION"
-        #bstate = init_states[0][3]
-        #env.state_space.add_state(bstate)
         invatiant = root.children[2]
         assert isinstance(invatiant, AInvariantMachineClause)
         assert interpret(invatiant, env)

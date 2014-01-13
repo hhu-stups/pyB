@@ -6,7 +6,7 @@ from bexceptions import *
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str, find_var_nodes
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
-from animation_clui import show_ui, show_env, print_set_up_bstates, print_init_bstates
+from animation_clui import show_ui, print_set_up_bstates, print_init_bstates
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from ast_nodes import *
@@ -83,8 +83,6 @@ def run_animation_mode():
             next_states = __calc_states_and_print_ui(root, env, mch, solution_file_present)
             if next_states==[]: # BUG: no enabled ops doesnt mean there are none (deadlock-state)
                 pass
-                #show_env(env)
-                #break
             undo_possible = not env.state_space.empty()
             number_of_options = len(next_states)
             if undo_possible: 

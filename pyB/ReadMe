@@ -201,6 +201,7 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     - 69. Impl. missing/incomplete substitution in animation module (e.g. If else)
     - 91. run pyB with pypy
     - 92. use symbolic solutions like ae = (INTEGER * NATURAL1)
+    - 100. eliminate side-effects in interp method to enable result caching.
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names. "a"=a  with S={a} is True!
     - 31. Check Includes, Sees, Uses, Extends rules 
@@ -262,6 +263,7 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
 	- 97. Price.price = {(GOODS1|->1),(GOODS2|->3)}
 	- 98. fixe GCD ext func BUG
 	- 99. C578/2013_08_14/machines_14082013/410_002_simple: assertion pass in pyb mode but not in team mode
+    - 101. run coverage tests.
 8.5 Maybe Bugs:
     - 62. eval of preds changes value_stack
 8.6 Case Study:
