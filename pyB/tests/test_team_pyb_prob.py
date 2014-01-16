@@ -50,6 +50,7 @@ def run_with_pyb(bfile_name, dir=""):
     env.state_space.add_state(bstates[0]) 
     bstates = exec_initialisation(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
+    # arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
     #if mch.aAssertionsMachineClause:
     #   interpret(mch.aAssertionsMachineClause, env)
     if mch.aPropertiesMachineClause:

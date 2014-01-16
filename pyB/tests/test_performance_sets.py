@@ -2,7 +2,8 @@ import time
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from interp import interpret, _init_machine
+from interp import interpret
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 
 file_name = "input.txt"

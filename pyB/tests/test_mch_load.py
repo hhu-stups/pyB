@@ -2,6 +2,7 @@
 from ast_nodes import *
 from environment import Environment
 from interp import interpret, set_up_constants
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -30,7 +31,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -60,7 +61,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         # TODO query check
@@ -91,7 +92,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         # TODO query check
@@ -118,7 +119,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -147,7 +148,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -170,7 +171,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -195,7 +196,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
 
@@ -224,7 +225,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
 
@@ -261,7 +262,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[6], AInvariantMachineClause)
         assert interpret(root.children[6], env)
         assert isinstance(root.children[1], AConstraintsMachineClause)
@@ -297,7 +298,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("A") == True
         assert env.get_value("B") == True
         assert env.get_value("C") == False
@@ -319,7 +320,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
 
 
     def test_structs2(self):
@@ -338,7 +339,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
 
 
     def test_structs3(self):
@@ -357,7 +358,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 4
 
 
@@ -377,7 +378,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("s") == "Hallo Welt"
         
         
@@ -405,7 +406,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        arbitrary_init_machine(root, env, mch) # eval CONSTANTS and PROPERTIES
         assert isinstance(root.children[3], APropertiesMachineClause)
         assert interpret(root.children[3], env)
    
@@ -505,7 +506,7 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 2   
 
 
@@ -525,5 +526,5 @@ class TestMCHLaod():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        interpret(root, env)# search for CONSTANTS which make PROPERTIES True
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 0    

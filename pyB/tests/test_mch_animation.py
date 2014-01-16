@@ -2,7 +2,8 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from interp import interpret, _init_machine, set_up_constants, exec_initialisation
+from interp import interpret, set_up_constants, exec_initialisation
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states
@@ -35,7 +36,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         invatiant = root.children[2]
         assert isinstance(invatiant, AInvariantMachineClause)
         assert interpret(invatiant, env)
@@ -73,7 +74,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -100,7 +101,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -128,7 +129,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0==env.get_value("xx")
@@ -160,7 +161,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -194,7 +195,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -224,7 +225,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -258,7 +259,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -297,7 +298,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -340,7 +341,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 4 == env.get_value("xx")
@@ -370,7 +371,7 @@ class TestMCHAnimation():
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
@@ -412,7 +413,7 @@ class TestMCHAnimation():
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
@@ -453,7 +454,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -488,7 +489,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -524,7 +525,7 @@ class TestMCHAnimation():
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
@@ -559,7 +560,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -587,7 +588,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -621,7 +622,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -657,7 +658,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -685,7 +686,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -713,7 +714,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -742,7 +743,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -774,7 +775,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -808,7 +809,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -836,7 +837,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -870,7 +871,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -896,7 +897,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -951,7 +952,7 @@ class TestMCHAnimation():
         env._max_int = 8
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
@@ -983,7 +984,7 @@ class TestMCHAnimation():
         env._max_int = 8
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
@@ -1015,7 +1016,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -1050,7 +1051,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
@@ -1081,7 +1082,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert 4 == env.get_value("xx")
@@ -1116,7 +1117,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
         
@@ -1146,7 +1147,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env,mch)
+        arbitrary_init_machine(root, env,mch)
         invariant = root.children[2]
         assert isinstance(invariant, AInvariantMachineClause)
         assert interpret(invariant, env)
@@ -1205,7 +1206,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
 
@@ -1233,7 +1234,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
         empty = env.get_value("keys")
@@ -1285,7 +1286,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops) == ['closedoor', 'lockdoor', 'opendoor', 'unlockdoor']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
 
@@ -1351,7 +1352,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops)== ['closedoor', 'extract', 'insert', 'lockdoor', 'opendoor', 'quicklock', 'unlock']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
         #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
@@ -1400,7 +1401,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops)== ['pricequery', 'setprice']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         next_states = calc_next_states(env,mch)
         names = [op[0] for op in next_states]
@@ -1432,7 +1433,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops)== ['Price.pricequery', 'Price.setprice', 'sale', 'total']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
         assert env.get_value("takings")==0
@@ -1468,7 +1469,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops)== ['Price.pricequery', 'Price.setprice', 'buy']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         assert not env.get_value("price")==None
         assert isinstance(root.children[5], AInvariantMachineClause)
@@ -1521,7 +1522,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.all_operations]
         assert sorted(possible_ops)== ['Life.born', 'Life.die', 'part', 'partner', 'wed']
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         value = env.get_value("marriage") 
         assert value==frozenset([])
         
@@ -1558,7 +1559,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         value = env.get_value("read") 
         assert value==frozenset([])
         next_states = calc_next_states(env,mch)
@@ -1648,7 +1649,7 @@ class TestMCHAnimation():
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         next_states = calc_next_states(env,mch)
         names = [op[0] for op in next_states]  
         assert frozenset(names)==frozenset(['new','nr_ready'])
@@ -1691,7 +1692,7 @@ class TestMCHAnimation():
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        _init_machine(root, env, mch)
+        arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[6], AInvariantMachineClause)
         assert interpret(root.children[6], env)
         near = env.get_value("near") 
@@ -1739,7 +1740,7 @@ class TestMCHAnimation():
         env._max_int = 10
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         #op_and_state_list = calc_possible_operations(env, mch) 
         next_states = calc_next_states(env,mch)
         assert next_states[0][0]=="op"
@@ -1782,7 +1783,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         next_states = calc_next_states(env,mch)
         assert len(next_states)==4
         for lst in next_states:
@@ -1825,7 +1826,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3*4
         

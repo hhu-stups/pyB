@@ -3,6 +3,7 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from interp import interpret
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -44,7 +45,7 @@ class TestLibrary():
         assert isinstance(env.get_type("length").data, CartType)
         assert isinstance(env.get_type("length").data.data[0].data, StringType)
         assert isinstance(env.get_type("length").data.data[1].data, IntegerType)
-        interpret(root, env)
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
 
@@ -96,7 +97,7 @@ class TestLibrary():
         assert isinstance(env.get_type("append").data.data[0].data.data[0].data, StringType)
         assert isinstance(env.get_type("append").data.data[0].data.data[1].data, StringType)
         assert isinstance(env.get_type("append").data.data[1].data, StringType)
-        interpret(root, env) 
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
         
@@ -139,7 +140,7 @@ class TestLibrary():
         assert isinstance(env.get_type("split").data.data[1].data.data, CartType)  
         assert isinstance(env.get_type("split").data.data[1].data.data.data[0].data, IntegerType)
         assert isinstance(env.get_type("split").data.data[1].data.data.data[1].data, StringType)      
-        interpret(root, env) 
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT 
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
 
@@ -202,7 +203,7 @@ class TestLibrary():
         assert isinstance(env.get_type("chars").data.data[1].data.data, CartType)  
         assert isinstance(env.get_type("chars").data.data[1].data.data.data[0].data, IntegerType)
         assert isinstance(env.get_type("chars").data.data[1].data.data.data[1].data, StringType) 
-        interpret(root, env) 
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
  
@@ -251,7 +252,7 @@ class TestLibrary():
         assert isinstance(env.get_type("codes").data.data[1].data.data, CartType)  
         assert isinstance(env.get_type("codes").data.data[1].data.data.data[0].data, IntegerType)
         assert isinstance(env.get_type("codes").data.data[1].data.data.data[1].data, IntegerType) 
-        interpret(root, env) 
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[4], AAssertionsMachineClause)
         interpret(root.children[4], env)
                 

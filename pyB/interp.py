@@ -25,16 +25,6 @@ def eval_Properties(root, env, mch):
         return intperpet(mch.aPropertiesMachineClause, env)
     else:
         return None
-            
-# Should ONLY be used in tests! 
-# The data from the solution-files has already been read at the mch creation time
-def _init_machine(root, env, mch, solution_file_read=False):    
-    bstates = set_up_constants(root, env, mch, solution_file_read)
-    if len(bstates)>0:
-        env.state_space.add_state(bstates[0])
-    bstates = exec_initialisation(root, env, mch, solution_file_read)
-    if len(bstates)>0:
-        env.state_space.add_state(bstates[0]) 
 
 
 # if ProB found a "full solution". This shouldn't do anything, except checking the solution   
@@ -542,11 +532,7 @@ def interpret(node, env):
         else:
             print "Warning: Expressions with variables are not implemented now"
         return
-    elif isinstance(node, AAbstractMachineParseUnit):
-        # TODO: remove when prob solution eval for child mch is done
-        mch = env.current_mch
-        _init_machine(node, env, mch)
-        return mch
+
 # ********************************************
 #
 #        0. Clauses

@@ -5,6 +5,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit, type_check_bmch
 from interp import interpret
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from bexceptions import *
@@ -28,7 +29,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
@@ -52,7 +53,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
@@ -77,7 +78,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -124,7 +125,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
@@ -150,7 +151,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -218,7 +219,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==True
@@ -241,7 +242,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
@@ -265,7 +266,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
@@ -290,7 +291,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>=3
@@ -313,7 +314,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>=2
@@ -336,7 +337,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("f")==frozenset([(1,2),(3,3)])
@@ -359,7 +360,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("f")==frozenset([((1,1),2),((2,2),1)])
@@ -381,7 +382,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -407,7 +408,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -433,7 +434,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -459,7 +460,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==0
@@ -484,7 +485,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==0
@@ -508,7 +509,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
@@ -530,7 +531,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -552,7 +553,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -575,7 +576,7 @@ class TestInterpSubstitutions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         try:
-            interpret(root, env) # init VARIABLES and eval INVARIANT
+            arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         except INITNotPossibleException:
             pass
 
@@ -596,7 +597,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2 or env.get_value("xx")==3
@@ -618,7 +619,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -640,7 +641,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2 or env.get_value("xx")==3 or env.get_value("xx")==4
@@ -665,7 +666,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -690,7 +691,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
@@ -716,7 +717,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
@@ -744,7 +745,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
@@ -772,7 +773,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
@@ -801,7 +802,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
@@ -829,7 +830,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==4
@@ -858,7 +859,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==5 or env.get_value("xx")==7 # 3+4 or 5+0
@@ -889,7 +890,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("SumR")==1
@@ -913,7 +914,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
@@ -935,7 +936,7 @@ class TestInterpSubstitutions():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # init VARIABLES and eval INVARIANT       
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT       
         assert isinstance(root.children[3], AInvariantMachineClause)
         assert interpret(root.children[3], env)
         assert env.get_value("xx")=="aa"

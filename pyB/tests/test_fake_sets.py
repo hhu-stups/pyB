@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from environment import Environment
-from interp import interpret
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -26,7 +26,7 @@ class TestFakeSets():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        interpret(root, env)
+        arbitrary_init_machine(root, env, mch)
         value = env.get_value("z")
         assert isinstance(value, FakeCartSet)
         assert isinstance(value.left_set, IntegerSet)
@@ -48,7 +48,7 @@ class TestFakeSets():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        interpret(root, env)
+        arbitrary_init_machine(root, env, mch)
         value = env.get_value("z")
         assert isinstance(value, FakeCartSet)
         assert isinstance(value.left_set, frozenset)

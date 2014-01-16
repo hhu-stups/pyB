@@ -2,6 +2,7 @@
 from ast_nodes import *
 from environment import Environment
 from interp import interpret
+from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast
 from typing import type_check_bmch
@@ -42,7 +43,7 @@ class TestMCHAssert():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        arbitrary_init_machine(root, env, mch) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
         for pred in root.children[3].children:
@@ -83,7 +84,7 @@ class TestMCHAssert():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        arbitrary_init_machine(root, env, mch) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
         assert not interpret(root.children[3].children[0], env)
@@ -138,7 +139,7 @@ class TestMCHAssert():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        arbitrary_init_machine(root, env, mch) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
         assert interpret(root.children[3].children[0], env)
@@ -191,7 +192,7 @@ class TestMCHAssert():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        interpret(root, env) # eval CONSTANTS and PROPERTIES
+        arbitrary_init_machine(root, env, mch) # eval CONSTANTS and PROPERTIES
         # eval ASSERTIONS (again)
         assert isinstance(root.children[3], AAssertionsMachineClause)
         assert not interpret(root.children[3].children[0], env)
