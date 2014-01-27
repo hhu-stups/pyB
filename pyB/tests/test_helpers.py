@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from environment import Environment
-from helpers import file_to_AST_str, string_to_file, find_var_names, all_ids_known, select_ast_to_list
+from helpers import file_to_AST_str, string_to_file, all_ids_known, select_ast_to_list, find_var_nodes
 
 file_name = "input.txt"
 
@@ -11,8 +11,9 @@ class TestHelpers():
         string_to_file("#PREDICATE F=S+->T", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
-
-        var_list = find_var_names(root)
+    
+        idNodes = find_var_nodes(root)
+        var_list = [n.idName for n in idNodes]
         assert var_list==['F','S','T']
 
 
@@ -20,8 +21,9 @@ class TestHelpers():
         string_to_file("#PREDICATE x<4 & x<42", file_name)
         ast_string = file_to_AST_str(file_name)
         exec ast_string
-
-        var_list = find_var_names(root)
+    
+        idNodes = find_var_nodes(root)
+        var_list = [n.idName for n in idNodes]
         assert var_list==['x']
     
     def test_all_ids_known(self):

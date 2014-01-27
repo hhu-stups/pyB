@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import find_var_names, print_ast, add_all_visible_ops_to_env, find_var_nodes
+from helpers import print_ast, add_all_visible_ops_to_env
 from bmachine import BMachine
 from boperation import BOperation
 from pretty_printer import pretty_print
@@ -448,22 +448,13 @@ def type_check_root_bmch(root, env, mch):
     type_env = type_check_bmch(root, env, mch)
     # type check solution file when all mch are typed
     if env.solution_root:
-        typeit(env.solution_root, env, type_env)
-        #idNodes = find_var_nodes(env.solution_root.children[0]) 
-        #idNames = [n.idName for n in idNodes]
-        #type_check_predicate(env.solution_root, env, idNames)   
+        typeit(env.solution_root, env, type_env) 
     
 
 def type_check_bmch(root, env, mch):
     # TODO: abstr const/vars
     # TODO?: operations?
-    set_idNames   = find_var_names(mch.aSetsMachineClause) 
-    const_idNames = find_var_names(mch.aConstantsMachineClause)
-    const_idNames += find_var_names(mch.aAbstractConstantsMachineClause)
-    var_idNames   = find_var_names(mch.aVariablesMachineClause)
-    var_idNames   += find_var_names(mch.aConcreteVariablesMachineClause)
-    idNames = set_idNames + const_idNames + var_idNames
-    #assert set(idNames)==set(mch.names)
+    idNames = mch.eset_names + mch.dset_names + mch.eset_elem_names + mch.const_names + mch.var_names
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace

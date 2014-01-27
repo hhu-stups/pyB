@@ -4,7 +4,7 @@ from interp import interpret, set_up_constants, exec_initialisation, eval_Invari
 from bmachine import BMachine
 from bexceptions import *
 from environment import Environment
-from helpers import file_to_AST_str_no_print, solution_file_to_AST_str, find_var_nodes
+from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
 from animation_clui import show_ui, print_set_up_bstates, print_init_bstates
 from animation import calc_next_states
@@ -188,10 +188,6 @@ def run_checking_mode():
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
-        #if env.solution_root:
-        #    idNodes = find_var_nodes(root.children[0]) 
-        #    idNames = [n.idName for n in idNodes]
-        #    type_check_predicate(env.solution_root, env, idNames)
         mch = parse_object
         
         bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")

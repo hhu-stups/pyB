@@ -103,33 +103,6 @@ def string_to_file(string, file_name, path=""):
     return f
 
 
-# added every id in the a to a list, except quantified ids
-# predicate: root
-# b-machines: mch-clauses
-def find_var_names(node):
-    lst = []
-    _find_var_names(node, lst) #side-effect: fills list
-    return lst
-
-
-# helper for find_var_names
-def _find_var_names(node, lst):
-    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
-        return
-    elif isinstance(node, AIdentifierExpression):
-        if not node.idName in lst:
-            lst.append(node.idName)
-    else:
-        if isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
-            if not node.idName in lst:
-                lst.append(node.idName)
-        try:
-            for n in node.children:
-                _find_var_names(n, lst)
-        except AttributeError:
-            return #FIXME no children
-
-
 def find_var_nodes(node):
     lst = []
     _find_var_nodes(node, lst, []) #side-effect: fills list
@@ -251,6 +224,7 @@ def all_ids_known(node, env):
 # 3. All Ops of extended machines
 # 4. All Ops of used or seen machines (with prefix). This is transitive 
 # TODO: Check this an write test cases
+# TODO: move to bmachine or environment
 def add_all_visible_ops_to_env(mch, env): 
     # TODO: check for name collisions. 
     # TODO: check for sees/uses includes/extends cycles in the mch graph
@@ -267,7 +241,8 @@ def add_all_visible_ops_to_env(mch, env):
 
 
 # A machine can be seen by more than on machine, but its operations should
-# only appear once in the list of available operations        
+# only appear once in the list of available operations
+# TODO: move to bmachine or environment        
 def _add_seen_and_used_operations(mch, env):
     for m in mch.seen_mch + mch.used_mch:
         # before making a mch.op visible, calc. the available operations

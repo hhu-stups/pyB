@@ -179,6 +179,9 @@ class BMachine:
             assert not self.aConstraintsMachineClause==None
                                    
 
+    # This methods walks ASTs to determine the name of constants, variables and sets.
+    # This information (the names) is used by the type checker, the environment 
+    # and the interpreter
     def _learn_names(self):
         cmc  = self.aConstantsMachineClause
         acmc = self.aAbstractConstantsMachineClause
@@ -204,7 +207,7 @@ class BMachine:
                 if isinstance(set, AEnumeratedSet):
                     eset_names.append(set.idName)
                     elem_names = [e.idName for e in set.children]
-                    eset_elem_names += elem_names
+                    eset_elem_names += elem_names # also learn element names 
         return const_names, var_names, dset_names, eset_names, eset_elem_names
 
 

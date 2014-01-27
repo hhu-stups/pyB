@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import find_var_nodes, find_var_names, flatten, double_element_check, find_assignd_vars, print_ast
+from helpers import find_var_nodes, flatten, double_element_check, find_assignd_vars, print_ast
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
