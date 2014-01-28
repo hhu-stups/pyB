@@ -149,7 +149,7 @@ class BMachine:
                     mch_list.append(mch) 
                     continue
 
-				# BMachine unknown, continue parsing
+                # BMachine unknown, continue parsing
                 if isinstance(child, AIdentifierExpression):
                     assert isinstance(mch_clause, AUsesMachineClause) or isinstance(mch_clause, ASeesMachineClause)
                 else:
@@ -234,5 +234,55 @@ class BMachine:
             assert self.aInvariantMachineClause and self.aInitialisationMachineClause
         # TODO: much more self checking to do e.g visibility 
 
+    # This helper adds alle visible operations to the environment:
+    # 1. All ops of the root-machine
+    # 2. All promoted ops of included machines.
+    # 3. All Ops of extended machines
+    # 4. All Ops of used or seen machines (with prefix). This is transitive 
+    # TODO: Check this an write test cases
+    def add_all_visible_ops_to_env(self, env): 
+        # TODO: check for name collisions. 
+        # TODO: check for sees/uses includes/extends cycles in the mch graph
+        # Otherwise the following code is wrong:
+        assert env.all_operations == frozenset([]) # this method should only called once   
+        self._add_seen_and_used_operations(env)
+        if self.aPromotesMachineClause or self.aExtendsMachineClause:
+            self._add_extended_and_promoted_ops()
+        env.all_operations = env.all_operations.union(self.operations)
+        # calc list of operation-asts for quick animation lookup
+        assert env.all_operation_asts == []
+        for op in env.all_operations:
+            env.all_operation_asts.append(op.ast)
+    
+    
+    # A machine can be seen by more than on machine, but its operations should
+    # only appear once in the list of available operations   
+    def _add_seen_and_used_operations(self, env):
+        for m in self.seen_mch + self.used_mch:
+            # before making a mch.op visible, calc. the available operations
+            _add_extended_and_promoted_ops(m)
+            #if m.aSeesMachineClause or m.aUsesMachineClause:
+            #    _add_seen_and_used_operations(m, env)
+            for op in m.operations:        
+                prefix_name = m.name + "." + op.op_name
+                op_copy = op.copy()
+                op_copy.op_name = prefix_name 
+                env.all_operations = env.all_operations.union(frozenset([op_copy]))      
+         
+    
+    # TODO: If M2 includes/extends M1, promoted ops should only change the state of M1
+    # this method is recursive because extends and includes are transitive (Page 126)
+    def _add_extended_and_promoted_ops(self, mch):
+        for m in mch.extended_mch + mch.included_mch:
+            self._add_extended_and_promoted_ops(m)
+        if self.aPromotesMachineClause:
+            promoted_op_names = [x.idName for x in mch.aPromotesMachineClause.children]
+            for m in mch.included_mch:
+                for op in m.operations:
+                    if op.op_name in promoted_op_names:
+                        self.operations = self.operations.union(frozenset([op]))
+        if self.aExtendsMachineClause:
+            for m in self.extended_mch:
+                self.operations = self.operations.union(m.operations)
 
 

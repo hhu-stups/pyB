@@ -2,6 +2,7 @@
 import json
 from ast_nodes import *
 from bmachine import BMachine
+from helpers import add_all_visible_ops_to_env
 
 class PredicateParseUnit:
     def __init__(self, root):
@@ -28,6 +29,8 @@ def parse_ast(root, env):
         assert isinstance(root, AAbstractMachineParseUnit)
         mch = BMachine(root, env) 
         mch.recursive_self_parsing() # recursive parsing of all included, seen, etc. ...
+        #add_all_visible_ops_to_env(mch, env)
+        #mch.add_all_visible_ops_to_env(env)
         env.root_mch = mch
         env.current_mch = mch #current mch
         return mch

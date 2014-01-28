@@ -29,6 +29,7 @@ def calc_next_states(env, bmachine):
         # WARNING: assumes no vars/sets with the same name in two b machines
         # TODO: write a method to check this assumption 
         operations = env.all_operation_asts
+        #print "empty?:", operations
         for op in operations:
             assert isinstance(op, AOperation)         
             # (1) add helper state to avoid bstate-side-effects i.e. operations-state calculations

@@ -458,6 +458,7 @@ def type_check_bmch(root, env, mch):
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
+    # TODO move to parsing.py
     if env.root_mch == mch:
         add_all_visible_ops_to_env(mch, env)
     check_mch_parameter(root, env, mch)
@@ -1261,18 +1262,8 @@ def typeit(node, env, type_env):
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
         # Add query-operation test and add result to list
-        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)
-        #print "DEBUG:",env.current_mch.name, ":",node.opName, ":", is_query_op       
-        # FIXME: adding the node is not a task of type_checking 
-        # TODO: delete when refactoring done
-        operation_info = {}
-        operation_info["return_types"]    = ret_types
-        operation_info["parameter_types"] = para_types
-        operation_info["op_name"]         = node.opName
-        operation_info["ast"]             = node
-        operation_info["owner_machine"]   = env.current_mch
-        operation_info["is_query_op"]     = is_query_op
-        #env.mch_operation_type.append(operation_info)
+        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)     
+        # TODO: adding the node is not a task of type_checking 
         boperation= BOperation()
         boperation.return_types    = ret_types
         boperation.parameter_types = para_types
