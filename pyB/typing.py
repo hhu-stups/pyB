@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import print_ast, add_all_visible_ops_to_env
+from helpers import print_ast
 from bmachine import BMachine
 from boperation import BOperation
 from pretty_printer import pretty_print
@@ -460,7 +460,7 @@ def type_check_bmch(root, env, mch):
     type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
     # TODO move to parsing.py
     if env.root_mch == mch:
-        add_all_visible_ops_to_env(mch, env)
+        mch.add_all_visible_ops_to_env(env)
     check_mch_parameter(root, env, mch)
     return type_env
 
@@ -1265,8 +1265,7 @@ def typeit(node, env, type_env):
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)     
         # TODO: adding the node is not a task of type_checking 
         boperation= BOperation()
-        boperation.return_types    = ret_types
-        boperation.parameter_types = para_types
+        boperation.set_types(ret_types, para_types)
         boperation.op_name         = node.opName
         boperation.ast             = node
         boperation.owner_machine   = env.current_mch

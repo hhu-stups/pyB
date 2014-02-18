@@ -240,14 +240,15 @@ class BMachine:
     # 3. All Ops of extended machines
     # 4. All Ops of used or seen machines (with prefix). This is transitive 
     # TODO: Check this an write test cases
-    def add_all_visible_ops_to_env(self, env): 
+    def add_all_visible_ops_to_env(self, env):
+        assert self==env.root_mch 
         # TODO: check for name collisions. 
         # TODO: check for sees/uses includes/extends cycles in the mch graph
         # Otherwise the following code is wrong:
         assert env.all_operations == frozenset([]) # this method should only called once   
         self._add_seen_and_used_operations(env)
         if self.aPromotesMachineClause or self.aExtendsMachineClause:
-            self._add_extended_and_promoted_ops()
+            self._add_extended_and_promoted_ops(self)
         env.all_operations = env.all_operations.union(self.operations)
         # calc list of operation-asts for quick animation lookup
         assert env.all_operation_asts == []
@@ -260,7 +261,7 @@ class BMachine:
     def _add_seen_and_used_operations(self, env):
         for m in self.seen_mch + self.used_mch:
             # before making a mch.op visible, calc. the available operations
-            _add_extended_and_promoted_ops(m)
+            self._add_extended_and_promoted_ops(m)
             #if m.aSeesMachineClause or m.aUsesMachineClause:
             #    _add_seen_and_used_operations(m, env)
             for op in m.operations:        
@@ -269,20 +270,21 @@ class BMachine:
                 op_copy.op_name = prefix_name 
                 env.all_operations = env.all_operations.union(frozenset([op_copy]))      
          
-    
+
+    # TODO: testcase for self instead of mch   
     # TODO: If M2 includes/extends M1, promoted ops should only change the state of M1
     # this method is recursive because extends and includes are transitive (Page 126)
     def _add_extended_and_promoted_ops(self, mch):
         for m in mch.extended_mch + mch.included_mch:
             self._add_extended_and_promoted_ops(m)
-        if self.aPromotesMachineClause:
+        if mch.aPromotesMachineClause:
             promoted_op_names = [x.idName for x in mch.aPromotesMachineClause.children]
             for m in mch.included_mch:
                 for op in m.operations:
                     if op.op_name in promoted_op_names:
-                        self.operations = self.operations.union(frozenset([op]))
-        if self.aExtendsMachineClause:
-            for m in self.extended_mch:
-                self.operations = self.operations.union(m.operations)
+                        mch.operations = mch.operations.union(frozenset([op])) 
+        if mch.aExtendsMachineClause:
+            for m in mch.extended_mch:
+                mch.operations = mch.operations.union(m.operations)
 
 

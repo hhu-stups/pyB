@@ -157,7 +157,7 @@ class Environment():
         # (3) fail
         raise Exception("unknown op: ",idName)
     
-    # TODO: use dict (name->op)
+    # TODO: use dict (name->op) (if unique, otherwise implement lookup mchname.opname)
     def find_operation_type(self, idName):
         for op in self.mch_operation_type:
             name = op.op_name
@@ -191,3 +191,8 @@ class Environment():
                     if VERBOSE:
                         print "WARNING: PyB failed to use solution: " + pretty_print(node)
                     continue 
+    
+    
+    def get_all_visible_op_asts(self):
+        # TODO caching to avoid this calculation
+        return [op.ast for op in self.all_operations]

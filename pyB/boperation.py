@@ -6,7 +6,13 @@ class BOperation:
         self.ast = None        
         self.owner_machine = None
         self.is_query_op = False
-  
+
+    # called by typeit once.  
+    def set_types(self, ret_types, para_types):
+        self.return_types    = ret_types
+        self.parameter_types = para_types
+
+
     # only used ti change the name (prefix)
     def copy(self):
         op = BOperation()
