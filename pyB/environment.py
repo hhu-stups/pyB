@@ -28,9 +28,9 @@ class Environment():
         self.all_strings = [""]           # remember all strings seen (in this or other bmachines). used to enumerate 'STRING'
         # This is a caching-list which contains all operations of all machines
         # It should prevent from intensive lookup while animation and op_call substitutions
-        self.all_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
-        self.mch_operation_type = []   
-        self.all_operation_asts = []
+        self.visible_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
+        self.operations = {}   
+        self._all_operation_asts = []      # cache for get_all_visible_op_asts()
         self.parsed_bmachines = {}
         self.init_sets_bmachnes_names = [] # names of all bmachines with set-init done
         self.set_up_bmachines_names   = [] # set up constants done
@@ -134,9 +134,9 @@ class Environment():
         bstate.pop_frame(bmachine) 
     
     
-    # This is called by a op-substitution only
+    # This is called by a op-substitution only (typeit.py and interp.py)
     # TODO: cache operations
-    def find_operation(self, idName):
+    def lookup_operation(self, idName):
         # (1) operations of included or extended machines are under full control
         # and can be executed via op-call-substitutions
         # This is not transitive!
@@ -155,14 +155,20 @@ class Environment():
                     assert op.is_query_op 
                     return op    
         # (3) fail
-        raise Exception("unknown op: ",idName)
+        raise Exception("lookup operation inside op-substitution failed! unknown op: ",idName)
+
     
-    # TODO: use dict (name->op) (if unique, otherwise implement lookup mchname.opname)
-    def find_operation_type(self, idName):
-        for op in self.mch_operation_type:
-            name = op.op_name
-            if idName == name:
-                return op        
+    # This method is only called by the type checker inside a operation node.
+    # It is used to get the operation object previously added by the parser. 
+    # So it should never create a KeyError/LookupError. And it doesn't need any lookup
+    # code, because it will be called from the correct operation node IF (mch_name, op_name)
+    # is unambiguous/unique key.
+    def get_operation_by_name(self, mch_name, op_name):
+        return self.operations[(mch_name, op_name)]
+
+    def set_operation_by_name(self, mch_name, op_name, operation_obj):
+        self.operations[(mch_name, op_name)] = operation_obj
+   
     
     def set_search_dir(self, file_name_str):
         import os
@@ -194,5 +200,7 @@ class Environment():
     
     
     def get_all_visible_op_asts(self):
-        # TODO caching to avoid this calculation
-        return [op.ast for op in self.all_operations]
+        # caching to avoid this calculation
+        if self._all_operation_asts == []:
+            self._all_operation_asts = [op.ast for op in self.visible_operations]
+        return self._all_operation_asts

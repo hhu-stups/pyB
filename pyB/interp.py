@@ -1779,7 +1779,7 @@ def exec_substitution(sub, env):
         yield False
     elif isinstance(sub, AOpSubstitution):
         # set up
-        boperation = env.find_operation(sub.idName)
+        boperation = env.lookup_operation(sub.idName)
         ret_types = boperation.return_types
         para_types = boperation.parameter_types
         values = []
@@ -1814,7 +1814,7 @@ def exec_substitution(sub, env):
         env.current_mch = temp
     elif isinstance(sub, AOpWithReturnSubstitution):
         # set up
-        boperation = env.find_operation(sub.idName)
+        boperation = env.lookup_operation(sub.idName)
         ret_types = boperation.return_types
         para_types = boperation.parameter_types
         values = []

@@ -3,7 +3,6 @@ from ast_nodes import *
 from btypes import *
 from helpers import print_ast
 from bmachine import BMachine
-from boperation import BOperation
 from pretty_printer import pretty_print
 from bexceptions import ResolveFailedException, BTypeException
 
@@ -458,9 +457,6 @@ def type_check_bmch(root, env, mch):
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
     type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
-    # TODO move to parsing.py
-    if env.root_mch == mch:
-        mch.add_all_visible_ops_to_env(env)
     check_mch_parameter(root, env, mch)
     return type_env
 
@@ -475,6 +471,7 @@ def check_mch_parameter(root, env, mch):
         atype = env.get_type_by_node(n)
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
+
 
 # returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
 # sideeffect: changes env
@@ -1241,7 +1238,6 @@ def typeit(node, env, type_env):
         atype = unify_equal(IntegerType(None), atype, type_env)
         return IntegerType(None)
     elif isinstance(node, AOperation):
-        #print node.opName
         names = []
         for i in range(0,node.return_Num+ node.parameter_Num):
             assert isinstance(node.children[i], AIdentifierExpression)
@@ -1263,18 +1259,12 @@ def typeit(node, env, type_env):
             para_types.append(tuple([child, atype]))
         # Add query-operation test and add result to list
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)     
-        # TODO: adding the node is not a task of type_checking 
-        boperation= BOperation()
-        boperation.set_types(ret_types, para_types)
-        boperation.op_name         = node.opName
-        boperation.ast             = node
-        boperation.owner_machine   = env.current_mch
-        boperation.is_query_op     = is_query_op      
-        env.current_mch.operations = env.current_mch.operations.union(frozenset([boperation]))
-        env.mch_operation_type.append(boperation)
+        boperation = env.get_operation_by_name(env.current_mch.name, node.opName)
+        boperation.is_query_op     = is_query_op   
+        boperation.set_types(ret_types, para_types)         
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
-        boperation = env.find_operation_type(node.idName)
+        boperation = env.lookup_operation(node.idName)
         para_types = boperation.parameter_types
         assert len(para_types)==node.parameter_Num
         for i in range(len(node.children)):
@@ -1285,7 +1275,7 @@ def typeit(node, env, type_env):
         assert ret_type==[]
         return
     elif isinstance(node, AOpWithReturnSubstitution):
-        boperation = env.find_operation_type(node.idName)
+        boperation = env.lookup_operation(node.idName)
         ret_types =  boperation.return_types
         para_types = boperation.parameter_types
         assert len(para_types)==node.parameter_Num

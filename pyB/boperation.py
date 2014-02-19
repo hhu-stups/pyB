@@ -14,12 +14,12 @@ class BOperation:
 
 
     # only used ti change the name (prefix)
-    def copy(self):
+    def copy_op(self):
         op = BOperation()
-        op.return_types = self.return_types
-        op.parameter_types = self.parameter_types
+        #op.return_types = self.return_types
+        #op.parameter_types = self.parameter_types
         op.op_name = self.op_name
         op.ast = self.ast     
         op.owner_machine = self.owner_machine
-        op.is_query_op = self.is_query_op
+        #op.is_query_op = self.is_query_op
         return op

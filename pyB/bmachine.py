@@ -2,6 +2,7 @@
 from ast_nodes import *
 from helpers import file_to_AST_str_no_print
 from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION
+from boperation import BOperation
 #from environment import Environment
 
 # -*- coding: utf-8 -*-
@@ -132,11 +133,22 @@ class BMachine:
         self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
         self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names()
         all_names = self.const_names + self.var_names #+ self.dset_names + self.eset_names + self.eset_elem_names
+        if self.aOperationsMachineClause:
+            for op in self.aOperationsMachineClause.children:
+                self.parse_operation(op)
         bstate = self.env.state_space.get_state()
-        bstate.register_new_bmachine(self, all_names)
-        #bstate.add_mch_state(self, names)
-         
+        bstate.register_new_bmachine(self, all_names)        
         self.get_all_strings(self.root) # get string expressions inside mch.
+
+
+    def parse_operation(self, operation):
+        assert isinstance(operation, AOperation)
+        boperation = BOperation()
+        boperation.op_name         = operation.opName
+        boperation.ast             = operation
+        boperation.owner_machine   = self
+        self.operations = self.operations.union(frozenset([boperation]))
+        self.env.set_operation_by_name(self.name, operation.opName, boperation)
 
 
     # parsing of the machines
@@ -245,15 +257,11 @@ class BMachine:
         # TODO: check for name collisions. 
         # TODO: check for sees/uses includes/extends cycles in the mch graph
         # Otherwise the following code is wrong:
-        assert env.all_operations == frozenset([]) # this method should only called once   
+        assert env.visible_operations == frozenset([]) # this method should only called once   
         self._add_seen_and_used_operations(env)
         if self.aPromotesMachineClause or self.aExtendsMachineClause:
             self._add_extended_and_promoted_ops(self)
-        env.all_operations = env.all_operations.union(self.operations)
-        # calc list of operation-asts for quick animation lookup
-        assert env.all_operation_asts == []
-        for op in env.all_operations:
-            env.all_operation_asts.append(op.ast)
+        env.visible_operations = env.visible_operations.union(self.operations)
     
     
     # A machine can be seen by more than on machine, but its operations should
@@ -266,9 +274,9 @@ class BMachine:
             #    _add_seen_and_used_operations(m, env)
             for op in m.operations:        
                 prefix_name = m.name + "." + op.op_name
-                op_copy = op.copy()
+                op_copy = op.copy_op()
                 op_copy.op_name = prefix_name 
-                env.all_operations = env.all_operations.union(frozenset([op_copy]))      
+                env.visible_operations = env.visible_operations.union(frozenset([op_copy]))      
          
 
     # TODO: testcase for self instead of mch   

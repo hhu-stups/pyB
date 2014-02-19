@@ -1284,7 +1284,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops) == ['closedoor', 'lockdoor', 'opendoor', 'unlockdoor']
         arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
@@ -1350,7 +1350,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops)== ['closedoor', 'extract', 'insert', 'lockdoor', 'opendoor', 'quicklock', 'unlock']
         arbitrary_init_machine(root, env, mch)
         assert isinstance(root.children[5], AInvariantMachineClause)
@@ -1399,7 +1399,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops)== ['pricequery', 'setprice']
         arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
@@ -1431,7 +1431,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops)== ['Price.pricequery', 'Price.setprice', 'sale', 'total']
         arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
@@ -1467,7 +1467,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops)== ['Price.pricequery', 'Price.setprice', 'buy']
         arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
@@ -1520,7 +1520,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        possible_ops = [op.op_name for op in env.all_operations]
+        possible_ops = [op.op_name for op in env.visible_operations]
         assert sorted(possible_ops)== ['Life.born', 'Life.die', 'part', 'partner', 'wed']
         arbitrary_init_machine(root, env, mch)
         value = env.get_value("marriage") 
