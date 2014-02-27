@@ -35,7 +35,7 @@ def read_solution_file(env, solution_file_name_str):
     ast_str, error = solution_file_to_AST_str(solution_file_name_str)
     if error:
         print error
-    exec ast_str # TODO: JSON instead of dynamic 'exec' call
+    root = str_ast_to_python_ast(ast_str)
     env.solution_root = root
     env.write_solution_nodes_to_env(root)
     if env.solutions and VERBOSE:

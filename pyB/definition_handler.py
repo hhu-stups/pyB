@@ -3,6 +3,7 @@ from ast_nodes import *
 from external_functions import EXTERNAL_FUNCTIONS_DICT
 from pretty_printer import pretty_print
 from helpers import file_to_AST_str_no_print, print_ast
+from parsing import str_ast_to_python_ast
 
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)
 class DefinitionHandler():
@@ -50,7 +51,7 @@ class DefinitionHandler():
                 # get def-file ast
                 file_path_and_name = self.env._bmachine_search_dir + definition.idName
                 ast_string, error = file_to_AST_str_no_print(file_path_and_name) 
-                exec ast_string 
+                root = str_ast_to_python_ast(ast_string)
                 assert isinstance(root, ADefinitionFileParseUnit)  
                 assert isinstance(root.children[0], ADefinitionsMachineClause)
                 # used definitions

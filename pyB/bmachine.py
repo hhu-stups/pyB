@@ -3,10 +3,9 @@ from ast_nodes import *
 from helpers import file_to_AST_str_no_print
 from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION
 from boperation import BOperation
-#from environment import Environment
 
 # -*- coding: utf-8 -*-
-# abstract machine
+# abstract machine object
 class BMachine:
     def __init__(self, node, env):
         self.name = None
@@ -24,7 +23,7 @@ class BMachine:
         self.extended_mch  = []   # list of b-mchs
         self.seen_mch      = []   # list of b-mchs
         self.used_mch      = []   # list of b-mchs
-        self.operations    = frozenset([])    # set of operations (to easy avoid double entries)
+        self.operations    = frozenset([])    # set of operations (to easy avoid double entries) only used to init env.operations and env.visible_opertaions
         self.aConstantsMachineClause = None
         self.aAbstractConstantsMachineClause = None
         self.aConstraintsMachineClause = None

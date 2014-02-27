@@ -5,6 +5,7 @@ from environment import Environment
 from interp import interpret
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 #  maximum size of a python list on a 32 bit system is 536,870,912 elements
@@ -36,7 +37,7 @@ def test_performance_cart_prod():
 	string = "#EXPRESSION S*T"
 	string_to_file(string, file_name)
 	ast_string = file_to_AST_str(file_name)
-	exec ast_string
+	root = str_ast_to_python_ast(ast_string)
 	print string 
 	print "card(S) and card(T)"
 	# Test
@@ -81,7 +82,7 @@ def test_performance_cart_prod():
 	string = "#EXPRESSION POW(S)"
 	string_to_file(string, file_name)
 	ast_string = file_to_AST_str(file_name)
-	exec ast_string
+	root = str_ast_to_python_ast(ast_string)
 	print string 
 	print "card(S)"
 	# Test

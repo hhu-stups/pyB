@@ -14,9 +14,12 @@ class ExpressionParseUnit:
 # gets a python-code string. and gen a ast
 # TODO: get a JSON string insted of python code
 # TODO: parse JSON files
+# TODO: A Parsing via "exec <String>" is not RPython: 
+# Write a JSON-parser to avoid the string-eval.
 def str_ast_to_python_ast(string):
     exec string
     return root
+
 
 # just generate python wrappers.
 def parse_ast(root, env):
@@ -30,7 +33,7 @@ def parse_ast(root, env):
         mch.recursive_self_parsing() # recursive parsing of all included, seen, etc. ...
         env.root_mch = mch
         env.current_mch = mch #current mch
-        mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmch and env
+        mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
         return mch
 
 

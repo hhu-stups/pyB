@@ -67,10 +67,11 @@ def remove_carttypes(arg_type):
     
 
 # helper function to check if a substitution (also operation and a machine)
-# uses substituions which change the state. 
+# uses substituions which change the state (set of var-names). 
 # False if any state-change is possible.    
 def check_if_query_op(sub, var_names):
     assert isinstance(sub, Substitution)
+    # case 1: x:=E
     if isinstance(sub, AAssignSubstitution):
         for i in range(int(sub.lhs_size)):
             lhs_node = sub.children[i]
@@ -82,17 +83,20 @@ def check_if_query_op(sub, var_names):
                 assert isinstance(lhs_node.children[0], AIdentifierExpression)
                 if lhs_node.children[0].idName in var_names:
                    return False
+    # case 2: x:P or x::S
     elif isinstance(sub, ABecomesElementOfSubstitution) or isinstance(sub, ABecomesSuchSubstitution):
         for child in sub.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             if child.idName in var_names:
                 return False
+    # case 3 df-search
     else: # df-search 
         for child in sub.children:
             if isinstance(child, Substitution):
                 is_query_op = check_if_query_op(child, var_names)
                 if not is_query_op:
-                    return False            
+                    return False  
+    # default: nothing found          
     return True 
 
 
@@ -301,7 +305,7 @@ class TypeCheck_Environment():
             current_hint = None
         if current_hint ==None:
             id_to_enum_hint[idName] = hint_idName
-        # TODO: else chose better set 
+        # TODO: else choose better set 
 
 
 
@@ -452,7 +456,6 @@ def type_check_root_bmch(root, env, mch):
 
 def type_check_bmch(root, env, mch):
     # TODO: abstr const/vars
-    # TODO?: operations?
     idNames = mch.eset_names + mch.dset_names + mch.eset_elem_names + mch.const_names + mch.var_names
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters

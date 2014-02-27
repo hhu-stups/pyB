@@ -4,6 +4,7 @@ from btypes import *
 from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -12,7 +13,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f:S<->T", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -36,7 +37,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE S=dom(f)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -54,7 +55,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE {4,5,6}=ran({(1|->4),(2|->5),(3|->6)}) ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -65,7 +66,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE S= (p ; q)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -90,7 +91,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE r=id(S)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -104,7 +105,7 @@ class TestInterpRelations():
         # Build AST
         string_to_file("#PREDICATE f=closure(r)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -134,7 +135,7 @@ class TestInterpRelations():
         # Build AST
         string_to_file("#PREDICATE f=closure1(r)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -152,7 +153,7 @@ class TestInterpRelations():
         # Build AST
         string_to_file("#PREDICATE f=iterate(r,n)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -197,7 +198,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=S<|r", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -216,7 +217,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=S<<|r", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -235,7 +236,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=r|>T", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -254,7 +255,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=r|>>T", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -273,7 +274,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=r~", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -291,7 +292,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=r[S]", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -325,7 +326,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=r1 <+ r2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -350,7 +351,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=prj1(S,T)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -375,7 +376,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f=prj2(S,T)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -401,7 +402,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f= p >< q", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -431,7 +432,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f= (p || q)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -456,7 +457,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f={aa|->aa, aa|->bb, bb|->bb, bb|->aa} & f=ID*ID", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -472,7 +473,7 @@ class TestInterpRelations():
         # Build AST:
         string_to_file("#PREDICATE f1 = {(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})} & r= rel(f1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()

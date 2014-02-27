@@ -135,7 +135,7 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
 
 
 
-7. FIXED BUGS:
+7. FIXED BUGS and Issues:
     - replace depricated set module
     - implement AST Gen for Node with more than two children
         e.g. ASetExtensionExpression
@@ -175,6 +175,11 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     - 61. (2 + 3) / 2 == 2 --> same result as prob. maybe never was a problem
     - *24. wrong var-output for bound vars. eg. %x.(x:1..100|x*x) Output: x:-1(minint) -> can not reproduce error, maybe fixed
     - 90. enable external function like length, append, app, chars (prolog code in case of ProB)
+    - 91. run pyB with pypy
+    - 20. Maybe all asserts inside the type checker must be replaced by 
+      unify_equal()
+    - 92. use symbolic solutions like ae = (INTEGER * NATURAL1) - done. See e.g. C578_Urgent_Jul13/151_001.mch
+    
 
 
 8. TODO-LIST:
@@ -186,8 +191,6 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     - 17. Implement Definitions FILES
     - 18. set machine-parameter to "good" values
     - 19. enum set which have no expl. elements
-    - 20. Maybe all asserts inside the type checker must be replaced by 
-      unify_equal()
     - 22. renaming with '.' (e.g. INCLUDES)
     - 23. type checker: some substitutions are not allowed inside an abstract mch other not inside an implementation
     - 25. include init and set_constants step in animation
@@ -197,11 +200,10 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     - 65. Problem with false Properties on ProB side. e.g. {}: String +->> INT
     - 67. Add printing of substitutions to pretty-printer 
           - pp only print predicates and expr. results at the moment.
-    - 68. Use JSON Parser (needs metaprogramming for elifs)
+    -+ 68. Use JSON Parser (needs metaprogramming for elifs)
     - 69. Impl. missing/incomplete substitution in animation module (e.g. If else)
-    - 91. run pyB with pypy
-    - 92. use symbolic solutions like ae = (INTEGER * NATURAL1)
-    - 100. eliminate side-effects in interp method to enable result caching.
+    -+ 100. eliminate side-effects in interp method to enable result caching.
+    -+ 101. create python pyB egg file and maybe use distutils for building
 8.2 Refactoring / small fixes:
     - 30. The values of elements of enumerated sets are their names. "a"=a  with S={a} is True!
     - 31. Check Includes, Sees, Uses, Extends rules 
@@ -261,11 +263,11 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     - 95. missing external functions create infinite loops (remove some py_ext from dict in external_functions.py to reproduce error)
 	- 96. Fix solution file usage bug
 	- 97. Price.price = {(GOODS1|->1),(GOODS2|->3)}
-	- 98. fixe GCD ext func BUG
-	- 99. C578/2013_08_14/machines_14082013/410_002_simple: assertion pass in pyb mode but not in team mode
-    - 101. run coverage tests.
+	-+ 98. fix GCD ext func BUG
+	-+ 99. C578/2013_08_14/machines_14082013/410_002_simple: assertion pass in pyb mode but not in team mode
+    -+ 101. run coverage tests.
 8.5 Maybe Bugs:
-    - 62. eval of preds changes value_stack
+    -+ 62. eval of preds changes value_stack
 8.6 Case Study:
     - Eval this result: probcli produces a error message "!setup_constants_fails" for the model "Rule_DB_Route_0001ori_modified"
       while producing a correct value file. The processing of this solution generates the result True by pyB
@@ -574,6 +576,68 @@ E /= F      B
 {z|P}       	P(type(z)) (only one var)
 {x1,x2,..xn|P}	P(C(C(P(type(x1),P(type(x2)),P(type(x3)....P(type(xn))
 
+John-Witulskis-MacBook-Pro:pyB johnwitulski$ coverage report
+Name                              Stmts   Miss  Cover
+-----------------------------------------------------
+animation                            80      2    98%
+animation_clui                      127    116     9%
+ast_nodes                           369      0   100%
+bexceptions                          21      1    95%
+bmachine                            223      2    99%
+boperation                           17      6    65%
+bstate                               80     11    86%
+btypes                               35      0   100%
+config                               15      0   100%
+/Users/johnwitulski/witulski/git/pyB/pyB/constrainsolver.py:39: SyntaxWarning: import * only allowed at module level
+  def calc_constraint_domain(env, varList, predicate):
+constrainsolver                     125     16    87%
+definition_handler                   96     10    90%
+enumeration                         163     14    91%
+environment                         126     11    91%
+external_functions                   45      4    91%
+fake_sets                           264    124    53%
+helpers                             180     33    82%
+interp                             1539    140    91%
+parsing                              54     10    81%
+pretty_printer                      502     20    96%
+pyB                                 175    175     0%
+quick_eval                          235     37    84%
+repl                                 32     32     0%
+statespace                           18      2    89%
+tests/test_constraintsolver         137      0   100%
+tests/test_definition_handler        56      0   100%
+tests/test_fake_sets                139      0   100%
+tests/test_gen_solutions             10      0   100%
+tests/test_helpers                   78      0   100%
+tests/test_interp_definitions       124      0   100%
+tests/test_interp_fixedAST          511      0   100%
+tests/test_interp_functions         482      9    98%
+tests/test_interp_numbers           281      0   100%
+tests/test_interp_quick_enum        228      0   100%
+tests/test_interp_relations         337      0   100%
+tests/test_interp_sets              410      0   100%
+tests/test_interp_substitutions     484     11    98%
+tests/test_json                      25      0   100%
+tests/test_library                  106      0   100%
+tests/test_mch_animation           1000      0   100%
+tests/test_mch_assertions            72      0   100%
+tests/test_mch_load                 235     13    94%
+tests/test_performance_sets          38     14    63%
+tests/test_pretty_printer           131      0   100%
+tests/test_refinement                 8      0   100%
+tests/test_team_pyb_prob             56      0   100%
+tests/test_types_definitions         33      0   100%
+tests/test_types_exceptions          66      0   100%
+tests/test_types_functions          323     10    97%
+tests/test_types_numbers            380      0   100%
+tests/test_types_relations          448      0   100%
+tests/test_types_sets               466      0   100%
+tests/util                            8      0   100%
+typing                             1068     46    96%
+-----------------------------------------------------
+TOTAL                             12261    869    93%
+
+
 Print ASTS:
 java -cp ../jars/bparser-2.0.67.jar:../jars/prologlib-2.0.67.jar:../jars/parserbase-2.0.67.jar:../jars/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt    
 or
@@ -581,6 +645,9 @@ java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prolog
 PATH for testing:
 export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.John-Witulskis-MacBook-Pro:pyB    
 
+
+run with pypy:
+/Users/johnwitulski/pypy-2.2.1-osx64/bin/pypy pyB.py examples/scheduler.mc
 kills proB:
 
 MACHINE del_me

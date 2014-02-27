@@ -97,7 +97,7 @@ class TestTeam():
 #         
 #        
     def test_team_systerel(self):
-        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
+        bfile_name="examples/not_public/Systerel/C578.EML.014/019_100"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
         run_with_pyb(bfile_name)
 

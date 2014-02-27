@@ -5,6 +5,7 @@ from environment import Environment
 from interp import interpret
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -13,7 +14,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 1+1=3", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -24,7 +25,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 1+1=2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -35,7 +36,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 4-3=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -47,7 +48,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 4--3=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -59,7 +60,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 4*0=0", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -70,7 +71,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 8/2=4", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -81,7 +82,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 8 mod 3=2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -92,7 +93,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 2 ** 4 = 16", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -103,7 +104,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 0 /= 1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -114,7 +115,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 1+1=2 & 7<8", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -125,7 +126,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 4*0=0 or 4*0=4", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -136,7 +137,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 4>3 => 4>2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -147,7 +148,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE (1+1=2) <=> (2+2=4)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -158,7 +159,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 6 = (2+2)*4+(10-0)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -169,7 +170,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 26 = (2+2)*4+(10-0)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -180,7 +181,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE 6>x", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -199,7 +200,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE 6>=x", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -218,7 +219,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE 6<=x", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -237,7 +238,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE S={1,2,3,4,5} & min(S)=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -251,7 +252,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE S={1,2,3,4,5} & max(S)=5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -265,7 +266,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE #(z).( z<4 & z>0)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -277,7 +278,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE #(x,y).( x<0 & y>0 & x>y)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -289,7 +290,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE #(x,y).( x<0 & y>0 & y>x)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -301,7 +302,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE  #(x).(x:S & x>4999) & S={5000}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -316,7 +317,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE !(z).( z<4 => z<5)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -328,7 +329,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE !(x,y,z).( x>0 & y>0 & z<4 => x+y=z)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -340,7 +341,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -352,7 +353,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE (PI zz . (zz:1..5 | zz))=120", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -364,7 +365,7 @@ class TestInterpNumbers():
         # Build AST:
         string_to_file("#PREDICATE 4=(SIGMA zz . (zz:POW(ID) | card(zz)))", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -379,7 +380,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE x<MAXINT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -393,7 +394,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE x>MININT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -407,7 +408,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 2=succ(1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -418,7 +419,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 2=pred(3)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -429,7 +430,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 1000:NATURAL", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -440,7 +441,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 1000:NATURAL1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -451,7 +452,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE 0:NATURAL1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -462,7 +463,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE -54321:INTEGER", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -473,7 +474,7 @@ class TestInterpNumbers():
         # Build AST
         string_to_file("#PREDICATE -1:INT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()

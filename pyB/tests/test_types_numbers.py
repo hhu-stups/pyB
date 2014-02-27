@@ -4,7 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit, type_check_bmch
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -13,7 +13,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x:INTEGER", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -24,7 +24,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x:NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -36,7 +36,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x:NAT1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -48,7 +48,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=1+1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -60,7 +60,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=1-1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -72,7 +72,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=a-b & a=42 & b=0", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -86,7 +86,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=4*7", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -98,7 +98,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=a*b & a=4 & b=7", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -112,7 +112,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 42=a*b", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -125,7 +125,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 42*c=a*b", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -139,7 +139,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 42=a*b-c", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -153,7 +153,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE d-a*b-c=42", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -167,7 +167,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=8/2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -179,7 +179,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=8 mod 2", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -191,7 +191,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=y", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -204,7 +204,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE y=x", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -217,7 +217,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE y=1+1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -229,7 +229,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 6*7=41+1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -240,7 +240,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 2 ** 4 = 16", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -251,7 +251,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE (SIGMA zz . (zz:1..5 | zz*zz))=55", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -263,7 +263,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE (PI zz . (zz:1..5 | zz))=120", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -275,7 +275,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x>5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -287,7 +287,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x>=5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -299,7 +299,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x<5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -311,7 +311,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE 1*1<1+1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -322,7 +322,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x<=5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -334,7 +334,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x:1..5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -346,7 +346,7 @@ class TestTypesNumbers():
         # Build AST:
         string_to_file("#PREDICATE x=1..5", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -359,7 +359,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=y & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -372,7 +372,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE z=x & x=y & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -386,7 +386,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE z=x & x=y & y=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -400,7 +400,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE z=x & z=1 & x=y", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -414,7 +414,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x=42 & z=x  & x=y", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -428,7 +428,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE y=42 & z=x & y=x", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -442,7 +442,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE z=x & z=y & z=w & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -457,7 +457,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x<y & y=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -470,7 +470,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x<MAXINT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -482,7 +482,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE x>MININT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -494,7 +494,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE #(z).( z<4 & z>0)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -506,7 +506,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE S<:NAT & #(z).(z:S)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -518,7 +518,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE  #(z).(z:S) & S<:NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -530,7 +530,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 2=succ(1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -541,7 +541,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file("#PREDICATE 2=pred(3)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -557,7 +557,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()
@@ -578,7 +578,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()
@@ -599,7 +599,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()
@@ -621,7 +621,7 @@ class TestTypesNumbers():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()

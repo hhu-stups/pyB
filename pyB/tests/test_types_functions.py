@@ -4,6 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -68,7 +69,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE f:S+->T & y=f(x)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -82,7 +83,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE f= {1 |-> \"aa\", 2 |-> \"bb\"}(xx) & xx=1 ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -95,7 +96,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE f="+"%"+"x.(x>0 & x<10|x*x)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -111,7 +112,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE f="+"%"+"(x,y).(x=0 & y=10|TRUE)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -134,7 +135,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE paid: 1..5 --> BOOL & switcher: 1..5 --> {0, 1} & !(i).(paid(i) = FALSE => switcher(i) = 1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Type
         env = Environment()
@@ -146,7 +147,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE f: NAT * NAT * BOOL --> BOOL  & !(x,y,z).(f(x,y,z) = FALSE => 1+1=2)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Type
         env = Environment()
@@ -193,7 +194,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & t:perm(S) & r=s^t", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -209,7 +210,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & E:S & t=E->s", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -225,7 +226,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & x=size(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -238,7 +239,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & t=rev(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -254,7 +255,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE n=3 & s:perm(S) & t=s/|\\n", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -271,7 +272,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE n=3 & s:perm(S) & t=s\|/n", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -288,7 +289,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & n=first(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -302,7 +303,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & n=last(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -316,7 +317,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & t=tail(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -332,7 +333,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & t=front(s)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -348,7 +349,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE ss:perm(perm(S)) & s=conc(ss)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -364,7 +365,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s=conc([[2, 5], [-1, -2, 9], [], [5]])", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string    
+        root = str_ast_to_python_ast(ast_string)    
 
         # Type
         env = Environment()
@@ -381,7 +382,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE S=[[2, 5], [-1, -2, 9], [], [5]] & s=conc(S)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string    
+        root = str_ast_to_python_ast(ast_string)    
 
         # Type
         env = Environment()
@@ -408,7 +409,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s:perm(S) & E:S & t=s<-E", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -424,7 +425,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE s=[1,2,3]", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -440,7 +441,7 @@ class TestTypesFunctions():
         # Build AST
         string_to_file("#PREDICATE R1 = {(0|->1), (0|->2), (1|->1), (1|->7), (2|->3)} & f= fnc(R1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -457,7 +458,7 @@ class TestTypesFunctions():
 
 
     def type_check_sequence(self, ast_string):
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -470,7 +471,7 @@ class TestTypesFunctions():
 
 
     def type_check_function(self, ast_string):
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()

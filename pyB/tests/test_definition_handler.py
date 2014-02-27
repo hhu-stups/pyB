@@ -2,6 +2,7 @@ from ast_nodes import *
 from helpers import file_to_AST_str, string_to_file
 from definition_handler import DefinitionHandler
 from environment import Environment
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -16,7 +17,7 @@ class TestDefinitionHandler():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         dh = DefinitionHandler(env)
@@ -34,7 +35,7 @@ class TestDefinitionHandler():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         init = root.children[3]
@@ -59,7 +60,7 @@ class TestDefinitionHandler():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         init = root.children[3]
@@ -85,7 +86,7 @@ class TestDefinitionHandler():
 		END'''
         string_to_file(string, file_name, path="examples/")
         ast_string = file_to_AST_str(file_name, path="examples/")
-        exec ast_string 
+        root = str_ast_to_python_ast(ast_string) 
         
         env = Environment()
         dh = DefinitionHandler(env)                                    # 5. replace defs if present 

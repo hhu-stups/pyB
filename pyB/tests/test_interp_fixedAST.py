@@ -3,7 +3,6 @@ from ast_nodes import *
 from environment import  Environment
 from interp import interpret
 
-
 class TestInterp_fixedAST():
 
     def test_simple_expr_add(self):

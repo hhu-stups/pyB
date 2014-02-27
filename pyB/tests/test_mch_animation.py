@@ -8,7 +8,7 @@ from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 
 file_name = "input.txt"
@@ -30,7 +30,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -68,7 +68,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -95,7 +95,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -123,7 +123,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -155,7 +155,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -189,7 +189,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -219,7 +219,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -253,7 +253,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -292,7 +292,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -335,7 +335,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -364,7 +364,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -406,7 +406,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -448,7 +448,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -483,7 +483,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -518,7 +518,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -554,7 +554,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -582,7 +582,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -616,7 +616,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -652,7 +652,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -680,7 +680,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -708,7 +708,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -737,7 +737,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -769,7 +769,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -803,7 +803,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -831,7 +831,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string 
+        root = str_ast_to_python_ast(ast_string) 
 
         # Test
         env = Environment()
@@ -865,7 +865,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -891,7 +891,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -915,7 +915,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -945,7 +945,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -977,7 +977,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1010,7 +1010,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1045,7 +1045,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1076,7 +1076,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1111,7 +1111,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1141,7 +1141,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1200,7 +1200,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1228,7 +1228,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1278,7 +1278,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1340,7 +1340,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Config
         #import enumeration
@@ -1393,7 +1393,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1425,7 +1425,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1461,7 +1461,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1514,7 +1514,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1553,7 +1553,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1641,7 +1641,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1684,7 +1684,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1733,7 +1733,7 @@ class TestMCHAnimation():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1777,7 +1777,7 @@ class TestMCHAnimation():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -1820,7 +1820,7 @@ class TestMCHAnimation():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1841,7 +1841,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -1862,7 +1862,7 @@ class TestMCHAnimation():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()

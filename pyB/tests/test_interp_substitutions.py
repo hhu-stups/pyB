@@ -7,7 +7,7 @@ from typing import _test_typeit, type_check_bmch
 from interp import interpret
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from bexceptions import *
 
 file_name = "input.txt"
@@ -23,7 +23,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -47,7 +47,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -72,7 +72,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -98,7 +98,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -119,7 +119,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -145,7 +145,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -170,7 +170,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -192,7 +192,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -213,7 +213,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -236,7 +236,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -260,7 +260,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -285,7 +285,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -308,7 +308,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -331,7 +331,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -354,7 +354,7 @@ class TestInterpSubstitutions():
         '''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -376,7 +376,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -402,7 +402,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -428,7 +428,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -454,7 +454,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -479,7 +479,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -503,7 +503,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -525,7 +525,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -547,7 +547,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -569,7 +569,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -591,7 +591,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -613,7 +613,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -635,7 +635,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -660,7 +660,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -685,7 +685,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -711,7 +711,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -739,7 +739,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -767,7 +767,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -796,7 +796,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -824,7 +824,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -853,7 +853,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -884,7 +884,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -899,6 +899,39 @@ class TestInterpSubstitutions():
         assert env.get_value("Var2")==3
 
 
+    # maybe wrong scoping
+    import pytest
+    @pytest.mark.xfail
+    def test_genAST_sub_let2(self):
+        string = '''
+        MACHINE Test
+        VARIABLES X, Y
+        INVARIANT X:NAT & Y:NAT
+        INITIALISATION BEGIN X:=10; 
+                        LET r1, X BE
+                    X  = 6 &
+                        r1 = X / 2 
+                        IN
+                        Y := r1
+                        END
+
+                    END
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert env.get_value("X")==10
+        assert env.get_value("Y")==3
+        
+
     def test_genAST_sub_skip(self):
         string = '''
         MACHINE Test
@@ -908,7 +941,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -930,7 +963,7 @@ class TestInterpSubstitutions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()

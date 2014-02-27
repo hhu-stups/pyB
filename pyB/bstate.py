@@ -3,12 +3,13 @@ from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
 
-# BState: Set of all Values of all B-machines 
+# BState: Set of all values (constants and variabels) of all B-machines
+# Used by state_space.py. 
 class BState():
     def __init__(self):
-        # bmch_dict is a dict of value stacks: bmachine -> list(dict1, dict2, ...)
-        # Values of global and local vars: string -> value.
-        # NEW FRAME on this stack via append <=> New Var. Scope.
+        # (1) bmch_dict is a dict of value stacks: bmachine -> list(dict1, dict2, ...)
+        # (2) Every dict maps values of global and local vars: string -> value.
+        # (3) NEW FRAME (dict) on this stack via append <=> New Var. Scope.
         # special case: Predicates and Expressions have no bmachine
         # in this case the mapping is: None -> list(dict1, dict2, ...)
         self.bmch_dict = {None:[{}]} # empty entry for states without Bmachine (Predicated and Expressions)
@@ -23,11 +24,14 @@ class BState():
                 print bmch.name, ":", self.bmch_dict[bmch]
      
                 
-    # TODO: implement me
+    # TODO: implement me, when model checking is implemented
+    # currently unused.  
     def equal(self, bstate):
         pass
         
-        
+    
+    # e.g used by animation to calculated the next state 
+    # without affecting the current one    
     def clone(self):
         c = BState()
         for key in self.bmch_dict:
@@ -35,9 +39,9 @@ class BState():
             vs = []
             for d in value_stack:
                 vs.append(d.copy())
-            #vs.reverse()
             c.bmch_dict[key] = vs
         return c
+ 
     
     # called only once (per b-machine) after successful parsing
     def register_new_bmachine(self, bmachine, all_names):
@@ -45,20 +49,6 @@ class BState():
         for name in all_names:
             value_stack[name] = None  # default init
         self.bmch_dict[bmachine] = [value_stack]
- 
-#     def add_mch_state(self, bmachine, names=[], solutions={}):
-#         value_stack = self._write_solutions(names, solutions, bmachine)
-#         self.bmch_dict[bmachine] = value_stack 
-#  
-#     
-#     def _write_solutions(self, names, solutions, bmachine):
-#         vstack = {}
-#         for name in names:
-#             if name in solutions or bmachine.name+"."+name in solutions:
-#                 vstack[name] = solutions[name]
-#             else:
-#                 vstack[name] = None # default init
-#         return [vstack]
     
 
     def get_value(self, id_Name, bmachine):
@@ -66,7 +56,7 @@ class BState():
         #if isinstance(id_Name, AIdentifierExpression): # debug
         #    print id_Name.idName
         assert isinstance(id_Name, str)
-        assert isinstance(bmachine, BMachine) or bmachine==None
+        assert isinstance(bmachine, BMachine) or bmachine==None #None if Predicate or Expression
         value_stack = self.bmch_dict[bmachine]
         value_map_copy =  [x for x in value_stack] # no ref. copy
         value_map_copy.reverse()
@@ -77,8 +67,10 @@ class BState():
                 return value_map_copy[i][id_Name]
             except KeyError:
                 continue
-        # No entry in the value_stack. The Variable with the name id_Name
-        # is unknown for the machine bmachine. This could be ok during lookup
+        # No entry in the value_stack. The variable/constant with the name 'id_Name'
+        # is unknown for the machine 'bmachine'. 
+        # case(1): called by env.get_value method: This may be ok during lookup
+        # case(2): Bug inside pyB or the B machine
         if bmachine:
             name = bmachine.name
         else:
@@ -89,7 +81,7 @@ class BState():
         raise ValueNotInBStateException(string)
 
 
-    # TODO: (maybe) check if value has the correct type
+    # TODO: (maybe) check if value has the correct type - but this can be better done static
     # used by tests and enumeration and substitution
     def set_value(self, id_Name, value, bmachine):
         #print value, id_Name
@@ -100,8 +92,10 @@ class BState():
             if id_Name in top_map:
                 top_map[id_Name] = value
                 return
-        # No entry in the value_stack. The Variable with the name id_Name
-        # is unknown for the machine bmachine. This could be ok during lookup
+        # No entry in the value_stack. The variable/constant with the name 'id_Name'
+        # is unknown for the machine 'bmachine'. 
+        # case(1): called by env.get_value method: This may be ok during lookup
+        # case(2): Bug inside pyB or the B machine
         if bmachine:
             name = bmachine.name
         else:
@@ -122,7 +116,8 @@ class BState():
     def push_new_frame(self, nodes, bmachine):
         # TODO: throw warning if local var with 
         # the same name like a global var. This is not a B error
-        # but maybe not intended by the User
+        # but maybe not intended by the User. 
+        # It should be found static and not at runtime
         var_map = {}
         for node in nodes:
             assert isinstance(node, AIdentifierExpression)
@@ -139,10 +134,11 @@ class BState():
             if not top_map.has_key(i):
                 top_map[i] = None
     
+    
     # used in use_constants_solutions and use_variables_solutions
     # to "manually" write to the correct entry 
     def get_bmachine_by_name(self, name):
         for bmachine in self.bmch_dict:
             if bmachine.name==name:
                 return bmachine
-        raise Exception("BUG! unknown: %s" % name) 
+        raise Exception("BUG! unknown B-machine: %s" % name) 

@@ -2,6 +2,7 @@
 from ast_nodes import *
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file, all_ids_known, select_ast_to_list, find_var_nodes
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -10,7 +11,7 @@ class TestHelpers():
     def test_varName_simple(self):
         string_to_file("#PREDICATE F=S+->T", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
     
         idNodes = find_var_nodes(root)
         var_list = [n.idName for n in idNodes]
@@ -20,7 +21,7 @@ class TestHelpers():
     def test_varName_simple2(self):
         string_to_file("#PREDICATE x<4 & x<42", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
     
         idNodes = find_var_nodes(root)
         var_list = [n.idName for n in idNodes]
@@ -29,7 +30,7 @@ class TestHelpers():
     def test_all_ids_known(self):
     	string_to_file("#PREDICATE x=y & x=42", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         env.add_ids_to_frame(["x","y"])
@@ -39,7 +40,7 @@ class TestHelpers():
     def test_all_ids_known2(self):
     	string_to_file("#PREDICATE x=y & x=42", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         env.add_ids_to_frame(["x","y"])
@@ -51,7 +52,7 @@ class TestHelpers():
     def test_all_ids_known3(self):
     	string_to_file("#PREDICATE #(x).(x>0 & x<10)", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         assert all_ids_known(root, env)==False
@@ -60,7 +61,7 @@ class TestHelpers():
     def test_all_ids_known4(self):
     	string_to_file("#PREDICATE ID={x|x>0 & x<10}", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         env.add_ids_to_frame(["ID"])
@@ -70,7 +71,7 @@ class TestHelpers():
     def test_all_ids_known5(self):
     	string_to_file("#PREDICATE ID={x|x>0 & x<10}", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         env.add_ids_to_frame(["ID"])
@@ -81,7 +82,7 @@ class TestHelpers():
     def test_all_ids_known6(self):
     	string_to_file("#PREDICATE {(1,2)}:S<->T", file_name)
     	ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
         env.add_ids_to_frame(["S","T"])
@@ -103,7 +104,7 @@ class TestHelpers():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         select_ast = root.children[3].children[0].children[0].children[1]
         assert isinstance(select_ast, ASelectSubstitution)

@@ -4,6 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -12,7 +13,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE card(S)=3", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -26,7 +27,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE ID={aa,bb}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -45,7 +46,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE ID={} & ID<:NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -57,7 +58,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE ID={x|x<10}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -70,7 +71,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S={a,b} & ID={x,y|x<10 & y:S}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -87,7 +88,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=A\/B & T=A/\\B & R = A-B", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -108,7 +109,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=A*B", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -122,7 +123,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=POW(B)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -136,7 +137,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=POW(B) & B=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -151,7 +152,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S<:B", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -166,7 +167,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE R=S\/T & S:POW(B)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -187,7 +188,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE R=S\/T & R:POW(B)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -208,7 +209,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE R=S\/T & T:POW(B)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -229,7 +230,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE T:POW(B) & R=S\/T ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -250,7 +251,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE R:POW(B) & R=S\/T ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -271,7 +272,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S:POW(B) & R=S\/T ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -292,7 +293,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:POW(A) & y:POW(B) & POW(A)=B & A<:NAT ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -311,7 +312,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE 1:S ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -324,7 +325,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:S & x=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -338,7 +339,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE X=S & S:POW(NAT) & y:X", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -354,7 +355,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:S & S:POW(NAT)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -368,7 +369,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:A & x:B & A=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -384,7 +385,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:POW(A) & x:POW(B) & A=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -401,7 +402,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x:POW(A) & A=NAT & x:POW(B)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -418,7 +419,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE #x.(x:S=>x>=0) & S=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -432,7 +433,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S= {1,a,b}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -447,7 +448,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE {a,42,b}=S", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -462,7 +463,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE a=42 & S={a}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -477,7 +478,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S={a} & a=42 ", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -491,7 +492,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=A-B & A=NAT & B=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -506,7 +507,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE S=A*B & A=NAT & B=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -521,7 +522,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE NAT*NAT=A*B", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -536,7 +537,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE NAT*B=A*NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -551,7 +552,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE NAT*B=A*POW(NAT)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -567,7 +568,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE x=(1,2)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -579,7 +580,7 @@ class TestTypesSets():
         # Build AST:
         string_to_file("#PREDICATE x=(1,2,41) & y={(0,0,41),(1,0,41),(0,1,41),(1,1,41)}", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -595,7 +596,7 @@ class TestTypesSets():
         # Build AST:
         string_to_file("#PREDICATE U:POW(POW(S)) & u=union(U)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -612,7 +613,7 @@ class TestTypesSets():
         # Build AST:
         string_to_file("#PREDICATE U:POW(POW(S)) & u=inter(U)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -629,7 +630,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE s=\"HalloWelt\"", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -641,7 +642,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE  s= [\"VIA_1\",\"VIA_2\",\"VIA_3\",\"VIA_4\"]", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string    
+        root = str_ast_to_python_ast(ast_string)    
 
         # Type
         env = Environment()
@@ -656,7 +657,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE A:BOOL & B:BOOL & C:BOOL & (A=TRUE <=> (B=FALSE or C=FALSE)) & (B=TRUE <=> A=TRUE)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -670,7 +671,7 @@ class TestTypesSets():
         # Build AST
         string_to_file("#PREDICATE A=bool(1<2)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()

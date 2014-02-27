@@ -4,7 +4,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from definition_handler import DefinitionHandler
 
 file_name = "input.txt"
@@ -21,7 +21,7 @@ class TestTypesDefinitions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()
@@ -44,7 +44,7 @@ class TestTypesDefinitions():
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type
         env = Environment()

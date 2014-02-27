@@ -4,7 +4,7 @@ from environment import Environment
 from interp import interpret
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 
 file_name = "input.txt"
@@ -37,7 +37,7 @@ class TestMCHAssert():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -78,7 +78,7 @@ class TestMCHAssert():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -133,7 +133,7 @@ class TestMCHAssert():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -186,7 +186,7 @@ class TestMCHAssert():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()

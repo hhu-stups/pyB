@@ -5,7 +5,7 @@ from btypes import *
 from environment import Environment
 from typing import _test_typeit, type_check_bmch, BTypeException
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from bexceptions import ResolveFailedException, BTypeException
 file_name = "input.txt"
 
@@ -14,7 +14,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE a=b", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -25,7 +25,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE a=NAT & a=42", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -36,7 +36,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE a=NAT & b=a+42", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -47,7 +47,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE b=a mod NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -58,7 +58,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE a < NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -69,7 +69,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE 42*NAT=a", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -80,7 +80,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE 42-NAT=a", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -91,7 +91,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file("#PREDICATE a*b=c & a=42 & b=NAT", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Type and fail
         env = Environment()
@@ -109,7 +109,7 @@ class TestTypesTypeExceptions():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string   
+        root = str_ast_to_python_ast(ast_string)   
 
         # Test
         env = Environment()

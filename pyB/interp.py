@@ -590,6 +590,7 @@ def interpret(node, env):
         expr = interpret(node.children[0], env)
         return not expr
     elif isinstance(node, AUniversalQuantificationPredicate):
+        # notice: the all and any keywords are not used, because they need the generation of the whole set
         # new scope
         varList = node.children[:-1]
         env.push_new_frame(varList)

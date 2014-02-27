@@ -4,7 +4,7 @@ from environment import Environment
 from interp import interpret, set_up_constants
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
-from parsing import parse_ast
+from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 
 file_name = "input.txt"
@@ -25,7 +25,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -55,7 +55,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -86,7 +86,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -113,7 +113,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -142,7 +142,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -165,7 +165,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -190,7 +190,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -219,7 +219,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -255,7 +255,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
 
         # Test
@@ -292,7 +292,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -314,7 +314,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -333,7 +333,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -352,7 +352,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -372,7 +372,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -400,7 +400,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -422,7 +422,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -448,7 +448,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -475,7 +475,7 @@ class TestMCHLaod():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -500,7 +500,7 @@ class TestMCHLaod():
 		# Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -520,7 +520,7 @@ class TestMCHLaod():
 		# Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -528,3 +528,10 @@ class TestMCHLaod():
         type_check_bmch(root, env, mch)
         arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 0    
+    
+    
+    # issue 22
+    import pytest
+    @pytest.mark.xfail
+    def test_renaming_included_mch(self):
+        assert 1==2

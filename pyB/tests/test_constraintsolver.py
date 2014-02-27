@@ -5,6 +5,7 @@ from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from typing import _test_typeit
 from constrainsolver import calc_constraint_domain
+from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
 
@@ -14,7 +15,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE !(z).((z:NAT & z>2 & z<5) => (z>1 & z<=10))", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -36,7 +37,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE f={(1,7),(2,8),(3,9)} & S={1,2,3} & !(x,y).(y:INTEGER &(x:S & f(x)<y) & y<42 =>y:T)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -69,7 +70,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE #(z).((z:NAT & z>=2 & z<=5) & (z>1 & z<=10))", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -91,7 +92,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE card(%x.(x:1..100|x*x))=100", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
         
         # Test
         env = Environment()
@@ -117,7 +118,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE length: STRING --> INTEGER & length = %x.(x:STRING|42)", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -144,7 +145,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE card({x|x:NAT & x=12})=1", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
@@ -166,7 +167,7 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE PI(x).(x:-4..4 & x/=0 | x)=576", file_name)
         ast_string = file_to_AST_str(file_name)
-        exec ast_string
+        root = str_ast_to_python_ast(ast_string)
 
         # Test
         env = Environment()
