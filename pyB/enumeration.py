@@ -22,6 +22,7 @@ def all_values(node, env):
 # generate all values of a type (basetype or composed)
 def all_values_by_type(atype, env):
     if isinstance(atype, IntegerType):
+        print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)
     elif isinstance(atype, BoolType):
         return [True, False]
@@ -212,12 +213,6 @@ def create_sequence(images, number, length):
         number /= basis
     result.reverse()
     return result
-
-
-def quick_enum_possible(root, env):
-    if (isinstance(root, ABelongPredicate) or isinstance(root, ANotBelongPredicate)) and all_ids_known(root, env):
-        return True                                                                                            
-    return False
 
     
 # the right side (or both) contain a infinit set

@@ -263,7 +263,7 @@ class TypeCheck_Environment():
             try:
                 enum_hint = id_to_enum_hint[idName]
             except KeyError:
-                enum_hint = None #XXX/TODO: child env
+                enum_hint = None #TODO: (#ISSUE 19) child env
             # unknown now. will be found in resole()
             # This is when local vars use global vars
             # which are unknown a this time
@@ -406,6 +406,7 @@ def throw_away_unknown(tree, idName=""):
 # returns an UnknownType or a BType
 # WARNING: This BType could point on other UnknownTypes. e.g. POW(X)
 # WARNING: assumes cyclic - free
+# TODO:(#ISSUE 20) find cycles 
 def unknown_closure(atype):
     if not isinstance(atype, UnknownType):
         return atype
@@ -424,7 +425,7 @@ def unknown_closure(atype):
     if isinstance(atype.real_type, BType) or isinstance(atype.real_type, PowORIntegerType) or isinstance(atype.real_type, PowCartORIntegerType):
         return atype.real_type
     else:
-        assert atype.real_type==None #XXX: PowORIntegerType/PowCartORIntegerType
+        assert atype.real_type==None #FIXME: PowORIntegerType/PowCartORIntegerType
         return atype
 
 

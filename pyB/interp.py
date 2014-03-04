@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import find_var_nodes, flatten, double_element_check, find_assignd_vars, print_ast
+from helpers import find_var_nodes, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -787,7 +787,7 @@ def interpret(node, env):
         if contains_infinit_enum(node, env):
             result = infinity_belong_check(node, env)
             return result
-        if quick_enum_possible(node, env):
+        if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)
             return result
@@ -798,7 +798,7 @@ def interpret(node, env):
             return True # FIXME: hack
         return elm in aSet
     elif isinstance(node, ANotBelongPredicate):
-        if quick_enum_possible(node, env):
+        if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             return not quick_member_eval(node.children[1], env, elm)
         elm = interpret(node.children[0], env)
@@ -830,12 +830,12 @@ def interpret(node, env):
     elif isinstance(node, ANaturalSetExpression):
         #if VERBOSE:
         #    print "WARNING: NATURAL = 0.."+str(env._max_int)
-        #return frozenset(range(0,env._max_int+1)) #XXX
+        #return frozenset(range(0,env._max_int+1)) # TODO:(#ISSUE 17)
         return NaturalSet(env)
     elif isinstance(node, ANatural1SetExpression):
         #if VERBOSE:
         #    print "WARNING: NATURAL1 = 1.."+str(env._max_int)
-        #return frozenset(range(1,env._max_int+1)) #XXX
+        #return frozenset(range(1,env._max_int+1)) # TODO:(#ISSUE 17)
         return Natural1Set(env)
     elif isinstance(node, ANatSetExpression):
         return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
@@ -849,7 +849,7 @@ def interpret(node, env):
     elif isinstance(node, AIntegerSetExpression):
         #if VERBOSE:
         #    print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
-        #return frozenset(range(env._min_int,env._max_int+1)) #XXX
+        #return frozenset(range(env._min_int,env._max_int+1)) # TODO:(#ISSUE 17)
         return IntegerSet(env)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
@@ -1597,7 +1597,8 @@ def exec_substitution(sub, env):
         for possible in exec_sequence_substitution(subst_list, env):
             yield possible
     elif isinstance(sub, AWhileSubstitution):
-        print "WARNING: WHILE inside abstract MACHINE!!" # TODO: replace/move warning
+        if PRINT_WARNINGS:
+            print "WARNING: WHILE inside abstract MACHINE!" # TODO: replace/move warning
         condition = sub.children[0]
         doSubst   = sub.children[1]
         invariant = sub.children[2]

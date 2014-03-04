@@ -240,10 +240,8 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     else:
-        #XXX no quick eval, can crash
+        #TODO:(#ISSUE 18) no quick eval, can crash
         aSet = interpret(ast, env)
-        if isinstance(element,str) and aSet=="":
-            return True # FIXME: hack
         return element in aSet                                             
 
 
@@ -259,4 +257,4 @@ def infinity_belong_check(node, env):
     string = pretty_print(node)
     print "WARNING: CHECK OF INFINITE SET NOT IMPLEMENTED! CAN NOT EVAL:", string
     print "default return: FALSE"
-    return False # XXX: not implemented
+    return False # TODO:(#ISSUE 13) add more cases

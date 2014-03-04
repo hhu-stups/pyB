@@ -3,7 +3,7 @@ class BTypeException(Exception):
     def __init__(self, string):
         self.value = string
 
-# e.g: f={(1,42)} & x=f[5] 
+# caused by e.g: f={(1,42)} & x=f[5] 
 class ValueNotInDomainException(BTypeException):   
     def __init__(self, value):
         self.value = value

@@ -4,6 +4,7 @@ from bstate import BState
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]
+        self.history = [] # only strings
     
     def get_state(self):
         return self.stack[-1]
@@ -13,8 +14,10 @@ class StateSpace:
     
     def undo(self):
         self.stack.pop()
+        self.history.pop()
     
-    def add_state(self, bstate):
+    def add_state(self, bstate, op_name="unknown"):
+        self.history.append(op_name)
         self.stack.append(bstate)
     
     def get_stack_size(self):

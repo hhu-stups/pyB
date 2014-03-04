@@ -51,8 +51,8 @@ def run_with_pyb(bfile_name, dir=""):
     bstates = exec_initialisation(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
     # arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-    #if mch.aAssertionsMachineClause:
-    #   interpret(mch.aAssertionsMachineClause, env)
+    if mch.aAssertionsMachineClause:
+       interpret(mch.aAssertionsMachineClause, env)
     if mch.aPropertiesMachineClause:
         assert interpret(mch.aPropertiesMachineClause, env)
     if mch.aInvariantMachineClause:
@@ -97,7 +97,7 @@ class TestTeam():
 #         
 #        
     def test_team_systerel(self):
-        bfile_name="examples/not_public/Systerel/C578.EML.014/019_100"
+        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 60000", bfile_name)
         run_with_pyb(bfile_name)
 

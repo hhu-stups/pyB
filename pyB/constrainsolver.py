@@ -71,7 +71,7 @@ def calc_constraint_domain(env, varList, predicate):
     expr += varList[-1].idName+":"+constraint_string
     #print expr
     my_globales = {"qme_nodes":qme_nodes, "quick_member_eval":quick_member_eval, "env":env}
-    lambda_func = eval(expr, my_globales)  # XXX not Rpython
+    lambda_func = eval(expr, my_globales)  # TODO:(#ISSUE 16) not Rpython
     problem.addConstraint(lambda_func, names)
     return problem.getSolutionIter()
 
@@ -134,7 +134,7 @@ def pretty_print(env, varList, node, qme_nodes):
 		#             name = str(node.children[0].idName)
 		#             string = name+" in "+str(range(1,env._max_int+1))
 		#             return string 
-		#         elif isinstance(node.children[1], AIntegerSetExpression): # XXX
+		#         elif isinstance(node.children[1], AIntegerSetExpression): # TODO:(#ISSUE 17)
 		#             name = str(node.children[0].idName)
 		#             string = name+" in "+str(range(env._min_int,env._max_int+1))
 		#             return string           
@@ -177,9 +177,9 @@ def pretty_print(env, varList, node, qme_nodes):
         number = node.children[0].intValue * -1
         return str(number)
     elif isinstance(node, AFunctionExpression) and isinstance(node.children[1],AIdentifierExpression):
-        func_name =  node.children[0].idName
+        func_name =  node.children[0].idName # TODO:(#ISSUE 13) this may not be an id node in all cases
         function = env.get_value(func_name)
-        arg = node.children[1].idName  # XXX more args
+        arg = node.children[1].idName  # TODO:(#ISSUE 13) more args possible. 
         string = arg + " in " + str(dict(function).keys()) + " and " # only try values in domain
         string += str(dict(env.get_value(func_name)))
         string += "["+arg +"]" 
@@ -187,7 +187,3 @@ def pretty_print(env, varList, node, qme_nodes):
     #print node.children
     raise ConstraintNotImplementedException(node)
          
-  
-def string_to_number(string):
-    result =0
-    return result # xx
