@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from interp import interpret, set_up_constants, exec_initialisation
-from util import arbitrary_init_machine
+from util import arbitrary_init_machine, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states
@@ -1151,7 +1151,7 @@ class TestMCHAnimation():
         invariant = root.children[2]
         assert isinstance(invariant, AInvariantMachineClause)
         assert interpret(invariant, env)
-        atype = env.get_type("BOOK")
+        atype = get_type_by_name(env, "BOOK")
         assert isinstance(atype, PowerSetType)
         assert isinstance(atype.data, SetType)
         empty = env.get_value("read")

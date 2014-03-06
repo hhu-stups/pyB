@@ -4,7 +4,7 @@ from btypes import *
 from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
-from typing import _test_typeit
+from util import type_with_known_types
 from parsing import str_ast_to_python_ast
 
 file_name = "input.txt"
@@ -308,7 +308,7 @@ class TestInterpFunctions():
 
         env = Environment()
         env.add_ids_to_frame(["f"])
-        _test_typeit(root.children[0], env, [], ["f"])
+        type_with_known_types(root.children[0], env, [], ["f"])
         assert interpret(root.children[0],env)
 
 
@@ -330,7 +330,7 @@ class TestInterpFunctions():
 
         env = Environment()
         env.add_ids_to_frame(["f"])
-        _test_typeit(root, env, [], ["f","x"])
+        type_with_known_types(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(1,1),(2,4),(3,9)]))
         assert interpret(root.children[0],env)
 
@@ -343,7 +343,7 @@ class TestInterpFunctions():
 
         env = Environment()
         env.add_ids_to_frame(["f"])
-        _test_typeit(root, env, [], ["f","x"])
+        type_with_known_types(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(((1,1),1),3),(((1,1),2),4),(((1,2),1),4),(((2,1),1),4),(((1,2),2),5),(((2,2),1),5),(((2,1),2),5),(((2,2),2),6)]))
         assert interpret(root.children[0],env)
 

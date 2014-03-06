@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
-from typing import _test_typeit
+from util import type_with_known_types, get_type_by_name
 from constrainsolver import calc_constraint_domain
 from parsing import str_ast_to_python_ast
 
@@ -19,8 +19,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [""])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
         unqantPred = root.children[0]
         assert isinstance(unqantPred, AUniversalQuantificationPredicate)
         varList = unqantPred.children[0:-1]
@@ -42,11 +42,11 @@ class TestConstraintSolver():
         # Test
         env = Environment()
         lst = [("S", PowerSetType(IntegerType(None))),("f", PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(IntegerType(None)))))]
-        _test_typeit(root, env, lst, ["T"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, IntegerType)
+        type_with_known_types(root, env, lst, ["T"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, IntegerType)
         env.add_ids_to_frame(["f","S","T"])
         env.set_value("f", frozenset([(1,7),(2,8),(3,9)]))
         env.set_value("S", frozenset([1,2,3]))
@@ -74,8 +74,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [""])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
         exqantPred = root.children[0]
         assert isinstance(exqantPred, AExistentialQuantificationPredicate)
         varList = exqantPred.children[0:-1]
@@ -96,8 +96,8 @@ class TestConstraintSolver():
         
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [""])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
         lambdaexpr = root.children[0].children[0].children[0] 
         assert isinstance(lambdaexpr, ALambdaExpression)
         varList = lambdaexpr.children[0:-2]
@@ -122,8 +122,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], ["length"])
-        assert isinstance(env.get_type("x"), StringType)
+        type_with_known_types(root, env, [], ["length"])
+        assert isinstance(get_type_by_name(env, "x"), StringType)
         lambdaexpr = root.children[0].children[1].children[1] 
         assert isinstance(lambdaexpr, ALambdaExpression)
         varList = lambdaexpr.children[0:-2]		 
@@ -149,8 +149,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [""])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
         setexpr = root.children[0].children[0].children[0] 
         assert isinstance(setexpr, AComprehensionSetExpression)
         varList = setexpr.children[0:-1]
@@ -171,8 +171,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        _test_typeit(root, env, [], [""])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
         setexpr = root.children[0].children[0]
         assert isinstance(setexpr, AGeneralProductExpression)
         varList = setexpr.children[0:-2]

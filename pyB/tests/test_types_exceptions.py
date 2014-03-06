@@ -3,7 +3,8 @@ import py.test
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit, type_check_bmch, BTypeException
+from typing import type_check_bmch, BTypeException
+from util import type_with_known_types
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 from bexceptions import ResolveFailedException, BTypeException
@@ -18,7 +19,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\"])")
 
 
     def test_types_siple_err(self):
@@ -29,7 +30,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\"])")
 
 
     def test_types_op_err(self):
@@ -40,7 +41,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\"])")
 
 
     def test_types_op_err2(self):
@@ -51,7 +52,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\"])")
 
 
     def test_types_op_err3(self):
@@ -62,7 +63,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\"])")
 
 
     def test_types_op_err4(self):
@@ -73,7 +74,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\"])")
 
 
     def test_types_op_err5(self):
@@ -84,7 +85,7 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\"])")
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\"])")
 
 
     def test_types_op_err6(self):
@@ -95,8 +96,8 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        #_test_typeit(root, env, [], ["a","b","c"])
-        py.test.raises(BTypeException, "_test_typeit(root, env, [], [\"a\",\"b\",\"c\"])")
+        #type_with_known_types(root, env, [], ["a","b","c"])
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\",\"c\"])")
 
 
     def test_types_impossible_resolve(self):

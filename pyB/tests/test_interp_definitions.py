@@ -2,7 +2,7 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit, type_check_bmch
+from typing import type_check_bmch
 from interp import interpret
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file

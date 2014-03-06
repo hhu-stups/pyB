@@ -2,7 +2,8 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit, type_check_bmch
+from typing import type_check_bmch
+from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 
@@ -17,8 +18,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
         
     def test_types_simple_nat(self):
         # Build AST
@@ -28,8 +29,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_nat1(self):
@@ -40,8 +41,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_add(self):
@@ -52,8 +53,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_sub(self):
@@ -64,8 +65,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_sub_unify(self):
@@ -76,10 +77,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","a","b"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
+        type_with_known_types(root, env, [], ["x","a","b"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
 
 
     def test_types_simple_mul(self):
@@ -90,8 +91,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_mul_unify(self):
@@ -102,10 +103,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","b","a"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
+        type_with_known_types(root, env, [], ["x","b","a"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
 
 
     def test_types_simple_mul_unify2(self):
@@ -116,9 +117,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["b","a"])
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
+        type_with_known_types(root, env, [], ["b","a"])
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
 
 
     def test_types_simple_mul_unify3(self):
@@ -129,10 +130,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["c","b","a"])
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
-        assert isinstance(env.get_type("c"), IntegerType)
+        type_with_known_types(root, env, [], ["c","b","a"])
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
+        assert isinstance(get_type_by_name(env, "c"), IntegerType)
 
 
     def test_types_simple_mul_unify4(self):
@@ -143,10 +144,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["a","b","c"])
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
-        assert isinstance(env.get_type("c"), IntegerType)
+        type_with_known_types(root, env, [], ["a","b","c"])
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
+        assert isinstance(get_type_by_name(env, "c"), IntegerType)
 
 
     def test_types_simple_mul_unify5(self):
@@ -157,11 +158,11 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["a","b","c","d"])
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
-        assert isinstance(env.get_type("c"), IntegerType)
-        assert isinstance(env.get_type("d"), IntegerType)
+        type_with_known_types(root, env, [], ["a","b","c","d"])
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
+        assert isinstance(get_type_by_name(env, "c"), IntegerType)
+        assert isinstance(get_type_by_name(env, "d"), IntegerType)
 
     def test_types_simple_div(self):
         # Build AST
@@ -171,8 +172,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_mod(self):
@@ -183,8 +184,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_equal(self):
@@ -196,8 +197,8 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         lst = [("y", IntegerType(42))]
-        _test_typeit(root, env, lst, ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, lst, ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_equal2(self):
@@ -209,8 +210,8 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         lst = [("y", IntegerType(42))]
-        _test_typeit(root, env, lst, ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, lst, ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_equal3(self):
@@ -222,7 +223,7 @@ class TestTypesNumbers():
         # Type
         env = Environment()
         lst = [("y", IntegerType(2))] # number not important
-        _test_typeit(root, env, lst, ["y"])
+        type_with_known_types(root, env, lst, ["y"])
 
 
     def test_types_simple_equal4(self):
@@ -233,7 +234,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
+        type_with_known_types(root, env, [], [])
 
 
     def test_types_simple_equal5(self):
@@ -244,7 +245,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
+        type_with_known_types(root, env, [], [])
 
 
     def test_types_sigma(self):
@@ -255,8 +256,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert isinstance(env.get_type("zz"), IntegerType)
+        type_with_known_types(root, env, [], [])
+        assert isinstance(get_type_by_name(env, "zz"), IntegerType)
 
 
     def test_types_pi(self):
@@ -267,8 +268,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
-        assert isinstance(env.get_type("zz"), IntegerType)
+        type_with_known_types(root, env, [], [])
+        assert isinstance(get_type_by_name(env, "zz"), IntegerType)
 
 
     def test_types_gt(self):
@@ -279,8 +280,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_ge(self):
@@ -291,8 +292,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_ls(self):
@@ -303,8 +304,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_ls2(self):
@@ -315,7 +316,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
+        type_with_known_types(root, env, [], [])
 
 
     def test_types_le(self):
@@ -326,8 +327,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_interval(self):
@@ -338,8 +339,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_interval2(self):
@@ -350,9 +351,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), PowerSetType)
-        assert isinstance(env.get_type("x").data, IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x").data, IntegerType)
 
 
     def test_types_expr_equ(self):
@@ -363,9 +364,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
 
 
     def test_types_expr_equ2(self):
@@ -376,10 +377,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_equ3(self):
@@ -390,10 +391,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_equ4(self):
@@ -404,10 +405,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_equ5(self):
@@ -418,10 +419,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_equ6(self):
@@ -432,10 +433,10 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_equ7(self):
@@ -446,11 +447,11 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y","z","w"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
-        assert isinstance(env.get_type("z"), IntegerType)
-        assert isinstance(env.get_type("w"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y","z","w"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
+        assert isinstance(get_type_by_name(env, "w"), IntegerType)
 
 
     def test_types_expr_leq(self):
@@ -461,9 +462,9 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y"])
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
+        type_with_known_types(root, env, [], ["x","y"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
 
 
     def test_types_expr_maxint(self):
@@ -474,8 +475,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_expr_minint(self):
@@ -486,8 +487,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_exist(self):
@@ -498,8 +499,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["z"])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["z"])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_exist2(self):
@@ -510,8 +511,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S"])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["S"])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
         
 
     def test_types_exist3(self):
@@ -522,8 +523,8 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S"])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, [], ["S"])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_expr_succ(self):
@@ -534,7 +535,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
+        type_with_known_types(root, env, [], [])
 
 
     def test_types_expr_pred(self):
@@ -545,7 +546,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], [])
+        type_with_known_types(root, env, [], [])
   
         
     def test_types_set_or_integer(self):
@@ -563,9 +564,9 @@ class TestTypesNumbers():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        assert isinstance(env.get_type("X"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
-        assert isinstance(env.get_type("sum"), IntegerType)
+        assert isinstance(get_type_by_name(env, "X"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "sum"), IntegerType)
 
 
     def test_types_set_or_integer2(self):
@@ -584,9 +585,9 @@ class TestTypesNumbers():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        assert isinstance(env.get_type("X").data, SetType)
-        assert isinstance(env.get_type("yy").data, SetType)
-        assert isinstance(env.get_type("sum").data, SetType)
+        assert isinstance(get_type_by_name(env, "X").data, SetType)
+        assert isinstance(get_type_by_name(env, "yy").data, SetType)
+        assert isinstance(get_type_by_name(env, "sum").data, SetType)
 
 
     def test_types_set_or_integer3(self):
@@ -605,11 +606,11 @@ class TestTypesNumbers():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        assert isinstance(env.get_type("x").data, SetType)
-        assert isinstance(env.get_type("y").data, SetType)
-        assert isinstance(env.get_type("z").data, SetType)
-        assert isinstance(env.get_type("w").data, SetType)
-        assert isinstance(env.get_type("sum").data, SetType)
+        assert isinstance(get_type_by_name(env, "x").data, SetType)
+        assert isinstance(get_type_by_name(env, "y").data, SetType)
+        assert isinstance(get_type_by_name(env, "z").data, SetType)
+        assert isinstance(get_type_by_name(env, "w").data, SetType)
+        assert isinstance(get_type_by_name(env, "sum").data, SetType)
                 
 
     def test_types_set_or_integer4(self):
@@ -627,6 +628,6 @@ class TestTypesNumbers():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        assert isinstance(env.get_type("X"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
-        assert isinstance(env.get_type("sum"), IntegerType)
+        assert isinstance(get_type_by_name(env, "X"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "sum"), IntegerType)

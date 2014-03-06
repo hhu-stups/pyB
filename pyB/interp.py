@@ -440,7 +440,7 @@ def _learn_assigned_values(root, env, lst):
                 continue # case not implemented: skip
             
             assert not expression_node==None
-            idNodes = find_var_nodes(expression_node)
+            #idNodes = find_var_nodes(expression_node)
             # TODO: use idNodes-result to check if an eval. of expression node is possible
             # maybe this enum of node-classes becomes unnecessary
             
@@ -450,10 +450,11 @@ def _learn_assigned_values(root, env, lst):
                     env.set_value(idNode.idName, expr)
                     lst.append(idNode.idName)
                     continue
-                except Exception:
+                except Exception as e:
+                    #TODO: this case is not covered by any test
                     continue 
             # only uses lambda which can be solved instantly 
-            elif isinstance(expression_node, ALambdaExpression) and idNodes==[]:
+            elif isinstance(expression_node, ALambdaExpression):# and idNodes==[]:
                 try:
                     expr = interpret(expression_node, env)
                     env.set_value(idNode.idName, expr)

@@ -22,11 +22,11 @@ def all_values(node, env):
 # generate all values of a type (basetype or composed)
 def all_values_by_type(atype, env):
     if isinstance(atype, IntegerType):
-        print env._min_int, env._max_int
+        #print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)
     elif isinstance(atype, BoolType):
         return [True, False]
-    elif isinstance(atype, StringType): # FIXME: only some strings are returned here
+    elif isinstance(atype, StringType): # FIXME:(#ISSUE 21) only some strings are returned here
         return frozenset(env.all_strings)
     elif isinstance(atype, SetType):
         type_name =  atype.data
@@ -78,9 +78,9 @@ def try_all_values(root, env, idNodes):
     yield False
 
 
-# FIXME: dummy-init of deffered sets
+# FIXME:(#ISSUE 22) dummy-init of deffered sets
 def init_deffered_set(def_set, env):
-    # TODO: retry if no animation possible
+    # TODO:(#ISSUE 22) retry if no animation possible
     assert isinstance(def_set, ADeferredSet)
     name = def_set.idName
     env.add_ids_to_frame([name])
@@ -183,7 +183,7 @@ def powerset(iterable):
 def all_records(value_dict, result, acc, index):
     if len(value_dict)==index:
         import copy
-        result.append(copy.deepcopy(acc)) # FIXME: Performance-Problems
+        result.append(copy.deepcopy(acc)) # FIXME:(#ISSUE 23) Performance-Problems
     else:
         name = list(value_dict.keys())[index]
         values = list(value_dict.values())[index]

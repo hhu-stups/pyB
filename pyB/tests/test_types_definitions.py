@@ -2,7 +2,7 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit
+from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 from definition_handler import DefinitionHandler
@@ -29,8 +29,8 @@ class TestTypesDefinitions():
         dh.repl_defs(root)
         parse_ast(root,env)
         lst = []
-        _test_typeit(root, env, lst, ["z"])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, lst, ["z"])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)
 
 
     def test_types_two_para_def(self):
@@ -52,5 +52,5 @@ class TestTypesDefinitions():
         dh.repl_defs(root)
         parse_ast(root, env)
         lst = []
-        _test_typeit(root, env, lst, ["z"])
-        assert isinstance(env.get_type("z"), IntegerType)
+        type_with_known_types(root, env, lst, ["z"])
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)

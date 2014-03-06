@@ -110,7 +110,7 @@ def find_var_nodes(node):
 
 
 # helper for find_var_nodes
-# TODO: quantifed preds
+# TODO: quantified preds
 def _find_var_nodes(node, lst, black_list):
     if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression):
         bl = black_list + [x.idName for x in node.children[:-1]]
@@ -132,6 +132,7 @@ def _find_var_nodes(node, lst, black_list):
             for n in node.children:
                 _find_var_nodes(n, lst, black_list)
         except AttributeError:
+            #print "_find_var_nodes: AttributeError" 
             return #FIXME: no children   
 
 
@@ -168,6 +169,7 @@ def _find_assignd_vars(node, lst):
             for n in node.children:
                 _find_assignd_vars(n, lst)
         except AttributeError:
+            #print "_find_assignd_vars: AttributeError" 
             return #FIXME no children
 
 

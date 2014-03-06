@@ -27,6 +27,7 @@ class TestHelpers():
         var_list = [n.idName for n in idNodes]
         assert var_list==['x']
     
+    
     def test_all_ids_known(self):
     	string_to_file("#PREDICATE x=y & x=42", file_name)
     	ast_string = file_to_AST_str(file_name)

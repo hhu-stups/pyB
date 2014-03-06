@@ -3,9 +3,9 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit, type_check_bmch
+from typing import type_check_bmch
 from interp import interpret
-from util import arbitrary_init_machine
+from util import arbitrary_init_machine, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 from bexceptions import *
@@ -33,7 +33,7 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==3
-        assert isinstance(env.get_type("xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
 
@@ -58,8 +58,8 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
         assert env.get_value("yy")==2
-        assert isinstance(env.get_type("xx"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
 
 
     def test_genAST_sub_parallel_asgn2(self):
@@ -83,8 +83,8 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
         assert env.get_value("yy")==1
-        assert isinstance(env.get_type("xx"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
 
 
 
@@ -130,8 +130,8 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==1
         assert env.get_value("yy")==2
-        assert isinstance(env.get_type("xx"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
 
 
 
@@ -156,8 +156,8 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==2
         assert env.get_value("yy")==1
-        assert isinstance(env.get_type("xx"), IntegerType)
-        assert isinstance(env.get_type("yy"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "yy"), IntegerType)
 
 
     def test_genAST_sub_multiple_asgn3_exception(self):
@@ -223,7 +223,7 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")==True
-        assert isinstance(env.get_type("xx"), BoolType)
+        assert isinstance(get_type_by_name(env, "xx"), BoolType)
 
 
     def test_genAST_sub_choice_by(self):
@@ -247,7 +247,7 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
         assert env.get_value("xx")<4
-        assert isinstance(env.get_type("xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
     def test_genAST_sub_choice_by2(self):
@@ -271,7 +271,7 @@ class TestInterpSubstitutions():
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>0
         assert env.get_value("xx")<6
-        assert isinstance(env.get_type("xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
 
@@ -295,7 +295,7 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>=3
-        assert isinstance(env.get_type("xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
     def test_genAST_sub_choice_by_primed(self):
@@ -318,7 +318,7 @@ class TestInterpSubstitutions():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         assert env.get_value("xx")>=2
-        assert isinstance(env.get_type("xx"), IntegerType)
+        assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
     def test_genAST_sub_func_overw(self):

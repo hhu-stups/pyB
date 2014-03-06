@@ -2,7 +2,7 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import _test_typeit
+from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from parsing import str_ast_to_python_ast
 
@@ -20,7 +20,7 @@ class TestTypesSets():
         env.add_ids_to_frame(["S"])
         env.set_value("S", frozenset(["Huey", "Dewey", "Louie"]))
         lst = [("S", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, [])
+        type_with_known_types(root, env, lst, [])
 
 
     def test_types_simple_set(self):
@@ -36,10 +36,10 @@ class TestTypesSets():
         env.set_value("bb", "bb")
         env.set_value("ID", frozenset(["aa", "bb"]))
         lst = [("aa", SetType("X")),("bb", SetType("X"))]
-        _test_typeit(root, env, lst, ["ID"])
-        assert isinstance(env.get_type("ID"), PowerSetType)
-        assert isinstance(env.get_type("ID").data, SetType)
-        assert env.get_type("ID").data.data =="X"
+        type_with_known_types(root, env, lst, ["ID"])
+        assert isinstance(get_type_by_name(env, "ID"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "ID").data, SetType)
+        assert get_type_by_name(env, "ID").data.data =="X"
 
 
     def test_types_simple_set_empty(self):
@@ -50,8 +50,8 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["ID"])
-        assert isinstance(env.get_type("ID"), PowerSetType)
+        type_with_known_types(root, env, [], ["ID"])
+        assert isinstance(get_type_by_name(env, "ID"), PowerSetType)
 
 
     def test_types_simple_set_com(self):
@@ -62,9 +62,9 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["ID"])
-        assert isinstance(env.get_type("ID"), PowerSetType)
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["ID"])
+        assert isinstance(get_type_by_name(env, "ID"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_simple_set_com2(self):
@@ -76,12 +76,12 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("a", SetType("X")),("b", SetType("X"))]
-        _test_typeit(root, env, lst, ["S","ID"]) 
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("ID"), PowerSetType)
-        assert isinstance(env.get_type("x"), IntegerType)
-        assert isinstance(env.get_type("y"), SetType)
-        assert env.get_type("y").data =="X"
+        type_with_known_types(root, env, lst, ["S","ID"]) 
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "ID"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), SetType)
+        assert get_type_by_name(env, "y").data =="X"
 
 
     def test_types_simple_set_union(self):
@@ -93,16 +93,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("A", PowerSetType(SetType("X"))),("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","T","R"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data =="X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data =="X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data =="X"
+        type_with_known_types(root, env, lst, ["S","T","R"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data =="X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data =="X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data =="X"
 
 
     def test_types_simple_cart_prod(self):
@@ -114,9 +114,9 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("A", PowerSetType(SetType("X"))),("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, CartType)
+        type_with_known_types(root, env, lst, ["S"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, CartType)
 
 
     def test_types_simple_pow(self):
@@ -128,9 +128,9 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, PowerSetType)
+        type_with_known_types(root, env, lst, ["S"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, PowerSetType)
 
 
     def test_types_simple_pow2(self):
@@ -141,11 +141,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","B"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, PowerSetType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("B").data, IntegerType)
+        type_with_known_types(root, env, [], ["S","B"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, PowerSetType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
 
 
     def test_types_simple_subset(self):
@@ -157,10 +157,10 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
+        type_with_known_types(root, env, lst, ["S"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
 
 
     def test_types_set_union(self):
@@ -172,16 +172,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_union2(self):
@@ -193,16 +193,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_union3(self):
@@ -214,16 +214,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_union4(self):
@@ -235,16 +235,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_union5(self):
@@ -256,16 +256,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_union6(self):
@@ -277,16 +277,16 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("B", PowerSetType(SetType("X")))]
-        _test_typeit(root, env, lst, ["S","R","T"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, SetType)
-        assert env.get_type("S").data.data == "X"
-        assert isinstance(env.get_type("R"), PowerSetType)
-        assert isinstance(env.get_type("R").data, SetType)
-        assert env.get_type("R").data.data == "X"
-        assert isinstance(env.get_type("T"), PowerSetType)
-        assert isinstance(env.get_type("T").data, SetType)
-        assert env.get_type("T").data.data == "X"
+        type_with_known_types(root, env, lst, ["S","R","T"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, SetType)
+        assert get_type_by_name(env, "S").data.data == "X"
+        assert isinstance(get_type_by_name(env, "R"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "R").data, SetType)
+        assert get_type_by_name(env, "R").data.data == "X"
+        assert isinstance(get_type_by_name(env, "T"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "T").data, SetType)
+        assert get_type_by_name(env, "T").data.data == "X"
 
 
     def test_types_set_power_unify(self):
@@ -297,15 +297,15 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A","B","x","y"])
-        assert isinstance(env.get_type("x"), PowerSetType)
-        assert isinstance(env.get_type("x").data, IntegerType)
-        assert isinstance(env.get_type("y"), PowerSetType)
-        assert isinstance(env.get_type("y").data, PowerSetType)
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("B").data, PowerSetType)
+        type_with_known_types(root, env, [], ["A","B","x","y"])
+        assert isinstance(get_type_by_name(env, "x"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "y").data, PowerSetType)
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data, PowerSetType)
 
 
     def test_types_set_power_unify2(self):
@@ -316,9 +316,9 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
+        type_with_known_types(root, env, [], ["S"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
 
 
     def test_types_set_power_unify3(self):
@@ -329,10 +329,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","x"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["S","x"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_set_power_unify4(self):
@@ -343,12 +343,12 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","X","y"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
-        assert isinstance(env.get_type("X"), PowerSetType)
-        assert isinstance(env.get_type("X").data, IntegerType)
-        assert isinstance(env.get_type("y"), IntegerType)
+        type_with_known_types(root, env, [], ["S","X","y"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "X"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "X").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
 
 
     def test_types_set_power_unify5(self):
@@ -359,10 +359,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","x"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["S","x"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_set_power_unify6(self):
@@ -373,12 +373,12 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","A","B"])
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("B").data, IntegerType)
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["x","A","B"])
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_set_power_unify7(self):
@@ -389,13 +389,13 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","A","B"])
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("B").data, IntegerType)
-        assert isinstance(env.get_type("x"), PowerSetType)
-        assert isinstance(env.get_type("x").data, IntegerType)
+        type_with_known_types(root, env, [], ["x","A","B"])
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x").data, IntegerType)
 
 
     def test_types_set_power_unify8(self):
@@ -406,13 +406,13 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","A","B"])
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("B").data, IntegerType)
-        assert isinstance(env.get_type("x"), PowerSetType)
-        assert isinstance(env.get_type("x").data, IntegerType)
+        type_with_known_types(root, env, [], ["x","A","B"])
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "x").data, IntegerType)
 
 
     def test_types_set_power_unify9(self):
@@ -423,10 +423,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","x"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
-        assert isinstance(env.get_type("x"), IntegerType)
+        type_with_known_types(root, env, [], ["S","x"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
 
     def test_types_set_comp_unify(self):
@@ -437,11 +437,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","a","b"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType) 
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
+        type_with_known_types(root, env, [], ["S","a","b"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType) 
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
 
 
     def test_types_set_comp_unify2(self):
@@ -452,11 +452,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","a","b"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType)
-        assert isinstance(env.get_type("a"), IntegerType)
-        assert isinstance(env.get_type("b"), IntegerType)
+        type_with_known_types(root, env, [], ["S","a","b"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
 
 
     def test_types_set_comp_unify3(self):
@@ -467,10 +467,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","a"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType) 
-        assert isinstance(env.get_type("a"), IntegerType)
+        type_with_known_types(root, env, [], ["S","a"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType) 
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
 
 
 
@@ -482,10 +482,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","a"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType) 
-        assert isinstance(env.get_type("a"), IntegerType)
+        type_with_known_types(root, env, [], ["S","a"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType) 
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
 
 
     def test_types_set_sub_unify(self):
@@ -496,11 +496,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","A","B"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, IntegerType) 
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("B"), PowerSetType)
+        type_with_known_types(root, env, [], ["S","A","B"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType) 
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
 
 
     def test_types_set_cart_unify(self):
@@ -511,11 +511,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["S","A","B"])
-        assert isinstance(env.get_type("S"), PowerSetType)
-        assert isinstance(env.get_type("S").data, CartType) 
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B").data, IntegerType)
+        type_with_known_types(root, env, [], ["S","A","B"])
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, CartType) 
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
 
 
     def test_types_set_cart_unify2(self):
@@ -526,11 +526,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A","B"])
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B").data, IntegerType)
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("B"), PowerSetType)
+        type_with_known_types(root, env, [], ["A","B"])
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
 
 
     def test_types_set_cart_unify3(self):
@@ -541,11 +541,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A","B"])
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B").data, IntegerType)
+        type_with_known_types(root, env, [], ["A","B"])
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B").data, IntegerType)
 
 
     def test_types_set_cart_unify4(self):
@@ -556,12 +556,12 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A","B"])
-        assert isinstance(env.get_type("A"), PowerSetType)
-        assert isinstance(env.get_type("B"), PowerSetType)
-        assert isinstance(env.get_type("A").data, IntegerType)
-        assert isinstance(env.get_type("B").data, PowerSetType)
-        assert isinstance(env.get_type("B").data.data, IntegerType)
+        type_with_known_types(root, env, [], ["A","B"])
+        assert isinstance(get_type_by_name(env, "A"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "B"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "A").data, IntegerType)
+        assert isinstance(get_type_by_name(env, "B").data, PowerSetType)
+        assert isinstance(get_type_by_name(env, "B").data.data, IntegerType)
 
 
     def test_types_set_cart_tuple(self):
@@ -572,8 +572,8 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x"])
-        assert isinstance(env.get_type("x"), CartType)
+        type_with_known_types(root, env, [], ["x"])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
 
 
     def test_types_set_cart_tuple2(self):
@@ -584,12 +584,12 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["x","y"])
-        assert isinstance(env.get_type("x"), CartType)
-        assert isinstance(env.get_type("y"), PowerSetType)
-        assert isinstance(env.get_type("y").data, CartType)
-        assert isinstance(env.get_type("y").data.data[0].data, CartType)
-        assert isinstance(env.get_type("y").data.data[1].data, IntegerType)
+        type_with_known_types(root, env, [], ["x","y"])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
+        assert isinstance(get_type_by_name(env, "y"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "y").data, CartType)
+        assert isinstance(get_type_by_name(env, "y").data.data[0].data, CartType)
+        assert isinstance(get_type_by_name(env, "y").data.data[1].data, IntegerType)
 
 
     def test_types_set_gen_union(self):
@@ -601,12 +601,12 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("S", PowerSetType(SetType("S")))]
-        _test_typeit(root, env, lst, ["U","u"])
-        assert isinstance(env.get_type("U"), PowerSetType)
-        assert isinstance(env.get_type("U").data, PowerSetType)
-        assert isinstance(env.get_type("U").data.data, SetType)
-        assert isinstance(env.get_type("u"), PowerSetType)
-        assert isinstance(env.get_type("u").data, SetType)
+        type_with_known_types(root, env, lst, ["U","u"])
+        assert isinstance(get_type_by_name(env, "U"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "U").data, PowerSetType)
+        assert isinstance(get_type_by_name(env, "U").data.data, SetType)
+        assert isinstance(get_type_by_name(env, "u"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "u").data, SetType)
 
 
     def test_types_set_gen_inter(self):
@@ -618,12 +618,12 @@ class TestTypesSets():
         # Type
         env = Environment()
         lst = [("S", PowerSetType(SetType("S")))]
-        _test_typeit(root, env, lst, ["U","u"])
-        assert isinstance(env.get_type("U"), PowerSetType)
-        assert isinstance(env.get_type("U").data, PowerSetType)
-        assert isinstance(env.get_type("U").data.data, SetType)
-        assert isinstance(env.get_type("u"), PowerSetType)
-        assert isinstance(env.get_type("u").data, SetType)
+        type_with_known_types(root, env, lst, ["U","u"])
+        assert isinstance(get_type_by_name(env, "U"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "U").data, PowerSetType)
+        assert isinstance(get_type_by_name(env, "U").data.data, SetType)
+        assert isinstance(get_type_by_name(env, "u"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "u").data, SetType)
 
 
     def test_types_string(self):
@@ -634,8 +634,8 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["s"])
-        assert isinstance(env.get_type("s"), StringType)
+        type_with_known_types(root, env, [], ["s"])
+        assert isinstance(get_type_by_name(env, "s"), StringType)
     
 
     def test_types_string2(self):
@@ -646,11 +646,11 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["s"])
-        assert isinstance(env.get_type("s"), PowerSetType)
-        assert isinstance(env.get_type("s").data, CartType)
-        assert isinstance(env.get_type("s").data.data[0].data, IntegerType)
-        assert isinstance(env.get_type("s").data.data[1].data, StringType)
+        type_with_known_types(root, env, [], ["s"])
+        assert isinstance(get_type_by_name(env, "s"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "s").data, CartType)
+        assert isinstance(get_type_by_name(env, "s").data.data[0].data, IntegerType)
+        assert isinstance(get_type_by_name(env, "s").data.data[1].data, StringType)
 
 
     def test_types_bool(self):
@@ -661,10 +661,10 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A","B","C"])
-        assert isinstance(env.get_type("A"), BoolType)
-        assert isinstance(env.get_type("B"), BoolType)
-        assert isinstance(env.get_type("C"), BoolType)
+        type_with_known_types(root, env, [], ["A","B","C"])
+        assert isinstance(get_type_by_name(env, "A"), BoolType)
+        assert isinstance(get_type_by_name(env, "B"), BoolType)
+        assert isinstance(get_type_by_name(env, "C"), BoolType)
 
 
     def test_types_bool2(self):
@@ -675,5 +675,5 @@ class TestTypesSets():
 
         # Type
         env = Environment()
-        _test_typeit(root, env, [], ["A"])
-        assert isinstance(env.get_type("A"), BoolType)
+        type_with_known_types(root, env, [], ["A"])
+        assert isinstance(get_type_by_name(env, "A"), BoolType)

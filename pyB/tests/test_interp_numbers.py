@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from interp import interpret
-from typing import _test_typeit
+from util import type_with_known_types
 from helpers import file_to_AST_str, string_to_file
 from parsing import str_ast_to_python_ast
 
@@ -243,7 +243,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.add_ids_to_frame(["S"])
-        _test_typeit(root.children[0], env, [], ["S"])
+        type_with_known_types(root.children[0], env, [], ["S"])
         env.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
@@ -257,7 +257,7 @@ class TestInterpNumbers():
         # Test
         env = Environment()
         env.add_ids_to_frame(["S"])
-        _test_typeit(root.children[0], env, [], ["S"])
+        type_with_known_types(root.children[0], env, [], ["S"])
         env.set_value("S", frozenset([1,2,3,4,5]))
         assert interpret(root.children[0], env)
 
@@ -270,7 +270,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -282,7 +282,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert not interpret(root.children[0],env)
 
 
@@ -294,7 +294,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -309,7 +309,7 @@ class TestInterpNumbers():
         env.add_ids_to_frame(["S"])
         env.set_value("S", frozenset([5000]))
         env._max_int = 2**16
-        _test_typeit(root.children[0], env, [], ["S"])
+        type_with_known_types(root.children[0], env, [], ["S"])
         assert interpret(root.children[0],env)
  
         
@@ -321,7 +321,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -333,7 +333,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert not interpret(root.children[0],env)
 
 
@@ -345,7 +345,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -357,7 +357,7 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -372,7 +372,7 @@ class TestInterpNumbers():
         env.add_ids_to_frame(["ID"])
         lst = [("ID", PowerSetType(SetType("ID")))]
         env.set_value("ID", frozenset(["a","b"]))
-        _test_typeit(root.children[0], env, lst, "")
+        type_with_known_types(root.children[0], env, lst, "")
         assert interpret(root.children[0],env)
 
 
@@ -386,7 +386,7 @@ class TestInterpNumbers():
         env = Environment()
         env.add_ids_to_frame(["x"])
         env.set_value("x", 2)
-        _test_typeit(root.children[0], env, [], "x")
+        type_with_known_types(root.children[0], env, [], "x")
         assert interpret(root.children[0],env)
 
 
@@ -400,7 +400,7 @@ class TestInterpNumbers():
         env = Environment()
         env.add_ids_to_frame(["x"])
         env.set_value("x", 2)
-        _test_typeit(root.children[0], env, [], "x")
+        type_with_known_types(root.children[0], env, [], "x")
         assert interpret(root.children[0],env)
 
 

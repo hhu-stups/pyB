@@ -3,9 +3,9 @@ from ast_nodes import *
 from btypes import *
 from environment import Environment
 from interp import interpret
-from util import arbitrary_init_machine
+from util import arbitrary_init_machine, type_with_known_types
 from helpers import file_to_AST_str, string_to_file
-from typing import _test_typeit, type_check_bmch
+from typing import type_check_bmch
 from parsing import parse_ast, str_ast_to_python_ast
 
 file_name = "input.txt"
@@ -432,7 +432,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -444,7 +444,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        _test_typeit(root.children[0], env, [], [])
+        type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
 
@@ -461,7 +461,7 @@ class TestInterpSets():
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("T", frozenset(["a"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root.children[0], env, lst, ["T","S"])
+        type_with_known_types(root.children[0], env, lst, ["T","S"])
         assert interpret(root.children[0],env)
 
 
@@ -477,7 +477,7 @@ class TestInterpSets():
         env.set_value("ID", frozenset(["a","b"]))
         env.set_value("S", frozenset(["a","b"]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root.children[0], env, lst, ["S"])
+        type_with_known_types(root.children[0], env, lst, ["S"])
         assert not interpret(root.children[0],env)
 
 
@@ -493,7 +493,7 @@ class TestInterpSets():
         env.set_value("ID", frozenset(["a","b"]))
         env.set_value("T", frozenset([frozenset(["a","b"]),frozenset(["a"]),frozenset(["b"]),frozenset([])]))
         lst = [("ID", PowerSetType(SetType("ID")))]
-        _test_typeit(root.children[0], env, lst, ["T"])
+        type_with_known_types(root.children[0], env, lst, ["T"])
         assert interpret(root.children[0],env)
 
 

@@ -108,20 +108,14 @@ class TypeCheck_Environment():
         self.id_to_nodes_stack = []
         self.id_to_types_stack = []
         self.id_to_enum_hint_stack = []
+        
 
-
-    def init_env(self, known_types_list, idNames):
+    def init_env(self, idNames):
+        # 1. first stack frame
         id_to_nodes_map = {} # A: str->NODE
         id_to_types_map = {} # T: str->Type
         id_to_enum_hint = {} # E: str->str
-        # 1. write known Informations 
-        for atuple in known_types_list:
-            id_Name = atuple[0]
-            atype = atuple[1]
-            id_to_types_map[id_Name] = UnknownType(id_Name, atype)
-            id_to_nodes_map[id_Name] = []
-            id_to_enum_hint[id_Name] = None
-        # 2. and ids with unknown types
+        # 2. add ids with unknown types
         for id_Name in idNames:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
@@ -429,28 +423,27 @@ def unknown_closure(atype):
         return atype
 
 
-# TODO: rename
-def _test_typeit(root, env, known_types_list, idNames):
+def type_check_predicate(root, env, idNames):
     type_env = TypeCheck_Environment()
-    type_env.init_env(known_types_list, idNames)
+    type_env.init_env(idNames)     
     typeit(root, env, type_env)
     type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
     resolve_type(env) # throw away unknown types
     return type_env   # contains only knowladge about ids at global level
 
 
-def type_check_predicate(root, env, idNames):
-    ## FIXME: replace this call someday
-    type_env = _test_typeit(root.children[0], env, [], idNames)
-
 def type_check_expression(root, env, idNames):
-    ## FIXME: replace this call someday
-    type_env = _test_typeit(root.children[0], env, [], idNames)
+    type_env = TypeCheck_Environment()
+    type_env.init_env(idNames)   
+    typeit(root, env, type_env)
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    resolve_type(env) # throw away unknown types
+    return type_env   # contains only knowladge about ids at global level
 
 
 def type_check_root_bmch(root, env, mch):
     type_env = type_check_bmch(root, env, mch)
-    # type check solution file when all mch are typed
+    # type check solution file when all mch are typed (type-informations need to type file)
     if env.solution_root:
         typeit(env.solution_root, env, type_env) 
     
@@ -460,7 +453,11 @@ def type_check_bmch(root, env, mch):
     idNames = mch.eset_names + mch.dset_names + mch.eset_elem_names + mch.const_names + mch.var_names
     for node in mch.scalar_params + mch.set_params:
         idNames.append(node.idName) # add machine-parameters
-    type_env = _test_typeit(root, env, [], idNames) ## FIXME: replace
+    type_env = TypeCheck_Environment()
+    type_env.init_env(idNames)    
+    typeit(root, env, type_env)
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    resolve_type(env) # throw away unknown types    
     check_mch_parameter(root, env, mch)
     return type_env
 
