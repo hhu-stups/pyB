@@ -14,6 +14,7 @@ from bexceptions import *
 def all_values(node, env):
     assert isinstance(node, AIdentifierExpression)
     if node.enum_hint:
+        print "USUNG Enum hint", node.enum_hint
         return env.get_value(node.enum_hint)
     atype = env.get_type_by_node(node)
     return all_values_by_type(atype, env)
@@ -57,6 +58,7 @@ def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
     if node.enum_hint:
+        print "all values by USUNG Enum hint", node.enum_hint
         all_values = env.get_value(node.enum_hint)
     else:
     	atype = env.get_type_by_node(node)

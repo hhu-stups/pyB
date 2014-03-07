@@ -62,6 +62,7 @@ def file_to_AST_str(file_name_str, path=""):
 
 
 # returns list of 2-tuples (predicate, substitution) for every select-branch
+# FIXME: not used
 def select_ast_to_list(select_ast):
     assert isinstance(select_ast, ASelectSubstitution)
     result = []
@@ -109,7 +110,7 @@ def find_var_nodes(node):
     return lst
 
 
-# helper for find_var_nodes
+# helper for find_var_nodes, used only by typing of predicates or expressions
 # TODO: quantified preds
 def _find_var_nodes(node, lst, black_list):
     if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression):
@@ -137,7 +138,8 @@ def _find_var_nodes(node, lst, black_list):
 
 
 # search for all substitutions which change a variable.
-# This is used in parallel-substitutions to detect modifications of the same vars.
+# This is only used in parallel-substitutions to detect modifications of the same vars.
+# TODO: Think of some way to do this not at runtime, but only once static at startup
 def find_assignd_vars(node):
     lst = []
     _find_assignd_vars(node, lst)  # side-effect: fills list

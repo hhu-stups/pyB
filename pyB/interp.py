@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import find_var_nodes, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known
+from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -484,9 +484,7 @@ def interpret(node, env):
     #print pretty_print(node)  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
-        idNodes = find_var_nodes(node.children[0]) 
-        idNames = [n.idName for n in idNodes]
-        type_check_predicate(node, env, idNames)
+        type_check_predicate(node, env)
         if idNames ==[]: # variable free predicate
             result = interpret(node.children[0], env)
             print result
@@ -524,9 +522,7 @@ def interpret(node, env):
         return None
     elif isinstance(node, AExpressionParseUnit): #TODO more
         #TODO: move print to animation_clui
-        idNodes = find_var_nodes(node.children[0]) 
-        idNames = [n.idName for n in idNodes]
-        type_check_expression(node, env, idNames)
+        type_check_expression(node, env)
         if idNames ==[]: # variable free expression
             result = interpret(node.children[0], env)
             print print_values_b_style(result)

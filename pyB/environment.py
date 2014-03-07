@@ -8,7 +8,7 @@ from pretty_printer import pretty_print
 
 # TODO: This must be a singelton object
 class Environment():
-    def __init__(self):
+    def __init__(self): 
         # Types of AST-ID-Nodes: Node->type.
         # This map is used by the enumeration
         # and was created and filled by typeit of the module typing.
@@ -20,7 +20,7 @@ class Environment():
         self._min_int = MIN_INT
         self._max_int = MAX_INT
         self._bmachine_search_dir = BMACHINE_SEARCH_DIR
-        self.solution_root = None         # predicateparseunit of solution-ast
+        self.solution_root = None         # predicateparseunit of solution-ast(prob file)
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = [""]           # remember all strings seen (in this or other bmachines). used to enumerate 'STRING'
@@ -28,13 +28,13 @@ class Environment():
         # It should prevent from intensive lookup while animation and op_call substitutions
         self.visible_operations = frozenset([]) # rettype, opname, paratype, backlink:owner_bmch, bool:is_query_op
         self.operations = {}   
-        self._all_operation_asts = []      # cache for get_all_visible_op_asts()
+        self._all_operation_asts = []      # cache for get_all_visible_op_asts() method
         self.parsed_bmachines = {}
         self.init_sets_bmachnes_names = [] # names of all bmachines with set-init done
         self.set_up_bmachines_names   = [] # set up constants done
         self.init_bmachines_names     = [] # init done
         # animation parameters
-        self.set_up_state_on_stack  = False
+        self.set_up_state_on_stack  = False #MOVE to status object or something like that
         self.init_state_on_stack    = False
         self.set_up_done            = False
         self.init_done              = False

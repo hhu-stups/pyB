@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
-from helpers import print_ast
+from helpers import print_ast, find_var_nodes
 from bmachine import BMachine
 from pretty_printer import pretty_print
 from bexceptions import ResolveFailedException, BTypeException
@@ -258,7 +258,7 @@ class TypeCheck_Environment():
                 enum_hint = id_to_enum_hint[idName]
             except KeyError:
                 enum_hint = None #TODO: (#ISSUE 19) child env
-            # unknown now. will be found in resole()
+            # Type unknown now. will be found in resole()
             # This is when local vars use global vars
             # which are unknown a this time
             if atype==None:
@@ -423,7 +423,9 @@ def unknown_closure(atype):
         return atype
 
 
-def type_check_predicate(root, env, idNames):
+def type_check_predicate(root, env):
+    idNodes = find_var_nodes(node.children[0]) 
+    idNames = [n.idName for n in idNodes]
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)     
     typeit(root, env, type_env)
@@ -432,7 +434,9 @@ def type_check_predicate(root, env, idNames):
     return type_env   # contains only knowladge about ids at global level
 
 
-def type_check_expression(root, env, idNames):
+def type_check_expression(root, env):
+    idNodes = find_var_nodes(root.children[0]) 
+    idNames = [n.idName for n in idNodes]
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)   
     typeit(root, env, type_env)
