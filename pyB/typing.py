@@ -110,9 +110,9 @@ class TypeCheck_Environment():
         
 
     def init_env(self, idNames):
-        # 1. first stack frame
-        id_to_nodes_map = {} # A: str->NODE
-        id_to_types_map = {} # T: str->Type
+        # 1. create first stack frame
+        id_to_nodes_map = {} # str->NODE (all nodes with name str)
+        id_to_types_map = {} # str->Type (all types of str)
         # 2. add ids with unknown types
         for id_Name in idNames:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
@@ -245,12 +245,14 @@ class TypeCheck_Environment():
         for idName in type_top_map:
             utype = type_top_map[idName]
             atype = unknown_closure(utype)
-            # Type unknown now. will be found in resole()
+            # Type unknown now. will be found in resolve()
             # This is when local vars use global vars
             # which are unknown a this time
             if atype==None:
                 atype= utype
+            # get all nodes with the name "idName"
             node_lst = node_top_map[idName]
+            # set all these nodes to the type "atype"
             for node in node_lst:
                 env.node_to_type_map[node] = atype
 
@@ -379,10 +381,8 @@ def unknown_closure(atype):
     if not isinstance(atype, UnknownType):
         return atype
     i = 0
+    seen_types = [atype]
     while True:
-        i = i +1
-        if i==100: #DEBUG: maybe endles loop
-            assert 2==1
         if not isinstance(atype.real_type, UnknownType):
             break
         elif isinstance(atype.real_type, PowORIntegerType):
@@ -390,6 +390,13 @@ def unknown_closure(atype):
         elif isinstance(atype.real_type, PowCartORIntegerType):
             break
         atype = atype.real_type
+        # cycle found. This musst be a bug!
+        if atype in seen_types:
+            print "WARNING: cyclic type chain found while unknown_closure."
+            print "There is a Bug inside the type checker!"
+            print seen_types
+            raise Exception()
+        seen_types.append(atype)
     if isinstance(atype.real_type, BType) or isinstance(atype.real_type, PowORIntegerType) or isinstance(atype.real_type, PowCartORIntegerType):
         return atype.real_type
     else:
