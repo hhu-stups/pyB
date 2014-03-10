@@ -107,22 +107,18 @@ class TypeCheck_Environment():
         # is used to construct the env.node_to_type_map
         self.id_to_nodes_stack = []
         self.id_to_types_stack = []
-        self.id_to_enum_hint_stack = []
         
 
     def init_env(self, idNames):
         # 1. first stack frame
         id_to_nodes_map = {} # A: str->NODE
         id_to_types_map = {} # T: str->Type
-        id_to_enum_hint = {} # E: str->str
         # 2. add ids with unknown types
         for id_Name in idNames:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
-            id_to_enum_hint[id_Name] = None
         self.id_to_types_stack = [id_to_types_map]
         self.id_to_nodes_stack = [id_to_nodes_map]
-        self.id_to_enum_hint_stack = [id_to_enum_hint]
 
 
     def add_known_types_of_child_env(self, id_to_types_map):
@@ -138,14 +134,11 @@ class TypeCheck_Environment():
     def push_frame(self, id_Names):
         id_to_nodes_map = {} # A: str->NODE
         id_to_types_map = {} # T: str->Type
-        id_to_enum_hint = {} # E: str->str
         for id_Name in id_Names:
             id_to_nodes_map[id_Name] = [] # no Nodes at the moment
             id_to_types_map[id_Name] = UnknownType(id_Name, None)
-            id_to_enum_hint[id_Name] = None
         self.id_to_nodes_stack.append(id_to_nodes_map)
         self.id_to_types_stack.append(id_to_types_map)
-        self.id_to_enum_hint_stack.append(id_to_enum_hint)
 
 
     def add_node_by_id(self, node):
@@ -241,23 +234,17 @@ class TypeCheck_Environment():
     def pop_frame(self, env):
         node_top_map = self.id_to_nodes_stack[-1]
         type_top_map = self.id_to_types_stack[-1]
-        id_to_enum_hint = self.id_to_enum_hint_stack[-1]
         self.id_to_nodes_stack.pop()
         self.id_to_types_stack.pop()
-        self.id_to_enum_hint_stack.pop()
         #assert isinstance(env, Environment)
-        self.write_to_env(env, type_top_map, node_top_map, id_to_enum_hint)
+        self.write_to_env(env, type_top_map, node_top_map)
 
 
 
-    def write_to_env(self, env, type_top_map, node_top_map, id_to_enum_hint):
+    def write_to_env(self, env, type_top_map, node_top_map):
         for idName in type_top_map:
             utype = type_top_map[idName]
             atype = unknown_closure(utype)
-            try:
-                enum_hint = id_to_enum_hint[idName]
-            except KeyError:
-                enum_hint = None #TODO: (#ISSUE 19) child env
             # Type unknown now. will be found in resole()
             # This is when local vars use global vars
             # which are unknown a this time
@@ -265,7 +252,6 @@ class TypeCheck_Environment():
                 atype= utype
             node_lst = node_top_map[idName]
             for node in node_lst:
-                node.enum_hint = enum_hint
                 env.node_to_type_map[node] = atype
 
 
@@ -288,18 +274,6 @@ class TypeCheck_Environment():
         string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?" % idName
         print string
         raise BTypeException(string)
-
-
-    # FIXME: maybe this is nonsense :)
-    def set_enumeration_hint(self, idName, hint_idName):
-        id_to_enum_hint = self.id_to_enum_hint_stack[-1]
-        try:
-            current_hint = id_to_enum_hint[idName]
-        except KeyError: # TODO: child env
-            current_hint = None
-        if current_hint ==None:
-            id_to_enum_hint[idName] = hint_idName
-        # TODO: else choose better set 
 
 
 
@@ -429,7 +403,7 @@ def type_check_predicate(root, env):
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)     
     typeit(root, env, type_env)
-    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types
     return type_env   # contains only knowladge about ids at global level
 
@@ -440,7 +414,7 @@ def type_check_expression(root, env):
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)   
     typeit(root, env, type_env)
-    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types
     return type_env   # contains only knowladge about ids at global level
 
@@ -460,7 +434,7 @@ def type_check_bmch(root, env, mch):
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)    
     typeit(root, env, type_env)
-    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types    
     check_mch_parameter(root, env, mch)
     return type_env
@@ -713,8 +687,6 @@ def typeit(node, env, type_env):
         unify_element_of(elm_type, set_type, type_env, node)
         #print elm_type, set_type, node.children[0].idName, node.children[1]
         elm_type = unknown_closure(elm_type)
-        if isinstance(elm_type, UnknownType) and isinstance(node.children[0], AIdentifierExpression) and isinstance(node.children[1], AIdentifierExpression):
-            type_env.set_enumeration_hint(node.children[0].idName, node.children[1].idName)
         return BoolType()
     # TODO: notBelong
     elif isinstance(node, ANotBelongPredicate):

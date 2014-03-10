@@ -27,10 +27,9 @@ def type_with_known_types(root, env, known_types_list, idNames):
         atype = atuple[1]
         type_env.id_to_types_stack[0][id_Name]     = UnknownType(id_Name, atype)
         type_env.id_to_nodes_stack[0][id_Name]     = []
-        type_env.id_to_enum_hint_stack[0][id_Name] = None
     # start typing algorithm
     typeit(root, env, type_env)
-    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1], type_env.id_to_enum_hint_stack[-1])
+    type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types
     return type_env   # contains only knowladge about ids at global level
 
@@ -41,8 +40,8 @@ def get_type_by_name(env, string):
 	assert isinstance(string, str)
 	# scoping: if there is more than one "string"
 	# e.g x:Nat & !x.(x:S=>card(x)=3)...
-	if string in [n.idName for n in env.node_to_type_map]:
-		print "WARNING: lookup of type via string. This name is uses more than once: %s" % string        
+	#if string in [n.idName for n in env.node_to_type_map]:
+	#	print "WARNING: lookup of type via string. This name is uses more than once: %s" % string        
 	# linear search for ID with the name string
 	for node in env.node_to_type_map:
 		assert isinstance(node, AIdentifierExpression)

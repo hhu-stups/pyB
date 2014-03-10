@@ -1,3 +1,4 @@
+# This is NOT a constraint solver. It is a wrapper to enable usage of a constraint solver
 # pyB imports:
 from ast_nodes import *
 from enumeration import all_values_by_type
@@ -43,7 +44,7 @@ def calc_constraint_domain(env, varList, predicate):
     # download and unzip python-constraint-1.1.tar.bz2
     # python setup.py build
     # python setup.py install
-    from constraint import *
+    from constraint import Problem
     if predicate==None: # none = no pred. constraining parameter values
     	raise ConstraintNotImplementedException(None) #TODO replace with exception matching problem
     assert isinstance(predicate, Predicate)

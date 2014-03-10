@@ -446,6 +446,30 @@ class TestInterpSets():
         env = Environment()
         type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
+        
+
+    def test_genAST_pred_set_compreh3(self):      
+        string = '''
+        MACHINE Test
+        VARIABLES f, T
+        SETS      S={a,b,c}
+        INVARIANT f<:S & T<:S
+        INITIALISATION T:={a,b}; f:={x| x:S & x/:T}
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
+        assert "c" in env.get_value("f")
+        assert "a" in env.get_value("T")
+        assert "b" in env.get_value("T")
 
 
     def test_genAST_pred_forall3(self):
