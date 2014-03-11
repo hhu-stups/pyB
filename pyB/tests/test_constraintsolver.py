@@ -41,7 +41,7 @@ class TestConstraintSolver():
         
         # Test
         env = Environment()
-        lst = [("S", PowerSetType(IntegerType(None))),("f", PowerSetType(CartType(PowerSetType(IntegerType(None)), PowerSetType(IntegerType(None)))))]
+        lst = [("S", PowerSetType(IntegerType())),("f", PowerSetType(CartType(PowerSetType(IntegerType()), PowerSetType(IntegerType()))))]
         type_with_known_types(root, env, lst, ["T"])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
         assert isinstance(get_type_by_name(env, "y"), IntegerType)

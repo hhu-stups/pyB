@@ -138,7 +138,7 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(IntegerType()))))]
         type_with_known_types(root, env, l, ["f","n"])
         assert isinstance(get_type_by_name(env, "f"), PowerSetType)
         assert isinstance(get_type_by_name(env, "f").data, CartType)
@@ -155,7 +155,7 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(IntegerType()))))]
         type_with_known_types(root, env, l, ["f"])
         assert isinstance(get_type_by_name(env, "f"), PowerSetType)
         assert isinstance(get_type_by_name(env, "f").data, CartType)
@@ -171,7 +171,7 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
-        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType(None)),PowerSetType(IntegerType(None)))))]
+        l = [("r", PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(IntegerType()))))]
         type_with_known_types(root, env, l, ["f"])
         assert isinstance(get_type_by_name(env, "f"), PowerSetType)
         assert isinstance(get_type_by_name(env, "f").data, CartType)

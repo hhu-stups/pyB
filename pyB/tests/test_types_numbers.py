@@ -196,7 +196,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        lst = [("y", IntegerType(42))]
+        lst = [("y", IntegerType())]
         type_with_known_types(root, env, lst, ["x"])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
@@ -209,7 +209,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        lst = [("y", IntegerType(42))]
+        lst = [("y", IntegerType())]
         type_with_known_types(root, env, lst, ["x"])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
 
@@ -222,7 +222,7 @@ class TestTypesNumbers():
 
         # Type
         env = Environment()
-        lst = [("y", IntegerType(2))] # number not important
+        lst = [("y", IntegerType())] # number not important
         type_with_known_types(root, env, lst, ["y"])
 
 

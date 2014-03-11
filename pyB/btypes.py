@@ -26,12 +26,9 @@ class BoolType(BType):
     pass
 
 class IntegerType(BType):
-    def __init__(self, number_or_None):
+    def __init__(self):
         pass
-        # maybe this data is useless for typechecking
-        # TODO: Use this information for error messages
-        #self.data = number_or_None
-
+        
 
 class PowerSetType(BType):
     def __init__(self, aset_type):
