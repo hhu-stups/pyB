@@ -912,7 +912,7 @@ def typeit(node, env, type_env):
         atype1 = unify_equal(set_type1, expected_type1, type_env)
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, AFunctionExpression):
-        # At this point it is imposible to know always the number of arguments!
+        # At this point it is imposible to always know the number of arguments!
         #
         # - num_args: (number of arguments by ast walk of args-nodes) 
         # if one of this args will be (later) unified to an Carttype, 

@@ -107,35 +107,32 @@ def string_to_file(string, file_name, path=""):
 def find_var_nodes(node):
     assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
     lst = []
-    _find_var_nodes(node, lst, []) #side-effect: fills list
+    _find_var_nodes(node, lst) #side-effect: fills list
     return lst
 
 
 # helper for find_var_nodes, used only by typing of predicates or typing expressions.
-# Quantified predicates are not visited because their variabels are enumerated seperate. 
-def _find_var_nodes(node, lst, black_list):
-    if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression):
-        #bl = black_list + [x.idName for x in node.children[:-1]]
-        #_find_var_nodes(node.children[-1], lst, bl)
+# Quantified predicates are not visited because their variabels are enumerated separate. 
+def _find_var_nodes(node, lst):
+    # (case 1) new scope needed, stop search. This variables will be typed later
+    if isinstance(node, (AUniversalQuantificationPredicate, AExistentialQuantificationPredicate, AComprehensionSetExpression, ALambdaExpression)):
         return
-    elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression) or isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression) or isinstance(node, ALambdaExpression):
-        bl = black_list + [x.idName for x in node.children[:-2]]
-        _find_var_nodes(node.children[-2], lst, bl)
-        _find_var_nodes(node.children[-1], lst, bl)
-        return    
+    elif isinstance(node,(AGeneralSumExpression, AGeneralProductExpression, AGeneralUnionExpression, AGeneralIntersectionExpression)):
+        return
+    # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 4)
+    elif isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AFileDefinition): 
+        return 
+    # (case 3) Id node found. Add to list   
     elif isinstance(node, AIdentifierExpression):
-        if (not node.idName in [l.idName for l in lst]) and (not node.idName in black_list):
+        if (not node.idName in [l.idName for l in lst]):
             lst.append(node)
+    elif isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
+        if not node.idName in [l.idName for l in lst]:
+            lst.append(node)
+    # (case 4) deep first search. 
     else:
-        if isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
-            if not node.idName in [l.idName for l in lst]:
-                lst.append(node)
-        try:
-            for n in node.children:
-                _find_var_nodes(n, lst, black_list)
-        except AttributeError:
-            #print "_find_var_nodes: AttributeError" 
-            return #FIXME: no children   
+		for n in node.children:
+			_find_var_nodes(n, lst)
 
 
 # search for all substitutions which change a variable.
@@ -148,12 +145,14 @@ def find_assignd_vars(node):
 
 
 def _find_assignd_vars(node, lst):
+    # (case 1) Assignment found
     if isinstance(node, AAssignSubstitution):
         for i in range(int(node.lhs_size)):
             idNode = node.children[i]
             if isinstance(idNode, AIdentifierExpression):
                 lst.append(idNode.idName)
             else:
+                # FIXME: This assumption may be wrong. Write test: {(1,2)}[1]
                 assert isinstance(idNode, AFunctionExpression)
                 assert isinstance(idNode.children[0], AIdentifierExpression)
                 lst.append(idNode.children[0].idName)
@@ -166,14 +165,14 @@ def _find_assignd_vars(node, lst):
         for i in range(node.idNum):
             idNode = node.children[i]
             assert isinstance(idNode, AIdentifierExpression)
-            lst.append(idNode.idName)            
+            lst.append(idNode.idName)
+    # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 3)
+    elif isinstance(node, (AIntegerExpression, AStringExpression, AFileDefinition, AIdentifierExpression)): 
+        return 
+    # (case 3) deep first search.             
     else:
-        try:
-            for n in node.children:
-                _find_assignd_vars(n, lst)
-        except AttributeError:
-            #print "_find_assignd_vars: AttributeError" 
-            return #FIXME no children
+		for n in node.children:
+			_find_assignd_vars(n, lst)
 
 
 # [[1,2],[3,[[4]]]] -> [1,2,3,4]
