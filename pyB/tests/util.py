@@ -25,7 +25,9 @@ def type_with_known_types(root, env, known_types_list, idNames):
     for atuple in known_types_list:
         id_Name = atuple[0]
         atype = atuple[1]
-        type_env.id_to_types_stack[0][id_Name]     = UnknownType(id_Name, atype)
+        utype = UnknownType(id_Name)
+        utype.real_type = atype
+        type_env.id_to_types_stack[0][id_Name]     = utype
         type_env.id_to_nodes_stack[0][id_Name]     = []
     # start typing algorithm
     typeit(root, env, type_env)

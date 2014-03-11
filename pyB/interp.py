@@ -440,7 +440,6 @@ def _learn_assigned_values(root, env, lst):
                 continue # case not implemented: skip
             
             assert not expression_node==None
-            #idNodes = find_var_nodes(expression_node)
             # TODO: use idNodes-result to check if an eval. of expression node is possible
             # maybe this enum of node-classes becomes unnecessary
             
@@ -483,7 +482,7 @@ def interpret(node, env):
 # ********************************************
     #print pretty_print(node)  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
-    if isinstance(node,APredicateParseUnit): #TODO: move print to animation_clui
+    if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
         type_check_predicate(node, env)
         if idNames ==[]: # variable free predicate
             result = interpret(node.children[0], env)

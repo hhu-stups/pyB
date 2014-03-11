@@ -71,11 +71,7 @@ def run_animation_mode():
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         mch = parse_object
-        type_check_root_bmch(root, env, mch) # also checks all included, seen, used and extend 
-        #if env.solution_root:
-        #    idNodes = find_var_nodes(root.children[0]) 
-        #    idNames = [n.idName for n in idNodes]
-        #    type_check_predicate(env.solution_root, env, idNames)    
+        type_check_root_bmch(root, env, mch) # also checks all included, seen, used and extend  
         # TODO: Check with B spec
                                                                 # 9. animate if ops are present                                                    
         # DO-WHILE Loop

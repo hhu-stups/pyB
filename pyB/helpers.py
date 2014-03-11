@@ -105,17 +105,18 @@ def string_to_file(string, file_name, path=""):
 
 
 def find_var_nodes(node):
+    assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
     lst = []
     _find_var_nodes(node, lst, []) #side-effect: fills list
     return lst
 
 
-# helper for find_var_nodes, used only by typing of predicates or expressions
-# TODO: quantified preds
+# helper for find_var_nodes, used only by typing of predicates or typing expressions.
+# Quantified predicates are not visited because their variabels are enumerated seperate. 
 def _find_var_nodes(node, lst, black_list):
     if isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AComprehensionSetExpression):
-        bl = black_list + [x.idName for x in node.children[:-1]]
-        _find_var_nodes(node.children[-1], lst, bl)
+        #bl = black_list + [x.idName for x in node.children[:-1]]
+        #_find_var_nodes(node.children[-1], lst, bl)
         return
     elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression) or isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression) or isinstance(node, ALambdaExpression):
         bl = black_list + [x.idName for x in node.children[:-2]]

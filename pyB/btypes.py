@@ -27,9 +27,10 @@ class BoolType(BType):
 
 class IntegerType(BType):
     def __init__(self, number_or_None):
+        pass
         # maybe this data is useless for typechecking
         # TODO: Use this information for error messages
-        self.data = number_or_None
+        #self.data = number_or_None
 
 
 class PowerSetType(BType):
@@ -56,20 +57,19 @@ class StructType(BType):
         self.data = dictionary
 
 
-class UnknownType(): # no BType: used later to throw Exceptions
-    # the arg real_type is only set by tests!
-    def __init__(self, name, real_type):
+class UnknownType(): # no BType: used later to throw Exceptions, a type-variable 
+    def __init__(self, name):
         # this member is used to learn the name of sets and for debugging
         self.name = name
         # if this is still None after typechecking 
         # than a Typeerror has been found
-        self.real_type = real_type
+        self.real_type = None
 
 
 # will be decided in resolve()
 class PowCartORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
-        UnknownType.__init__(self, None,None)
+        UnknownType.__init__(self, "PowCartORIntegerType")
         self.data = (arg1, arg2)
 
 
@@ -78,5 +78,5 @@ class PowCartORIntegerType(UnknownType):
 # PowerSetType (of something known at resolve phase)
 class PowORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
-        UnknownType.__init__(self, None,None)
+        UnknownType.__init__(self, "PowORIntegerType")
         self.data = (arg1, arg2) 
