@@ -419,7 +419,7 @@ def pretty_print(node):
         if isinstance(node.children[0], ASuccessorExpression):
             string = pretty_print(node.children[1])
             return "succ("+string+")"
-        # FIXME: maybe string1 is not the function-name. e.g. set-extentions
+        # FIXME:(ISSUE #25) maybe string1 is not the function-name. e.g. set-extentions (see ast_nodes.py AFunctionExpression for examples)
         string1 = pretty_print(node.children[0])
         string2 = ""
         for i in range(len(node.children[1:])):

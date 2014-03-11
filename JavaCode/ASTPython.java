@@ -1031,7 +1031,7 @@ public class ASTPython extends DepthFirstAdapter{
     public void caseAFunctionExpression(AFunctionExpression node)
     {
         List<Node> children = new ArrayList<Node>();
-        children.add(node.getIdentifier());
+        children.add(node.getIdentifier()); // this may not be an ID! e.g {(x,y)}(x)
         if (node.getParameters()!=null)
             children.addAll(node.getParameters());
         printStdOut_manyChildren(node, children);

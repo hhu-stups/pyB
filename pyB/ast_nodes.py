@@ -256,7 +256,7 @@ class ATotalBijectionExpression(Expression):
 class APartialBijectionExpression(Expression):
     pass
 
-
+# e.g. f(x) f~(x) proj1(S,T)(x) (x,y)(x) {(x,y)}(x) {(x|->y)}(x)
 class AFunctionExpression(Expression):
     pass
 

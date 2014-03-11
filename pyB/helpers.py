@@ -62,7 +62,7 @@ def file_to_AST_str(file_name_str, path=""):
 
 
 # returns list of 2-tuples (predicate, substitution) for every select-branch
-# FIXME: not used
+# FIXME:(ISSUE #26) not used
 def select_ast_to_list(select_ast):
     assert isinstance(select_ast, ASelectSubstitution)
     result = []
@@ -152,7 +152,7 @@ def _find_assignd_vars(node, lst):
             if isinstance(idNode, AIdentifierExpression):
                 lst.append(idNode.idName)
             else:
-                # FIXME: This assumption may be wrong. Write test: {(1,2)}[1]
+                # FIXME:(ISSUE #25) This assumption may be wrong. Write test: {(1,2)}(1)
                 assert isinstance(idNode, AFunctionExpression)
                 assert isinstance(idNode.children[0], AIdentifierExpression)
                 lst.append(idNode.children[0].idName)

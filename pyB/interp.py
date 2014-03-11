@@ -581,7 +581,8 @@ def interpret(node, env):
     elif isinstance(node, AEquivalencePredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
-        return expr1 == expr2 # FIXME: maybe this is wrong...
+        assert isinstance(expr1, bool) and isinstance(expr2, bool)
+        return expr1 == expr2 
     elif isinstance(node, ANegationPredicate):
         expr = interpret(node.children[0], env)
         return not expr
@@ -789,9 +790,6 @@ def interpret(node, env):
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        #print elm, aSet, node.children[0], node.children[1]
-        if isinstance(elm,str) and aSet=="":
-            return True # FIXME: hack
         return elm in aSet
     elif isinstance(node, ANotBelongPredicate):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
@@ -960,12 +958,12 @@ def interpret(node, env):
         aSet = make_set_of_realtions(aSet1, aSet2)
         return aSet
     elif isinstance(node, ADomainExpression):
-        # FIXME: crashs if this is not a set of 2-tuple
+        # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
         dom = [e[0] for e in list(aSet)]
         return frozenset(dom)
     elif isinstance(node, ARangeExpression):
-        # FIXME: crashs if this is not a set of 2-tuple
+        # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
         ran = [e[1] for e in list(aSet)]
         return frozenset(ran)
