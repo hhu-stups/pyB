@@ -7,7 +7,7 @@ from boperation import BOperation
 # -*- coding: utf-8 -*-
 # abstract machine object
 class BMachine:
-    def __init__(self, node, env):
+    def __init__(self, node):
         self.name = None
         self.const_names = []
         self.var_names   = []
@@ -15,7 +15,6 @@ class BMachine:
         self.eset_names  = []
         self.eset_elem_names = []
         self.root = node
-        self.env = env # TODO: Check if a elimination of this unclean backref is possible
         self.aMachineHeader = None
         self.scalar_params = []   # scalar machine parameter
         self.set_params    = []   # set machine parameter
@@ -110,53 +109,53 @@ class BMachine:
 
     # This method is a dirty solution to enumerate the set of all strings.
     # It collects all string expressions inside the machine
-    def get_all_strings(self, node):
+    def get_all_strings(self, node, env):
         if isinstance(node, AStringExpression):
-            self.env.all_strings.append(node.string)
+            env.all_strings.append(node.string)
         try:
             for child in node.children:
-                self.get_all_strings(child)
+                self.get_all_strings(child, env)
         except AttributeError:
             return
 
 
     # parse all child machines (constructs BMachine objects)
-    def recursive_self_parsing(self):        
+    def recursive_self_parsing(self, env):        
         self.parse_parameters()
         # remember this to avoid double-parsing and enable later lookup by name
-        self.env.parsed_bmachines[self.name] = self
+        env.parsed_bmachines[self.name] = self
         
-        self.parse_child_machines(self.aIncludesMachineClause, self.included_mch)
-        self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch)
-        self.parse_child_machines(self.aSeesMachineClause, self.seen_mch)
-        self.parse_child_machines(self.aUsesMachineClause, self.used_mch)
+        self.parse_child_machines(self.aIncludesMachineClause, self.included_mch, env)
+        self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch, env)
+        self.parse_child_machines(self.aSeesMachineClause, self.seen_mch, env)
+        self.parse_child_machines(self.aUsesMachineClause, self.used_mch, env)
         self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names()
         all_names = self.const_names + self.var_names #+ self.dset_names + self.eset_names + self.eset_elem_names
         if self.aOperationsMachineClause:
             for op in self.aOperationsMachineClause.children:
-                self.parse_operation(op)
-        bstate = self.env.state_space.get_state()
+                self.parse_operation(op, env)
+        bstate = env.state_space.get_state()
         bstate.register_new_bmachine(self, all_names)        
-        self.get_all_strings(self.root) # get string expressions inside mch.
+        self.get_all_strings(self.root, env) # get string expressions inside mch.
 
 
-    def parse_operation(self, operation):
+    def parse_operation(self, operation, env):
         assert isinstance(operation, AOperation)
         boperation = BOperation()
         boperation.op_name         = operation.opName
         boperation.ast             = operation
         boperation.owner_machine   = self
         self.operations = self.operations.union(frozenset([boperation]))
-        self.env.set_operation_by_name(self.name, operation.opName, boperation)
+        env.set_operation_by_name(self.name, operation.opName, boperation)
 
 
     # parsing of the machines
-    def parse_child_machines(self, mch_clause, mch_list):
+    def parse_child_machines(self, mch_clause, mch_list, env):
         if mch_clause:
             for child in mch_clause.children:
                 # avoid double parsing and two (or more) BMachine object for the same Machine
-                if child.idName in self.env.parsed_bmachines:
-                    mch = self.env.parsed_bmachines[child.idName]
+                if child.idName in env.parsed_bmachines:
+                    mch = env.parsed_bmachines[child.idName]
                     mch_list.append(mch) 
                     continue
 
@@ -166,13 +165,13 @@ class BMachine:
                 else:
                     assert isinstance(child, AMachineReference) 
                 # TODO: impl search strategy
-                file_path_and_name = self.env._bmachine_search_dir + child.idName + BFILE_EXTENSION
+                file_path_and_name = env._bmachine_search_dir + child.idName + BFILE_EXTENSION
                 ast_string, error = file_to_AST_str_no_print(file_path_and_name)
                 if error:
                     print error
                 exec ast_string
-                mch = BMachine(root, self.env)
-                mch.recursive_self_parsing()
+                mch = BMachine(root)
+                mch.recursive_self_parsing(env)
                 mch_list.append(mch)    
 
 
@@ -228,11 +227,11 @@ class BMachine:
     def type_child_machines(self, type_check_bmch, root_type_env, env):
         machine_list = self.included_mch + self.extended_mch + self.seen_mch + self.used_mch
         for mch in machine_list:
-            self.env.current_mch = mch
+            env.current_mch = mch
             type_env = type_check_bmch(mch.root, env, mch)
             id_2_t = type_env.id_to_types_stack[0]
             root_type_env.add_known_types_of_child_env(id_2_t)
-        self.env.current_mch = self  
+        env.current_mch = self  
 
 
     def self_check(self):

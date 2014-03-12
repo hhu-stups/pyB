@@ -11,7 +11,7 @@ from bexceptions import ResolveFailedException, BTypeException
 # helper for debugging.
 # prints a type-tree.
 def __print__btype(tree, t=0):
-    # FIXME: sometimes endles-loops, maybe cyclic (buggy-)trees?
+    # TODO: sometimes endles-loops, maybe cyclic (buggy-)trees? Check for cycles
     #tree = unknown_closure(tree)
     if isinstance(tree, SetType):
        print " "*t, tree, ": ", tree.data 
@@ -101,7 +101,6 @@ def check_if_query_op(sub, var_names):
 
 
 # Helper env: will be thrown away after Typechecking
-# FIXME: But is used in B-machine
 class TypeCheck_Environment():
     def __init__(self):
         # is used to construct the env.node_to_type_map

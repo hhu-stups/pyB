@@ -29,8 +29,8 @@ def parse_ast(root, env):
         return ExpressionParseUnit(root)
     else:
         assert isinstance(root, AAbstractMachineParseUnit)
-        mch = BMachine(root, env) 
-        mch.recursive_self_parsing() # recursive parsing of all included, seen, etc. ...
+        mch = BMachine(root) 
+        mch.recursive_self_parsing(env) # recursive parsing of all included, seen, etc. ...
         env.root_mch = mch
         env.current_mch = mch #current mch
         mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
