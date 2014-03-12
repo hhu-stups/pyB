@@ -93,7 +93,7 @@ def __set_up_constants_list_generator(root, env, mch_list):
                 
 # yield True: B-state was successfully changed
 # yield False: no change
-# FIXME: IF M1 includes/sees M2 : Constants and set which satisfy 
+# FIXME:(ISSUE #27) IF M1 includes/sees M2 : Constants and set which satisfy 
 # M2-Properties but not M1-Properties are NOT a solution
 def __set_up_constants_generator(root, env, mch):
     # 0. set up already done?
@@ -1244,12 +1244,14 @@ def interpret(node, env):
         perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
         return frozenset(perm_sequence_list)
     elif isinstance(node, AConcatExpression):
+        # u:= s^t
         s = interpret(node.children[0], env)
         t = interpret(node.children[1], env)
-        new_t = []
-        for tup in t: # FIXME: maybe wrong order
-            new_t.append(tuple([tup[0]+len(s),tup[1]]))
-        return frozenset(list(s)+new_t)
+        u = list(s)
+        for tup in t:
+            index = tup[0]+len(s)
+            u.append(tuple([index, tup[1]]))
+        return frozenset(u)
     elif isinstance(node, AInsertFrontExpression):
         E = interpret(node.children[0], env)
         s = interpret(node.children[1], env)

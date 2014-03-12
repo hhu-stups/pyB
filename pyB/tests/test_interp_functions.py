@@ -4,8 +4,9 @@ from btypes import *
 from environment import Environment
 from interp import interpret
 from helpers import file_to_AST_str, string_to_file
-from util import type_with_known_types
-from parsing import str_ast_to_python_ast
+from util import type_with_known_types, arbitrary_init_machine
+from parsing import str_ast_to_python_ast, parse_ast
+from typing import type_check_bmch
 
 file_name = "input.txt"
 
@@ -417,7 +418,7 @@ class TestInterpFunctions():
         assert not interpret(root.children[0],env)
 
 
-    def test_genAST_pred_seq_conc(self):
+    def test_genAST_pred_seq_conc1(self):
         # Build AST:
         string_to_file("#PREDICATE s:perm(S) & t:perm(S) => s^t:seq(S)", file_name)
         ast_string = file_to_AST_str(file_name)
@@ -430,6 +431,30 @@ class TestInterpFunctions():
         env.set_value("t", frozenset([(1, 'a'), (2, 'b')]))
         assert interpret(root.children[0],env)
 
+
+
+    def test_genAST_mch_seq_conc(self):
+        # Build AST
+        string = '''
+        MACHINE Test
+        VARIABLES s,t,u
+        SETS S={a,b}
+        INVARIANT s:perm(S) & t:perm(S) & u:seq(S)
+        INITIALISATION s:={(2,a),(1,b)}; t:={(1,a),(2,b)}; u:=s^t
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
+        assert env.get_value("S")==frozenset(['a', 'b'])
+        assert env.get_value("s")==frozenset([(2,'a'), (1,'b')])
+        assert env.get_value("t")==frozenset([(1,'a'), (2,'b')])
+        assert env.get_value("u")==frozenset([(1,'b'), (2,'a'), (3,'a'), (4,'b')])
 
     def test_genAST_pred_seq_prepend(self):
         # Build AST:
@@ -604,7 +629,7 @@ class TestInterpFunctions():
         assert interpret(root.children[0],env)
 
 
-    def test_genAST_pred_seq_conc(self):
+    def test_genAST_pred_seq_conc2(self):
         # Build AST:
         string_to_file("#PREDICATE s:perm(perm(S)) & t=conc(s)", file_name)
         ast_string = file_to_AST_str(file_name)

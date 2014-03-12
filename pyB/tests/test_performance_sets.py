@@ -38,8 +38,8 @@ def test_performance_cart_prod():
 	string_to_file(string, file_name)
 	ast_string = file_to_AST_str(file_name)
 	root = str_ast_to_python_ast(ast_string)
-	print string 
-	print "card(S) and card(T)"
+	#print string 
+	#print "card(S) and card(T)"
 	# Test
 	for i in range(1):
 	#for i in range(501):   
@@ -83,8 +83,8 @@ def test_performance_cart_prod():
 	string_to_file(string, file_name)
 	ast_string = file_to_AST_str(file_name)
 	root = str_ast_to_python_ast(ast_string)
-	print string 
-	print "card(S)"
+	#print string 
+	#print "card(S)"
 	# Test
 	for i in range(1):
 	#for i in range(22):   
@@ -93,7 +93,7 @@ def test_performance_cart_prod():
 		env.set_value("S", frozenset(range(i)))
 		t = time.clock()
 		result = interpret(root.children[0],env)
-		print i ,":", time.clock()-t,"seconds. Itmes:",len(result)  
+		#print i ,":", time.clock()-t,"seconds. Itmes:",len(result)  
 
 #test_performance_cart_prod()
 test_performance_cart_prod()
