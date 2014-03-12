@@ -563,25 +563,14 @@ def typeit(node, env, type_env):
 #
 # **************
     elif isinstance(node, ASetExtensionExpression):
-        # FIXME: This code don't works inside a SET-Section
-        # no Vars are declared!
-        # TODO: maybe new frame?
-        if isinstance(node.children[0], ACoupleExpression):
-            # a realtion: S1->S2->S3-> ... ->S"len(children)"
-            elem_type = typeit(node.children[0], env, type_env)
-            # learn that all Elements must have the same type:
-            for child in node.children[1:]:
-                assert isinstance(child, ACoupleExpression)
-                atype = typeit(child, env, type_env)
-                unify_equal(elem_type, atype, type_env)
-            return PowerSetType(elem_type)
-        else:
-            reftype = typeit(node.children[0], env, type_env)
-            # learn that all Elements must have the same type:
-            for child in node.children[1:]:
-                atype = typeit(child, env, type_env)
-                reftype = unify_equal(atype, reftype, type_env)
-            return PowerSetType(reftype)
+        # {a,b} or {(0,0,41),(1,0,41),(0,1,41),(1,1,41)} or etc.. 
+        # this may be a IdentifierExpression, a CoupleExpression or something else..
+		reftype = typeit(node.children[0], env, type_env)
+		# learn that all Elements must have the same type:
+		for child in node.children[1:]:
+			atype = typeit(child, env, type_env)
+			reftype = unify_equal(atype, reftype, type_env)
+		return PowerSetType(reftype)
     elif isinstance(node, AEmptySetExpression):
         return PowerSetType(UnknownType("AEmptySetExpression"))
     elif isinstance(node, AComprehensionSetExpression):
@@ -963,7 +952,7 @@ def typeit(node, env, type_env):
             arg_type_list2 += arg_list
         
 
-        #TODO: more test for this code
+        #TODO:(ISSUE #28) more test for this code 
         # (6) unification of needed and given args (may both be known at this point)
         k = 0 # list may not be of the same length
         for i in range(number_of_args_given):
@@ -975,7 +964,7 @@ def typeit(node, env, type_env):
                 unify_equal(utype1, arg_type_list[k], type_env, node)
                 unify_equal(utype2, arg_type_list[k+1], type_env, node)
                 #tuple_type = CartType(PowerSetType(utype1), PowerSetType(utype2))
-                # FIXME: wrong unification at this point
+                # FIXME:(ISSUE #28) wrong unification at this point 
                 #unify_equal(arg_type, tuple_type, type_env, node)
                 number_of_args_given = number_of_args_given + 1
                 k = k + 1  # used two types: skip one intertation              

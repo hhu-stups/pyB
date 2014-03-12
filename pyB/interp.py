@@ -1365,11 +1365,11 @@ def interpret(node, env):
         # copy paste :-)
         assert isinstance(id_Name, str)
         return env.get_value(id_Name)
-        # FIXME:
+        # FIXME (ISSUE #28):
         #value_map_copy =  [x for x in env.get_state().value_stack] # no ref. copy
         # pop frame to get old value (you are inside an enumeration):
         #value_map_copy.pop()
-        #value_map_copy.reverse() # FIXME
+        #value_map_copy.reverse() # FIXME (ISSUE #28)
         #stack_depth = len(value_map_copy)
         # lookup:
         #for i in range(stack_depth):
