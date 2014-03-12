@@ -373,33 +373,41 @@ def throw_away_unknown(tree, idName=""):
 
 
 # follows an UnknownType pointer chain:
-# returns an UnknownType or a BType
+# (case 1) It returns the first concrete type if one exists.
+#     Exception: the type-variables of powsets contain informations. 
+#     This information can be used while unification. 
+#      So it is returned like it is a BType
+# (case 2) It returns the last unknown type if no concrete type is part of the chain.
 # WARNING: This BType could point on other UnknownTypes. e.g. POW(X)
 def unknown_closure(atype):
+    # first element contains informations
     if not isinstance(atype, UnknownType):
         return atype
-    i = 0
     seen_types = [atype]
+    # search until 
+    # (1) information found
+    # (2) end of chain reached
+    # (3) cycle found -> This is a Bug inside pyB
     while True:
-        if not isinstance(atype.real_type, UnknownType):
-            break
-        elif isinstance(atype.real_type, PowORIntegerType):
-            break
-        elif isinstance(atype.real_type, PowCartORIntegerType):
-            break
+        if isinstance(atype.real_type, BType):
+            return atype.real_type
+        elif isinstance(atype.real_type, (PowORIntegerType, PowCartORIntegerType)):
+            return atype.real_type
+        elif atype.real_type==None:
+            # This chain points to no Btype. 
+            assert isinstance(atype, UnknownType)
+            return atype
         atype = atype.real_type
         # cycle found. This musst be a bug!
         if atype in seen_types:
-            print "WARNING: cyclic type chain found while unknown_closure."
-            print "There is a Bug inside the type checker!"
-            print seen_types
-            raise Exception()
+            break
         seen_types.append(atype)
-    if isinstance(atype.real_type, BType) or isinstance(atype.real_type, PowORIntegerType) or isinstance(atype.real_type, PowCartORIntegerType):
-        return atype.real_type
-    else:
-        assert atype.real_type==None #FIXME: PowORIntegerType/PowCartORIntegerType
-        return atype
+    
+    print "WARNING: cyclic type chain found while unknown_closure."
+    print "There is a Bug inside the type checker!"
+    print seen_types
+    raise Exception()
+
 
 
 def type_check_predicate(root, env):
@@ -565,12 +573,12 @@ def typeit(node, env, type_env):
     elif isinstance(node, ASetExtensionExpression):
         # {a,b} or {(0,0,41),(1,0,41),(0,1,41),(1,1,41)} or etc.. 
         # this may be a IdentifierExpression, a CoupleExpression or something else..
-		reftype = typeit(node.children[0], env, type_env)
-		# learn that all Elements must have the same type:
-		for child in node.children[1:]:
-			atype = typeit(child, env, type_env)
-			reftype = unify_equal(atype, reftype, type_env)
-		return PowerSetType(reftype)
+        reftype = typeit(node.children[0], env, type_env)
+        # learn that all Elements must have the same type:
+        for child in node.children[1:]:
+            atype = typeit(child, env, type_env)
+            reftype = unify_equal(atype, reftype, type_env)
+        return PowerSetType(reftype)
     elif isinstance(node, AEmptySetExpression):
         return PowerSetType(UnknownType("AEmptySetExpression"))
     elif isinstance(node, AComprehensionSetExpression):
