@@ -1,6 +1,12 @@
+# This exception is thrown in "impossible states".
+# They indicate a bug inside pyb
+class PYBBugException(Exception):
+    def __init__(self, string):
+        self.value = string
 
 class BTypeException(Exception):
     def __init__(self, string):
+        print string
         self.value = string
 
 # caused by e.g: f={(1,42)} & x=f[5] 

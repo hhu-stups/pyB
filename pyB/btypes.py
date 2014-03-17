@@ -54,7 +54,7 @@ class StructType(BType):
         self.data = dictionary
 
 
-class UnknownType(): # no BType: used later to throw Exceptions, a type-variable 
+class UnknownType(): # no BType: used later to throw exceptions, a type-variable 
     def __init__(self, name):
         # this member is used to learn the name of sets and for debugging
         self.name = name

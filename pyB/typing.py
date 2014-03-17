@@ -152,8 +152,8 @@ class TypeCheck_Environment():
                 return
             except KeyError:
                 continue
-        string = "TypeError: %s not found while adding node %s to type-env! Maybe %s is unknown to type-env. IdName not added to type-env..." % (node.idName, node, node.idName)
-        print string
+        string = "TypeError in typing.py: %s not found while adding node %s to type-env! Maybe %s is unknown to type-env. IdName not added to type-env..." % (node.idName, node, node.idName)
+        #print string
         raise BTypeException(string)
 
 
@@ -272,8 +272,8 @@ class TypeCheck_Environment():
             except KeyError:
                 continue
         # error
-        string = "TypeError: idName %s not found! IdName not added to type_env (typing.py)?" % idName
-        print string
+        string = "TypeError in typing.py: idName %s not found! IdName not added to type_env." % idName
+        #print string
         raise BTypeException(string)
 
 
@@ -305,8 +305,8 @@ def throw_away_unknown(tree, idName=""):
         if isinstance(tree.data, UnknownType):
             atype = unknown_closure(tree.data)
             if not isinstance(atype, BType):
-                string = "TypeError! Can not resolve type of %s \n" % idName
-                print string
+                string = "TypeError in typing.py: Can not resolve type of %s \n" % idName
+                #print string
                 raise ResolveFailedException(string)
             assert isinstance(atype, BType)
             tree.data = atype
@@ -330,7 +330,7 @@ def throw_away_unknown(tree, idName=""):
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
         if not arg1.__class__ == arg2.__class__:
-            string = "TypeError: not unifiable %s %s",arg1, arg2
+            string = "TypeError in typing.py: Unable to unify two type variables: %s %s" % (arg1, arg2)
             raise BTypeException(string)
 
         if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
@@ -347,7 +347,7 @@ def throw_away_unknown(tree, idName=""):
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
         if not arg1.__class__ == arg2.__class__:
-            string = "TypeError: not unifiable %s %s",arg1, arg2
+            string = "TypeError in typing.py: Unable to unify two type variables: %s %s" % (arg1, arg2)
             raise BTypeException(string)
 
         if isinstance(arg1, PowerSetType) and isinstance(arg2, PowerSetType):
@@ -356,19 +356,20 @@ def throw_away_unknown(tree, idName=""):
             tree = arg1
         return tree
     elif tree==None: # UnknownTypes point at None, if the are not set to something while unification
-        raise BTypeException("TypeError: can not resolve a Type of: %s" % idName)
+        raise BTypeException("TypeError in typing.py: can not resolve a Type of: %s" % idName)
     elif isinstance(tree, UnknownType):
         tree = unknown_closure(tree)
         if isinstance(tree, UnknownType):
             #print tree
-            string = "TypeError: can not resolve a Type of: %s" % str(tree.name)
-            print string
+            string = "TypeError in typing.py: can not resolve a Type of: %s" % str(tree.name)
+            #print string
             raise ResolveFailedException(string)
         # skip chain-of UnknownTypes
         tree = throw_away_unknown(tree, idName)
         return tree
     else:
         raise Exception("resolve fail: Not Implemented %s %s" % (tree, idName))
+        
 
 
 # follows an UnknownType pointer chain:
@@ -400,12 +401,9 @@ def unknown_closure(atype):
         # cycle found. This musst be a bug!
         if atype in seen_types:
             break
-        seen_types.append(atype)
-    
-    print "WARNING: cyclic type chain found while unknown_closure."
-    print "There is a Bug inside the type checker!"
-    print seen_types
-    raise Exception()
+        seen_types.append(atype)    
+    string = "WARNING: cyclic type chain found while unknown_closure. %s" % seen_types
+    raise PYBBugException(string)
 
 
 
@@ -452,16 +450,20 @@ def type_check_bmch(root, env, mch):
     return type_env
 
 
+# This method is called after successful pass of the type checking of the machine.
+# At this time all parameters musst have a type. 
 def check_mch_parameter(root, env, mch):
-    # TODO: move this code to type-checker
+    # To understand assertions, see: 7.5. page 116
     for n in mch.scalar_params:
-        # page 126
         atype = env.get_type_by_node(n)
-        assert isinstance(atype, IntegerType) or isinstance(atype, BoolType)
+        if not(isinstance(atype, IntegerType) or isinstance(atype, BoolType)):
+            string = "TypeError in typing.py: no integer or boolean type for scalar machine parameter %s" % n.idName
+            raise BTypeException(string)
     for n in mch.set_params:
         atype = env.get_type_by_node(n)
-        assert isinstance(atype, PowerSetType)
-        assert isinstance(atype.data, SetType)
+        if not(isinstance(atype, PowerSetType) or isinstance(atype.data, SetType)):
+            string = "TypeError in typing.py: no set type for set machine parameter %s" % n.idName
+            raise BTypeException(string)
 
 
 # returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
@@ -485,7 +487,7 @@ def typeit(node, env, type_env):
         for child in node.children:
             typeit(child, env, type_env)    
     elif isinstance(node, AAbstractMachineParseUnit):
-        # TODO: mch-parameters
+        # TODO: mch-parameters of child machines
         mch = env.current_mch
         mch.type_child_machines(type_check_bmch, type_env, env)
 
@@ -493,7 +495,9 @@ def typeit(node, env, type_env):
         for idNode in mch.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
             typeit(idNode, env, type_env)
-            
+        
+        # set parameters have always the type Pow(Settype). In contrast to scalar 
+        # parameters, they do not need a typing by the CONSTRAINTS clause.   
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p.idName)
             unify_equal(unknown_type, PowerSetType(SetType(p.idName)), type_env)
@@ -614,7 +618,10 @@ def typeit(node, env, type_env):
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
             return PowORIntegerType(expr1_type, expr2_type)
         else:
-            raise Exception("Unimplemented case: %s",node)
+            string = "Typchecker Bug: unexpected type objects inside minus or cart expression."
+            string += "Unimplemented case: %s %s", expr1_type, expr2_type
+            string += "Last unification was caused by: " + pretty_print(node)
+            raise PYBBugException(string)
     elif isinstance(node, ASetSubtractionExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
@@ -637,7 +644,7 @@ def typeit(node, env, type_env):
             # only unify if IntgerType
             unify_equal(expr1_type, expr2_type, type_env)
             return IntegerType()
-        # else: expr1_type and expr2_type can be different
+        # else: S*T expr1_type and expr2_type can be of different type. 
         elif isinstance(expr1_type, PowerSetType) and isinstance(expr2_type, UnknownType):  # CartExpression
             return PowerSetType(CartType(PowerSetType(expr1_type), PowerSetType(expr2_type)))
         elif isinstance(expr2_type, PowerSetType) and isinstance(expr1_type, UnknownType):  # CartExpression
@@ -647,7 +654,10 @@ def typeit(node, env, type_env):
         elif isinstance(expr1_type, UnknownType) and isinstance(expr2_type, UnknownType):  # Dont know
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
-            raise Exception("Unimplemented case: %s %s", expr1_type, expr2_type)
+            string = "Typchecker Bug: unexpected type objects inside mult or cart expression."
+            string += "Unimplemented case: %s %s", expr1_type, expr2_type
+            string += "Last unification was caused by: " + pretty_print(node)
+            raise PYBBugException(string)
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(UnknownType("APowSubsetExpression"))
@@ -1122,7 +1132,7 @@ def typeit(node, env, type_env):
         atype = typeit(node.children[-1], env, type_env)
         for child in node.children[:-1]:
             idtype = typeit(child, env, type_env)
-            unify_element_of(idtype, atype, type_env)
+            unify_element_of(idtype, atype, type_env, node)
     elif isinstance(node, AVarSubstitution):
         ids = []
         for idNode in node.children[:-1]:
@@ -1349,10 +1359,10 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
                 assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, StringType)
             return maybe_type0
         else:
-            string = "TypeError: Not unifiable: %s %s", maybe_type0, maybe_type1
-            print string
+            string = "TypeError in typing.py! Unable to unify two type variables: %s %s." % (maybe_type0, maybe_type1)
+            #print string
             if pred_node:
-                print "(maybe) caused by: " + pretty_print(pred_node)
+                string += "Last unification was caused by: " + pretty_print(pred_node)
                 #arrgs = type_env.get_current_type("ad")
                 #__print__btype(arrgs)
             raise BTypeException(string)
@@ -1363,24 +1373,27 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
 
     # case 3: Unknown, BType
     elif isinstance(maybe_type0, UnknownType) and isinstance(maybe_type1, BType):
-        return type_env.set_concrete_type(maybe_type0, maybe_type1)
+        return type_env.set_concrete_type(utype=maybe_type0, ctype=maybe_type1)
 
     # case 4: BType, Unknown
     elif isinstance(maybe_type0, BType) and isinstance(maybe_type1, UnknownType):
-        return type_env.set_concrete_type(maybe_type1, maybe_type0)
+        return type_env.set_concrete_type(utype=maybe_type1, ctype=maybe_type0)
     else:
         # no UnknownType and no BType:
         # If this is ever been raised than this is a bug
         # inside the typechecker: Every unifiable expression
         # must be a BType or an UnknownType!
-        print maybe_type0, maybe_type1
-        raise BTypeException("Typchecker Bug: no Unknowntype and no Btype!\nUnification fail: %s != %s" % (maybe_type0, maybe_type1))
+        string = "Typchecker Bug: no Unknowntype and no Btype!\nUnification fail: %s != %s" % (maybe_type0, maybe_type1)
+        if pred_node:
+            string += "Last unification was caused by: " + pretty_print(pred_node)
+        raise PYBBugException(string)
 
 
 
-# called by (and only by) the Belong-Node
+# called by Belong-Node
 # calls the unify_equal method with correct args
-def unify_element_of(elm_type, set_type, type_env, pred_node=None):
+def unify_element_of(elm_type, set_type, type_env, pred_node):
+    assert isinstance(pred_node, (ABecomesElementOfSubstitution, ANotBelongPredicate, ABelongPredicate))
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)
@@ -1394,13 +1407,14 @@ def unify_element_of(elm_type, set_type, type_env, pred_node=None):
         elif isinstance(set_type, UnknownType):
             assert set_type.real_type == None
             unify_equal(set_type, PowerSetType(elm_type), type_env, pred_node)
-        #TODO: add Type-exceptions: e.g. x:POW(42)
         else:
             # no UnknownType and no PowersetType:
             # If this is ever been raised than this is a bug 
             # inside the typechecker. In B the right side S of
             # a Belong-expression (x:S) must be of PowerSetType!
-            raise Exception("Typchecker Bug(?): no UnknownType and no PowersetType")
+            string = "Typchecker Bug: set type is no Unknowntype and no PowersetType!"
+            string += "Last unification was caused by: " + pretty_print(pred_node)
+            raise PYBBugException(string)
         return
     elif isinstance(elm_type, BType):
         unify_equal(PowerSetType(elm_type), set_type, type_env, pred_node)
@@ -1410,4 +1424,6 @@ def unify_element_of(elm_type, set_type, type_env, pred_node=None):
         # If this is ever been raised than this is a bug
         # inside the typechecker: Every unifiable expression
         # must be a BType or an UnknownType!
-        raise Exception("Typchecker Bug: no Unknowntype and no Btype!")
+        string = "Typchecker Bug: element type is no Unknowntype and no Btype!"
+        string += "Last unification was caused by: " + pretty_print(pred_node)
+        raise PYBBugException(string)

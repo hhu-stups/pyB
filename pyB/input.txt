@@ -1,1 +1,4 @@
-#PREDICATE A=bool(1<2)
+
+        MACHINE Test
+        EXTENDS Club(2)
+        END 

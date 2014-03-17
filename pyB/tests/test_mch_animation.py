@@ -1570,7 +1570,32 @@ class TestMCHAnimation():
         #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
 
-        
+    # issue 31
+    import pytest
+    @pytest.mark.xfail
+    def test_extends_with_arg(self):
+        string = '''
+        MACHINE Test
+        EXTENDS Club(2)
+        END '''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        env._min_int = -1
+        env._max_int = 5
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        bstates = set_up_constants(root, env, mch)
+        for s in bstates:
+            env.state_space.add_state(s)
+            assert env.get_value("capacity")==2
+            assert env.get_value("total")>2
+            env.state_space.undo()     
+
 
     def test_scheduler(self):        
         string = '''
@@ -1763,17 +1788,17 @@ class TestMCHAnimation():
         INITIALISATION rand:=1; num:=4
         OPERATIONS
         op = 
-		BEGIN
-	       num:=4;
-		   WHILE num-rand>0 DO
-				rand::{1,2};
-				num := num-rand 
-		   INVARIANT
-				num : INT & num:-1..4 & rand:NAT1 
-		   VARIANT 
-			  num
-		   END
-		END
+        BEGIN
+           num:=4;
+           WHILE num-rand>0 DO
+                rand::{1,2};
+                num := num-rand 
+           INVARIANT
+                num : INT & num:-1..4 & rand:NAT1 
+           VARIANT 
+              num
+           END
+        END
         END'''
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
