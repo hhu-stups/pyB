@@ -149,3 +149,41 @@ class TestTypesTypeExceptions():
         mch = parse_ast(root, env) 
         py.test.raises(BTypeException, "type_check_bmch(root, env, mch)")       
         
+    # ISSUE 32
+    import pytest
+    @pytest.mark.xfail
+    def test_types_wrong_parameter_type3(self):
+        string = '''
+        MACHINE Test
+        SETS S
+        EXTENDS Club(S)
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)          
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env) 
+        py.test.raises(BTypeException, "type_check_bmch(root, env, mch)")  
+
+
+    # ISSUE 32
+    import pytest
+    @pytest.mark.xfail
+    def test_types_wrong_parameter_type4(self):
+        string = '''
+        MACHINE Test
+        SETS S
+        INCLUDES Club(S)
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)          
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env) 
+        py.test.raises(BTypeException, "type_check_bmch(root, env, mch)")  

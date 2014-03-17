@@ -487,7 +487,6 @@ def typeit(node, env, type_env):
         for child in node.children:
             typeit(child, env, type_env)    
     elif isinstance(node, AAbstractMachineParseUnit):
-        # TODO: mch-parameters of child machines
         mch = env.current_mch
         mch.type_child_machines(type_check_bmch, type_env, env)
 
@@ -496,13 +495,15 @@ def typeit(node, env, type_env):
             assert isinstance(idNode, AIdentifierExpression)
             typeit(idNode, env, type_env)
         
-        # set parameters have always the type Pow(Settype). In contrast to scalar 
-        # parameters, they do not need a typing by the CONSTRAINTS clause.   
+        # set machine parameters have always the type Pow(Settype). In contrast to scalar 
+        # machine parameters, they do not need a typing by the CONSTRAINTS clause.   
         for p in mch.set_params:
             unknown_type = type_env.get_current_type(p.idName)
             unify_equal(unknown_type, PowerSetType(SetType(p.idName)), type_env)
 
-        # type
+        # type clauses. Sees, uses, promotes clauses need no typing. The have no parameters 
+        # FIXME: (#ISSUE 32) use type informations of child machines to check extends
+        # and includes parameters
         if mch.aExtendsMachineClause:
             typeit(mch.aExtendsMachineClause, env, type_env)
         if mch.aIncludesMachineClause:

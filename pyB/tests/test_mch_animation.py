@@ -1570,7 +1570,7 @@ class TestMCHAnimation():
         #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
 
-    # issue 31
+    # ISSUE 31
     import pytest
     @pytest.mark.xfail
     def test_extends_with_arg(self):

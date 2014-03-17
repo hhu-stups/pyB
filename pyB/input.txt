@@ -1,4 +1,5 @@
 
         MACHINE Test
-        EXTENDS Club(2)
-        END 
+        SETS S
+        INCLUDES Club(S)
+        END
