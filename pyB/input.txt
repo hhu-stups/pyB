@@ -1,5 +1,6 @@
 
         MACHINE Test
-        SETS S
-        INCLUDES Club(S)
+        VARIABLES RES, xx
+        INVARIANT RES:struct(Mark:NAT, Good_enough:BOOL) & xx:NAT
+        INITIALISATION RES := rec(Mark:4, Good_enough:TRUE); xx:=RES'Mark
         END

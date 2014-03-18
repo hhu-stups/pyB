@@ -96,7 +96,17 @@ class TestTypesTypeExceptions():
 
         # Type and fail
         env = Environment()
-        #type_with_known_types(root, env, [], ["a","b","c"])
+        py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\",\"c\"])")
+
+
+    def test_types_op_err7(self):
+        # Build AST
+        string_to_file("#PREDICATE a**b=c & a=42 & b=NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Type and fail
+        env = Environment()
         py.test.raises(BTypeException, "type_with_known_types(root, env, [], [\"a\",\"b\",\"c\"])")
 
 

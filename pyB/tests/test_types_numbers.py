@@ -631,3 +631,23 @@ class TestTypesNumbers():
         assert isinstance(get_type_by_name(env, "X"), IntegerType)
         assert isinstance(get_type_by_name(env, "yy"), IntegerType)
         assert isinstance(get_type_by_name(env, "sum"), IntegerType)
+
+    def test_types_min_max(self):
+        string = '''
+        MACHINE Test
+		CONSTANTS a,b,  S
+		PROPERTIES a=min(S) & b=max(S) & S<:NAT & card(S)=3
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(get_type_by_name(env, "a"), IntegerType)
+        assert isinstance(get_type_by_name(env, "b"), IntegerType)
+        assert isinstance(get_type_by_name(env, "S"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "S").data, IntegerType)

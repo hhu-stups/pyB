@@ -513,7 +513,7 @@ def typeit(node, env, type_env):
         if mch.aSetsMachineClause: # St
             for child in mch.aSetsMachineClause.children:
                 set_name = child.idName
-                utype = type_env.get_current_type(set_name)
+                utype = type_env.get_current_type(set_name) # hack: use def init with unknown type
                 atype = SetType(set_name)
                 unify_equal(utype, PowerSetType(atype), type_env)
                 if isinstance(child, AEnumeratedSet):
@@ -546,23 +546,23 @@ def typeit(node, env, type_env):
 #        1. Predicates
 #
 # *********************
-    elif isinstance(node, AConjunctPredicate) or isinstance(node, ADisjunctPredicate) or isinstance(node, AImplicationPredicate) or isinstance(node, AEquivalencePredicate) or isinstance(node, ANegationPredicate):
+    elif isinstance(node, (AConjunctPredicate, ADisjunctPredicate, AImplicationPredicate, AEquivalencePredicate, ANegationPredicate)):
         for child in node.children:
             atype = typeit(child, env, type_env)
             expected_type = BoolType()
             unify_equal(atype, expected_type, type_env)
         return BoolType()
-    elif isinstance(node, AUniversalQuantificationPredicate) or isinstance(node, AExistentialQuantificationPredicate):
+    elif isinstance(node, (AUniversalQuantificationPredicate, AExistentialQuantificationPredicate)):
         ids = []
         for n in node.children[:-1]:
             assert isinstance(n.idName, str)
             ids.append(n.idName)
-        type_env.push_frame(ids)
+        type_env.push_frame(ids) # new scope
         for child in node.children:
             typeit(child, env, type_env)
         type_env.pop_frame(env)
         return BoolType()
-    elif isinstance(node, AEqualPredicate) or  isinstance(node,AUnequalPredicate):
+    elif isinstance(node, (AEqualPredicate, AUnequalPredicate)):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         unify_equal(expr1_type, expr2_type, type_env, node)
@@ -578,7 +578,7 @@ def typeit(node, env, type_env):
         # {a,b} or {(0,0,41),(1,0,41),(0,1,41),(1,1,41)} or etc.. 
         # this may be a IdentifierExpression, a CoupleExpression or something else..
         reftype = typeit(node.children[0], env, type_env)
-        # learn that all Elements must have the same type:
+        # all Elements must have the same type:
         for child in node.children[1:]:
             atype = typeit(child, env, type_env)
             reftype = unify_equal(atype, reftype, type_env)
@@ -593,18 +593,22 @@ def typeit(node, env, type_env):
             ids.append(n.idName)
         type_env.push_frame(ids)
         assert len(node.children)>=1
+        # type children
         for child in node.children:
             typeit(child, env, type_env)
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
             assert not type_env.get_current_type(child.idName)==None
-        atype = type_env.get_current_type(ids[0])
+        # construct type of this node
+        atype = type_env.get_current_type(ids[0]) 
         if len(ids)>1:
-            atype = CartType(PowerSetType(atype), PowerSetType(type_env.get_current_type(ids[1])))
+            imagetype    = type_env.get_current_type(ids[1])
+            atype = CartType(PowerSetType(atype), PowerSetType(imagetype))
             for i in ids[2:]:
-                atype = CartType(PowerSetType(atype), PowerSetType(type_env.get_current_type(i)))
+                next_imagetype = type_env.get_current_type(i)
+                atype = CartType(PowerSetType(atype), PowerSetType(next_imagetype))
         type_env.pop_frame(env)
-        return PowerSetType(atype) #name unknown
+        return PowerSetType(atype) 
     elif isinstance(node, AMinusOrSetSubtractExpression):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
@@ -634,7 +638,8 @@ def typeit(node, env, type_env):
         atype = CartType(PowerSetType(atype0), PowerSetType(atype1))
         # all couples must have the same type
         for index in range(len(node.children)-2):
-            atype = CartType(PowerSetType(atype), PowerSetType(typeit(node.children[index+2], env, type_env)))
+            next_imagetype = typeit(node.children[index+2], env, type_env)
+            atype = CartType(PowerSetType(atype), PowerSetType(next_imagetype))
         return atype
     elif isinstance(node, AMultOrCartExpression):
         expr1_type = typeit(node.children[0], env, type_env)
@@ -659,7 +664,7 @@ def typeit(node, env, type_env):
             string += "Unimplemented case: %s %s", expr1_type, expr2_type
             string += "Last unification was caused by: " + pretty_print(node)
             raise PYBBugException(string)
-    elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
+    elif isinstance(node, (APowSubsetExpression, APow1SubsetExpression)):
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(UnknownType("APowSubsetExpression"))
         atype = unify_equal(set_type, expected_type, type_env)
@@ -669,12 +674,13 @@ def typeit(node, env, type_env):
         expected_type = PowerSetType(UnknownType("ACardExpression"))
         unify_equal(atype, expected_type, type_env)
         return IntegerType()
-    elif isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
+    elif isinstance(node, (AGeneralUnionExpression, AGeneralIntersectionExpression)):
+        # inter(U) or union(U)
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(PowerSetType(UnknownType(None)))
         atype = unify_equal(set_type, expected_type,type_env)
         return atype.data
-    elif isinstance(node, AQuantifiedIntersectionExpression) or isinstance(node, AQuantifiedUnionExpression):
+    elif isinstance(node, (AQuantifiedIntersectionExpression, AQuantifiedUnionExpression)):
         idNames = []
         for idNode in node.children[:node.idNum]:
             assert isinstance(idNode, AIdentifierExpression)
@@ -692,26 +698,17 @@ def typeit(node, env, type_env):
 #       2.1 Set predicates
 #
 # *************************
-    elif isinstance(node, ABelongPredicate):
+    elif isinstance(node, (ABelongPredicate, ANotBelongPredicate)):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
-        #print pretty_print(node)
-        unify_element_of(elm_type, set_type, type_env, node)
-        #print elm_type, set_type, node.children[0].idName, node.children[1]
-        elm_type = unknown_closure(elm_type)
+        unify_element_of(elm_type, set_type, type_env, node) # special unification
         return BoolType()
-    # TODO: notBelong
-    elif isinstance(node, ANotBelongPredicate):
-        elm_type = typeit(node.children[0], env, type_env)
-        set_type = typeit(node.children[1], env, type_env)
-        unify_element_of(elm_type, set_type, type_env, node)
-        return BoolType()    
-    elif isinstance(node, AIncludePredicate) or isinstance(node, ANotIncludePredicate) or isinstance(node, AIncludeStrictlyPredicate) or isinstance(node, ANotIncludeStrictlyPredicate):
+    elif isinstance(node, (AIncludePredicate, ANotIncludePredicate, AIncludeStrictlyPredicate, ANotIncludeStrictlyPredicate)):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         unify_equal(expr1_type, expr2_type, type_env)
         return BoolType()
-    elif isinstance(node, AUnionExpression) or isinstance(node, AIntersectionExpression):
+    elif isinstance(node, (AUnionExpression, AIntersectionExpression)):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         atype = unify_equal(expr1_type, expr2_type, type_env)
@@ -723,7 +720,7 @@ def typeit(node, env, type_env):
 #       3. Numbers
 #
 # *****************
-    elif isinstance(node, AIntSetExpression) or isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression)  or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AIntegerSetExpression):
+    elif isinstance(node, (AIntSetExpression, ANatSetExpression, ANat1SetExpression, ANaturalSetExpression, ANatural1SetExpression, AIntegerSetExpression)):
         return PowerSetType(IntegerType())
     elif isinstance(node, AIntervalExpression):
         int_type = typeit(node.children[0], env, type_env)
@@ -733,18 +730,18 @@ def typeit(node, env, type_env):
         return PowerSetType(IntegerType())
     elif isinstance(node, AIntegerExpression):
         return IntegerType()
-    elif isinstance(node, AMinExpression) or isinstance(node, AMaxExpression):
+    elif isinstance(node, (AMinExpression, AMaxExpression)):
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(IntegerType())
-        unify_equal(set_type, expected_type,type_env)
+        unify_equal(set_type, expected_type, type_env)
         return IntegerType()
-    elif isinstance(node, AAddExpression) or isinstance(node, ADivExpression) or isinstance(node, AModuloExpression):
+    elif isinstance(node, (AAddExpression, ADivExpression, AModuloExpression, APowerOfExpression)):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
         unify_equal(expr1_type, IntegerType(), type_env)
         unify_equal(expr2_type, IntegerType(), type_env)
         return IntegerType()
-    elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
+    elif isinstance(node, (AGeneralSumExpression, AGeneralProductExpression)):
         ids = []
         for n in node.children[:-2]:
             assert isinstance(n.idName, str)
@@ -761,7 +758,7 @@ def typeit(node, env, type_env):
 #       3.1 Number predicates
 #
 # ***************************
-    elif isinstance(node, ALessEqualPredicate) or isinstance(node, ALessPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AGreaterPredicate):
+    elif isinstance(node, (ALessEqualPredicate, ALessPredicate, AGreaterEqualPredicate, AGreaterPredicate)):
         expr1_type = typeit(node.children[0], env, type_env)
         expr2_type = typeit(node.children[1], env, type_env)
         unify_equal(expr1_type, IntegerType(), type_env)
@@ -817,12 +814,12 @@ def typeit(node, env, type_env):
         atype = unify_equal(rel_type, expected_type, type_env)
         unify_equal(int_type, IntegerType(), type_env)
         return atype
-    elif isinstance(node, AReflexiveClosureExpression) or isinstance(node, AClosureExpression):
+    elif isinstance(node, (AReflexiveClosureExpression, AClosureExpression)):
         rel_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(CartType(PowerSetType(UnknownType("AReflexiveClosureExpression")),PowerSetType(UnknownType("AReflexiveClosureExpression"))))
         atype = unify_equal(rel_type, expected_type, type_env)
         return atype
-    elif isinstance(node, ADomainRestrictionExpression) or isinstance(node, ADomainSubtractionExpression):
+    elif isinstance(node, (ADomainRestrictionExpression, ADomainSubtractionExpression)):
         set_type = typeit(node.children[0], env, type_env)
         rel_type = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(UnknownType("ADomainRestrictionExpression"))
@@ -830,7 +827,7 @@ def typeit(node, env, type_env):
         unify_equal(set_type, expected_type0, type_env)
         atype = unify_equal(rel_type, expected_type1, type_env)
         return atype
-    elif isinstance(node, ARangeSubtractionExpression) or isinstance(node, ARangeRestrictionExpression):
+    elif isinstance(node, (ARangeSubtractionExpression, ARangeRestrictionExpression)):
         rel_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(UnknownType("ARangeSubtractionExpression"))
@@ -847,10 +844,8 @@ def typeit(node, env, type_env):
         return PowerSetType(CartType(imagetype, preimagetype))
     elif isinstance(node, AImageExpression):
         rel_type = typeit(node.children[0], env, type_env)
-        for child in node.children[1:]:
-            typeit(child, env, type_env)
-        # TODO: use knowledge from args
-        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("AImageExpression")),PowerSetType(UnknownType("AImageExpression"))))
+        set_type = typeit(node.children[1], env, type_env)
+        expected_type = PowerSetType(CartType(set_type,PowerSetType(UnknownType("AImageExpression"))))
         atype = unify_equal(rel_type, expected_type, type_env)
         return atype.data.data[1]
     elif isinstance(node, AOverwriteExpression):
@@ -863,6 +858,7 @@ def typeit(node, env, type_env):
         atype = unify_equal(rel_type0, rel_type1, type_env)
         return atype
     elif isinstance(node, AParallelProductExpression):
+        # p || q = {(x,y), (m,n) | x|->y:p & m|->n:q }  
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("AParallelProductExpression")),PowerSetType(UnknownType("AParallelProductExpression"))))
@@ -875,6 +871,7 @@ def typeit(node, env, type_env):
         n = atype1.data.data[1]
         return PowerSetType(CartType(PowerSetType(CartType(x,y)),PowerSetType(CartType(m,n))))
     elif isinstance(node, ADirectProductExpression):
+        # p x q ={ x,(y,z) | x|->y:p & x|->z:q }
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("ADirectProductExpression")),PowerSetType(UnknownType("ADirectProductExpression"))))
@@ -885,8 +882,8 @@ def typeit(node, env, type_env):
         y = atype0.data.data[1]
         x2 = atype1.data.data[0]
         z = atype1.data.data[1]
-        assert x.__class__ == x2.__class__
-        return PowerSetType(CartType(x,PowerSetType(CartType(y,z))))
+        x3 = unify_equal(x, x2, type_env)
+        return PowerSetType(CartType(x3,PowerSetType(CartType(y,z))))
     elif isinstance(node, AFirstProjectionExpression):
         set_type0 = typeit(node.children[0], env, type_env)
         set_type1 = typeit(node.children[1], env, type_env)
@@ -910,7 +907,7 @@ def typeit(node, env, type_env):
 #       4.1 Functions
 #
 # *******************
-    elif isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or  isinstance(node, ATotalBijectionExpression) or isinstance(node, APartialBijectionExpression):
+    elif isinstance(node, (APartialFunctionExpression, ATotalFunctionExpression, APartialInjectionExpression, ATotalInjectionExpression, APartialSurjectionExpression, ATotalSurjectionExpression, ATotalBijectionExpression, APartialBijectionExpression)):
         set_type0 = typeit(node.children[0], env, type_env)
         set_type1 = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(UnknownType("APartialFunctionExpression"))
@@ -922,7 +919,7 @@ def typeit(node, env, type_env):
         # At this point it is imposible to always know the number of arguments!
         #
         # - num_args: (number of arguments by ast walk of args-nodes) 
-        # if one of this args will be (later) unified to an Carttype, 
+        # if one of this args will be (later) unified to an CartType, 
         # the num_args is less then or equal the number of primitive-args
         # It is used to to construct a dummy-functype in step 3.
         # - number_of_args_needed (number of direct node children)
@@ -993,13 +990,13 @@ def typeit(node, env, type_env):
         # return imagetype (pow(cart(arg_types, pow(imagetype))))
         return functype.data.data[1].data
     elif isinstance(node, ALambdaExpression):
-        # print pretty_print(node)
-        # TODO: unification 
+        # get id names
         ids = []
         for n in node.children[:-2]:
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
+        # type ids and predicate
         for child in node.children[:-1]:
             typeit(child, env, type_env)
         pre_img_type = typeit(node.children[0], env, type_env)
@@ -1007,9 +1004,10 @@ def typeit(node, env, type_env):
             for n in node.children[1:-2]:
                 atype = typeit(n, env, type_env)
                 pre_img_type = CartType(PowerSetType(pre_img_type), PowerSetType(atype))
+        # get type of expression
         img_type = typeit(node.children[-1], env, type_env)
         type_env.pop_frame(env)
-        #print "DEBUG:",pre_img_type,img_type
+        # put it all together
         return PowerSetType(CartType(PowerSetType(pre_img_type), PowerSetType(img_type)))
 
 
@@ -1020,7 +1018,7 @@ def typeit(node, env, type_env):
 # ********************
     elif isinstance(node,AEmptySequenceExpression):
         return PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("AEmptySequenceExpression"))))
-    elif isinstance(node,ASeqExpression) or isinstance(node,ASeq1Expression) or isinstance(node,AIseqExpression) or isinstance(node,APermExpression) or isinstance(node, AIseq1Expression):
+    elif isinstance(node, (ASeqExpression, ASeq1Expression, AIseqExpression, APermExpression, AIseq1Expression)):
         set_type = typeit(node.children[0], env, type_env)
         expected_type = PowerSetType(UnknownType("ASeqExpression"))
         atype = unify_equal(set_type, expected_type, type_env)
@@ -1045,7 +1043,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AInsertFrontExpression):
         set_type = typeit(node.children[0], env, type_env)
         seq_type = typeit(node.children[1], env, type_env)
-        img_type = UnknownType("AInsertFrontExpression")
+        img_type = UnknownType("AInsertFrontExpression") # e.g. IntegerType or PowerSetType
         expected_type1 = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(img_type)))
         atype0 = unify_equal(set_type, img_type, type_env)
         atype1 = unify_equal(seq_type, expected_type1, type_env)
@@ -1055,7 +1053,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, AInsertTailExpression):
         seq_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
-        img_type = UnknownType("AInsertTailExpression")
+        img_type = UnknownType("AInsertTailExpression") # e.g. IntegerType or PowerSetType
         expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(img_type)))
         atype0 = unify_equal(seq_type, expected_type0, type_env)
         atype1 = unify_equal(set_type, img_type, type_env)
@@ -1063,23 +1061,23 @@ def typeit(node, env, type_env):
             assert atype1.data == atype0.data.data[1].data.data # Setname
         return atype0
     elif isinstance(node, ASequenceExtensionExpression):
-        # Todo: s=[]
+        # children = list of expressions 
         reftype = typeit(node.children[0], env, type_env) 
-        for n in node.children[1:]:
-            atype = typeit(n, env, type_env)
+        for child in node.children[1:]:
+            atype = typeit(child, env, type_env)
             unify_equal(atype, reftype, type_env)
         return PowerSetType(CartType(PowerSetType(IntegerType()), PowerSetType(reftype)))
     elif isinstance(node, ASizeExpression):
-        type0 = typeit(node.children[0], env, type_env)
-        expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ASizeExpression"))))
-        unify_equal(type0, expected_type0, type_env)
+        seq_type = typeit(node.children[0], env, type_env)
+        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ASizeExpression"))))
+        unify_equal(seq_type, expected_type, type_env)
         return IntegerType()
     elif isinstance(node, ARevExpression):
         seq_type = typeit(node.children[0], env, type_env)
-        expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ARevExpression"))))
-        atype = unify_equal(seq_type, expected_type0, type_env)
+        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ARevExpression"))))
+        atype = unify_equal(seq_type, expected_type, type_env)
         return atype
-    elif isinstance(node, ARestrictFrontExpression) or isinstance(node, ARestrictTailExpression):
+    elif isinstance(node, (ARestrictFrontExpression, ARestrictTailExpression)):
         seq_type = typeit(node.children[0], env, type_env)
         int_type = typeit(node.children[1], env, type_env)
         expected_type0 = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ARestrictFrontExpression"))))
@@ -1087,14 +1085,14 @@ def typeit(node, env, type_env):
         atype = unify_equal(seq_type, expected_type0, type_env)
         unify_equal(int_type, expected_type1, type_env)
         return atype
-    elif isinstance(node, AFirstExpression) or isinstance(node, ALastExpression):
+    elif isinstance(node, (AFirstExpression, ALastExpression)):
         seq_type = typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("AFirstExpression"))))
+        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("AFirstORLastExpression"))))
         atype = unify_equal(seq_type, expected_type, type_env)
         return atype.data.data[1].data
-    elif isinstance(node, ATailExpression) or isinstance(node, AFrontExpression):
+    elif isinstance(node, (ATailExpression, AFrontExpression)):
         seq_type = typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("ATailExpression"))))
+        expected_type = PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(UnknownType("AFrontORTailExpression"))))
         atype = unify_equal(seq_type, expected_type, type_env)
         return atype
 
@@ -1130,6 +1128,7 @@ def typeit(node, env, type_env):
         unify_equal(atype, BoolType(), type_env)
         return BoolType()
     elif isinstance(node, ABecomesElementOfSubstitution):
+        # x :: {a,b,c}
         atype = typeit(node.children[-1], env, type_env)
         for child in node.children[:-1]:
             idtype = typeit(child, env, type_env)
@@ -1171,11 +1170,13 @@ def typeit(node, env, type_env):
     elif isinstance(node, AIdentifierExpression):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
-        #print node.idName, node, idtype
         return idtype
-    elif isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression) or isinstance(node, ASuccessorExpression) or isinstance(node, APredecessorExpression) or isinstance(node, APowerOfExpression):
+    elif isinstance(node, (AMinIntExpression, AMaxIntExpression, ASuccessorExpression, APredecessorExpression)):
+        # min(S) max(S) pred(x), succ(x)
+        typeit(node.children[0], env, type_env)
         return IntegerType()
     elif isinstance(node, AStructExpression):
+        # E.g. struct(Mark:NAT,Good_enough:BOOL)
         dictionary = {}
         for rec_entry in node.children:
             assert isinstance(rec_entry, ARecEntry)
@@ -1184,9 +1185,10 @@ def typeit(node, env, type_env):
                 name = rec_entry.children[0].idName
             assert isinstance(rec_entry.children[-1], Expression)
             atype = typeit(rec_entry.children[-1], env, type_env)
-            dictionary[name] = atype.data # remove powerset
+            dictionary[name] = atype.data # use data to remove powerset
         return PowerSetType(StructType(dictionary))
     elif isinstance(node, ARecExpression):
+        # E.g. rec(Mark:14,Good_enough:TRUE)
         dictionary = {}
         for rec_entry in node.children:
             assert isinstance(rec_entry, ARecEntry)
@@ -1198,11 +1200,11 @@ def typeit(node, env, type_env):
             dictionary[name] = atype
         return StructType(dictionary)
     elif isinstance(node, ARecordFieldExpression):
+        # E.g. RES'Mark
         atype = typeit(node.children[0], env, type_env)
         assert isinstance(atype, StructType)
         assert isinstance(node.children[1], AIdentifierExpression)
-        entry_type = atype.data[node.children[1].idName]
-        # TODO: unify
+        entry_type = atype.data[node.children[1].idName] # access dict 
         return entry_type
     elif isinstance(node, ATransRelationExpression):
         func_type = typeit(node.children[0], env, type_env)
@@ -1223,8 +1225,8 @@ def typeit(node, env, type_env):
         image_type = atype.data.data[1]
         return PowerSetType(CartType(range_type, PowerSetType(image_type)))
     elif isinstance(node, AUnaryExpression):
-        atype = typeit(node.children[0], env, type_env)
-        atype = unify_equal(IntegerType(), atype, type_env)
+        aint_type = typeit(node.children[0], env, type_env)
+        unify_equal(IntegerType(), aint_type, type_env)
         return IntegerType()
     elif isinstance(node, AOperation):
         names = []

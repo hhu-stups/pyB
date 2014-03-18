@@ -278,6 +278,7 @@ class TestTypesRelations():
 
         # Type
         env = Environment()
+        # A and C POW(X)
         lst = [("A", PowerSetType(SetType("X"))),("B", PowerSetType(SetType("Y"))),("C", PowerSetType(SetType("X"))),("D", PowerSetType(SetType("Z")))]
         type_with_known_types(root, env, lst, ["r1","r2","r3"])
         assert isinstance(get_type_by_name(env, "r3"), PowerSetType)
@@ -302,6 +303,24 @@ class TestTypesRelations():
         # Type
         env = Environment()
         type_with_known_types(root, env, [], ["f","g"])
+
+
+    def test_types_simple_dirprod3(self):
+        string = '''
+        MACHINE Test
+        SETS C; D; X ={a,b,c}
+        CONSTANTS r1, r2, r3, A, B
+        PROPERTIES r1:A<->C & r2:B<->D & r3=r1 >< r2 &  A<:X & B<:X
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)       
+     
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
 
 
     def test_types_simple_proj1(self):
@@ -598,11 +617,11 @@ class TestTypesRelations():
 
     def test_types_complex_union_empty_set(self):          
         string = '''MACHINE Test
-		SETS U = {g, h, i}; R={j,k,l}        
-		CONSTANTS gg
-		PROPERTIES
-		gg : U +-> (R >+> R) & gg = { g |-> {j |-> l}, h |-> {k |-> k}, i |-> {}} 
-		END'''
+        SETS U = {g, h, i}; R={j,k,l}        
+        CONSTANTS gg
+        PROPERTIES
+        gg : U +-> (R >+> R) & gg = { g |-> {j |-> l}, h |-> {k |-> k}, i |-> {}} 
+        END'''
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
@@ -625,7 +644,7 @@ class TestTypesRelations():
         assert image_type.data[0].data.data=="R"
         assert image_type.data[1].data.data=="R"
         
-        		
+                
     def test_types_complex_union_empty_set2(self):          
         string = '''
         MACHINE Test
@@ -685,7 +704,3 @@ class TestTypesRelations():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        
-
-
-                        

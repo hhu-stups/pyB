@@ -4,7 +4,8 @@ from btypes import *
 from environment import Environment
 from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
-from parsing import str_ast_to_python_ast
+from parsing import str_ast_to_python_ast,  parse_ast
+from typing import type_check_bmch
 
 file_name = "input.txt"
 
@@ -435,6 +436,26 @@ class TestTypesFunctions():
         assert isinstance(get_type_by_name(env, "s").data.data[0].data, IntegerType)
         assert isinstance(get_type_by_name(env, "s").data.data[1].data, IntegerType)
 
+
+    def test_types_seq_extention2(self):
+        string = '''
+        MACHINE Test
+		CONSTANTS s, x
+		PROPERTIES s=[17+4,x, 5] & x=42 		
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)       
+     
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        assert isinstance(get_type_by_name(env, "s"), PowerSetType)
+        assert isinstance(get_type_by_name(env, "s").data, CartType)
+        assert isinstance(get_type_by_name(env, "s").data.data[0].data, IntegerType)
+        assert isinstance(get_type_by_name(env, "s").data.data[1].data, IntegerType)
 
 
     def test_types_fnc_expr(self):
