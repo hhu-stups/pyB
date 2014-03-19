@@ -1776,6 +1776,7 @@ def exec_substitution(sub, env):
         env.pop_frame()
         yield False
     elif isinstance(sub, AOpSubstitution):
+        # TODO: parameters passed by copy (page 162), write test: side effect free?
         # set up
         boperation = env.lookup_operation(sub.idName)
         ret_types = boperation.return_types
@@ -1811,6 +1812,7 @@ def exec_substitution(sub, env):
         env.pop_frame()
         env.current_mch = temp
     elif isinstance(sub, AOpWithReturnSubstitution):
+        # TODO: parameters passed by copy (page 162), write test: side effect free?
         # set up
         boperation = env.lookup_operation(sub.idName)
         ret_types = boperation.return_types

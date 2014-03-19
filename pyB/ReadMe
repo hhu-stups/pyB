@@ -449,6 +449,7 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     caseAIntSetExpression
     caseASuccessorExpression
     caseAPredecessorExpression
+    caseAOpWithReturnSubstitution 
     
 
  9.2 NOT IMPLEMENTED/TODO:
@@ -483,7 +484,6 @@ Prebuild jars are inside the jars folder. Python 2.7 needed
     caseAProverComprehensionSetExpression (EventB ?)
     
     caseAFuncOpSubstitution             - impl sees first
-    caseAOpWithReturnSubstitution       - impl sees first
 
 
 

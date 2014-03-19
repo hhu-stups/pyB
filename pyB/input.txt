@@ -1,6 +1,1 @@
-
-        MACHINE Test
-        VARIABLES RES, xx
-        INVARIANT RES:struct(Mark:NAT, Good_enough:BOOL) & xx:NAT
-        INITIALISATION RES := rec(Mark:4, Good_enough:TRUE); xx:=RES'Mark
-        END
+#PREDICATE A=bool(1<2)

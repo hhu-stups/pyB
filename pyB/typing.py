@@ -925,16 +925,18 @@ def typeit(node, env, type_env):
         # - number_of_args_needed (number of direct node children)
         # one of this args may be a Carttype or will later be unified to Carttype  
         # - number_of_args_needed: the number of args known at this point (less or equal real arg-num)
+    
         
+        # special case: (succ/pred)-function
+        if isinstance(node.children[0], (APredecessorExpression, ASuccessorExpression)):
+            atype = typeit(node.children[1], env, type_env) # type arg
+            unify_equal(atype, IntegerType(), type_env, node)
+            return IntegerType() # done
+
         # (1) determine the (incomplete) type of the function 
         # represented by a set-extension-, first/second projection- or id-expression
         type0 = typeit(node.children[0], env, type_env)
-        
-        # special case: (succ/pred)-function
-        if isinstance(type0, IntegerType): 
-            assert isinstance(node.children[0], APredecessorExpression) or isinstance(node.children[0], ASuccessorExpression)
-            return type0 # done
-        
+                
         # (2) calculate the number of args given 
         # (a ast-tree of couple- and identifier-expressions)
         num_args = 0
@@ -1162,7 +1164,7 @@ def typeit(node, env, type_env):
         return PowerSetType(StringType())
     elif isinstance(node, ABoolSetExpression):
         return PowerSetType(BoolType())
-    elif isinstance(node, ATrueExpression) or isinstance(node,AFalseExpression):
+    elif isinstance(node, (ATrueExpression,AFalseExpression)):
         return BoolType()
     elif isinstance(node, APrimedIdentifierExpression):
         assert len(node.children)==1 # TODO: x.y.z + unify
@@ -1171,9 +1173,8 @@ def typeit(node, env, type_env):
         type_env.add_node_by_id(node)
         idtype = type_env.get_current_type(node.idName)
         return idtype
-    elif isinstance(node, (AMinIntExpression, AMaxIntExpression, ASuccessorExpression, APredecessorExpression)):
-        # min(S) max(S) pred(x), succ(x)
-        typeit(node.children[0], env, type_env)
+    elif isinstance(node, (AMinIntExpression, AMaxIntExpression)):
+        # MINT_INT MAX_INT
         return IntegerType()
     elif isinstance(node, AStructExpression):
         # E.g. struct(Mark:NAT,Good_enough:BOOL)
@@ -1234,27 +1235,33 @@ def typeit(node, env, type_env):
             assert isinstance(node.children[i], AIdentifierExpression)
             names.append(node.children[i].idName)
         type_env.push_frame(names)
+        # type everything 
         for child in node.children:
             typeit(child, env, type_env)
+        # save type of return arguments
         ret_types = []
         for child in node.children[0:node.return_Num]:
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
             ret_types.append(tuple([child, atype]))
+        # save type of parameters
         para_types = []
         for child in node.children[node.return_Num:(node.return_Num+node.parameter_Num)]:
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
             para_types.append(tuple([child, atype]))
-        # Add query-operation test and add result to list
-        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names)     
+        # Add query-operation test and add result to list.
+        # TODO: strictly speaking this is no task of a type checker
+        is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names) 
+        # add all computed informations    
         boperation = env.get_operation_by_name(env.current_mch.name, node.opName)
         boperation.is_query_op     = is_query_op   
         boperation.set_types(ret_types, para_types)         
         type_env.pop_frame(env)
     elif isinstance(node, AOpSubstitution):
+        # FIXME: assumption: Operation object typed before Op substitution call
         boperation = env.lookup_operation(node.idName)
         para_types = boperation.parameter_types
         assert len(para_types)==node.parameter_Num
@@ -1286,9 +1293,9 @@ def typeit(node, env, type_env):
         functype = atype.data
         return functype.data.data[1].data #image
     else:
-        # WARNING: Make sure that is only used when no typeinfo is needed
-        #print "WARNING: unhandeld node:", node #DEBUG
-        # This case is used for all nodes which just perform depth-first-search 
+        # Substitutions and clauses return no type informations.
+        # It is sufficient to visit all children (AST-sub-trees).
+        assert isinstance(node, Substitution) or isinstance(node, Clause) or isinstance(node, AMachineReference)
         for child in node.children:
             typeit(child, env, type_env)
 
