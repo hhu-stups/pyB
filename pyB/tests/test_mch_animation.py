@@ -1854,6 +1854,31 @@ class TestMCHAnimation():
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3*4
+
+    # issue 33
+    import pytest
+    @pytest.mark.xfail
+    def test_genAST_includes_with_alias(self):        
+        string= '''
+        MACHINE Test
+        INCLUDES Alias.Testcase
+        VARIABLES         yy
+        INVARIANT         yy:NAT
+        INITIALISATION    yy := 1
+        OPERATIONS
+        op = yy <-- Alias.op3
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
+        next_states = calc_next_states(env,mch)        
+        assert len(next_states)==3
         
         
     def test_concrete_variables(self):        

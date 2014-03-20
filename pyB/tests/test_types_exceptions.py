@@ -144,6 +144,7 @@ class TestTypesTypeExceptions():
         py.test.raises(BTypeException, "type_check_bmch(root, env, mch)")
         
  
+ 
     def test_types_wrong_parameter_type2(self):
         string = '''
         MACHINE Test(a,b)
@@ -159,7 +160,7 @@ class TestTypesTypeExceptions():
         mch = parse_ast(root, env) 
         py.test.raises(BTypeException, "type_check_bmch(root, env, mch)")       
         
-    # ISSUE 32
+    # ISSUE 32. Club gets an integer as parameter
     import pytest
     @pytest.mark.xfail
     def test_types_wrong_parameter_type3(self):

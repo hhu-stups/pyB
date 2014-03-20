@@ -446,14 +446,15 @@ def type_check_bmch(root, env, mch):
     typeit(root, env, type_env)
     type_env.write_to_env(env, type_env.id_to_types_stack[-1], type_env.id_to_nodes_stack[-1])
     resolve_type(env) # throw away unknown types    
-    check_mch_parameter(root, env, mch)
+    get_and_check_mch_parameter(root, env, mch, type_env)
     return type_env
 
 
 # This method is called after successful pass of the type checking of the machine.
 # At this time all parameters musst have a type. 
-def check_mch_parameter(root, env, mch):
+def get_and_check_mch_parameter(root, env, mch, type_env):
     # To understand assertions, see: 7.5. page 116
+    # (1) check types
     for n in mch.scalar_params:
         atype = env.get_type_by_node(n)
         if not(isinstance(atype, IntegerType) or isinstance(atype, BoolType)):
@@ -464,6 +465,11 @@ def check_mch_parameter(root, env, mch):
         if not(isinstance(atype, PowerSetType) or isinstance(atype.data, SetType)):
             string = "TypeError in typing.py: no set type for set machine parameter %s" % n.idName
             raise BTypeException(string)
+    # (2) everything ok, add types
+    if mch.aMachineHeader:
+        for child in mch.aMachineHeader.children:
+            atype = typeit(child, env, type_env)
+            mch.parameter_type_lst.append(atype)
 
 
 # returns BType/UnkownType or None(for expr which need no type. e.g. x=y)
@@ -490,7 +496,7 @@ def typeit(node, env, type_env):
         mch = env.current_mch
         mch.type_child_machines(type_check_bmch, type_env, env)
 
-        # add para-nodes to map
+        # add para-nodes to map 
         for idNode in mch.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
             typeit(idNode, env, type_env)
@@ -505,8 +511,12 @@ def typeit(node, env, type_env):
         # FIXME: (#ISSUE 32) use type informations of child machines to check extends
         # and includes parameters
         if mch.aExtendsMachineClause:
+            for child in mch.aExtendsMachineClause.children:
+                assert isinstance(child, AMachineReference)
             typeit(mch.aExtendsMachineClause, env, type_env)
         if mch.aIncludesMachineClause:
+            for child in mch.aIncludesMachineClause.children:
+                assert isinstance(child, AMachineReference)
             typeit(mch.aIncludesMachineClause, env, type_env)
         if mch.aConstraintsMachineClause: # C
             typeit(mch.aConstraintsMachineClause, env, type_env)

@@ -16,8 +16,9 @@ class BMachine:
         self.eset_elem_names = []
         self.root = node
         self.aMachineHeader = None
-        self.scalar_params = []   # scalar machine parameter
-        self.set_params    = []   # set machine parameter
+        self.parameter_type_lst = [] # ordered list of type instances 
+        self.scalar_params = []   # scalar machine parameter (idNodes)
+        self.set_params    = []   # set machine parameter (idNodes)
         self.included_mch  = []   # list of b-mchs
         self.extended_mch  = []   # list of b-mchs
         self.seen_mch      = []   # list of b-mchs
