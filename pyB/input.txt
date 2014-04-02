@@ -1,9 +1,1 @@
-
-        MACHINE Test
-        INCLUDES Alias.Testcase
-        VARIABLES         yy
-        INVARIANT         yy:NAT
-        INITIALISATION    yy := 1
-        OPERATIONS
-        op = yy <-- Alias.op3
-        END
+#PREDICATE A=bool(1<2)

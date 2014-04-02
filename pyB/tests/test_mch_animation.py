@@ -1855,7 +1855,7 @@ class TestMCHAnimation():
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3*4
 
-    # issue 33
+    # issue 33 Page 181. 8.3B
     import pytest
     @pytest.mark.xfail
     def test_genAST_includes_with_alias(self):        

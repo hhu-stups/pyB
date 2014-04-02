@@ -2,6 +2,7 @@
 # moved for testing-reasons
 from subprocess import Popen, PIPE
 from ast_nodes import *
+from config import VERBOSE
 #from boperation import BOperation
  
 command_str = "java -Xms64m -Xmx1024m -cp "
@@ -22,7 +23,8 @@ def solution_file_to_AST_str(file_name_str):
     f = open("solution.tmp", "w")
     f.write(string)
     f.close()
-    print "reading solution file "+file_name_str+" ..."
+    if VERBOSE:
+        print "reading solution file "+file_name_str+" ..."
     result, err = file_to_AST_str_no_print("solution.tmp")
     return result, err
 
