@@ -982,6 +982,7 @@ class TestMCHAnimation():
         # Test
         env = Environment()
         env._max_int = 8
+        env._min_int = -1
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1049,6 +1050,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._max_int = 5
+        env._min_int = -1
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1443,6 +1446,7 @@ class TestMCHAnimation():
         
         
     def test_schneider_sees3(self):
+        # TODO: crashs if min_int = -2
         # side effect: loades examples/Goods.mch and Price.mch           
         string = '''
         MACHINE           Customer

@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known
+from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -484,10 +484,11 @@ def interpret(node, env):
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
         type_check_predicate(node, env)
+        idNodes = find_var_nodes(node) 
+        idNames = [n.idName for n in idNodes]
         if idNames ==[]: # variable free predicate
             result = interpret(node.children[0], env)
-            print result
-            return
+            return result
         else:            # there are variables 
             env.add_ids_to_frame(idNames)
             learnd_vars = learn_assigned_values(node, env)
@@ -506,28 +507,27 @@ def interpret(node, env):
                 if gen.next():
                     for i in idNames:
                         if VERBOSE:
-                            print i,"=", env.get_value(i)
+                            print i,"=", print_values_b_style(env.get_value(i))
                 else:
                     print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
-                    print False
-                    return
+                    return False
             else:
                 for i in idNames:
                     print i,"=", print_values_b_style(env.get_value(i))
                 result = interpret(node.children[0], env)
-                print result
-                return
-        print True
-        return None
+                return result
+        return True
     elif isinstance(node, AExpressionParseUnit): #TODO more
         #TODO: move print to animation_clui
         type_check_expression(node, env)
+        idNodes = find_var_nodes(node) 
+        idNames = [n.idName for n in idNodes]
         if idNames ==[]: # variable free expression
             result = interpret(node.children[0], env)
-            print print_values_b_style(result)
+            return print_values_b_style(result)
         else:
-            print "Warning: Expressions with variables are not implemented now"
-        return
+            return "Warning: Expressions with variables are not implemented now"
+            
 
 # ********************************************
 #

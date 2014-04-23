@@ -9,11 +9,14 @@ class TestRepl():
     def test_repl_add(self):
         env = Environment() 
         input = "1+1"
-        parse_repl_input(input)
-        #Todo: separate printing
-        #assert sys.stdout.read()=="2" 
-
+        output, err = parse_repl_input(input)
+        assert err==None
+        assert output=="2"
+        
+         
     def test_repl_eq(self):
         env = Environment() 
         input = "1+1=2"
-        parse_repl_input(input)
+        output, err = parse_repl_input(input)
+        assert err==None
+        assert output==True

@@ -67,7 +67,8 @@ def run_animation_mode():
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
         is_epu = isinstance(parse_object, ExpressionParseUnit) 
         assert is_ppu or is_epu              
-        interpret(parse_object.root, env)                       # eval predicate or expression
+        result = interpret(parse_object.root, env)              # eval predicate or expression
+        print result
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         mch = parse_object
@@ -180,7 +181,8 @@ def run_checking_mode():
     dh.repl_defs(root)    
     parse_object = parse_ast(root, env)                         # 7. which kind of ast?
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
-        interpret(parse_object.root, env)                       # eval predicate or expression
+        result = interpret(parse_object.root, env)              # eval predicate or expression
+        print result
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
@@ -227,5 +229,5 @@ try:
 	else:
 		run_animation_mode()
 except Exception as e:
-    print e
-    print e.value
+    print "Error in pyB:", type(e), e.args, e
+    #print e.value

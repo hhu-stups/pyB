@@ -408,7 +408,7 @@ def unknown_closure(atype):
 
 
 def type_check_predicate(root, env):
-    idNodes = find_var_nodes(node.children[0]) 
+    idNodes = find_var_nodes(root) 
     idNames = [n.idName for n in idNodes]
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)     
@@ -419,7 +419,7 @@ def type_check_predicate(root, env):
 
 
 def type_check_expression(root, env):
-    idNodes = find_var_nodes(root.children[0]) 
+    idNodes = find_var_nodes(root) 
     idNames = [n.idName for n in idNodes]
     type_env = TypeCheck_Environment()
     type_env.init_env(idNames)   

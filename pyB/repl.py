@@ -10,26 +10,32 @@ def run_repl():
     print "Input: e.g. '1+1' or '1+1<42'"
     print "quit to exit."
     string = None
-    env = Environment() 
     while True:
         string = raw_input(">>")
         if string=="quit":
             break
-        try:   
-            string_to_file("#EXPRESSION "+string, "temp.b")
-            ast_string,error = file_to_AST_str_no_print("temp.b")
-            root = str_ast_to_python_ast(ast_string)    
-        except NameError: #no expression
-            string_to_file("#PREDICATE "+string, "temp.b")
-            ast_string, error = file_to_AST_str_no_print("temp.b")
-            if error:
-                if "Error parsing input file" in error:
-                    print "PARSING ERROR on Java-LEVEL:"
-                    print error
-                    continue
-                else:
-                    print error
-                    exit()                
-            root = str_ast_to_python_ast(ast_string)                                            
-        result = interpret(root, env) #printing via sideeffect
+        output, error = parse_repl_input(string)
+        if error:
+            if "Error parsing input file" in error:
+                print "PARSING ERROR on Java-LEVEL:"
+                print error
+                print "check your jar files or yout input!"
+                continue
+            else:
+                print error
+                exit()  
     exit()
+
+def parse_repl_input(input):
+    try:   
+        string_to_file("#EXPRESSION "+input, "temp.b")
+        ast_string,error = file_to_AST_str_no_print("temp.b")
+        root = str_ast_to_python_ast(ast_string) 
+    except NameError: #no expression
+        string_to_file("#PREDICATE "+input, "temp.b")
+        ast_string, error = file_to_AST_str_no_print("temp.b")
+        if error:
+            return None, error
+        root = str_ast_to_python_ast(ast_string)                                                        
+    result = interpret(root, Environment() ) #printing via side effect
+    return result, None
