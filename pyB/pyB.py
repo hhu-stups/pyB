@@ -6,7 +6,7 @@ from bexceptions import *
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
-from animation_clui import show_ui, print_set_up_bstates, print_init_bstates
+from animation_clui import show_ui, print_set_up_bstates, print_init_bstates, print_values_b_style
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
 from ast_nodes import *
@@ -68,7 +68,7 @@ def run_animation_mode():
         is_epu = isinstance(parse_object, ExpressionParseUnit) 
         assert is_ppu or is_epu              
         result = interpret(parse_object.root, env)              # eval predicate or expression
-        print result
+        print print_values_b_style(result)
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         mch = parse_object

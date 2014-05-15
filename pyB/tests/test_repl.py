@@ -4,6 +4,7 @@ from environment import Environment
 from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
 from repl import parse_repl_input
+from animation_clui import print_values_b_style
 
 class TestRepl():
     def test_repl_add(self):
@@ -11,7 +12,7 @@ class TestRepl():
         input = "1+1"
         output, err = parse_repl_input(input)
         assert err==None
-        assert output=="2"
+        assert print_values_b_style(output)=="2"
         
          
     def test_repl_eq(self):
@@ -19,4 +20,4 @@ class TestRepl():
         input = "1+1=2"
         output, err = parse_repl_input(input)
         assert err==None
-        assert output==True
+        assert print_values_b_style(output)=="True"

@@ -4,19 +4,59 @@ from ast_nodes import *
 from enumeration import all_values_by_type
 from bexceptions import ConstraintNotImplementedException
 from quick_eval import quick_member_eval
+from config import TO_MANY_ITEMS
 
 
+# assumption: the variables of varList are typed and constraint by the
+# predicate. If predicate is None, all values of the variable type is returned.
+# After a this function returns a generator, every solution-candidate musst be checked! 
+# This function may be generate false values, but does not omit right ones 
+# i.e no values are missing 
+def calc_possible_solutions(predicate, env, varList, interpreter_callable):
+    # check which kind of predicate
+    assert isinstance(varList, list)
 
-def calc_possible_solutions(env, varList, predicate):
+    # case 1: none = no predicate constraining parameter values
+    if predicate==None: 
+        generator = gen_all_values(env, varList, {})
+        return generator.__iter__()
+    
+    # case 2: a special case implemented by pyB    
+    # TODO: support more than one variable
+    # check if a solution-set is computable without the external contraint solver
+    if isinstance(predicate, AConjunctPredicate) and len(varList)==1:
+        pred_map = _categorize_predicates(predicate, env, varList)
+        assert pred_map != []
+        test_set = None
+        for pred in pred_map:
+            if "fast" in pred_map[pred]:
+                # at least on predicate of this conjunction can easiely be used
+                # to compute a testset. The exact solution musst contain all 
+                # or less elements than test_set
+                if test_set==None:
+                    test_set = _compute_test_set(pred, env, varList, interpreter_callable)
+                else:
+                    test_set = _constraint_test_set_(pred, env, varList, interpreter_callable, test_set)
+        if test_set !=None:
+            final_set = _constraint_test_set_(predicate, env, varList, interpreter_callable, test_set)
+            iterator = _set_to_iterator(env, varList, final_set)
+            return iterator
+        # Todo: generate constraint set by using all "fast computable" predicates
+        # Todo: call generator to return solution
+        
+    
+    # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
     try:
-        iterator = calc_constraint_domain(env, varList, predicate)
+        iterator = _calc_constraint_domain(env, varList, predicate)
+        # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
         return iterator 
     except (ConstraintNotImplementedException, ImportError): 
+        # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
-    	
+        
     
 
 def gen_all_values(env, varList, dic):
@@ -32,12 +72,21 @@ def gen_all_values(env, varList, dic):
         else:
             for d in gen_all_values(env, varList[1:], dic):
                 yield d
-            
+
+# XXX: only on var supported
+def _set_to_iterator(env, varList, aset):
+    idNode = varList[0]
+    assert isinstance(idNode, AIdentifierExpression)  
+    var_name = idNode.idName 
+    dic = {} 
+    for element in aset:
+        dic[var_name] = element 
+        yield dic.copy()            
                 
 
 # wrapper-function for contraint solver 
 # WARNING: asumes that every variable in varList has no value!
-def calc_constraint_domain(env, varList, predicate):
+def _calc_constraint_domain(env, varList, predicate):
     # TODO: import at module level
     # extern software:
     # install http://labix.org/python-constraint
@@ -45,8 +94,6 @@ def calc_constraint_domain(env, varList, predicate):
     # python setup.py build
     # python setup.py install
     from constraint import Problem
-    if predicate==None: # none = no pred. constraining parameter values
-    	raise ConstraintNotImplementedException(None) #TODO replace with exception matching problem
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
     # get domain 
@@ -113,37 +160,37 @@ def pretty_print(env, varList, node, qme_nodes):
     elif isinstance(node, ABelongPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
         qme_nodes.append(node.children[1])
         return " quick_member_eval( qme_nodes["+str(len(qme_nodes)-1)+"], env,"+node.children[0].idName+")"
-		#         if isinstance(node.children[1], AIntervalExpression):
-		#             name = str(node.children[0].idName)
-		#             number0 = pretty_print(env, varList, node.children[1].children[0])
-		#             number1 = pretty_print(env, varList, node.children[1].children[1])
-		#             if number0 and number1:
-		#                 string = name+">="+str(number0)
-		#                 string += " and "+name+"<="+str(number1)
-		#                 return string
-		#         elif isinstance(node.children[1], AIdentifierExpression):
-		#             name = str(node.children[0].idName)
-		#             setName = str(node.children[1].idName)
-		#             value = env.get_value(setName)
-		#             string = name+" in "+str(value)
-		#             return string 
-		#         elif isinstance(node.children[1], ANatSetExpression):
-		#             name = str(node.children[0].idName)
-		#             string = name+" in "+str(range(0,env._max_int+1))
-		#             return string   
-		#         elif isinstance(node.children[1], ANat1SetExpression):
-		#             name = str(node.children[0].idName)
-		#             string = name+" in "+str(range(1,env._max_int+1))
-		#             return string 
-		#         elif isinstance(node.children[1], AIntegerSetExpression): # TODO:(#ISSUE 17)
-		#             name = str(node.children[0].idName)
-		#             string = name+" in "+str(range(env._min_int,env._max_int+1))
-		#             return string           
-		#         elif isinstance(node.children[1], AStringSetExpression):
-		#             name = str(node.children[0].idName)
-		#             value = env.all_strings 
-		#             string = name+" in "+str(value)
-		#             return string     
+        #         if isinstance(node.children[1], AIntervalExpression):
+        #             name = str(node.children[0].idName)
+        #             number0 = pretty_print(env, varList, node.children[1].children[0])
+        #             number1 = pretty_print(env, varList, node.children[1].children[1])
+        #             if number0 and number1:
+        #                 string = name+">="+str(number0)
+        #                 string += " and "+name+"<="+str(number1)
+        #                 return string
+        #         elif isinstance(node.children[1], AIdentifierExpression):
+        #             name = str(node.children[0].idName)
+        #             setName = str(node.children[1].idName)
+        #             value = env.get_value(setName)
+        #             string = name+" in "+str(value)
+        #             return string 
+        #         elif isinstance(node.children[1], ANatSetExpression):
+        #             name = str(node.children[0].idName)
+        #             string = name+" in "+str(range(0,env._max_int+1))
+        #             return string   
+        #         elif isinstance(node.children[1], ANat1SetExpression):
+        #             name = str(node.children[0].idName)
+        #             string = name+" in "+str(range(1,env._max_int+1))
+        #             return string 
+        #         elif isinstance(node.children[1], AIntegerSetExpression): # TODO:(#ISSUE 17)
+        #             name = str(node.children[0].idName)
+        #             string = name+" in "+str(range(env._min_int,env._max_int+1))
+        #             return string           
+        #         elif isinstance(node.children[1], AStringSetExpression):
+        #             name = str(node.children[0].idName)
+        #             value = env.all_strings 
+        #             string = name+" in "+str(value)
+        #             return string     
     elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
         left = ""
         right = ""
@@ -187,4 +234,66 @@ def pretty_print(env, varList, node, qme_nodes):
         return string
     #print node.children
     raise ConstraintNotImplementedException(node)
-         
+
+
+# TODO: support more than one variable
+# input: P0 & P1 & ...PN
+# output(example): mapping {P0->fast, P1->long,... PN->infinite}        
+def _categorize_predicates(predicate, env, varList):
+    if isinstance(predicate, AConjunctPredicate):
+        map0 = _categorize_predicates(predicate.children[0], env, varList)
+        map1 = _categorize_predicates(predicate.children[1], env, varList)
+        map0.update(map1)
+        return map0
+    else:
+       string = _estimate_computation_time(predicate, env, varList)
+       return {predicate: string}
+
+
+# TODO: support more than one variable (which is constraint by the predicate to be analysed
+# this approximation is still not good. Eg. x/:NAT        
+def _estimate_computation_time(node, env, varList):
+    if isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression)):
+        return "infinite: %s" % node
+    elif isinstance(node, (ANatSetExpression, ANat1SetExpression, )):
+        if env._max_int > TO_MANY_ITEMS:
+            return "long: %s" % node
+        else: 
+            return "fast"
+    elif isinstance(node, AIntSetExpression):
+        if env._min_int*-1 + env._max_int > TO_MANY_ITEMS:
+            return "long: %s" % node
+        else:
+            return "fast"    
+    elif isinstance(node, AIntegerExpression):
+        return "fast"
+    elif isinstance(node, (ASetExtensionExpression, ACoupleExpression)):
+        if _estimate_computation_time(node.children[0], env, varList)=="fast" and _estimate_computation_time(node.children[1], env, varList)=="fast":
+            return "fast"
+    elif isinstance(node, ABelongPredicate):
+        # takes much time if set computation on the rhs takes much time
+        # left side indicates: rhs contrains set elements
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
+            return _estimate_computation_time(node.children[1], env, varList)
+    elif isinstance(node, AEqualPredicate):
+        # takes much time if computation on the rhs takes much time
+        # left side indicates: rhs contrains set elements
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
+            return _estimate_computation_time(node.children[1], env, varList)
+    return "dont know"
+
+
+def _compute_test_set(node, env, varList, interpreter_callable):
+    if isinstance(node, AEqualPredicate):
+        integer = interpreter_callable(node.children[1], env)
+        # if elements of the set are equal to some expression, a set has to be generated 
+        # e.g {x| x:NAT & x=42}  results in {42}
+        assert isinstance(integer, int)
+        return frozenset([integer])
+
+
+# remove all elements which do not satisfy pred
+def _constraint_test_set_(pred, env, varList, interpreter_callable, test_set):
+    # XXX
+    return test_set
+    

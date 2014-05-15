@@ -6,7 +6,7 @@ from enumeration import try_all_values
 from ast_nodes import *
 from constrainsolver import calc_possible_solutions
 from bexceptions import ValueNotInDomainException
-from interp import exec_substitution
+from interp import exec_substitution, interpret
 
 
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
@@ -77,10 +77,10 @@ def calc_next_states(env, bmachine):
                 domain_generator = None
                 if isinstance(substitution, APreconditionSubstitution):
                     predicate = substitution.children[0]
-                    domain_generator = calc_possible_solutions(env, parameter_idNodes, predicate)
+                    domain_generator = calc_possible_solutions(predicate, env, parameter_idNodes, interpret)
                 # TODO:(#ISSUE 13) maybe more guesses elif... 
                 else: # no guess possible, try all values (third-arg None cause an enum of all values)
-                    domain_generator = calc_possible_solutions(env, parameter_idNodes, None)
+                    domain_generator = calc_possible_solutions(None, env, parameter_idNodes, interpret)
                 assert not domain_generator==None
                 
                 # Try solutions

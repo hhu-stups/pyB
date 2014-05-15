@@ -524,7 +524,7 @@ def interpret(node, env):
         idNames = [n.idName for n in idNodes]
         if idNames ==[]: # variable free expression
             result = interpret(node.children[0], env)
-            return print_values_b_style(result)
+            return result
         else:
             return "Warning: Expressions with variables are not implemented now"
             
@@ -592,7 +592,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred.children[0]) # use left side of implication
+        domain_generator = calc_possible_solutions(pred.children[0], env, varList, interpret) # use left side of implication
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -610,7 +610,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -663,7 +663,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -739,7 +739,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -758,7 +758,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -890,7 +890,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -909,7 +909,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -1142,7 +1142,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(env, varList, pred)
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         # for every solution-entry found:
         for entry in domain_generator:
             # set all vars (of new frame/scope) to this solution

@@ -4,8 +4,9 @@ from btypes import *
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from util import type_with_known_types, get_type_by_name
-from constrainsolver import calc_constraint_domain
+from constrainsolver import _calc_constraint_domain, _categorize_predicates, calc_possible_solutions
 from parsing import str_ast_to_python_ast
+from interp import interpret
 
 file_name = "input.txt"
 
@@ -28,7 +29,9 @@ class TestConstraintSolver():
         Q = unqantPred.children[-1].children[1]
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
-        domain = calc_constraint_domain(env, varList, P)
+        #env._min_int = -2**32
+        #env._max_int = 2**32
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["z"] for x in domain])==frozenset([3,4])
 
 
@@ -58,9 +61,9 @@ class TestConstraintSolver():
         varList = unqantPred.children[0:-1]
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([1,2,3])
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
         
 
@@ -83,7 +86,7 @@ class TestConstraintSolver():
         Q = exqantPred.children[-1].children[1]
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["z"] for x in domain])== frozenset([2,3,4,5])
 
     
@@ -107,7 +110,7 @@ class TestConstraintSolver():
         assert isinstance(E, Expression)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         #print domain
         assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
 
@@ -134,7 +137,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         env.all_strings = ['abc', '', 'hello']
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         sol = frozenset([x["x"] for x in domain])
         assert sol==frozenset(env.all_strings)    
         
@@ -158,8 +161,35 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([12])
+
+
+    def test_constraint_set_comp2(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:NAT & x=42}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])
+        assert "long" in map[set_predicate.children[0]]    
+        assert "fast" in map[set_predicate.children[1]]    
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = iterator.next()
+        assert solution=={'x': 42}
+        result = interpret(root, env)
+        assert result==frozenset([42])
+        
 
 
     def test_constraint_pi(self):
@@ -181,5 +211,5 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = calc_constraint_domain(env, varList, P)
+        domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([-4,-3,-2,-1,1,2,3,4])

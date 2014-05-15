@@ -26,6 +26,7 @@ def run_repl():
                 exit()  
     exit()
 
+# returns value of expression, True/False or an Error, 
 def parse_repl_input(input):
     try:   
         string_to_file("#EXPRESSION "+input, "temp.b")
@@ -35,7 +36,9 @@ def parse_repl_input(input):
         string_to_file("#PREDICATE "+input, "temp.b")
         ast_string, error = file_to_AST_str_no_print("temp.b")
         if error:
-            return None, error
+            result = None
+            return result, error
         root = str_ast_to_python_ast(ast_string)                                                        
     result = interpret(root, Environment() ) #printing via side effect
-    return result, None
+    error = None
+    return result, error
