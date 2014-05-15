@@ -129,7 +129,7 @@ class TestConstraintSolver():
         assert isinstance(get_type_by_name(env, "x"), StringType)
         lambdaexpr = root.children[0].children[1].children[1] 
         assert isinstance(lambdaexpr, ALambdaExpression)
-        varList = lambdaexpr.children[0:-2]		 
+        varList = lambdaexpr.children[0:-2]      
         P = lambdaexpr.children[-2]
         E = lambdaexpr.children[-1]
         assert isinstance(P, Predicate)
@@ -142,7 +142,7 @@ class TestConstraintSolver():
         assert sol==frozenset(env.all_strings)    
         
          
-		      
+              
     def test_constraint_set_comp(self):
         # {x|P}
         # Build AST:
@@ -189,7 +189,32 @@ class TestConstraintSolver():
         assert solution=={'x': 42}
         result = interpret(root, env)
         assert result==frozenset([42])
-        
+ 
+ 
+    def test_constraint_set_comp3(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:NAT & x=-1}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)       
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])
+        assert "long" in map[set_predicate.children[0]]    
+        assert "fast" in map[set_predicate.children[1]]    
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = iterator.next()
+        #assert solution=={}
+        result = interpret(root, env)
+        assert result==frozenset([])
 
 
     def test_constraint_pi(self):

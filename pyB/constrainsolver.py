@@ -75,13 +75,16 @@ def gen_all_values(env, varList, dic):
 
 # XXX: only on var supported
 def _set_to_iterator(env, varList, aset):
-    idNode = varList[0]
-    assert isinstance(idNode, AIdentifierExpression)  
-    var_name = idNode.idName 
-    dic = {} 
-    for element in aset:
-        dic[var_name] = element 
-        yield dic.copy()            
+    if aset==frozenset([]):
+        yield {}
+    else:
+		idNode = varList[0]
+		assert isinstance(idNode, AIdentifierExpression)  
+		var_name = idNode.idName 
+		dic = {} 
+		for element in aset:
+			dic[var_name] = element 
+			yield dic.copy()            
                 
 
 # wrapper-function for contraint solver 
@@ -251,7 +254,8 @@ def _categorize_predicates(predicate, env, varList):
 
 
 # TODO: support more than one variable (which is constraint by the predicate to be analysed
-# this approximation is still not good. Eg. x/:NAT        
+# this approximation is still not good. Eg. x/:NAT   
+# TODO: maybe replace with abstract interpretation     
 def _estimate_computation_time(node, env, varList):
     if isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression)):
         return "infinite: %s" % node
@@ -267,6 +271,8 @@ def _estimate_computation_time(node, env, varList):
             return "fast"    
     elif isinstance(node, AIntegerExpression):
         return "fast"
+    elif isinstance(node, AUnaryExpression):
+        return _estimate_computation_time(node.children[0], env, varList)
     elif isinstance(node, (ASetExtensionExpression, ACoupleExpression)):
         if _estimate_computation_time(node.children[0], env, varList)=="fast" and _estimate_computation_time(node.children[1], env, varList)=="fast":
             return "fast"
@@ -293,7 +299,18 @@ def _compute_test_set(node, env, varList, interpreter_callable):
 
 
 # remove all elements which do not satisfy pred
+# TODO: support more than on variable 
 def _constraint_test_set_(pred, env, varList, interpreter_callable, test_set):
-    # XXX
     return test_set
+    #result = []
+    #idNode = varList[0]
+    #assert isinstance(idNode, AIdentifierExpression)  
+    #var_name = idNode.idName 
+    #env.push_new_frame(varList)
+    #for value in test_set:
+    #    env.set_value(var_name, value)
+    #    if interpreter_callable(pred, env):
+    #        result.append(value)
+    #env.pop_frame()
+    #return frozenset(result)
     
