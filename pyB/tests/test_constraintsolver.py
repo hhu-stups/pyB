@@ -217,6 +217,32 @@ class TestConstraintSolver():
         assert result==frozenset([])
 
 
+    def test_constraint_set_comp4(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:NAT & x:{1,2,3,-1}}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)       
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])
+        assert "long" in map[set_predicate.children[0]]    
+        assert "fast" in map[set_predicate.children[1]]  
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = list(iterator)
+        assert solution==[{'x': 1}, {'x': 2}, {'x': 3}]
+        result = interpret(root, env)
+        assert result==frozenset([1,2,3])
+
+
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

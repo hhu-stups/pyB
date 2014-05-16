@@ -666,7 +666,6 @@ def interpret(node, env):
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
-                print entry
                 value = entry[name]
                 env.set_value(name, value)
             try:

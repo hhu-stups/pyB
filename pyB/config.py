@@ -17,4 +17,5 @@ VERBOSE = True
 PRINT_WARNINGS = True   # prints deadlock warning and wrong substitution-warnings (e.g. while in abstract machine)
 BMACHINE_SEARCH_DIR = "examples/"
 BFILE_EXTENSION = ".mch"
+QUICK_EVAL_CONJ_PREDICATES = True
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)

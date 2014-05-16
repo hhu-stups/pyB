@@ -2,9 +2,9 @@
 # pyB imports:
 from ast_nodes import *
 from enumeration import all_values_by_type
-from bexceptions import ConstraintNotImplementedException
+from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from quick_eval import quick_member_eval
-from config import TO_MANY_ITEMS
+from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES
 
 
 # assumption: the variables of varList are typed and constraint by the
@@ -25,7 +25,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # case 2: a special case implemented by pyB    
     # TODO: support more than one variable
     # check if a solution-set is computable without the external contraint solver
-    if isinstance(predicate, AConjunctPredicate) and len(varList)==1:
+    if QUICK_EVAL_CONJ_PREDICATES and isinstance(predicate, AConjunctPredicate) and len(varList)==1:
         pred_map = _categorize_predicates(predicate, env, varList)
         assert pred_map != []
         test_set = None
@@ -273,7 +273,7 @@ def _estimate_computation_time(node, env, varList):
     elif isinstance(node, AUnaryExpression):
         return _estimate_computation_time(node.children[0], env, varList)
     elif isinstance(node, (ASetExtensionExpression, ACoupleExpression)):
-        if _estimate_computation_time(node.children[0], env, varList)=="fast" and _estimate_computation_time(node.children[1], env, varList)=="fast":
+        if "fast" in _estimate_computation_time(node.children[0], env, varList) and "fast" in _estimate_computation_time(node.children[1], env, varList):
             return "fast"
     elif isinstance(node, ABelongPredicate):
         # takes much time if set computation on the rhs takes much time
@@ -295,6 +295,13 @@ def _compute_test_set(node, env, varList, interpreter_callable):
         # e.g {x| x:NAT & x=42}  results in {42}
         assert isinstance(integer, int)
         return frozenset([integer])
+    elif isinstance(node, ABelongPredicate):
+        set = interpreter_callable(node.children[1], env)
+        # e.g. {x| x:Nat & x:{1,2,3}}
+        assert isinstance(set, frozenset)
+        return set
+    else:
+    	raise NotImplementedException()
 
 
 # remove all elements which do not satisfy pred
@@ -307,8 +314,11 @@ def _filter_false_elements(pred, env, varList, interpreter_callable, test_set):
     env.push_new_frame(varList)
     for value in test_set:
         env.set_value(var_name, value)
-        if interpreter_callable(pred, env):
-            result.append(value)
+        try:
+            if interpreter_callable(pred, env):
+                result.append(value)
+        except ValueNotInDomainException: # function app with wrong value
+            continue # skip this false value
     env.pop_frame()
     return frozenset(result)
     
