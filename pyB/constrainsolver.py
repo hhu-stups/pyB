@@ -9,9 +9,10 @@ from config import TO_MANY_ITEMS
 
 # assumption: the variables of varList are typed and constraint by the
 # predicate. If predicate is None, all values of the variable type is returned.
-# After a this function returns a generator, every solution-candidate musst be checked! 
+# After this function returns a generator, every solution-candidate musst be checked! 
 # This function may be generate false values, but does not omit right ones 
 # i.e no values are missing 
+# TODO: move checking inside function
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # check which kind of predicate
     assert isinstance(varList, list)
@@ -36,9 +37,9 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
                 if test_set==None:
                     test_set = _compute_test_set(pred, env, varList, interpreter_callable)
                 else:
-                    test_set = _constraint_test_set_(pred, env, varList, interpreter_callable, test_set)
+                    test_set = _filter_false_elements(pred, env, varList, interpreter_callable, test_set)
         if test_set !=None:
-            final_set = _constraint_test_set_(predicate, env, varList, interpreter_callable, test_set)
+            final_set = _filter_false_elements(predicate, env, varList, interpreter_callable, test_set)
             iterator = _set_to_iterator(env, varList, final_set)
             return iterator
         # Todo: generate constraint set by using all "fast computable" predicates
@@ -75,9 +76,7 @@ def gen_all_values(env, varList, dic):
 
 # XXX: only on var supported
 def _set_to_iterator(env, varList, aset):
-    if aset==frozenset([]):
-        yield {}
-    else:
+    if not aset==frozenset([]):
 		idNode = varList[0]
 		assert isinstance(idNode, AIdentifierExpression)  
 		var_name = idNode.idName 
@@ -300,17 +299,16 @@ def _compute_test_set(node, env, varList, interpreter_callable):
 
 # remove all elements which do not satisfy pred
 # TODO: support more than on variable 
-def _constraint_test_set_(pred, env, varList, interpreter_callable, test_set):
-    return test_set
-    #result = []
-    #idNode = varList[0]
-    #assert isinstance(idNode, AIdentifierExpression)  
-    #var_name = idNode.idName 
-    #env.push_new_frame(varList)
-    #for value in test_set:
-    #    env.set_value(var_name, value)
-    #    if interpreter_callable(pred, env):
-    #        result.append(value)
-    #env.pop_frame()
-    #return frozenset(result)
+def _filter_false_elements(pred, env, varList, interpreter_callable, test_set):
+    result = []
+    idNode = varList[0]
+    assert isinstance(idNode, AIdentifierExpression)  
+    var_name = idNode.idName 
+    env.push_new_frame(varList)
+    for value in test_set:
+        env.set_value(var_name, value)
+        if interpreter_callable(pred, env):
+            result.append(value)
+    env.pop_frame()
+    return frozenset(result)
     

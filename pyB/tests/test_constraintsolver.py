@@ -211,8 +211,8 @@ class TestConstraintSolver():
         assert "long" in map[set_predicate.children[0]]    
         assert "fast" in map[set_predicate.children[1]]    
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
-        solution = iterator.next()
-        #assert solution=={}
+        solution = list(iterator)
+        assert solution==[]
         result = interpret(root, env)
         assert result==frozenset([])
 
