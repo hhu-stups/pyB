@@ -254,7 +254,8 @@ def _categorize_predicates(predicate, env, varList):
 
 # TODO: support more than one variable (which is constraint by the predicate to be analysed
 # this approximation is still not good. Eg. x/:NAT   
-# TODO: maybe replace with abstract interpretation     
+# TODO: maybe replace with abstract interpretation 
+# TODO: return numbers insed of fast to estimate set explosion    
 def _estimate_computation_time(node, env, varList):
     if isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression)):
         return "infinite: %s" % node
@@ -272,6 +273,9 @@ def _estimate_computation_time(node, env, varList):
         return "fast"
     elif isinstance(node, AUnaryExpression):
         return _estimate_computation_time(node.children[0], env, varList)
+    #elif isinstance(node, APartialFunctionExpression):
+    #    if "fast" in _estimate_computation_time(node.children[0], env, varList) and "fast" in _estimate_computation_time(node.children[1], env, varList):
+    #        return "fast"
     elif isinstance(node, (ASetExtensionExpression, ACoupleExpression)):
         if "fast" in _estimate_computation_time(node.children[0], env, varList) and "fast" in _estimate_computation_time(node.children[1], env, varList):
             return "fast"
@@ -290,11 +294,10 @@ def _estimate_computation_time(node, env, varList):
 
 def _compute_test_set(node, env, varList, interpreter_callable):
     if isinstance(node, AEqualPredicate):
-        integer = interpreter_callable(node.children[1], env)
+        value = interpreter_callable(node.children[1], env)
         # if elements of the set are equal to some expression, a set has to be generated 
         # e.g {x| x:NAT & x=42}  results in {42}
-        assert isinstance(integer, int)
-        return frozenset([integer])
+        return frozenset([value])
     elif isinstance(node, ABelongPredicate):
         set = interpreter_callable(node.children[1], env)
         # e.g. {x| x:Nat & x:{1,2,3}}
