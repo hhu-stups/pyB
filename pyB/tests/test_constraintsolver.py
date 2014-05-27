@@ -182,8 +182,12 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var])
-        assert "long" in map[set_predicate.children[0]]    
-        assert "fast" in map[set_predicate.children[1]]    
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0 == env._max_int+2    
+        assert time1 == 3 
+        assert vars0 == ["x"]
+        assert vars1 == ["x"]
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
         solution = iterator.next()
         assert solution=={'x': 42}
@@ -208,8 +212,12 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var])
-        assert "long" in map[set_predicate.children[0]]    
-        assert "fast" in map[set_predicate.children[1]]    
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0 == env._max_int+2   
+        assert time1 == 4 
+        assert vars0 == ["x"]  
+        assert vars1 == ["x"] 
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
         solution = list(iterator)
         assert solution==[]
@@ -234,8 +242,12 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var])
-        assert "long" in map[set_predicate.children[0]]    
-        assert "fast" in map[set_predicate.children[1]]  
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0 == env._max_int+2  
+        assert time1 == 8
+        assert vars0 == ["x"]
+        assert vars1 == ["x"]
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
         solution = list(iterator)
         assert solution==[{'x': 1}, {'x': 2}, {'x': 3}]
@@ -252,8 +264,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
-        env._min_int = -2**3
-        env._max_int = 2**3
+        env._min_int = -2**32
+        env._max_int = 2**32
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "x"), PowerSetType)
         assert isinstance(get_type_by_name(env, "x").data, CartType)
@@ -261,14 +273,50 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var])
-        assert "dont know" in map[set_predicate.children[0]]    
-        assert "fast" in map[set_predicate.children[1]]  
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0==float("inf")    
+        assert isinstance(time1, int)   
+        assert vars0==["x"]
+        assert vars1==["x"]
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
-        #solution = list(iterator)
-        #assert solution==[{'x': frozenset([frozenset([1,1]),frozenset([2,2]),frozenset([3,3])])}]
+        solution = list(iterator)
+        assert solution==[{'x': frozenset([(1,1),(2,2),(3,3)])}]
         result = interpret(root, env)
         assert result==frozenset([frozenset([(1,1),(2,2),(3,3)])])
 
+
+    def test_constraint_set_comp6(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x : (INTEGER * INTEGER) * BOOL & (x : {((3|->10)|->TRUE),((3|->12)|->TRUE)})}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0==float("inf")    
+        assert isinstance(time1, int) 
+        assert vars0==["x"]
+        assert vars1==["x"]
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = list(iterator)
+        assert solution==[{'x': ((3, 12), True)}, {'x': ((3, 10), True)}]
+        result = interpret(root, env)
+        assert result==frozenset([((3, 12), True), ((3, 10), True)])
+        
+        
+        #(prj1(INTEGER*INTEGER,BOOL)(x) /: dom({((3|->10)|->TRUE),((3|->12)|->TRUE),
 
     def test_constraint_pi(self):
         # PI (z).(P|E)

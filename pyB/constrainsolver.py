@@ -5,6 +5,7 @@ from enumeration import all_values_by_type
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from quick_eval import quick_member_eval
 from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES
+from abstract_interpretation import estimate_computation_time, find_constraint_vars
 
 
 # assumption: the variables of varList are typed and constraint by the
@@ -30,7 +31,10 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         assert pred_map != []
         test_set = None
         for pred in pred_map:
-            if "fast" in pred_map[pred]:
+            (size, vars) = pred_map[pred]
+            
+            # TODO: more than one var 
+            if size!=float("inf") and size<TO_MANY_ITEMS and varList[0].idName in vars:
                 # at least on predicate of this conjunction can easiely be used
                 # to compute a testset. The exact solution musst contain all 
                 # or less elements than test_set
@@ -38,6 +42,9 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
                     test_set = _compute_test_set(pred, env, varList, interpreter_callable)
                 else:
                     test_set = _filter_false_elements(pred, env, varList, interpreter_callable, test_set)
+                #from pretty_printer import pretty_print
+                #print "predicate for testset:", pretty_print(pred)
+                #print "test set:", test_set
         if test_set !=None:
             final_set = _filter_false_elements(predicate, env, varList, interpreter_callable, test_set)
             iterator = _set_to_iterator(env, varList, final_set)
@@ -77,13 +84,13 @@ def gen_all_values(env, varList, dic):
 # XXX: only on var supported
 def _set_to_iterator(env, varList, aset):
     if not aset==frozenset([]):
-		idNode = varList[0]
-		assert isinstance(idNode, AIdentifierExpression)  
-		var_name = idNode.idName 
-		dic = {} 
-		for element in aset:
-			dic[var_name] = element 
-			yield dic.copy()            
+        idNode = varList[0]
+        assert isinstance(idNode, AIdentifierExpression)  
+        var_name = idNode.idName 
+        dic = {} 
+        for element in aset:
+            dic[var_name] = element 
+            yield dic.copy()            
                 
 
 # wrapper-function for contraint solver 
@@ -248,49 +255,10 @@ def _categorize_predicates(predicate, env, varList):
         map0.update(map1)
         return map0
     else:
-       string = _estimate_computation_time(predicate, env, varList)
-       return {predicate: string}
-
-
-# TODO: support more than one variable (which is constraint by the predicate to be analysed
-# this approximation is still not good. Eg. x/:NAT   
-# TODO: maybe replace with abstract interpretation 
-# TODO: return numbers insed of fast to estimate set explosion    
-def _estimate_computation_time(node, env, varList):
-    if isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression)):
-        return "infinite: %s" % node
-    elif isinstance(node, (ANatSetExpression, ANat1SetExpression, )):
-        if env._max_int > TO_MANY_ITEMS:
-            return "long: %s" % node
-        else: 
-            return "fast"
-    elif isinstance(node, AIntSetExpression):
-        if env._min_int*-1 + env._max_int > TO_MANY_ITEMS:
-            return "long: %s" % node
-        else:
-            return "fast"    
-    elif isinstance(node, AIntegerExpression):
-        return "fast"
-    elif isinstance(node, AUnaryExpression):
-        return _estimate_computation_time(node.children[0], env, varList)
-    #elif isinstance(node, APartialFunctionExpression):
-    #    if "fast" in _estimate_computation_time(node.children[0], env, varList) and "fast" in _estimate_computation_time(node.children[1], env, varList):
-    #        return "fast"
-    elif isinstance(node, (ASetExtensionExpression, ACoupleExpression)):
-        if "fast" in _estimate_computation_time(node.children[0], env, varList) and "fast" in _estimate_computation_time(node.children[1], env, varList):
-            return "fast"
-    elif isinstance(node, ABelongPredicate):
-        # takes much time if set computation on the rhs takes much time
-        # left side indicates: rhs contrains set elements
-        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
-            return _estimate_computation_time(node.children[1], env, varList)
-    elif isinstance(node, AEqualPredicate):
-        # takes much time if computation on the rhs takes much time
-        # left side indicates: rhs contrains set elements
-        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
-            return _estimate_computation_time(node.children[1], env, varList)
-    return "dont know"
-
+       size = estimate_computation_time(predicate, env, varList)
+       constraint_vars = find_constraint_vars(predicate, env, varList)
+       return {predicate: (size, constraint_vars)}
+    
 
 def _compute_test_set(node, env, varList, interpreter_callable):
     if isinstance(node, AEqualPredicate):
@@ -304,7 +272,7 @@ def _compute_test_set(node, env, varList, interpreter_callable):
         assert isinstance(set, frozenset)
         return set
     else:
-    	raise NotImplementedException()
+        raise NotImplementedException()
 
 
 # remove all elements which do not satisfy pred
@@ -316,6 +284,7 @@ def _filter_false_elements(pred, env, varList, interpreter_callable, test_set):
     var_name = idNode.idName 
     env.push_new_frame(varList)
     for value in test_set:
+        print "filter_false:", var_name, value
         env.set_value(var_name, value)
         try:
             if interpreter_callable(pred, env):
