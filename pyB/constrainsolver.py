@@ -5,36 +5,36 @@ from enumeration import all_values_by_type
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from quick_eval import quick_member_eval
 from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES
-from abstract_interpretation import estimate_computation_time, find_constraint_vars
+from abstract_interpretation import estimate_computation_time
 
 
-# assumption: the variables of varList are typed and constraint by the
+# assumption: the variables of varList are typed may constraint by the
 # predicate. If predicate is None, all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
 # This function may be generate false values, but does not omit right ones 
 # i.e no values are missing 
-# TODO: move checking inside function
+# TODO: move checking inside this function i.e. generate NO FALSE values
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
-    # check which kind of predicate
     assert isinstance(varList, list)
+    # check which kind of predicate: 3 cases
 
-    # case 1: none = no predicate constraining parameter values
+    # case 1: None = no predicate constraining parameter values, generate all values
     if predicate==None: 
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
     
     # case 2: a special case implemented by pyB    
+    # check if a solution-set is computable without a external contraint solver
     # TODO: support more than one variable
-    # check if a solution-set is computable without the external contraint solver
     if QUICK_EVAL_CONJ_PREDICATES and isinstance(predicate, AConjunctPredicate) and len(varList)==1:
         pred_map = _categorize_predicates(predicate, env, varList)
         assert pred_map != []
         test_set = None
         for pred in pred_map:
-            (size, vars) = pred_map[pred]
+            (time, vars) = pred_map[pred]
             
             # TODO: more than one var 
-            if size!=float("inf") and size<TO_MANY_ITEMS and varList[0].idName in vars:
+            if time!=float("inf") and time<TO_MANY_ITEMS and varList[0].idName in vars:
                 # at least on predicate of this conjunction can easiely be used
                 # to compute a testset. The exact solution musst contain all 
                 # or less elements than test_set
@@ -102,6 +102,8 @@ def _calc_constraint_domain(env, varList, predicate):
     # download and unzip python-constraint-1.1.tar.bz2
     # python setup.py build
     # python setup.py install
+    #from pretty_printer import pretty_print
+    #print "predicate:", pretty_print(predicate)
     from constraint import Problem
     assert isinstance(predicate, Predicate)
     var_and_domain_lst = []
@@ -120,7 +122,7 @@ def _calc_constraint_domain(env, varList, predicate):
             lst = _set_to_list(lst) 
         problem.addVariable(name, lst)
     qme_nodes = []
-    constraint_string = pretty_print(env, varList, predicate, qme_nodes)
+    constraint_string = pretty_print_python_style(env, varList, predicate, qme_nodes)
     names = [x.idName for x in varList]
     expr = "lambda "
     for n in names[0:-1]:
@@ -146,11 +148,11 @@ def function(env, func_name, key):
 # helper-function for calc_constraint_domain
 # This pretty printer prints B python-style. 
 # The pretty printer in pretty_printer.py prints B B-style
-def pretty_print(env, varList, node, qme_nodes):
+def pretty_print_python_style(env, varList, node, qme_nodes):
     #print node
     if isinstance(node, AConjunctPredicate):
-        string0 = pretty_print(env, varList, node.children[0], qme_nodes)
-        string1 = pretty_print(env, varList, node.children[1], qme_nodes)
+        string0 = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
+        string1 = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
         if string0 and string1:
             return "("+string0 +") and ("+ string1 +")"    
         elif string0:
@@ -158,8 +160,8 @@ def pretty_print(env, varList, node, qme_nodes):
         elif string1:
             return string1
     elif isinstance(node, ADisjunctPredicate):
-        string0 = pretty_print(env, varList, node.children[0], qme_nodes)
-        string1 = pretty_print(env, varList, node.children[1], qme_nodes)
+        string0 = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
+        string1 = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
         if string0 and string1:
             return "("+string0 +") or ("+ string1 +")"    
         elif string0:
@@ -169,37 +171,6 @@ def pretty_print(env, varList, node, qme_nodes):
     elif isinstance(node, ABelongPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
         qme_nodes.append(node.children[1])
         return " quick_member_eval( qme_nodes["+str(len(qme_nodes)-1)+"], env,"+node.children[0].idName+")"
-        #         if isinstance(node.children[1], AIntervalExpression):
-        #             name = str(node.children[0].idName)
-        #             number0 = pretty_print(env, varList, node.children[1].children[0])
-        #             number1 = pretty_print(env, varList, node.children[1].children[1])
-        #             if number0 and number1:
-        #                 string = name+">="+str(number0)
-        #                 string += " and "+name+"<="+str(number1)
-        #                 return string
-        #         elif isinstance(node.children[1], AIdentifierExpression):
-        #             name = str(node.children[0].idName)
-        #             setName = str(node.children[1].idName)
-        #             value = env.get_value(setName)
-        #             string = name+" in "+str(value)
-        #             return string 
-        #         elif isinstance(node.children[1], ANatSetExpression):
-        #             name = str(node.children[0].idName)
-        #             string = name+" in "+str(range(0,env._max_int+1))
-        #             return string   
-        #         elif isinstance(node.children[1], ANat1SetExpression):
-        #             name = str(node.children[0].idName)
-        #             string = name+" in "+str(range(1,env._max_int+1))
-        #             return string 
-        #         elif isinstance(node.children[1], AIntegerSetExpression): # TODO:(#ISSUE 17)
-        #             name = str(node.children[0].idName)
-        #             string = name+" in "+str(range(env._min_int,env._max_int+1))
-        #             return string           
-        #         elif isinstance(node.children[1], AStringSetExpression):
-        #             name = str(node.children[0].idName)
-        #             value = env.all_strings 
-        #             string = name+" in "+str(value)
-        #             return string     
     elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
         left = ""
         right = ""
@@ -207,11 +178,11 @@ def pretty_print(env, varList, node, qme_nodes):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
             name = str(node.children[0].idName)
             left = name
-            right = pretty_print(env, varList, node.children[1], qme_nodes)
+            right = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
         elif isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName in [x.idName for x in varList]:
             name = str(node.children[1].idName)
             right = name
-            left = pretty_print(env, varList, node.children[0], qme_nodes)
+            left = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
         if left and right and name:
             if isinstance(node, AGreaterPredicate):
                 bin_op = ">"
@@ -247,7 +218,7 @@ def pretty_print(env, varList, node, qme_nodes):
 
 # TODO: support more than one variable
 # input: P0 & P1 & ...PN
-# output(example): mapping {P0->fast, P1->long,... PN->infinite}        
+# output(example): mapping {P0->(time0, vars0), , P1->(time1, vars1),... PN->(timeN, varsN)}        
 def _categorize_predicates(predicate, env, varList):
     if isinstance(predicate, AConjunctPredicate):
         map0 = _categorize_predicates(predicate.children[0], env, varList)
@@ -255,10 +226,24 @@ def _categorize_predicates(predicate, env, varList):
         map0.update(map1)
         return map0
     else:
-       size = estimate_computation_time(predicate, env, varList)
+       time = estimate_computation_time(predicate, env)
        constraint_vars = find_constraint_vars(predicate, env, varList)
-       return {predicate: (size, constraint_vars)}
-    
+       return {predicate: (time, constraint_vars)}
+
+
+def find_constraint_vars(predicate, env, varList):
+    if isinstance(predicate, ABelongPredicate):
+        if isinstance(predicate.children[0], AIdentifierExpression):
+            return [predicate.children[0].idName]
+    elif isinstance(predicate, AEqualPredicate):
+        if isinstance(predicate.children[0], AIdentifierExpression):
+            return [predicate.children[0].idName]
+        elif isinstance(predicate.children[1], AIdentifierExpression):
+            return [predicate.children[1].idName]
+    # No implemented case found. Maybe there are constraints, but pyB doesnt find them
+    # TODO: Implement more cases, but only that on handeld in _compute_test_set
+    return []
+        
 
 def _compute_test_set(node, env, varList, interpreter_callable):
     if isinstance(node, AEqualPredicate):
