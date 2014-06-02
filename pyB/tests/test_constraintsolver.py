@@ -319,6 +319,26 @@ class TestConstraintSolver():
     def test_constraint_set_comp7(self):
         # {x|P}
         # Build AST:
+        string_to_file("#EXPRESSION {x|x: (INTEGER*INTEGER)*INTEGER & (x:{((1|->2)|->3),((4|->5)|->6)} or x : ((0 .. 209) * (0 .. 209)) * {-1})}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var]) 
+        print map 
+        
+        
+    def test_constraint_set_comp8(self):
+        # {x|P}
+        # Build AST:
         string_to_file("#EXPRESSION {x|x: (INTEGER*INTEGER)*INTEGER & (x:{((1|->2)|->3),((4|->5)|->6)} or (prj1(INTEGER*INTEGER,INTEGER)(x)/:dom({((1|->2)|->83),((1|->15)|->83)})  & x : ((0 .. 209) * (0 .. 209)) * {-1}))}", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string) 
@@ -337,6 +357,119 @@ class TestConstraintSolver():
         
         #(prj1(INTEGER*INTEGER,BOOL)(x) /: dom({((3|->10)|->TRUE),((3|->12)|->TRUE),
 
+
+    def test_constraint_set_comp9(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:{1,2,3,4} & (x:{1,2} or x:{3})}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])  
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]  
+        assert vars0==["x"]
+        assert vars1==["x"]
+        assert time0==7
+        assert time1==10
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = list(iterator)
+        assert solution==[{'x': 1}, {'x': 2}, {'x': 3}]
+        result = interpret(root, env)
+        assert result==frozenset([1,2,3])
+
+
+    def test_constraint_set_comp10(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x| (x:{1,2} or x:{3}) & x:{1,2,3,4}}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])  
+        (time0, vars0) = map[set_predicate.children[1]]
+        (time1, vars1) = map[set_predicate.children[0]]  
+        assert vars0==["x"]
+        assert vars1==["x"]
+        assert time0==7
+        assert time1==10
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = list(iterator)
+        assert solution==[{'x': 1}, {'x': 2}, {'x': 3}]
+        result = interpret(root, env)
+        assert result==frozenset([1,2,3])
+
+
+    def test_constraint_set_comp11(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:{1,2,3,4} & (x:NAT or x:{3})}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])    
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]          
+        assert vars0==["x"]
+        assert vars1==["x"]
+        iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
+        solution = list(iterator)
+        assert solution==[{'x': 1}, {'x': 2}, {'x': 3}, {'x':4}]
+        result = interpret(root, env)
+        assert result==frozenset([1,2,3,4])
+        assert time0==7
+        assert time1==env._max_int+7
+        
+        
+    def test_constraint_set_comp12(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x: (INTEGER*INTEGER)*INTEGER & x : ((0 .. 209) * (0 .. 209)) * {-1}}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])    
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]] 
+        print map    
+                
+        
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

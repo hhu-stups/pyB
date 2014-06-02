@@ -12,7 +12,7 @@ import math
 # is constraining a variable, which is element of a set i.e predicate defines a set
 # This method is used to select sub-predicates to generate constraint-"small" value 
 # domains of variables to avoid a set explosion during enumeration. It only checks the 
-# effort need for computation. If a predicate constrains a variable is checked by an other
+# effort need for computation. If a predicate constrains a variable, is checked by another
 # function  
 def estimate_computation_time(predicate, env):
     assert isinstance(predicate, Predicate)
@@ -31,15 +31,7 @@ def estimate_computation_time(predicate, env):
 #       AQuantifiedUnionExpression
 def _abs_int(node, env):
     #print node
-    if isinstance(node, ADisjunctPredicate):
-        time0 =  _abs_int(node.children[0], env)
-        time1 =  _abs_int(node.children[1], env)
-        # a "test-set" generator will choose the "quicker" path
-        if time0<time1:
-            return time1+1
-        else: 
-            return time0+1
-    elif isinstance(node, ABoolSetExpression):
+    if isinstance(node, ABoolSetExpression):
         return 2
     elif isinstance(node, (APowSubsetExpression, APow1SubsetExpression)):
         time = _abs_int(node.children[0], env)
@@ -53,6 +45,14 @@ def _abs_int(node, env):
         return env._max_int
     elif isinstance(node, AIntSetExpression):
         return env._min_int*-1 + env._max_int
+    elif isinstance(node, AMultOrCartExpression):
+        time0 = _abs_int(node.children[0], env)
+        time1 = _abs_int(node.children[1], env)    
+        prod = time0*time1
+        if prod>TO_MANY_ITEMS:
+            return float("inf")
+        else:
+            return prod
     ### Relations, functions, sequences
     elif isinstance(node, (APartialFunctionExpression, ARelationsExpression, APartialFunctionExpression, ATotalFunctionExpression, APartialInjectionExpression, ATotalInjectionExpression, APartialSurjectionExpression, ATotalSurjectionExpression, ATotalBijectionExpression, APartialBijectionExpression, ASeqExpression, ASeq1Expression, AIseqExpression, AIseq1Expression, APermExpression)):
         time0 = _abs_int(node.children[0], env)
@@ -65,6 +65,18 @@ def _abs_int(node, env):
     ### Leafs
     elif isinstance(node, (AIdentifierExpression, APrimedIdentifierExpression, AIntegerExpression, AStringExpression, AEmptySetExpression, AEmptySequenceExpression, ATrueExpression, AFalseExpression, AMinIntExpression, AMaxIntExpression)):
         return 1
+    elif isinstance(node, AIntervalExpression):
+        if isinstance(node.children[0], AIdentifierExpression):
+            val0 = env.get_value(node.children[0].idName)
+        else:
+        	assert isinstance(node.children[0], AIntegerExpression)
+        	val0 = node.children[0].intValue
+        if isinstance(node.children[1], AIdentifierExpression):
+            val1 = env.get_value(node.children[1].idName)
+        else:
+        	assert isinstance(node.children[1], AIntegerExpression)
+        	val1 = node.children[1].intValue
+        return val1-val0
     ### Default:
     else:
         time = 1

@@ -231,6 +231,7 @@ def _categorize_predicates(predicate, env, varList):
        return {predicate: (time, constraint_vars)}
 
 
+# input predicate is always a sub-predicate of a conjunction predicate 
 def find_constraint_vars(predicate, env, varList):
     if isinstance(predicate, ABelongPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
@@ -240,6 +241,14 @@ def find_constraint_vars(predicate, env, varList):
             return [predicate.children[0].idName]
         elif isinstance(predicate.children[1], AIdentifierExpression):
             return [predicate.children[1].idName]
+    # if the subpredicate consists of a conjunction or disjunction, it 
+    # only constraints a var x if x is constraint by both sub-predicates,
+    # because this sub-predicate may be a candidate for test-set generation
+    elif isinstance(predicate, (ADisjunctPredicate, AConjunctPredicate)):
+        lst0 = find_constraint_vars(predicate.children[0], env, varList)
+        lst1 = find_constraint_vars(predicate.children[1], env, varList)
+        result = [x for x in lst0 if x in lst1] # contraint by both
+        return result
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
     return []
@@ -256,6 +265,12 @@ def _compute_test_set(node, env, varList, interpreter_callable):
         # e.g. {x| x:Nat & x:{1,2,3}}
         assert isinstance(set, frozenset)
         return set
+    # this is only called because both branches (node.childern[0] and node.childern[1])
+    # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
+    elif isinstance(node, ADisjunctPredicate):
+        set0 = _compute_test_set(node.children[0], env, varList, interpreter_callable)
+        set1 = _compute_test_set(node.children[1], env, varList, interpreter_callable)
+        return set0.union(set1)
     else:
         raise NotImplementedException()
 
@@ -269,7 +284,7 @@ def _filter_false_elements(pred, env, varList, interpreter_callable, test_set):
     var_name = idNode.idName 
     env.push_new_frame(varList)
     for value in test_set:
-        print "filter_false:", var_name, value
+        #print "filter_false:", var_name, value
         env.set_value(var_name, value)
         try:
             if interpreter_callable(pred, env):
