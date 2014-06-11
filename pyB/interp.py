@@ -1056,14 +1056,16 @@ def interpret(node, env):
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, FakeSet) or isinstance(T, FakeSet):
+            return FakeFirstProj(S,T)
         cart = frozenset(((x,y) for x in S for y in T))
-        proj = [(x,x[0]) for x in cart]
+        proj = [(t,t[0]) for t in cart]
         return frozenset(proj)
     elif isinstance(node, ASecondProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         cart = frozenset(((x,y) for x in S for y in T))
-        proj = [(x,x[1]) for x in cart]
+        proj = [(t,t[1]) for t in cart]
         return frozenset(proj)
 
 
@@ -1184,6 +1186,8 @@ def interpret(node, env):
             else:
                 args = tuple([args, arg])
             i = i+1
+        if isinstance(function, FakeSet):
+            return function[args]
         return get_image(function, args)
 
 

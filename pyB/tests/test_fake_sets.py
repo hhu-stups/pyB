@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from interp import interpret
 from environment import Environment
 from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
@@ -176,4 +177,15 @@ class TestFakeSets():
         assert (nat_set | natural_set) ==natural_set
         assert (nat_set | natural1_set) ==natural1_set
         assert (nat_set | integer_set) ==integer_set
+        
+    
+    def test_symbolic_proj1(self):
+        # Build AST
+        string_to_file("#PREDICATE prj1(INTEGER*INTEGER,INTEGER)((1,42,1))=(1|->42)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root.children[0], env)
         

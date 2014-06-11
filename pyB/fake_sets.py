@@ -2,6 +2,8 @@
 # warning: some set behavior is implemented inside the interpreter
 # and its helper-methodes and NOT here
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
+from bexceptions import ValueNotInDomainException
+
 
 class FakeSet(object):
     def __init__(self, env):
@@ -329,3 +331,15 @@ class FakeCartSet(FakeSet):
 
 class FakePowerSet(FakeSet):
     pass #TODO: implement me
+
+
+class FakeFirstProj(FakeSet):
+    def __init__(self, aset0, aset1):
+        self.left_set = aset0
+        self.right_set = aset1  
+    
+    # proj1(S,T)(arg)
+    def __getitem__(self, arg):
+        if arg[0] not in self.left_set or arg[1] not in self.right_set:
+            raise ValueNotInDomainException(arg) 
+        return arg[0]  

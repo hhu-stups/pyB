@@ -7,6 +7,7 @@ from util import type_with_known_types, get_type_by_name
 from constrainsolver import _calc_constraint_domain, _categorize_predicates, calc_possible_solutions
 from parsing import str_ast_to_python_ast
 from interp import interpret
+from config import TO_MANY_ITEMS
 
 file_name = "input.txt"
 
@@ -333,8 +334,16 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var]) 
-        print map 
-        
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0==float("inf")    
+        assert time1 <TO_MANY_ITEMS
+        assert vars0==["x"]
+        assert vars1==["x"] 
+        # works, but take too much time
+        #result = interpret(root, env)
+        #print result       
+
         
     def test_constraint_set_comp8(self):
         # {x|P}
@@ -352,9 +361,17 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])    
-        print map     
-        
+        map = _categorize_predicates(set_predicate, env, [var])
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]]
+        assert time0==float("inf")    
+        assert time1 <TO_MANY_ITEMS
+        assert vars0==["x"]
+        assert vars1==["x"]     
+        # works, but take too much time (232.09 seconds)
+        #result = interpret(root, env)
+        #print result    
+        #TODO:     
         #(prj1(INTEGER*INTEGER,BOOL)(x) /: dom({((3|->10)|->TRUE),((3|->12)|->TRUE),
 
 
@@ -439,15 +456,15 @@ class TestConstraintSolver():
         (time1, vars1) = map[set_predicate.children[1]]          
         assert vars0==["x"]
         assert vars1==["x"]
+        assert time0==7
+        assert time1==env._max_int+7
         iterator = calc_possible_solutions(set_predicate, env, [var], interpret)
         solution = list(iterator)
         assert solution==[{'x': 1}, {'x': 2}, {'x': 3}, {'x':4}]
         result = interpret(root, env)
         assert result==frozenset([1,2,3,4])
-        assert time0==7
-        assert time1==env._max_int+7
-        
-        
+
+     
     def test_constraint_set_comp12(self):
         # {x|P}
         # Build AST:
@@ -466,10 +483,43 @@ class TestConstraintSolver():
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var])    
         (time0, vars0) = map[set_predicate.children[0]]
-        (time1, vars1) = map[set_predicate.children[1]] 
-        print map    
+        (time1, vars1) = map[set_predicate.children[1]]         
+        assert vars0==["x"]
+        assert vars1==["x"]
+        assert time0==float("inf")
+        assert time1<2**22   
+        # works, but take too much time
+        #result = interpret(root, env)
+        #print result
                 
-        
+                
+    def test_constraint_set_comp13(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION {x|x:INTEGER*INTEGER & x : dom({((2|->0)|->83),((2|->1)|->83),((2|->3)|->83)})}   ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), CartType)
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])  
+        (time0, vars0) = map[set_predicate.children[0]]
+        (time1, vars1) = map[set_predicate.children[1]] 
+        assert vars0==["x"]
+        assert vars1==["x"]
+        assert time0==float("inf")
+        assert time1<2**22   
+        result = interpret(root, env)
+        assert result==frozenset([(2, 0), (2, 3), (2, 1)])
+
+                
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

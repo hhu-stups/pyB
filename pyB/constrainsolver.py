@@ -8,6 +8,9 @@ from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES
 from abstract_interpretation import estimate_computation_time
 
 
+class PredicateDoesNotMatchException:
+    pass # TODO: refactor me
+
 # assumption: the variables of varList are typed may constraint by the
 # predicate. If predicate is None, all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
@@ -34,19 +37,23 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
             (time, vars) = pred_map[pred]
             
             # TODO: more than one var 
+            var_node = varList[0]
             if time!=float("inf") and time<TO_MANY_ITEMS and varList[0].idName in vars:
                 # at least on predicate of this conjunction can easiely be used
                 # to compute a testset. The exact solution musst contain all 
                 # or less elements than test_set
                 if test_set==None:
-                    test_set = _compute_test_set(pred, env, varList, interpreter_callable)
+                    try:
+                        test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
+                    except PredicateDoesNotMatchException: #.eg constraining y instead of x, or using unimplemented cases
+                        test_set = None 
                 else:
-                    test_set = _filter_false_elements(pred, env, varList, interpreter_callable, test_set)
+                    test_set = _filter_false_elements(pred, env, var_node, interpreter_callable, test_set)
                 #from pretty_printer import pretty_print
                 #print "predicate for testset:", pretty_print(pred)
                 #print "test set:", test_set
         if test_set !=None:
-            final_set = _filter_false_elements(predicate, env, varList, interpreter_callable, test_set)
+            final_set = _filter_false_elements(predicate, env, var_node, interpreter_callable, test_set)
             iterator = _set_to_iterator(env, varList, final_set)
             return iterator
         # Todo: generate constraint set by using all "fast computable" predicates
@@ -217,6 +224,8 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 
 
 # TODO: support more than one variable
+# FIMXE: doesnt finds finite-time computable sub-predicates. 
+#        e.g P0="P00(x) or P01(y)" with P01 infinite
 # input: P0 & P1 & ...PN
 # output(example): mapping {P0->(time0, vars0), , P1->(time1, vars1),... PN->(timeN, varsN)}        
 def _categorize_predicates(predicate, env, varList):
@@ -235,54 +244,73 @@ def _categorize_predicates(predicate, env, varList):
 def find_constraint_vars(predicate, env, varList):
     if isinstance(predicate, ABelongPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
-            return [predicate.children[0].idName]
+            test_set_var = [predicate.children[0].idName]
+            return test_set_var
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
-            return [predicate.children[0].idName]
+            test_set_var = [predicate.children[0].idName]
+            return test_set_var
         elif isinstance(predicate.children[1], AIdentifierExpression):
-            return [predicate.children[1].idName]
+            test_set_var = [predicate.children[1].idName]
+            return test_set_var
     # if the subpredicate consists of a conjunction or disjunction, it 
-    # only constraints a var x if x is constraint by both sub-predicates,
+    # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
     elif isinstance(predicate, (ADisjunctPredicate, AConjunctPredicate)):
         lst0 = find_constraint_vars(predicate.children[0], env, varList)
         lst1 = find_constraint_vars(predicate.children[1], env, varList)
-        result = [x for x in lst0 if x in lst1] # contraint by both
-        return result
+        test_set_var = list(set(lst0 + lst1)) # remove double entries 
+        return test_set_var
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
     return []
         
-
-def _compute_test_set(node, env, varList, interpreter_callable):
+# TODO: be sure this cases have no side effect
+# XXX: not all cases implemented (maybe not possible)
+def _compute_test_set(node, env, var_node, interpreter_callable):
     if isinstance(node, AEqualPredicate):
-        value = interpreter_callable(node.children[1], env)
         # if elements of the set are equal to some expression, a set has to be generated 
         # e.g {x| x:NAT & x=42}  results in {42}
-        return frozenset([value])
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
+            value = interpreter_callable(node.children[1], env)
+            return frozenset([value])
+        if isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName==var_node.idName:
+            value = interpreter_callable(node.children[0], env)
+            return frozenset([value])
     elif isinstance(node, ABelongPredicate):
-        set = interpreter_callable(node.children[1], env)
-        # e.g. {x| x:Nat & x:{1,2,3}}
-        assert isinstance(set, frozenset)
-        return set
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
+            set = interpreter_callable(node.children[1], env)
+            # e.g. {x| x:Nat & x:{1,2,3}}
+            assert isinstance(set, frozenset)
+            return set
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):
-        set0 = _compute_test_set(node.children[0], env, varList, interpreter_callable)
-        set1 = _compute_test_set(node.children[1], env, varList, interpreter_callable)
+        set0 = _compute_test_set(node.children[0], env, var_node, interpreter_callable)
+        set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
         return set0.union(set1)
+    elif isinstance(node, AConjunctPredicate):
+        try:
+            set0 = _compute_test_set(node.children[0], env, var_node, interpreter_callable)
+            try:
+                set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
+                return set0.union(set1)
+            except PredicateDoesNotMatchException:
+                return set0
+        except PredicateDoesNotMatchException:
+            set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
+            return set1   
     else:
-        raise NotImplementedException()
+        raise PredicateDoesNotMatchException()
 
 
 # remove all elements which do not satisfy pred
 # TODO: support more than on variable 
-def _filter_false_elements(pred, env, varList, interpreter_callable, test_set):
+def _filter_false_elements(pred, env, var_node, interpreter_callable, test_set):
     result = []
-    idNode = varList[0]
-    assert isinstance(idNode, AIdentifierExpression)  
-    var_name = idNode.idName 
-    env.push_new_frame(varList)
+    assert isinstance(var_node, AIdentifierExpression)  
+    var_name = var_node.idName 
+    env.push_new_frame([var_node])
     for value in test_set:
         #print "filter_false:", var_name, value
         env.set_value(var_name, value)

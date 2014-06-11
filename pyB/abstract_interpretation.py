@@ -22,7 +22,8 @@ def estimate_computation_time(predicate, env):
 
 # helper for estimate_computation_time
 # nodes which can not occur inside predicates, are omitted.
-# the implementation covers some special cases and one default case
+# the implementation covers some special cases and one default case.
+# the result is used by a test_set_generator (see constraint solving)
 # TODO: AComprehensionSetExpression AExistentialQuantificationPredicate, 
 #       AUniversalQuantificationPredicate, ALambdaExpression
 # TODO: ARecEntry, AStructExpression, ARecordFieldExpression, ARecExpression
@@ -77,6 +78,15 @@ def _abs_int(node, env):
         	assert isinstance(node.children[1], AIntegerExpression)
         	val1 = node.children[1].intValue
         return val1-val0
+    ### "meet"
+    elif isinstance(node, AConjunctPredicate):
+        # this information is used to generate test_sets for {x|P0(x) & P1(x)}
+        # the predicate is a candidate, if P0 OR P1 is finite 
+        time0 = _abs_int(node.children[0], env)
+        time1 = _abs_int(node.children[1], env)
+        if time0<time1:
+            return time0
+        return time1
     ### Default:
     else:
         time = 1
