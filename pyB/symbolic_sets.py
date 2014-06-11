@@ -5,15 +5,15 @@
 from bexceptions import ValueNotInDomainException
 
 
-class FakeSet(object):
+class SymbolicSet(object):
     def __init__(self, env):
         self.env = env # min and max int values may be needed for large sets
     
     def __mul__(self, aset):
-        return FakeCartSet(self, aset)
+        return SymbolicCartSet(self, aset)
     
     def __rmul__(self, aset):
-        return FakeCartSet(aset, self)
+        return SymbolicCartSet(aset, self)
     
     def __eq__(self, aset):
         if self.__class__ == aset.__class__:
@@ -25,11 +25,11 @@ class FakeSet(object):
             return False
         return True
 
-class LargeSet(FakeSet):
+class LargeSet(SymbolicSet):
     pass
     
 
-class InfiniteSet(FakeSet):
+class InfiniteSet(SymbolicSet):
     ## WARNING: python only accept int as return values
     ## so __len__ is not implemented
     pass
@@ -123,7 +123,7 @@ class IntegerSet(InfiniteSet):
         return False
 
     def __ge__(self, aset): # IntegerSet >= aset
-        if isinstance(aset, FakeSet): 
+        if isinstance(aset, SymbolicSet): 
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
@@ -305,7 +305,8 @@ class IntSet(LargeSet):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  
 
-class FakeCartSet(FakeSet):
+
+class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
         self.right_set = aset1
@@ -319,7 +320,7 @@ class FakeCartSet(FakeSet):
         return l in self.left_set and r in self.right_set
     
     def __eq__(self, aset):
-        if not isinstance(aset, FakeCartSet):
+        if not isinstance(aset, SymbolicCartSet):
             return False
         elif (self.left_set==aset.left_set) and (self.right_set==aset.right_set):
             return True
@@ -329,11 +330,11 @@ class FakeCartSet(FakeSet):
         return not self.__eq__(aset)
 
 
-class FakePowerSet(FakeSet):
+class SymbolicPowerSet(SymbolicSet):
     pass #TODO: implement me
 
 
-class FakeFirstProj(FakeSet):
+class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
         self.right_set = aset1  

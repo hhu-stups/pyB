@@ -10,7 +10,7 @@ from quick_eval import quick_member_eval, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
-from fake_sets import *
+from symbolic import *
 
 
 
@@ -1056,8 +1056,8 @@ def interpret(node, env):
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        if isinstance(S, FakeSet) or isinstance(T, FakeSet):
-            return FakeFirstProj(S,T)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicFirstProj(S,T)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[0]) for t in cart]
         return frozenset(proj)
@@ -1186,7 +1186,7 @@ def interpret(node, env):
             else:
                 args = tuple([args, arg])
             i = i+1
-        if isinstance(function, FakeSet):
+        if isinstance(function, SymbolicSet):
             return function[args]
         return get_image(function, args)
 
