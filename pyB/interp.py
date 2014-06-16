@@ -1084,13 +1084,16 @@ def interpret(node, env):
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicPartialFunctionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         return fun
     elif isinstance(node, ATotalFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #env.state_space.get_state().print_bstate()
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicTotalFunctionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         total_fun = filter_not_total(fun, S) # S-->T
@@ -1098,6 +1101,8 @@ def interpret(node, env):
     elif isinstance(node, APartialInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicPartialInjectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1105,6 +1110,8 @@ def interpret(node, env):
     elif isinstance(node, ATotalInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicTotalInjectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1113,6 +1120,8 @@ def interpret(node, env):
     elif isinstance(node, APartialSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicPartialSurjectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1120,6 +1129,8 @@ def interpret(node, env):
     elif isinstance(node, ATotalSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicTotalSurjectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1128,6 +1139,8 @@ def interpret(node, env):
     elif isinstance(node, ATotalBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicTotalBijectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1137,6 +1150,8 @@ def interpret(node, env):
     elif isinstance(node, APartialBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicPartialBijectionSet(S, T)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1149,7 +1164,7 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         # check if symbolic representation make sense
-        #time = estimate_computation_time(pred, env)
+        time = estimate_computation_time(pred, env)
         #if time==float("inf") or time>=TO_MANY_ITEMS:
         #    return SymbolicLambda(varList, pred, expr)
         # new scope

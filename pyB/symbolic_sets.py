@@ -394,3 +394,28 @@ class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
         self.right_set = aset1  
+
+class SymbolicPartialFunctionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicTotalFunctionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicPartialInjectionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicTotalInjectionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicPartialSurjectionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicTotalSurjectionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicTotalBijectionSet(SymbolicRelationSet):
+    pass
+    
+class SymbolicPartialBijectionSet(SymbolicRelationSet):
+    pass
+    
