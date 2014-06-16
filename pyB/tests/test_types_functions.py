@@ -107,6 +107,10 @@ class TestTypesFunctions():
         assert isinstance(get_type_by_name(env, "f").data.data[0].data, IntegerType)
         assert isinstance(get_type_by_name(env, "f").data.data[1].data, IntegerType)
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        lambda_node = root.children[0].children[1]
+        assert isinstance(lambda_node, ALambdaExpression)
+        image_type = env.get_lambda_type_by_node(lambda_node)
+        assert isinstance(image_type, IntegerType)
 
 
     def test_types_lambda2(self):
@@ -123,13 +127,17 @@ class TestTypesFunctions():
         assert isinstance(get_type_by_name(env, "f").data.data[0], PowerSetType)
         assert isinstance(get_type_by_name(env, "f").data.data[1], PowerSetType)
         dom_type = get_type_by_name(env, "f").data.data[0]
-        img_type = get_type_by_name(env, "f").data.data[1]
+        img_type = get_type_by_name(env, "f").data.data[1] #only present if lambda is ass. to var
         assert isinstance(img_type.data, BoolType)
         assert isinstance(dom_type.data, CartType)
         assert isinstance(dom_type.data.data[0], PowerSetType)
         assert isinstance(dom_type.data.data[1], PowerSetType)
         assert isinstance(dom_type.data.data[0].data, IntegerType)
         assert isinstance(dom_type.data.data[1].data, IntegerType)
+        lambda_node = root.children[0].children[1]
+        assert isinstance(lambda_node, ALambdaExpression)
+        image_type = env.get_lambda_type_by_node(lambda_node) # this function always returns a type
+        assert isinstance(image_type, BoolType)
 
 
     def test_types_type_arg(self):

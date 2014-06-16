@@ -51,6 +51,14 @@ class Environment():
         assert isinstance(atype, BType)
         return atype
 
+    # type of lambda image (domain type inside args)
+    def get_lambda_type_by_node(self, node):
+        assert isinstance(node, ALambdaExpression)
+        assert node in self.node_to_type_map
+        atype = self.node_to_type_map[node]
+        assert isinstance(atype, BType)
+        return atype
+
 
     # reference to the owner-mch of this state/env
     def set_mch(self, mch):

@@ -255,7 +255,9 @@ class TypeCheck_Environment():
             for node in node_lst:
                 env.node_to_type_map[node] = atype
 
-
+    def write_lambda_node_to_env(self, env, lambda_node, atype):
+        env.node_to_type_map[lambda_node] = atype
+        
     # returns BType or UnknownType
     # WARNING: not to be confused with env.get_type
     def get_current_type(self, idName):
@@ -288,7 +290,10 @@ def resolve_type(env):
         tree = env.node_to_type_map[node]
         #print node.idName, tree
         #__print__btype(tree)
-        tree_without_unknown = throw_away_unknown(tree, node.idName)
+        if isinstance(node, ALambdaExpression):
+            tree_without_unknown = throw_away_unknown(tree, "lambda expression()%s" % pretty_print(node))
+        else:
+            tree_without_unknown = throw_away_unknown(tree, node.idName)
         env.node_to_type_map[node] = tree_without_unknown
 
 
@@ -1019,6 +1024,8 @@ def typeit(node, env, type_env):
         # get type of expression
         img_type = typeit(node.children[-1], env, type_env)
         type_env.pop_frame(env)
+        # safe image type (needed for some symbolic lambda checks)
+        type_env.write_lambda_node_to_env(env, node, img_type)
         # put it all together
         return PowerSetType(CartType(PowerSetType(pre_img_type), PowerSetType(img_type)))
 
