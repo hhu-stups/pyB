@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pytest
 from interp import interpret
 from environment import Environment
 from util import arbitrary_init_machine
@@ -185,7 +186,64 @@ class TestSymbolicSets():
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
 
-        # Test
+        # Test fapp
         env = Environment()
         assert interpret(root.children[0], env)
+        
+        # Build AST
+        string_to_file("#PREDICATE (((1,2),42),(1,2)):prj1(INTEGER*INTEGER,INTEGER)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test membership
+        env = Environment()
+        assert interpret(root.children[0], env)       
+        
+
+    def test_symbolic_proj2(self):
+        # Build AST
+        string_to_file("#PREDICATE prj2(INTEGER*INTEGER,INTEGER)((1,1,42))=(42)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test fapp
+        env = Environment()
+        assert interpret(root.children[0], env)
+        
+        # Build AST
+        string_to_file("#PREDICATE (((1,1),42),42):prj2(INTEGER*INTEGER,INTEGER)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test membership
+        env = Environment()
+        assert interpret(root.children[0], env)      
+
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT|x*x)(25)=625", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test fapp
+        env = Environment()
+        assert interpret(root.children[0], env)        
+
+
+    # TODO: typeinformation for lambdaexpr images
+    # typeinformation for * and - nodes
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda2(self):
+        # Build AST
+        string_to_file("#PREDICATE %(x,y).(x:NAT & y:NAT|x*y)(5,5)=625", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test fapp
+        env = Environment()
+        assert interpret(root.children[0], env)        
         

@@ -10,8 +10,8 @@ from quick_eval import quick_member_eval, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
-from symbolic import *
-
+from symbolic_sets import *
+from abstract_interpretation import estimate_computation_time
 
 
 def eval_Invariant(root, env, mch):
@@ -361,13 +361,15 @@ def __exec_initialisation_generator(root, env, mch):
 def use_prob_solutions(env, idNames):
     for name in env.solutions:
         # TODO: ordering of solutions (important!)
+        print "use_prob_solutions"
         if name in idNames:
             node = env.solutions[name]
-            #print
-            #print
-            #print pretty_print(node) 
+            print
+            print
+            print "setting ",name, " to:", pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
+        print "ProB solutions set to env"
         
 
 
@@ -480,7 +482,7 @@ def interpret(node, env):
 #        0. Interpretation-mode 
 #
 # ********************************************
-    #print pretty_print(node)  # DEBUG
+    #print "interpret: ", pretty_print(node), node  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
         type_check_predicate(node, env)
@@ -1064,6 +1066,8 @@ def interpret(node, env):
     elif isinstance(node, ASecondProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicSecondProj(S,T)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[1]) for t in cart]
         return frozenset(proj)
@@ -1139,11 +1143,15 @@ def interpret(node, env):
     elif isinstance(node, ALambdaExpression):
         #print pretty_print(node) 
         func_list = []
-        # new scope
         varList = node.children[:-2]
-        env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
+        # check if symbolic representation make sense
+        #time = estimate_computation_time(pred, env)
+        #if time==float("inf") or time>=TO_MANY_ITEMS:
+        #    return SymbolicLambda(varList, pred, expr)
+        # new scope
+        env.push_new_frame(varList)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         # for every solution-entry found:
         for entry in domain_generator:
@@ -1186,6 +1194,20 @@ def interpret(node, env):
             else:
                 args = tuple([args, arg])
             i = i+1
+        if isinstance(function, SymbolicLambda):
+            varList = function.variable_list
+            env.push_new_frame(varList)
+            #assert len(varList)==len(args)
+            for i in range(len(varList)):
+                idNode = varList[i]
+                value  = args
+                env.set_value(idNode.idName, value)
+            value = interpret(function.predicate, env) 
+            if not value:
+                raise ValueNotInDomainException(args)
+            result = interpret(function.expression, env)  
+            env.pop_frame() # exit scope
+            return result
         if isinstance(function, SymbolicSet):
             return function[args]
         return get_image(function, args)

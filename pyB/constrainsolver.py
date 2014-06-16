@@ -4,8 +4,9 @@ from ast_nodes import *
 from enumeration import all_values_by_type
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from quick_eval import quick_member_eval
-from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES
+from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS
 from abstract_interpretation import estimate_computation_time
+from pretty_printer import pretty_print
 
 
 class PredicateDoesNotMatchException:
@@ -49,7 +50,6 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
                         test_set = None 
                 else:
                     test_set = _filter_false_elements(pred, env, var_node, interpreter_callable, test_set)
-                #from pretty_printer import pretty_print
                 #print "predicate for testset:", pretty_print(pred)
                 #print "test set:", test_set
         if test_set !=None:
@@ -67,7 +67,9 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
         return iterator 
-    except (ConstraintNotImplementedException, ImportError): 
+    except (ConstraintNotImplementedException, ImportError):
+        if PRINT_WARNINGS:
+            print "WARNING! Brute force enumeration caused by: %s" % pretty_print(predicate) 
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()

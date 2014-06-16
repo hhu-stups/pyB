@@ -46,16 +46,20 @@ def run_with_pyb(bfile_name, dir=""):
     #    idNames = [n.idName for n in idNodes]
     #    type_check_predicate(env.solution_root, env, idNames)   
     # side-effect: check properties and invariant 
+    print "team-test:calc set up.."
     bstates = set_up_constants(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
+    print "team-test:calc set init.."
     bstates = exec_initialisation(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
     # arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
     #if mch.aAssertionsMachineClause:
     #   interpret(mch.aAssertionsMachineClause, env)
     if mch.aPropertiesMachineClause:
+        print "team-test:eval properties..."
         assert interpret(mch.aPropertiesMachineClause, env)
     if mch.aInvariantMachineClause:
+        print "team-test:eval invariant..."
         assert interpret(mch.aInvariantMachineClause, env)
 
     

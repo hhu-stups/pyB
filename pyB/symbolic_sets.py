@@ -338,9 +338,53 @@ class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
         self.right_set = aset1  
+        
+    # ((x,y),z):proj1(S,T)
+    def __contains__(self, element):
+        if isinstance(element, SymbolicSet):
+            raise Exception("Not implemented: proj1 symbolic membership")
+        x = element[0][0]
+        y = element[0][1]
+        z = element[1]
+        if x not in self.left_set or y not in self.right_set or not(x==z) :
+            return False
+        return True
     
     # proj1(S,T)(arg)
     def __getitem__(self, arg):
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
         return arg[0]  
+
+
+class SymbolicSecondProj(SymbolicSet):
+    def __init__(self, aset0, aset1):
+        self.left_set = aset0
+        self.right_set = aset1  
+    
+    # ((x,y),z):proj2(S,T)
+    def __contains__(self, element):
+        if isinstance(element, SymbolicSet):
+            raise Exception("Not implemented: proj2 symbolic membership")
+        x = element[0][0]
+        y = element[0][1]
+        z = element[1]
+        if x not in self.left_set or y not in self.right_set or not(y==z) :
+            return False
+        return True
+        
+    
+    # proj2(S,T)(arg)
+    def __getitem__(self, arg):
+        if not isinstance(arg, tuple):
+            raise TypeError()
+        if arg[0] not in self.left_set or arg[1] not in self.right_set:
+            raise ValueNotInDomainException(arg) 
+        return arg[1] 
+
+# __getitem__ implemented inside interp to avoid env and interp_callable link
+class SymbolicLambda(SymbolicSet):
+    def __init__(self, varList, pred, expr):
+        self.variable_list = varList
+        self.predicate = pred
+        self.expression = expr  

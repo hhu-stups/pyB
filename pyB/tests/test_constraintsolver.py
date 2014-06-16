@@ -519,7 +519,16 @@ class TestConstraintSolver():
         result = interpret(root, env)
         assert result==frozenset([(2, 0), (2, 3), (2, 1)])
 
-                
+
+    def test_constraint_set_comp14(self):
+        # {x|P}
+        # Build AST:
+        string_to_file("#EXPRESSION %x.(x : STRING - {\"CL\",\"CM\"}|-1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)         
+        #TODO : "ck = ({uo,LAMBDA_RESULT___|(uo : STRING & LAMBDA_RESULT___ : INTEGER) & uo |-> LAMBDA_RESULT___ : {("CL"|->0),("CM"|->1)}} \/ %uo.(uo : STRING - {"CL","CM"}|-1))"        
+
+
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:
