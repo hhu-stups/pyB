@@ -388,3 +388,9 @@ class SymbolicLambda(SymbolicSet):
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr  
+        
+
+class SymbolicRelationSet(SymbolicSet):
+    def __init__(self, aset0, aset1):
+        self.left_set = aset0
+        self.right_set = aset1  

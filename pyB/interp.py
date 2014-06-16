@@ -957,6 +957,8 @@ def interpret(node, env):
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+            return SymbolicRelationSet(aSet1, aSet2)
         aSet = make_set_of_realtions(aSet1, aSet2)
         return aSet
     elif isinstance(node, ADomainExpression):
@@ -1082,28 +1084,28 @@ def interpret(node, env):
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         return fun
     elif isinstance(node, ATotalFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         #env.state_space.get_state().print_bstate()
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         total_fun = filter_not_total(fun, S) # S-->T
         return total_fun
     elif isinstance(node, APartialInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
         return inj_fun
     elif isinstance(node, ATotalInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
         total_inj_fun = filter_not_total(inj_fun, S) # S>->T
@@ -1111,14 +1113,14 @@ def interpret(node, env):
     elif isinstance(node, APartialSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
         return surj_fun
     elif isinstance(node, ATotalSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
         total_surj_fun = filter_not_total(surj_fun, S) # S-->>T
@@ -1126,7 +1128,7 @@ def interpret(node, env):
     elif isinstance(node, ATotalBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
         total_inj_fun = filter_not_total(inj_fun, S) # S>->T
@@ -1135,7 +1137,7 @@ def interpret(node, env):
     elif isinstance(node, APartialBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        relation_set = make_set_of_realtions(S,T) # S<-->T
+        relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
         bij_fun = filter_not_surjective(inj_fun,T)

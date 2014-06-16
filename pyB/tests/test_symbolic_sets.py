@@ -219,6 +219,17 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root.children[0], env)      
 
+    
+    def test_symbolic_relation_set(self):
+        # Build AST
+        string_to_file("#EXPRESSION INTEGER<->INTEGER", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        print interpret(root.children[0], env)      
+        
 
     import pytest
     @pytest.mark.xfail
