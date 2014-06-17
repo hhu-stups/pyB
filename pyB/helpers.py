@@ -217,6 +217,17 @@ def all_ids_known(node, env):
             env.set_value(idNode.idName, "dummy_value_for_bound_variables")
         # search for free variables which have no values        
         return all_ids_known(node.children[-1], env)
+    elif isinstance(node, ALambdaExpression):
+        id_names = []
+        for idNode in node.children[:-2]:
+            id_names.append(idNode.idName)  
+        env.add_ids_to_frame(id_names)
+        for idNode in node.children[:-2]:
+            env.set_value(idNode.idName, "dummy_value_for_bound_variables")
+        # search for free variables which have no values  
+        predicate_ids_known  = all_ids_known(node.children[-2], env) 
+        expression_ids_known = all_ids_known(node.children[-1], env) 
+        return predicate_ids_known and expression_ids_known
     else:
         for child in node.children:
             if all_ids_known(child, env)==False:

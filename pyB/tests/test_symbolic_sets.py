@@ -233,7 +233,7 @@ class TestSymbolicSets():
 
     import pytest
     @pytest.mark.xfail
-    def test_symbolic_lambda(self):
+    def test_symbolic_lambda1(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT|x*x)(25)=625", file_name)
         ast_string = file_to_AST_str(file_name)
@@ -241,29 +241,31 @@ class TestSymbolicSets():
 
         # Test fapp
         env = Environment()
-        assert interpret(root.children[0], env)        
+        assert interpret(root, env)        
 
 
-    # TODO: typeinformation for lambdaexpr images
-    # typeinformation for * and - nodes
-    import pytest
-    @pytest.mark.xfail
     def test_symbolic_lambda2(self):
         # Build AST
-        string_to_file("#PREDICATE %(x,y).(x:NAT & y:NAT|x*y)(5,5)=625", file_name)
+        string_to_file("#PREDICATE %(x,y).(x:NAT & y:NAT|x*y)(5,5)=25", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
 
         # Test fapp
         env = Environment()
-        assert interpret(root.children[0], env)        
+        assert interpret(root, env)        
+
  
- 
-    import pytest
-    @pytest.mark.xfail
+    # TODO: typeinformation for lambdaexpr images
+    # typeinformation for * and - nodes 
+    #import pytest
+    #@pytest.mark.xfail
     def test_symbolic_lambda3(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:INTEGER|x*x):INTEGER<->INTEGER", file_name)
         ast_string = file_to_AST_str(file_name)
-        root = str_ast_to_python_ast(ast_string)       
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)      
         

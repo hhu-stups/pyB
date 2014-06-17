@@ -93,3 +93,10 @@ def _abs_int(node, env):
         for child in node.children:
            time += _abs_int(child, env)
         return time
+
+
+# checks if a variabel is constraint by a predicate.
+# returns False (nothing found) or Dont know       
+def var_constraint_by_predicate(var_node, predicate):
+    print predicate, var_node
+    return "Dont know"

@@ -2,6 +2,8 @@
 from ast_nodes import *
 from btypes import *
 from pretty_printer import pretty_print
+from symbolic_sets import *
+from abstract_interpretation import var_constraint_by_predicate
 
 # This function is used in an Belong(member)-Node. x : S
 # It recursively checks if the right side(S) can 'generate' the element(x) of the left side.
@@ -37,17 +39,53 @@ def quick_member_eval(ast, env, element):
         S = list(interpret(ast, env))
         #print element,S # DEBUG
         return element in S
+    elif isinstance(element, SymbolicLambda):
+        # only one special case
+        #TODO: replace with general case
+        #TODO: support lambdas with more than one arg
+        # XXX: this line could case a infinit computation!
+        aSet = interpret(ast, env)
+        assert isinstance(aSet, SymbolicRelationSet)
+        if isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
+           # XXX: Dont know how to check this for every lambda 
+           pass
+        else:
+			types = []
+			for var in element.variable_list:
+				atype = env.get_type_by_node(var)
+				types.append(atype)
+			image_type = env.get_lambda_type_by_node(element.node)
+			domain_elemnet = False
+			image_elemnet  = False
+			if isinstance(aSet.left_set, IntegerSet) and len(types)==1 and isinstance(types[0], IntegerType):
+			    domain_elemnet = True
+			if isinstance(aSet.left_set, StringSet) and len(types)==1 and isinstance(types[0], StringType):
+				domain_elemnet = True
+			if isinstance(aSet.right_set, IntegerSet) and isinstance(image_type, IntegerType):
+				image_elemnet  = True
+			if domain_elemnet and image_elemnet:
+			    # checking if a function is total is done via an approximation:
+			    # if no constraint of the domain is found, the answer is yes, 
+			    # otherwise the answer is "dont know"
+			    if isinstance(aSet, ATotalFunctionExpression):
+			        # TODO: call check
+			        if len(element.variable_list)==1:
+			            # False or Dont know
+			            vcbp = var_constraint_by_predicate(element.variable_list, element.predicate)
+			    else:
+			        return True			   
+        # else use other checks 
 
     if isinstance(ast, ARelationsExpression):
-        #S = list(interpret(ast.children[0], env))
-        #T = list(interpret(ast.children[1], env))
+        #S = interpret(ast.children[0], env)
+        #T = interpret(ast.children[1], env)
         for tup in element: # a relation is a set of 2-tuples
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
         return True 
     elif isinstance(ast, APartialFunctionExpression):
-        #S = list(interpret(ast.children[0], env))
-        #T = list(interpret(ast.children[1], env))
+        #S = interpret(ast.children[0], env)
+        #T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -59,8 +97,8 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     elif isinstance(ast, APartialInjectionExpression):
-        #S = list(interpret(ast.children[0], env))
-        #T = list(interpret(ast.children[1], env))
+        #S = interpret(ast.children[0], env)
+        #T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -74,8 +112,8 @@ def quick_member_eval(ast, env, element):
             return False
         return True
     elif isinstance(ast, APartialSurjectionExpression):
-        #S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #S = interpret(ast.children[0], env)
+        T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -85,12 +123,12 @@ def quick_member_eval(ast, env, element):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(T)==set(image): 
+        if not set(list(T))==set(image): 
             return False # test surjection
         return True
     elif isinstance(ast, APartialBijectionExpression):
-        #S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        #S = interpret(ast.children[0], env)
+        T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -100,14 +138,14 @@ def quick_member_eval(ast, env, element):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(T)==set(image): # test surjection
+        if not set(list(T))==set(image): # test surjection
             return False 					
         if not (len(set(image))==len(image)): # test injection
             return False
         return True
     elif isinstance(ast, ATotalFunctionExpression):
-        S = list(interpret(ast.children[0], env))
-        #T = list(interpret(ast.children[1], env))
+        S = interpret(ast.children[0], env)
+        #T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -117,12 +155,12 @@ def quick_member_eval(ast, env, element):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(S)==set(preimage): # test total 
+        if not set(list(S))==set(preimage): # test total 
             return False
         return True  
     elif isinstance(ast, ATotalInjectionExpression):
-        S = list(interpret(ast.children[0], env))
-        #T = list(interpret(ast.children[1], env))
+        S = interpret(ast.children[0], env)
+        #T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -134,12 +172,12 @@ def quick_member_eval(ast, env, element):
             return False
         if not (len(set(image))==len(image)): # test injection
             return False            
-        if not set(S)==set(preimage): # test total 
+        if not set(list(S))==set(preimage): # test total 
             return False 
         return True   
     elif isinstance(ast, ATotalSurjectionExpression):
-        S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        S = interpret(ast.children[0], env)
+        T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -149,14 +187,14 @@ def quick_member_eval(ast, env, element):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False         
-        if not set(S)==set(preimage): # test total 
+        if not set(list(S))==set(preimage): # test total 
             return False 
-        if not set(T)==set(image): # test surjection
+        if not set(list(T))==set(image): # test surjection
             return False 			
         return True
     elif isinstance(ast, ATotalBijectionExpression):
-        S = list(interpret(ast.children[0], env))
-        T = list(interpret(ast.children[1], env))
+        S = interpret(ast.children[0], env)
+        T = interpret(ast.children[1], env)
         preimage = []
         image = []
         for tup in element:
@@ -166,9 +204,9 @@ def quick_member_eval(ast, env, element):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False         
-        if not set(S)==set(preimage): # test total
+        if not set(list(S))==set(preimage): # test total
             return False 
-        if not set(T)==set(image): # test surjection
+        if not set(list(T))==set(image): # test surjection
             return False 
         if not (len(set(image))==len(image)): # test injection
             return False

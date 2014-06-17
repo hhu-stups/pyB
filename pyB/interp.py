@@ -783,11 +783,13 @@ def interpret(node, env):
 #
 # *************************
     elif isinstance(node, ABelongPredicate):
+        #print pretty_print(node)
         if contains_infinit_enum(node, env):
             result = infinity_belong_check(node, env)
             return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
+            #print elm
             result = quick_member_eval(node.children[1], env, elm)
             return result
         elm = interpret(node.children[0], env)
@@ -1166,7 +1168,7 @@ def interpret(node, env):
         # check if symbolic representation make sense
         time = estimate_computation_time(pred, env)
         #if time==float("inf") or time>=TO_MANY_ITEMS:
-        #    return SymbolicLambda(varList, pred, expr)
+        #    return SymbolicLambda(varList, pred, expr, node)
         # new scope
         env.push_new_frame(varList)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
@@ -1465,6 +1467,7 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
+        #return StringSet(env)
         return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)

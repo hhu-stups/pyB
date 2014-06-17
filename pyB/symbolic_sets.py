@@ -306,6 +306,10 @@ class IntSet(LargeSet):
         raise NotImplementedError("inclusion with unknown set-type")  
 
 
+class StringSet(SymbolicSet):
+    pass
+    
+    
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
@@ -384,16 +388,17 @@ class SymbolicSecondProj(SymbolicSet):
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
-    def __init__(self, varList, pred, expr):
+    def __init__(self, varList, pred, expr, node):
         self.variable_list = varList
         self.predicate = pred
-        self.expression = expr  
+        self.expression = expr
+        self.node = node  
         
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
-        self.right_set = aset1  
+        self.right_set = aset1       
 
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass
