@@ -69,6 +69,38 @@ class TestInterpFunctions():
         env.set_value("T", frozenset(["hallo_welt",]))
         env.set_value("F", frozenset(l))
         assert interpret(root.children[0],env)
+        
+        l = []
+        l.append(frozenset([("1","hallo_welt"),("2","hallo_welt")]))
+        env.set_value("S", frozenset(["1","2"]))
+        env.set_value("T", frozenset(["42",])) #no hallo_welt
+        env.set_value("F", frozenset(l))
+        assert not interpret(root.children[0],env) #False, total but wrong image
+        
+        # membership tests:
+        env = Environment()
+        env.add_ids_to_frame(["S"])
+        env.set_value("S", frozenset([1,2]))
+        
+        string_to_file("#PREDICATE S={1,2} & {(1,1),(2,-1)}:S-->NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        assert not interpret(root,env)        
+
+        string_to_file("#PREDICATE S={1,2} & {(1,1),(3,2)}:S-->NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        assert not interpret(root,env)    
+                  
+        string_to_file("#PREDICATE S={1,2} & {(1,1),(2,2)}:S-->NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        assert interpret(root,env)
+ 
+ 
+ 
+
+        
 
 
     def test_genAST_pred_part_inj_fun(self):
@@ -347,6 +379,7 @@ class TestInterpFunctions():
         type_with_known_types(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(((1,1),1),3),(((1,1),2),4),(((1,2),1),4),(((2,1),1),4),(((1,2),2),5),(((2,2),1),5),(((2,1),2),5),(((2,2),2),6)]))
         assert interpret(root.children[0],env)
+
 
     def test_genAST_pred_seq_simple(self):
         # Build AST:

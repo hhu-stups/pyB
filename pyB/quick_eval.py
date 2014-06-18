@@ -147,10 +147,10 @@ def quick_member_eval(ast, env, element):
         S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
         preimage = []
-        image = []
+        #image = []
         for tup in element:
             preimage.append(tup[0])
-            image.append(tup[1])
+            #image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
         if not (len(set(preimage))==len(preimage)): # test function attribute
