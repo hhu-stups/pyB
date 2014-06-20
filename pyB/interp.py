@@ -1219,7 +1219,10 @@ def interpret(node, env):
             #assert len(varList)==len(args)
             for i in range(len(varList)):
                 idNode = varList[i]
-                value  = args
+                if len(varList)==1:
+                    value  = args
+                else:
+                    value = args[i]
                 env.set_value(idNode.idName, value)
             value = interpret(function.predicate, env) 
             if not value:

@@ -45,8 +45,7 @@ def quick_member_eval(ast, env, element):
         #TODO: support lambdas with more than one arg
         # XXX: this line could case a infinit computation!
         aSet = interpret(ast, env)
-        assert isinstance(aSet, SymbolicRelationSet)
-        if isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
+        if not isinstance(aSet, SymbolicRelationSet) or isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
            # XXX: Dont know how to check this for every lambda 
            pass
         else:
@@ -55,15 +54,15 @@ def quick_member_eval(ast, env, element):
 				atype = env.get_type_by_node(var)
 				types.append(atype)
 			image_type = env.get_lambda_type_by_node(element.node)
-			domain_elemnet = False
-			image_elemnet  = False
+			domain_element = False
+			image_element  = False
 			if isinstance(aSet.left_set, IntegerSet) and len(types)==1 and isinstance(types[0], IntegerType):
-			    domain_elemnet = True
+			    domain_element = True
 			if isinstance(aSet.left_set, StringSet) and len(types)==1 and isinstance(types[0], StringType):
-				domain_elemnet = True
+				domain_element = True
 			if isinstance(aSet.right_set, IntegerSet) and isinstance(image_type, IntegerType):
-				image_elemnet  = True
-			if domain_elemnet and image_elemnet:
+				image_element  = True
+			if domain_element and image_element:
 			    # checking if a function is total is done via an approximation:
 			    # if no constraint of the domain is found, the answer is yes, 
 			    # otherwise the answer is "dont know"
@@ -148,6 +147,7 @@ def quick_member_eval(ast, env, element):
         #T = interpret(ast.children[1], env)
         preimage = []
         #image = []
+        #print element
         for tup in element:
             preimage.append(tup[0])
             #image.append(tup[1])
@@ -280,7 +280,7 @@ def quick_member_eval(ast, env, element):
     else:
         #TODO:(#ISSUE 18) no quick eval, can crash
         aSet = interpret(ast, env)
-        #print element, aSet
+        #print "element, set:", element, aSet
         return element in aSet                                             
 
 

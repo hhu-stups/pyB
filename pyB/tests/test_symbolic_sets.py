@@ -228,8 +228,33 @@ class TestSymbolicSets():
         
         # Test creation 
         env = Environment()
-        print interpret(root.children[0], env)      
+        print interpret(root.children[0], env)  
         
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_function_set1(self):
+        # Build AST
+        string_to_file("#PREDICATE S={1,2} & {(1,1),(2,-1)}:S-->NAT ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        assert not interpret(root.children[0], env)  
+ 
+    #append
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_function_set2(self):
+        # Build AST
+        string_to_file("#PREDICATE %(x,y).(x: STRING & y: STRING | x):STRING*STRING --> STRING", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        assert interpret(root.children[0], env)         
+               
 
     import pytest
     @pytest.mark.xfail
