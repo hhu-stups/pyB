@@ -45,20 +45,24 @@ def quick_member_eval(ast, env, element):
         #TODO: support lambdas with more than one arg
         # XXX: this line could case a infinit computation!
         aSet = interpret(ast, env)
-        if not isinstance(aSet, SymbolicRelationSet) or isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
+        if (not isinstance(aSet, SymbolicRelationSet)) or isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
            # XXX: Dont know how to check this for every lambda 
            pass
         else:
             types = []
             for var in element.variable_list:
-                atype = env.get_type_by_node(var)
-                types.append(atype)
+                atype = env.get_type_by_node(var) 
+                if types==[]:
+                    types = atype
+                else:
+                    types = tuple([types,atype])
             image_type = env.get_lambda_type_by_node(element.node)
             domain_element = False
             image_element  = False
-            if len(types)==1:
-                domain_element = types[0] in aSet.left_set
+            domain_element = types in aSet.left_set
             image_element  = image_type in aSet.right_set
+            print types, " in ", aSet.left_set, domain_element
+            print "image:",image_type, " in ", aSet.right_set, image_element
             if domain_element and image_element:
                 # checking if a function is total is done via an approximation:
                 # if no constraint of the domain is found, the answer is yes, 

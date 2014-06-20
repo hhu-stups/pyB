@@ -243,8 +243,8 @@ class TestSymbolicSets():
         assert not interpret(root.children[0], env)  
  
     #append
-    import pytest
-    @pytest.mark.xfail 
+    #import pytest
+    #@pytest.mark.xfail 
     def test_symbolic_function_set2(self):
         # Build AST
         string_to_file("#PREDICATE %(x,y).(x: STRING & y: STRING | x):STRING*STRING --> STRING", file_name)
@@ -253,7 +253,7 @@ class TestSymbolicSets():
         
         # Test creation 
         env = Environment()
-        assert interpret(root.children[0], env)         
+        assert interpret(root, env)         
                
 
     import pytest

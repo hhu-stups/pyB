@@ -401,7 +401,23 @@ class SymbolicLambda(SymbolicSet):
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1):
         self.left_set = aset0
-        self.right_set = aset1       
+        self.right_set = aset1   
+    
+    def __contains__(self, element):
+        print "SymbolicRelationSet", self.left_set , self.right_set
+        print "SymbolicRelationSet", element
+        if isinstance(element, SymbolicSet):
+            assert isinstance(element, SymbolicCartSet)
+            return element.left_set in self.left_set and element.right_set in self.right_set
+        elif isinstance(element, PowerSetType):  
+            assert isinstance(element.data, CartType)
+            left  = element.data.data[0].data
+            right = element.data.data[1].data
+            return left in self.left_set and right in self.right_set 
+        else: 
+            assert isinstance(element, tuple)
+            return element[0] in self.left_set and element[1] in self.right_set 
+        raise Exception("Not implemented: relation symbolic membership")  
 
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass
