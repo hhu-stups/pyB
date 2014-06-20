@@ -280,10 +280,7 @@ class TestSymbolicSets():
         assert interpret(root, env)        
 
  
-    # TODO: typeinformation for lambdaexpr images
-    # typeinformation for * and - nodes 
-    #import pytest
-    #@pytest.mark.xfail
+    # TODO: typeinformation for * and - nodes 
     def test_symbolic_lambda3(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:INTEGER|x*x):INTEGER<->INTEGER", file_name)

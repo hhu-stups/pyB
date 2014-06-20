@@ -3,6 +3,7 @@
 # and its helper-methodes and NOT here
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException
+from btypes import *
 
 
 class SymbolicSet(object):
@@ -115,7 +116,7 @@ class Natural1Set(InfiniteSet):
 # the infinite B-set INTEGER    
 class IntegerSet(InfiniteSet): 
     def __contains__(self, element):
-        return isinstance(element, int)
+        return isinstance(element, int) or isinstance(element, IntegerType) #type for symbolic checks
     
     def __le__(self, aset): # IntegerSet <= aset
         if isinstance(aset, IntegerSet):
@@ -307,7 +308,8 @@ class IntSet(LargeSet):
 
 
 class StringSet(SymbolicSet):
-    pass
+    def __contains__(self, element):
+        return isinstance(element, str) or isinstance(element, StringType)
     
     
 class SymbolicCartSet(SymbolicSet):
@@ -321,6 +323,7 @@ class SymbolicCartSet(SymbolicSet):
             r = element[1]
         else:
             raise NotImplementedError()
+        print l, r
         return l in self.left_set and r in self.right_set
     
     def __eq__(self, aset):

@@ -16,14 +16,14 @@ def quick_member_eval(ast, env, element):
     if isinstance(element, int) or isinstance(element, str):
         if isinstance(ast, ANaturalSetExpression):
             assert isinstance(element, int) # if False: typechecking Bug
-    	    return element >=0
+            return element >=0
         if isinstance(ast, ANatural1SetExpression):
             assert isinstance(element, int) # if False: typechecking Bug
-    	    return element >0
-    	elif isinstance(ast, AIntegerSetExpression):
-    	    assert isinstance(element, int)
-    	    return True
-    	elif isinstance(ast, ANatSetExpression):
+            return element >0
+        elif isinstance(ast, AIntegerSetExpression):
+            assert isinstance(element, int)
+            return True
+        elif isinstance(ast, ANatSetExpression):
             assert isinstance(element, int)
             return element >=0 and element <= env._max_int
         elif isinstance(ast, ANat1SetExpression):
@@ -35,7 +35,7 @@ def quick_member_eval(ast, env, element):
         elif isinstance(ast, AStringSetExpression):
             assert isinstance(element, str)
             return True
-    	# fallback: enumerate right side. This 'should' never happen...
+        # fallback: enumerate right side. This 'should' never happen...
         S = list(interpret(ast, env))
         #print element,S # DEBUG
         return element in S
@@ -49,30 +49,27 @@ def quick_member_eval(ast, env, element):
            # XXX: Dont know how to check this for every lambda 
            pass
         else:
-			types = []
-			for var in element.variable_list:
-				atype = env.get_type_by_node(var)
-				types.append(atype)
-			image_type = env.get_lambda_type_by_node(element.node)
-			domain_element = False
-			image_element  = False
-			if isinstance(aSet.left_set, IntegerSet) and len(types)==1 and isinstance(types[0], IntegerType):
-			    domain_element = True
-			if isinstance(aSet.left_set, StringSet) and len(types)==1 and isinstance(types[0], StringType):
-				domain_element = True
-			if isinstance(aSet.right_set, IntegerSet) and isinstance(image_type, IntegerType):
-				image_element  = True
-			if domain_element and image_element:
-			    # checking if a function is total is done via an approximation:
-			    # if no constraint of the domain is found, the answer is yes, 
-			    # otherwise the answer is "dont know"
-			    if isinstance(aSet, ATotalFunctionExpression):
-			        # TODO: call check
-			        if len(element.variable_list)==1:
-			            # False or Dont know
-			            vcbp = var_constraint_by_predicate(element.variable_list, element.predicate)
-			    else:
-			        return True			   
+            types = []
+            for var in element.variable_list:
+                atype = env.get_type_by_node(var)
+                types.append(atype)
+            image_type = env.get_lambda_type_by_node(element.node)
+            domain_element = False
+            image_element  = False
+            if len(types)==1:
+                domain_element = types[0] in aSet.left_set
+            image_element  = image_type in aSet.right_set
+            if domain_element and image_element:
+                # checking if a function is total is done via an approximation:
+                # if no constraint of the domain is found, the answer is yes, 
+                # otherwise the answer is "dont know"
+                if isinstance(aSet, ATotalFunctionExpression):
+                    # TODO: call check
+                    if len(element.variable_list)==1:
+                        # False or Dont know
+                        vcbp = var_constraint_by_predicate(element.variable_list, element.predicate)
+                else:
+                    return True            
         # else use other checks 
 
     if isinstance(ast, ARelationsExpression):
@@ -138,7 +135,7 @@ def quick_member_eval(ast, env, element):
         if not (len(set(preimage))==len(preimage)): # test function attribute
             return False
         if not set(list(T))==set(image): # test surjection
-            return False 					
+            return False                    
         if not (len(set(image))==len(image)): # test injection
             return False
         return True
@@ -190,7 +187,7 @@ def quick_member_eval(ast, env, element):
         if not set(list(S))==set(preimage): # test total 
             return False 
         if not set(list(T))==set(image): # test surjection
-            return False 			
+            return False            
         return True
     elif isinstance(ast, ATotalBijectionExpression):
         S = interpret(ast.children[0], env)
