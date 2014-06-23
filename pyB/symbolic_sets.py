@@ -311,6 +311,23 @@ class StringSet(SymbolicSet):
     def __contains__(self, element):
         return isinstance(element, str) or isinstance(element, StringType)
     
+    # aSet<:STRING
+    def issubset(self, aSet):
+        if isinstance(aSet, StringSet):
+            return True
+        return False
+    
+    # aSet<:STRING(!)
+    def issuperset(self, aSet):
+        if isinstance(aSet, StringSet):
+            return True
+        if isinstance(aSet, frozenset):
+            for e in aSet:
+                if not isinstance(e, str):
+                    return False
+            return True
+        return False
+    
     
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1):

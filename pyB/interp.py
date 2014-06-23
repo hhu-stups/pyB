@@ -361,15 +361,15 @@ def __exec_initialisation_generator(root, env, mch):
 def use_prob_solutions(env, idNames):
     for name in env.solutions:
         # TODO: ordering of solutions (important!)
-        print "use_prob_solutions"
+        #print "use_prob_solutions"
         if name in idNames:
             node = env.solutions[name]
-            print
-            print
-            print "setting ",name, " to:", pretty_print(node) 
+            #print
+            #print
+            #print "setting ",name, " to:", pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
-        print "ProB solutions set to env"
+        #print "ProB solutions set to env"
         
 
 
@@ -803,8 +803,11 @@ def interpret(node, env):
         aSet = interpret(node.children[1], env)
         return not elm in aSet
     elif isinstance(node, AIncludePredicate):
+        print "interpret: ", pretty_print(node), node  # DEBUG
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet2, SymbolicSet):
+            return aSet2.issuperset(aSet1)
         return aSet1.issubset(aSet2)
     elif isinstance(node, ANotIncludePredicate):
         aSet1 = interpret(node.children[0], env)
@@ -1167,8 +1170,8 @@ def interpret(node, env):
         expr = node.children[-1]
         # check if symbolic representation make sense
         time = estimate_computation_time(pred, env)
-        #if time==float("inf") or time>=TO_MANY_ITEMS:
-        #    return SymbolicLambda(varList, pred, expr, node)
+        if time==float("inf") or time>=TO_MANY_ITEMS:
+            return SymbolicLambda(varList, pred, expr, node)
         # new scope
         env.push_new_frame(varList)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
@@ -1470,8 +1473,8 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
-        #return StringSet(env)
-        return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
+        return StringSet(env)
+        #return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         relation = []
