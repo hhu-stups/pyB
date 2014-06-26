@@ -13,7 +13,7 @@ class PredicateDoesNotMatchException:
     pass # TODO: refactor me
 
 # assumption: the variables of varList are typed may constraint by the
-# predicate. If predicate is None, all values of the variable type is returned.
+# predicate. If predicate is None(no constraint), all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
 # This function may be generate false values, but does not omit right ones 
 # i.e no values are missing 
@@ -30,7 +30,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     # TODO: support more than one variable
-    if QUICK_EVAL_CONJ_PREDICATES and isinstance(predicate, AConjunctPredicate) and len(varList)==1:
+    if QUICK_EVAL_CONJ_PREDICATES and len(varList)==1:
         pred_map = _categorize_predicates(predicate, env, varList)
         assert pred_map != []
         test_set = None
@@ -230,7 +230,7 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 # TODO: support more than one variable
 # FIMXE: doesnt finds finite-time computable sub-predicates. 
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
-# input: P0 & P1 & ...PN
+# input: P0 & P1 & ...PN or in special cases one predicate (like x=42)
 # output(example): mapping {P0->(time0, vars0), , P1->(time1, vars1),... PN->(timeN, varsN)}        
 def _categorize_predicates(predicate, env, varList):
     if isinstance(predicate, AConjunctPredicate):

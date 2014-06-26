@@ -544,7 +544,16 @@ class TestConstraintSolver():
         env._max_int = 2**32
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
-        # TODO: 
+        set_predicate = root.children[0].children[1]
+        var = root.children[0].children[0]
+        assert isinstance(set_predicate, AEqualPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])  
+        (time0, vars0) = map[set_predicate]
+        assert vars0==["x"]
+        assert time0<2**22   
+        result = interpret(root.children[0], env)
+        assert result==frozenset(['a', 'c', 'b'])
+
                
 
     # TODO:        

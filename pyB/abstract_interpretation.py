@@ -39,7 +39,7 @@ def _abs_int(node, env):
         if time>=math.log(TO_MANY_ITEMS,2):
             return float("inf")
         else:
-            return 2**(exp0)
+            return 2**(time)
     elif isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression, AStringSetExpression)):
         return float("inf")
     elif isinstance(node, (ANatSetExpression, ANat1SetExpression)):

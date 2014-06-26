@@ -338,5 +338,7 @@ class TestSymbolicSets():
         
         # Test creation 
         env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
         assert interpret(root, env)  
         
