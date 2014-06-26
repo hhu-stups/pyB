@@ -63,6 +63,8 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
     try:
+        if PRINT_WARNINGS:
+            print "WARNING! External constraint solver called. Caused by: %s" % pretty_print(predicate) 
         iterator = _calc_constraint_domain(env, varList, predicate)
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 

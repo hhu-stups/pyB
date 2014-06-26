@@ -98,5 +98,5 @@ def _abs_int(node, env):
 # checks if a variabel is constraint by a predicate.
 # returns False (nothing found) or Dont know       
 def var_constraint_by_predicate(var_node, predicate):
-    print predicate, var_node
+    #print predicate, var_node
     return "Dont know"

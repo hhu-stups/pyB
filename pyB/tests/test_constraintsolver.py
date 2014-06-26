@@ -529,6 +529,35 @@ class TestConstraintSolver():
         #TODO : "ck = ({uo,LAMBDA_RESULT___|(uo : STRING & LAMBDA_RESULT___ : INTEGER) & uo |-> LAMBDA_RESULT___ : {("CL"|->0),("CM"|->1)}} \/ %uo.(uo : STRING - {"CL","CM"}|-1))"        
 
 
+    def test_constraint_set_gen_union1(self):
+        # Build AST:
+        # UNION(x).(P(x)|E(x))
+        # find all values that settisfy  P(x)='x=1' and compute the union set of all 
+        # expressions E(X)(in this case one) for every x (in this case x doesnt constrain E(x) )
+        string_to_file("#EXPRESSION UNION(x).(x=1|{\"a\",\"b\"}\/{\"b\",\"c\"})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        # TODO: 
+               
+
+    # TODO:        
+    def test_constraint_set_gen_union2(self):
+        # Build AST:
+        # UNION(x).(P(x)|E(x))
+        # find all values that settisfy  P(x)='x=1' and compute the union set of all 
+        # expressions E(X)(in this case one) for every x (in this case x doesnt constrain E(x) )
+        string_to_file("#PREDICATE S={} & f=UNION(x).(x=1|{\"a\",\"b\"}\/{\"b\",\"c\"}\/S)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+                
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

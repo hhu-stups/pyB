@@ -61,8 +61,8 @@ def quick_member_eval(ast, env, element):
             image_element  = False
             domain_element = types in aSet.left_set
             image_element  = image_type in aSet.right_set
-            print types, " in ", aSet.left_set, domain_element
-            print "image:",image_type, " in ", aSet.right_set, image_element
+            #print types, " in ", aSet.left_set, domain_element
+            #print "image:",image_type, " in ", aSet.right_set, image_element
             if domain_element and image_element:
                 # checking if a function is total is done via an approximation:
                 # if no constraint of the domain is found, the answer is yes, 

@@ -340,7 +340,7 @@ class SymbolicCartSet(SymbolicSet):
             r = element[1]
         else:
             raise NotImplementedError()
-        print l, r
+        #print l, r
         return l in self.left_set and r in self.right_set
     
     def __eq__(self, aset):
@@ -353,6 +353,10 @@ class SymbolicCartSet(SymbolicSet):
     def __ne__(self, aset):
         return not self.__eq__(aset)
 
+class SymbolicUnionSet(SymbolicSet):
+    def __init__(self, aset0, aset1):
+        self.left_set = aset0
+        self.right_set = aset1    
 
 class SymbolicPowerSet(SymbolicSet):
     pass #TODO: implement me
@@ -421,8 +425,8 @@ class SymbolicRelationSet(SymbolicSet):
         self.right_set = aset1   
     
     def __contains__(self, element):
-        print "SymbolicRelationSet", self.left_set , self.right_set
-        print "SymbolicRelationSet", element
+        #print "SymbolicRelationSet", self.left_set , self.right_set
+        #print "SymbolicRelationSet", element
         if isinstance(element, SymbolicSet):
             assert isinstance(element, SymbolicCartSet)
             return element.left_set in self.left_set and element.right_set in self.right_set

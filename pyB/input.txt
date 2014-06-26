@@ -1,1 +1,1 @@
-#PREDICATE STRING<:{"hello world"}
+#EXPRESSION POW(S)

@@ -43,11 +43,15 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         
         env.state_space.add_state(pre_set_up_state)
         # TODO: Parameter set up
+        if VERBOSE:
+            print "checking properties (with proB solutions) now.."
         if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
             raise SETUPNotPossibleException("\nError: Values from solution-file caused an PROPERTIES-violation (wrong predicates above).\nMIN_INT: %s MAX_INT: %s" % (env._min_int, env._max_int))            
         elif not mch.aPropertiesMachineClause==None:
             print "Properties: True"
         env.state_space.undo()
+        if VERBOSE:
+            print "...no vialation found"
         return [pre_set_up_state] 
                
     # 2. set up frame and B-state
@@ -462,7 +466,7 @@ def _learn_assigned_values(root, env, lst):
                     lst.append(idNode.idName)
                     continue
                 except Exception as e:
-                    print e
+                    print "Exception:",e
                     continue 
 
         # df-search for equations 
@@ -688,6 +692,8 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+            return SymbolicUnionSet(aSet1, aSet2)
         return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
@@ -803,7 +809,6 @@ def interpret(node, env):
         aSet = interpret(node.children[1], env)
         return not elm in aSet
     elif isinstance(node, AIncludePredicate):
-        print "interpret: ", pretty_print(node), node  # DEBUG
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet2, SymbolicSet):
@@ -1170,7 +1175,9 @@ def interpret(node, env):
         expr = node.children[-1]
         # check if symbolic representation make sense
         time = estimate_computation_time(pred, env)
-        if time==float("inf") or time>=TO_MANY_ITEMS:
+        # if min/max int is to big, a explicit representation is not possible
+        # (at least one bound var may be of type int)
+        if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
             return SymbolicLambda(varList, pred, expr, node)
         # new scope
         env.push_new_frame(varList)
