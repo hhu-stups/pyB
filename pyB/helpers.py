@@ -133,8 +133,8 @@ def _find_var_nodes(node, lst):
             lst.append(node)
     # (case 4) deep first search. 
     else:
-		for n in node.children:
-			_find_var_nodes(n, lst)
+        for n in node.children:
+            _find_var_nodes(n, lst)
 
 
 # search for all substitutions which change a variable.
@@ -173,8 +173,8 @@ def _find_assignd_vars(node, lst):
         return 
     # (case 3) deep first search.             
     else:
-		for n in node.children:
-			_find_assignd_vars(n, lst)
+        for n in node.children:
+            _find_assignd_vars(n, lst)
 
 
 # [[1,2],[3,[[4]]]] -> [1,2,3,4]
@@ -184,6 +184,16 @@ def flatten(lst, res):
             res.append(e)
         else:
             res = flatten(e, res)
+    return res
+    
+    
+# ((3, 4), 5) -> [3,4,5]
+def remove_tuples(tup, res):
+    if isinstance(tup, tuple):
+        a = remove_tuples(tup[0], res)
+        b = remove_tuples(tup[1], res)
+    else:
+        res.append(tup)
     return res
 
 

@@ -2,8 +2,10 @@
 from config import *
 from ast_nodes import *
 from btypes import *
-from helpers import flatten, double_element_check, all_ids_known, print_ast
+from symbolic_sets import *
+from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples
 from bexceptions import *
+from pretty_printer import pretty_print
 
 # WARNING: most of the functions in this module should only be used
 # if the full set is needed in an expression: The functions are very slow 
@@ -229,3 +231,34 @@ def contains_infinit_enum(node, env):
             return True
     return False
 
+
+# convert symbolic set to finite frozen set, node arg needed for error msg
+# of course there are case when this approach will fail!
+def enum_symbolic(env, symbolic_set, node):
+    from interp import interpret
+    if isinstance(symbolic_set, SymbolicCompositionSet):
+        if isinstance(symbolic_set.left_set, frozenset) and isinstance(symbolic_set.right_set, SymbolicLambda):
+            result = []
+            lambda_function = symbolic_set.right_set        
+            env.push_new_frame(lambda_function.variable_list)
+            for tup in symbolic_set.left_set:
+                domain = tup[0]
+                args   = remove_tuples(tup[1],[])
+                for i in range(len(lambda_function.variable_list)):
+                    idNode = lambda_function.variable_list[i]
+                    # set args to correct bound variable in lambda expression
+                    value = args[i]
+                    env.set_value(idNode.idName, value)
+                # check if value is in lambda domain
+                pre_result = interpret(lambda_function.predicate, env)
+                if pre_result:
+                    # calculate element of composition expression
+                    lambda_image = interpret(lambda_function.expression, env)
+                    result.append(tuple([domain, lambda_image]))
+            env.pop_frame() # exit scope
+            return frozenset(result)
+        else:
+            if PRINT_WARNINGS:
+                print "WARNING: SymbolicCompositionSet case not implemented!"
+    if PRINT_WARNINGS:
+        print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(node) 

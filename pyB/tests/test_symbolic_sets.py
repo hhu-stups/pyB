@@ -328,30 +328,55 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)  
    
+    # TODO: Handle timeout enumeration
     import pytest
     @pytest.mark.xfail    
     def test_symbolic_lambda_composition1(self):
         # Build AST
-        string_to_file("#PREDICATE (%x.(x:NAT|x*x);{(25,42),(16,42),(42,42)})", file_name)
+        string_to_file("#PREDICATE {(4,42),(5,42)}=(%x.(x:INTEGER|x*x);{(25,42),(16,42),(42,42)})", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
         # Test fapp
         env = Environment()
-        assert frozenset([(4,42),(5,42)])==interpret(root, env)  
+        assert interpret(root, env)  
  
 
-    import pytest
-    @pytest.mark.xfail    
+    #import pytest
+    #@pytest.mark.xfail    
     def test_symbolic_lambda_composition2(self):
         # Build AST
-        string_to_file("#PREDICATE ({(25,42),(16,42),(42,42)};%x.(x:NAT|x*x))", file_name)
+        string_to_file("#PREDICATE {(16,1764),(25,1764),(42,1764)}=({(25,42),(16,42),(42,42)};%x.(x:INTEGER|x*x))", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
         # Test fapp
         env = Environment()
-        assert frozenset([(16,1764),(25,1764),(42,1764)])==interpret(root, env)  
+        assert interpret(root, env)  
+
+
+
+    def test_symbolic_lambda_composition3(self):
+        # Build AST
+        string_to_file("#PREDICATE {(2,12)}=({(2,(3,4))};(%(x,y).(x:INTEGER & y:INTEGER|y*x)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)
+        
+  
+    def test_symbolic_lambda_composition4(self):
+        # Build AST
+        string_to_file("#PREDICATE {(2,17)}=({(2,(3,4,5))};(%(x,y,z).(x:INTEGER & y:INTEGER & z:INTEGER|y*x+z)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)      
+        
 
 
     # TODO: symbolic intervall

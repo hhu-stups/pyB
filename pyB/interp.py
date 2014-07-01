@@ -640,8 +640,14 @@ def interpret(node, env):
         elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
             env.set_value(node.children[1].idName, expr1)
             return True
+        elif isinstance(expr1, SymbolicSet) and isinstance(expr2, frozenset):
+            expr1 = enum_symbolic(expr1, node)
+            return expr1 == expr2
+        elif isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
+            expr2 = enum_symbolic(env, expr2, node)
+            return expr1 == expr2
         else:
-            # else normal check
+            # else normal check, also symbolic (implemented by symbol classes)
             return expr1 == expr2
     elif isinstance(node, AUnequalPredicate):
         expr1 = interpret(node.children[0], env)
@@ -984,7 +990,8 @@ def interpret(node, env):
     elif isinstance(node, ACompositionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        print aSet1, aSet2
+        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+            return SymbolicCompositionSet(aSet1, aSet2)
         # p and q: tuples representing domain and image
         new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
         return frozenset(new_rel)
