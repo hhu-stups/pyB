@@ -85,6 +85,38 @@ class TestInterpRelations():
         env.set_value("p", frozenset([("1","x"),("2","x"),("3","z")]))
         env.set_value("q", frozenset([("x","a")]))
         assert interpret(root.children[0],env)
+        
+        # Build AST:
+        string_to_file("#PREDICATE p={(1,\"a\")} & q={(\"a\",\"x\")} & {(1,\"x\")}=(p;q)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["S","p","q"])
+        assert interpret(root.children[0],env)
+ 
+        # Build AST:
+        string_to_file("#PREDICATE p={(1,\"x\"),(2,\"y\"),(3,\"z\"),(1,\"y\")} & q={(\"x\",\"a\")} & {(1,\"a\")}=(p;q)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["S","p","q"])
+        assert interpret(root.children[0],env)   
+        
+         # Build AST:
+        string_to_file("#PREDICATE p={(1,\"x\"),(2,\"x\"),(3,\"z\")} & q={(\"x\",\"a\")} & {(1,\"a\"),(2,\"a\")}=(p;q) ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env.add_ids_to_frame(["S","p","q"])
+        assert interpret(root.children[0],env)        
+           
+        
 
 
     def test_genAST_pred_rel_id(self):

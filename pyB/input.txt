@@ -1,1 +1,1 @@
-#PREDICATE %x.(x:0..999999|x*x)(4)=16
+#PREDICATE A=bool(1<2)

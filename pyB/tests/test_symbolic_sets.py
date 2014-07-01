@@ -326,9 +326,34 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
-        assert interpret(root, env)      
+        assert interpret(root, env)  
+   
+    import pytest
+    @pytest.mark.xfail    
+    def test_symbolic_lambda_composition1(self):
+        # Build AST
+        string_to_file("#PREDICATE (%x.(x:NAT|x*x);{(25,42),(16,42),(42,42)})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert frozenset([(4,42),(5,42)])==interpret(root, env)  
+ 
 
-    
+    import pytest
+    @pytest.mark.xfail    
+    def test_symbolic_lambda_composition2(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(25,42),(16,42),(42,42)};%x.(x:NAT|x*x))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert frozenset([(16,1764),(25,1764),(42,1764)])==interpret(root, env)  
+
+
     # TODO: symbolic intervall
     def test_symbolic_intervall_set(self):
         # Build AST

@@ -984,6 +984,8 @@ def interpret(node, env):
     elif isinstance(node, ACompositionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        print aSet1, aSet2
+        # p and q: tuples representing domain and image
         new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):

@@ -440,6 +440,7 @@ class SymbolicRelationSet(SymbolicSet):
             return element[0] in self.left_set and element[1] in self.right_set 
         raise Exception("Not implemented: relation symbolic membership")  
 
+
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass
     
@@ -462,5 +463,9 @@ class SymbolicTotalBijectionSet(SymbolicRelationSet):
     pass
     
 class SymbolicPartialBijectionSet(SymbolicRelationSet):
+    pass
+    
+
+class SymbolicCompositionSet(SymbolicRelationSet):
     pass
     
