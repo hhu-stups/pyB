@@ -33,3 +33,7 @@ class SETUPNotPossibleException(BTypeException):
 class ResolveFailedException(BTypeException):
     def __init__(self, string):
         self.value = string
+
+class EnumerationNotPossibleException(BTypeException):   
+    def __init__(self, value):
+        self.value = value

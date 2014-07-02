@@ -759,8 +759,11 @@ def interpret(node, env):
                 value = entry[name]
                 env.set_value(name, value)
             try:
-                if interpret(pred, env):  # test   
-                    result |= interpret(expr, env) 
+                if interpret(pred, env):  # test (|= ior)
+                    aSet = interpret(expr, env)
+                    if isinstance(aSet, SymbolicSet):
+                        aSet = enum_symbolic(env, aSet, node)    
+                    result |= aSet
             except ValueNotInDomainException:
                 continue
         env.pop_frame()
@@ -780,9 +783,12 @@ def interpret(node, env):
             try:
                 if interpret(pred, env):  # test
                     if result==frozenset([]):
-                         result = interpret(expr, env)  
-                    else:      
-                         result &= interpret(expr, env) 
+                        result = interpret(expr, env)  
+                    else:
+                        aSet = interpret(expr, env)
+                        if isinstance(aSet, SymbolicSet):
+                            aSet = enum_symbolic(env, aSet, node)        
+                        result &= aSet
             except ValueNotInDomainException:
                 continue
         env.pop_frame()
@@ -798,6 +804,7 @@ def interpret(node, env):
         #print pretty_print(node)
         if contains_infinit_enum(node, env):
             result = infinity_belong_check(node, env)
+            print result
             return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)

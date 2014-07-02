@@ -335,12 +335,12 @@ class SymbolicCartSet(SymbolicSet):
         self.right_set = aset1
     
     def __contains__(self, element):
+        #print "elemet", element
         if isinstance(element, tuple):
             l = element[0]
             r = element[1]
         else:
             raise NotImplementedError()
-        #print l, r
         return l in self.left_set and r in self.right_set
     
     def __eq__(self, aset):

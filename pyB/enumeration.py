@@ -3,9 +3,10 @@ from config import *
 from ast_nodes import *
 from btypes import *
 from symbolic_sets import *
-from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples
+from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples, build_arg_by_type
 from bexceptions import *
 from pretty_printer import pretty_print
+from bexceptions import EnumerationNotPossibleException
 
 # WARNING: most of the functions in this module should only be used
 # if the full set is needed in an expression: The functions are very slow 
@@ -216,11 +217,16 @@ def create_sequence(images, number, length):
 # True  = no normal enumeration possible
 # False = Maybe
 def contains_infinit_enum(node, env):
+    #print "inf?:",node.children[1]
     if isinstance(node, ABelongPredicate):
         if isinstance(node.children[1], APartialSurjectionExpression):
             T = node.children[1].children[1]
             isInf = contains_infinit_enum(T, env)
             return isInf
+        #elif isinstance(node.children[1], AMultOrCartExpression):
+        #    infR = contains_infinit_enum(node.children[1].children[0], env)
+        #    infL = contains_infinit_enum(node.children[1].children[1], env)
+        #    return infR or infL
     elif isinstance(node, AIntegerSetExpression) or isinstance(node , ANaturalSetExpression) or isinstance(node, ANatural1SetExpression):
         return True
     elif isinstance(node, AIntSetExpression):
@@ -246,8 +252,11 @@ def enum_symbolic(env, symbolic_set, node):
                 args   = remove_tuples(tup[1],[])
                 for i in range(len(lambda_function.variable_list)):
                     idNode = lambda_function.variable_list[i]
-                    # set args to correct bound variable in lambda expression
-                    value = args[i]
+                    #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
+                    # onne carttype can contain more...
+                    # set args to correct bound variable in lambda expression using type-info
+                    atype = env.get_type_by_node(idNode)
+                    value = build_arg_by_type(atype, args) 
                     env.set_value(idNode.idName, value)
                 # check if value is in lambda domain
                 pre_result = interpret(lambda_function.predicate, env)
@@ -261,4 +270,5 @@ def enum_symbolic(env, symbolic_set, node):
             if PRINT_WARNINGS:
                 print "WARNING: SymbolicCompositionSet case not implemented!"
     if PRINT_WARNINGS:
-        print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(node) 
+        print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(node)
+    raise EnumerationNotPossibleException((symbolic_set,node)) 

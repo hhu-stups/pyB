@@ -36,7 +36,9 @@ def quick_member_eval(ast, env, element):
             assert isinstance(element, str)
             return True
         # fallback: enumerate right side. This 'should' never happen...
-        S = list(interpret(ast, env))
+        S = interpret(ast, env)
+        #print "quck eval of:", element, val
+        #S = list(val)
         #print element,S # DEBUG
         return element in S
     elif isinstance(element, SymbolicLambda):

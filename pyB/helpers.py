@@ -3,6 +3,7 @@
 from subprocess import Popen, PIPE
 from ast_nodes import *
 from config import VERBOSE
+from btypes import CartType
 #from boperation import BOperation
  
 command_str = "java -Xms64m -Xmx1024m -cp "
@@ -196,6 +197,17 @@ def remove_tuples(tup, res):
         res.append(tup)
     return res
 
+
+# this helper gets the type of an id and calcs how many 
+# args are needed for this type. This is used by symbolic compositions to set
+# id nodes of symbolic lambda expressions. E.g ((a,b),c)= 3 args
+def build_arg_by_type(atype, value_list):
+     if isinstance(atype, CartType):
+         a = build_arg_by_type(atype.data[0], value_list)
+         b = build_arg_by_type(atype.data[1], value_list)
+         return tuple([a,b])
+     return value_list.pop(0)
+     
 
 # checks if a list contains a duplicate element
 def double_element_check(lst):

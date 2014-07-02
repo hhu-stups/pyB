@@ -375,8 +375,28 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
-        assert interpret(root, env)      
+        assert interpret(root, env) 
         
+        # Build AST (brackets)
+        string_to_file("#PREDICATE {(2,17)}=({(2,((3,4),5))};(%(x,y,z).(x:INTEGER & y:INTEGER & z:INTEGER|y*x+z)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
+
+    def test_symbolic_lambda_composition5(self):
+        # Build AST
+        string_to_file("#PREDICATE {(2,7)}=({(2,(3,4))};(%(x).(x:INTEGER*INTEGER|%(a,b).(a:INTEGER & b:INTEGER|a+b)(x)))) ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)            
+       
 
 
     # TODO: symbolic intervall
