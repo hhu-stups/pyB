@@ -566,6 +566,14 @@ class TestConstraintSolver():
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
         
+
+    def test_constraint_set_gen_union3(self):
+        # Build AST:
+        string_to_file("#EXPRESSION UNION(x,y).(x|->y:{(1,1),(2,2)}|{x|->y})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)        
+        
+        
                 
     def test_constraint_pi(self):
         # PI (z).(P|E)

@@ -368,9 +368,11 @@ class SymbolicUnionSet(SymbolicSet):
     def __getitem__(self, arg):
         if isinstance(self.left_set, SymbolicLambda) and isinstance(self.right_set, SymbolicLambda):
             try:
-                return self.left_set[arg] 
+                result = self.left_set[arg] 
+                return result
             except:
-                return self.right_set[arg] 
+                result = self.right_set[arg] 
+                return result
         raise Exception("Not implemented: relation symbolic membership")  
 
 

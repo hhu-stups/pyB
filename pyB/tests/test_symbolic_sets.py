@@ -293,6 +293,7 @@ class TestSymbolicSets():
         assert interpret(root, env)         
                
 
+    # TODO: use symbolic natset on default
     import pytest
     @pytest.mark.xfail
     def test_symbolic_lambda1(self):
@@ -341,9 +342,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)  
  
-
-    #import pytest
-    #@pytest.mark.xfail    
+  
     def test_symbolic_lambda_composition2(self):
         # Build AST
         string_to_file("#PREDICATE {(16,1764),(25,1764),(42,1764)}=({(25,42),(16,42),(42,42)};%x.(x:INTEGER|x*x))", file_name)
