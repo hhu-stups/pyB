@@ -699,7 +699,7 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicUnionSet(aSet1, aSet2)
+            return SymbolicUnionSet(aSet1, aSet2, env, interpret)
         return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
@@ -850,26 +850,26 @@ def interpret(node, env):
         #if VERBOSE:
         #    print "WARNING: NATURAL = 0.."+str(env._max_int)
         #return frozenset(range(0,env._max_int+1)) # TODO:(#ISSUE 17)
-        return NaturalSet(env)
+        return NaturalSet(env, interpret)
     elif isinstance(node, ANatural1SetExpression):
         #if VERBOSE:
         #    print "WARNING: NATURAL1 = 1.."+str(env._max_int)
         #return frozenset(range(1,env._max_int+1)) # TODO:(#ISSUE 17)
-        return Natural1Set(env)
+        return Natural1Set(env, interpret)
     elif isinstance(node, ANatSetExpression):
         return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
-        #return NatSet(env)
+        #return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
         return frozenset(range(1,env._max_int+1))# TODO: Problem if to large
-        #return Nat1Set(env)
+        #return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
         return frozenset(range(env._min_int, env._max_int+1)) # TODO: Problem if to large
-        #return IntSet(env)
+        #return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
         #if VERBOSE:
         #    print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
         #return frozenset(range(env._min_int,env._max_int+1)) # TODO:(#ISSUE 17)
-        return IntegerSet(env)
+        return IntegerSet(env, interpret)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         return min(list(aSet))
@@ -981,7 +981,7 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicRelationSet(aSet1, aSet2)
+            return SymbolicRelationSet(aSet1, aSet2, env, interpret)
         aSet = make_set_of_realtions(aSet1, aSet2)
         return aSet
     elif isinstance(node, ADomainExpression):
@@ -998,7 +998,7 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicCompositionSet(aSet1, aSet2)
+            return SymbolicCompositionSet(aSet1, aSet2, env, interpret)
         # p and q: tuples representing domain and image
         new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
         return frozenset(new_rel)
@@ -1087,7 +1087,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicFirstProj(S,T)
+            return SymbolicFirstProj(S,T, env, interpret)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[0]) for t in cart]
         return frozenset(proj)
@@ -1095,7 +1095,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicSecondProj(S,T)
+            return SymbolicSecondProj(S,T, env, interpret)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[1]) for t in cart]
         return frozenset(proj)
@@ -1111,7 +1111,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialFunctionSet(S, T)
+            return SymbolicPartialFunctionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         return fun
@@ -1119,7 +1119,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalFunctionSet(S, T)
+            return SymbolicTotalFunctionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         total_fun = filter_not_total(fun, S) # S-->T
@@ -1128,7 +1128,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialInjectionSet(S, T)
+            return SymbolicPartialInjectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1137,7 +1137,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalInjectionSet(S, T)
+            return SymbolicTotalInjectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1147,7 +1147,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialSurjectionSet(S, T)
+            return SymbolicPartialSurjectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1156,7 +1156,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalSurjectionSet(S, T)
+            return SymbolicTotalSurjectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1166,7 +1166,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalBijectionSet(S, T)
+            return SymbolicTotalBijectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1177,7 +1177,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialBijectionSet(S, T)
+            return SymbolicPartialBijectionSet(S, T, env, interpret)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1194,7 +1194,7 @@ def interpret(node, env):
         # if min/max int is to big, a explicit representation is not possible
         # (at least one bound var may be of type int)
         if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
-            return SymbolicLambda(varList, pred, expr, node)
+            return SymbolicLambda(varList, pred, expr, node, env, interpret)
         # new scope
         env.push_new_frame(varList)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
@@ -1239,23 +1239,6 @@ def interpret(node, env):
             else:
                 args = tuple([args, arg])
             i = i+1
-        if isinstance(function, SymbolicLambda):
-            varList = function.variable_list
-            env.push_new_frame(varList)
-            #assert len(varList)==len(args)
-            for i in range(len(varList)):
-                idNode = varList[i]
-                if len(varList)==1:
-                    value  = args
-                else:
-                    value = args[i]
-                env.set_value(idNode.idName, value)
-            value = interpret(function.predicate, env) 
-            if not value:
-                raise ValueNotInDomainException(args)
-            result = interpret(function.expression, env)  
-            env.pop_frame() # exit scope
-            return result
         if isinstance(function, SymbolicSet):
             return function[args]
         return get_image(function, args)
@@ -1496,7 +1479,7 @@ def interpret(node, env):
                 return entry[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
-        return StringSet(env)
+        return StringSet(env, interpret)
         #return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)

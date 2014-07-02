@@ -59,24 +59,24 @@ class TestSymbolicSets():
     
     def test_symbolic_set_element_of(self):
         env = Environment()
-        inf_set = IntegerSet(env)
+        inf_set = IntegerSet(env, interpret)
         assert 1 in inf_set
-        inf_set = NaturalSet(env)
+        inf_set = NaturalSet(env, interpret)
         assert 0 in inf_set
         assert -1 not in inf_set
-        inf_set = Natural1Set(env)
+        inf_set = Natural1Set(env, interpret)
         assert 0  not in inf_set
         assert -1 not in inf_set
         assert 1 in inf_set
-        large_set = NatSet(env)
+        large_set = NatSet(env, interpret)
         assert 0 in large_set
         assert env._max_int in large_set
         assert -1 not in large_set
-        large_set = Nat1Set(env)
+        large_set = Nat1Set(env, interpret)
         assert 0  not in large_set
         assert env._max_int in large_set
         assert -1 not in large_set
-        large_set = IntSet(env)
+        large_set = IntSet(env, interpret)
         assert 0 in large_set
         assert env._max_int in large_set
         assert env._min_int in large_set
@@ -89,13 +89,13 @@ class TestSymbolicSets():
         
     def test_symbolic_set_compare(self):
         env = Environment()
-        inf_set = IntegerSet(env)
-        inf_set2 = IntegerSet(env)
+        inf_set = IntegerSet(env, interpret)
+        inf_set2 = IntegerSet(env, interpret)
         assert inf_set == inf_set2
-        inf_set3 = Natural1Set(env)
+        inf_set3 = Natural1Set(env, interpret)
         assert not inf_set == inf_set3
         acartSet = inf_set * inf_set3
-        acartSet2 = IntegerSet(env) * Natural1Set(env)
+        acartSet2 = IntegerSet(env, interpret) * Natural1Set(env, interpret)
         acartSet3 = inf_set3 * inf_set
         assert acartSet==acartSet2
         assert not acartSet==acartSet3
@@ -103,11 +103,11 @@ class TestSymbolicSets():
     
     def test_symbolic_set_len(self):
         env = Environment()
-        large_set = NatSet(env)
+        large_set = NatSet(env, interpret)
         assert len(large_set)== env._max_int +1
-        large_set = Nat1Set(env)
+        large_set = Nat1Set(env, interpret)
         assert len(large_set)== env._max_int 
-        large_set = IntSet(env)
+        large_set = IntSet(env, interpret)
         assert len(large_set)== env._max_int + (-1)*env._min_int + 1 
         # no impl. for inf_sets possible with __len__
     
@@ -116,9 +116,9 @@ class TestSymbolicSets():
         env = Environment()
         env._min_int = -2**31
         env._max_int = 2**31
-        nat_set = NatSet(env)
-        nat1_set = Nat1Set(env)
-        int_set = IntSet(env)
+        nat_set = NatSet(env, interpret)
+        nat1_set = Nat1Set(env, interpret)
+        int_set = IntSet(env, interpret)
         
         assert not nat_set<=nat1_set
         assert nat_set<=int_set
@@ -138,9 +138,9 @@ class TestSymbolicSets():
         assert not int_set<int_set
         assert int_set>=int_set
         
-        natural_set = NaturalSet(env)
-        natural1_set = Natural1Set(env)
-        integer_set = IntegerSet(env)
+        natural_set = NaturalSet(env, interpret)
+        natural1_set = Natural1Set(env, interpret)
+        integer_set = IntegerSet(env, interpret)
         
         assert not natural_set<=natural1_set
         assert natural_set<=integer_set
@@ -165,12 +165,12 @@ class TestSymbolicSets():
         env = Environment()
         env._min_int = -2**31
         env._max_int = 2**31
-        nat_set = NatSet(env)
-        nat1_set = Nat1Set(env)
-        int_set = IntSet(env)
-        natural_set = NaturalSet(env)
-        natural1_set = Natural1Set(env)
-        integer_set = IntegerSet(env)
+        nat_set = NatSet(env, interpret)
+        nat1_set = Nat1Set(env, interpret)
+        int_set = IntSet(env, interpret)
+        natural_set = NaturalSet(env, interpret)
+        natural1_set = Natural1Set(env, interpret)
+        integer_set = IntegerSet(env, interpret)
         
         assert (nat_set | nat_set) ==nat_set
         assert (nat_set | nat1_set)==nat1_set

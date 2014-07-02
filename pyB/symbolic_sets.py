@@ -1,20 +1,24 @@
 # this classes represent set which should not be enumerated as long as possible (beste case: never)
-# warning: some set behavior is implemented inside the interpreter
-# and its helper-methodes and NOT here
+# warning: some set behavior is implemented inside the interpreter and its helper-methodes and NOT here
+# design decision: most functionality should implemented in this module. the goal is that
+# symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException
 from btypes import *
 
 
 class SymbolicSet(object):
-    def __init__(self, env):
-        self.env = env # min and max int values may be needed for large sets
+    # min and max int values may be needed for large sets
+    # interpret for function call on tuple-sets
+    def __init__(self, env, interpret):
+        self.env = env 
+        self.interpret = interpret
     
     def __mul__(self, aset):
-        return SymbolicCartSet(self, aset)
+        return SymbolicCartSet(self, aset, self.env, self.interpret)
     
     def __rmul__(self, aset):
-        return SymbolicCartSet(aset, self)
+        return SymbolicCartSet(aset, self, self.env, self.interpret)
     
     def __eq__(self, aset):
         if self.__class__ == aset.__class__:
@@ -330,7 +334,8 @@ class StringSet(SymbolicSet):
     
     
 class SymbolicCartSet(SymbolicSet):
-    def __init__(self, aset0, aset1):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1
     
@@ -354,16 +359,28 @@ class SymbolicCartSet(SymbolicSet):
         return not self.__eq__(aset)
 
 class SymbolicUnionSet(SymbolicSet):
-    def __init__(self, aset0, aset1):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
-        self.right_set = aset1    
+        self.right_set = aset1
+    
+    # function call of set
+    def __getitem__(self, arg):
+        if isinstance(self.left_set, SymbolicLambda) and isinstance(self.right_set, SymbolicLambda):
+            try:
+                return self.left_set[arg] 
+            except:
+                return self.right_set[arg] 
+        raise Exception("Not implemented: relation symbolic membership")  
+
 
 class SymbolicPowerSet(SymbolicSet):
     pass #TODO: implement me
 
 
 class SymbolicFirstProj(SymbolicSet):
-    def __init__(self, aset0, aset1):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1  
         
@@ -386,7 +403,8 @@ class SymbolicFirstProj(SymbolicSet):
 
 
 class SymbolicSecondProj(SymbolicSet):
-    def __init__(self, aset0, aset1):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1  
     
@@ -412,15 +430,34 @@ class SymbolicSecondProj(SymbolicSet):
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
-    def __init__(self, varList, pred, expr, node):
+    def __init__(self, varList, pred, expr, node, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr
         self.node = node  
         
+    def __getitem__(self, args):
+        varList = self.variable_list
+        self.env.push_new_frame(varList)
+        for i in range(len(varList)):
+            idNode = varList[i]
+            if len(varList)==1:
+                value  = args
+            else:
+                value = args[i]
+            self.env.set_value(idNode.idName, value)
+        value = self.interpret(self.predicate, self.env) 
+        if not value:
+            raise ValueNotInDomainException(args)
+        result = self.interpret(self.expression, self.env)  
+        self.env.pop_frame() # exit scope
+        return result
+        
 
 class SymbolicRelationSet(SymbolicSet):
-    def __init__(self, aset0, aset1):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1   
     
