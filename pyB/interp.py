@@ -449,7 +449,7 @@ def _learn_assigned_values(root, env, lst):
             # TODO: use idNodes-result to check if an eval. of expression node is possible
             # maybe this enum of node-classes becomes unnecessary
             
-            if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ATrueExpression) or isinstance(expression_node, AFalseExpression):
+            if isinstance(expression_node, (AIntegerExpression, ASetExtensionExpression, ABoolSetExpression, ATrueExpression, AFalseExpression, AEmptySetExpression)):
                 try:
                     expr = interpret(expression_node, env)
                     env.set_value(idNode.idName, expr)

@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE {(1,1),(2,2)}=UNION(x,y).(x|->y:{(1,1),(2,2)}|{x|->y})

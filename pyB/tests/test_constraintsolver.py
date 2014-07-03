@@ -560,16 +560,34 @@ class TestConstraintSolver():
     def test_constraint_set_gen_union2(self):
         # Build AST:
         # UNION(x).(P(x)|E(x))
-        # find all values that settisfy  P(x)='x=1' and compute the union set of all 
+        # find all values that satisfy P(x)='x=1' and compute the union set of all 
         # expressions E(X)(in this case one) for every x (in this case x doesnt constrain E(x) )
         string_to_file("#PREDICATE S={} & f=UNION(x).(x=1|{\"a\",\"b\"}\/{\"b\",\"c\"}\/S)", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
         
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], ["S","f"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        union_predicate = root.children[0].children[1].children[1]
+        set_predicate = union_predicate.children[1]
+        var = union_predicate.children[0]
+        assert isinstance(set_predicate, AEqualPredicate)
+        map = _categorize_predicates(set_predicate, env, [var])  
+        (time0, vars0) = map[set_predicate]
+        assert vars0==["x"]
+        assert time0<2**22
+        env.add_ids_to_frame(["S","f"])
+        assert interpret(root.children[0], env)
+        
+        
 
     def test_constraint_set_gen_union3(self):
         # Build AST:
-        string_to_file("#EXPRESSION UNION(x,y).(x|->y:{(1,1),(2,2)}|{x|->y})", file_name)
+        string_to_file("#PREDICATE {(1,1),(2,2)}=UNION(x,y).(x|->y:{(1,1),(2,2)}|{x|->y})", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)        
         
