@@ -555,8 +555,7 @@ class TestConstraintSolver():
         assert result==frozenset(['a', 'c', 'b'])
 
                
-
-    # TODO:        
+     
     def test_constraint_set_gen_union2(self):
         # Build AST:
         # UNION(x).(P(x)|E(x))
@@ -589,8 +588,24 @@ class TestConstraintSolver():
         # Build AST:
         string_to_file("#PREDICATE {(1,1),(2,2)}=UNION(x,y).(x|->y:{(1,1),(2,2)}|{x|->y})", file_name)
         ast_string = file_to_AST_str(file_name)
-        root = str_ast_to_python_ast(ast_string)        
+        root = str_ast_to_python_ast(ast_string)
         
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], []) 
+        assert isinstance(get_type_by_name(env, "x"), IntegerType) 
+        union_predicate = root.children[0].children[1]  
+        set_predicate = union_predicate.children[2]
+        var0 = union_predicate.children[0]
+        var1 = union_predicate.children[1]
+        assert isinstance(set_predicate, ABelongPredicate)
+        map = _categorize_predicates(set_predicate, env, [var0, var1])  
+        (time0, vars0) = map[set_predicate]
+        assert set(vars0)==set(["x", "y"])
+        assert time0<2**22
+        assert interpret(root.children[0], env)
         
                 
     def test_constraint_pi(self):

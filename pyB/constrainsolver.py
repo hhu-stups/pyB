@@ -17,6 +17,8 @@ class PredicateDoesNotMatchException:
 # After this function returns a generator, every solution-candidate musst be checked! 
 # This function may be generate false values, but does not omit right ones 
 # i.e no values are missing 
+# varList: variables need to be constraint
+# returns a list of dicts [{x1:value00, ... ,xN:valueN0}, ... ,{x1:value0N, ... ,xN:value1NN}]
 # TODO: move checking inside this function i.e. generate NO FALSE values
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     assert isinstance(varList, list)
@@ -29,32 +31,43 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
-    # TODO: support more than one variable
-    if QUICK_EVAL_CONJ_PREDICATES and len(varList)==1:
+    if QUICK_EVAL_CONJ_PREDICATES:
         pred_map = _categorize_predicates(predicate, env, varList)
         assert pred_map != []
-        test_set = None
-        for pred in pred_map:
-            (time, vars) = pred_map[pred]
-            
-            # TODO: more than one var 
-            var_node = varList[0]
-            if time!=float("inf") and time<TO_MANY_ITEMS and varList[0].idName in vars:
-                # at least on predicate of this conjunction can easiely be used
-                # to compute a testset. The exact solution musst contain all 
-                # or less elements than test_set
-                if test_set==None:
-                    try:
-                        test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
-                    except PredicateDoesNotMatchException: #.eg constraining y instead of x, or using unimplemented cases
-                        test_set = None 
-                else:
-                    test_set = _filter_false_elements(pred, env, var_node, interpreter_callable, test_set)
-                #print "predicate for testset:", pretty_print(pred)
-                #print "test set:", test_set
-        if test_set !=None:
-            final_set = _filter_false_elements(predicate, env, var_node, interpreter_callable, test_set)
-            iterator = _set_to_iterator(env, varList, final_set)
+        test_dict = {}
+        for var_node in varList:
+            test_set = None 
+            for pred in pred_map:
+                (time, vars) = pred_map[pred]
+                # Avoid interference between bound variables: check find_constraint_vars
+                # This is less powerful, but correct
+                if time!=float("inf") and time<TO_MANY_ITEMS and var_node.idName in vars:
+                    # at least on predicate of this conjunction can easiely be used
+                    # to compute a testset. The exact solution musst contain all 
+                    # or less elements than test_set
+                    if test_set==None:
+                        try:
+                            test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
+                            break
+                        except PredicateDoesNotMatchException: 
+                            #.eg constraining y instead of x, or using unimplemented cases
+                            test_set = None 
+            if test_set==None:
+                break
+            else:
+                test_dict[var_node] = test_set
+                        
+        # check if a solution has been found for every bound variable
+        solution_found = True
+        for var_node in varList:   
+            if var_node not in test_dict:
+                solution_found = False
+            elif test_dict[var_node]==frozenset([]):
+                solution_found = False
+                
+        # use this solution and return a generator        
+        if solution_found:          
+            iterator = _dict_to_iterator(env, varList, test_dict, predicate, interpreter_callable, {})
             return iterator
         # Todo: generate constraint set by using all "fast computable" predicates
         # Todo: call generator to return solution
@@ -92,17 +105,24 @@ def gen_all_values(env, varList, dic):
             for d in gen_all_values(env, varList[1:], dic):
                 yield d
 
-# XXX: only on var supported
-def _set_to_iterator(env, varList, aset):
-    if not aset==frozenset([]):
-        idNode = varList[0]
-        assert isinstance(idNode, AIdentifierExpression)  
-        var_name = idNode.idName 
-        dic = {} 
-        for element in aset:
-            dic[var_name] = element 
-            yield dic.copy()            
-                
+
+def _dict_to_iterator(env, varList, test_dict, pred, interpreter_callable, partial_solution):
+    idNode = varList[0]
+    aSet = test_dict[idNode]
+    assert not aSet==frozenset([])
+    assert isinstance(idNode, AIdentifierExpression)
+    var_name = idNode.idName 
+    for element in aSet:
+        partial_solution[var_name] = element
+        if len(varList)==1:
+            if _is_solution(pred, env, interpreter_callable, varList, solution=partial_solution.copy()):
+                solution = partial_solution.copy()
+                yield solution
+        else:
+            for solution in _dict_to_iterator(env, varList[1:], test_dict, pred, interpreter_callable, partial_solution):
+                yield solution
+
+
 
 # wrapper-function for contraint solver 
 # WARNING: asumes that every variable in varList has no value!
@@ -250,6 +270,15 @@ def find_constraint_vars(predicate, env, varList):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
             return test_set_var
+        elif isinstance(predicate.children[0], ACoupleExpression):
+            element0 = predicate.children[0].children[0]
+            element1 = predicate.children[0].children[1]
+            if isinstance(element0, AIdentifierExpression):
+                lst0 = [element0.idName]
+            if isinstance(element1, AIdentifierExpression):
+                lst1 = [element1.idName]
+            test_set_var = list(set(lst0 + lst1)) # remove double entries 
+            return test_set_var 
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
@@ -284,9 +313,21 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
     elif isinstance(node, ABelongPredicate):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)
-            # e.g. {x| x:Nat & x:{1,2,3}}
+            # e.g. (x){ x:Nat & x:{1,2,3}}
             assert isinstance(set, frozenset)
             return set
+        elif isinstance(node.children[0], ACoupleExpression):
+            # e.g. (x,y){x|->y:{(1,2),(3,4)}} (only one id-constraint found in this pass)
+            element0 = node.children[0].children[0]
+            element1 = node.children[0].children[1]
+            if isinstance(element0, AIdentifierExpression) and element0.idName==var_node.idName:
+                set = interpreter_callable(node.children[1], env)
+                assert isinstance(set, frozenset)
+                return [t[0] for t in set]
+            if isinstance(element1, AIdentifierExpression) and element1.idName==var_node.idName:
+                set = interpreter_callable(node.children[1], env)
+                assert isinstance(set, frozenset)
+                return [t[1] for t in set]
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):
@@ -308,21 +349,17 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         raise PredicateDoesNotMatchException()
 
 
-# remove all elements which do not satisfy pred
-# TODO: support more than on variable 
-def _filter_false_elements(pred, env, var_node, interpreter_callable, test_set):
-    result = []
-    assert isinstance(var_node, AIdentifierExpression)  
-    var_name = var_node.idName 
-    env.push_new_frame([var_node])
-    for value in test_set:
-        #print "filter_false:", var_name, value
-        env.set_value(var_name, value)
-        try:
-            if interpreter_callable(pred, env):
-                result.append(value)
-        except ValueNotInDomainException: # function app with wrong value
-            continue # skip this false value
+# check if solution satisfies predicate 
+def _is_solution(pred, env, interpreter_callable, varList, solution):
+    env.push_new_frame(varList)
+    for key in solution:
+        value = solution[key]
+        print "set",key,"to",value
+        env.set_value(key, value)
+    try:
+        result = interpreter_callable(pred, env)
+    except ValueNotInDomainException: # function app with wrong value
+        result = False
     env.pop_frame()
-    return frozenset(result)
+    return result
     
