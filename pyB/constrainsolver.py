@@ -271,6 +271,8 @@ def find_constraint_vars(predicate, env, varList):
             test_set_var = [predicate.children[0].idName]
             return test_set_var
         elif isinstance(predicate.children[0], ACoupleExpression):
+            lst0 = []
+            lst1 = []
             element0 = predicate.children[0].children[0]
             element1 = predicate.children[0].children[1]
             if isinstance(element0, AIdentifierExpression):

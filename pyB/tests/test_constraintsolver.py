@@ -606,8 +606,16 @@ class TestConstraintSolver():
         assert set(vars0)==set(["x", "y"])
         assert time0<2**22
         assert interpret(root.children[0], env)
-        
-                
+
+
+    #TODO:
+    def test_constraint_set_gen_union4(self):
+        # Build AST:
+        string_to_file("#PREDICATE {1,4}=UNION(x, y, z).(x|->(y|->z):{(1,(2,3)),(4,(5,6))} |{x})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)        
+
+               
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

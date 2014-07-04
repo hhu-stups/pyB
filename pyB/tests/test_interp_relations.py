@@ -320,6 +320,17 @@ class TestInterpRelations():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_rel_inverse2(self):
+        # Build AST:
+        string_to_file("#PREDICATE {(\"c\",\"c\")}=({(\"a\",(\"b\",3)),(\"c\",(\"d\",6))};{(\"a\"|->(\"b\"|->9)),(\"c\"|->(\"d\"|->6))}~)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env)
+
+
     def test_genAST_pred_rel_image(self):
         # Build AST:
         string_to_file("#PREDICATE f=r[S]", file_name)
