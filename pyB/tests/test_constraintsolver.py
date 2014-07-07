@@ -615,7 +615,23 @@ class TestConstraintSolver():
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)        
 
-               
+
+    #TODO:
+    def test_constraint_set_gen_union5(self):
+        # Build AST:
+        string_to_file("#PREDICATE {1,2}=UNION(x,y,z).(x|->y:{(\"a\",\"b\"),(\"c\",\"d\")} & z={(\"a\"|->(\"b\"|->1)),(\"c\"|->(\"d\"|->2))} [{x}][{y}]|z)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+
+    #TODO:
+    def test_constraint_set_gen_union6(self):
+        # Build AST:
+        string_to_file("#PREDICATE S={(\"a\",1,\"b\"),(\"a\",2,\"c\"),(\"c\",3,\"d\"),(\"c\",4,\"a\")} & {(\"b\",\"c\"),(\"d\",\"a\")}=UNION(a,b,c,d,e).(a|->c|->b:S & a|->e|->d:S & c<e|{b|->d})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:
