@@ -216,6 +216,7 @@ def double_element_check(lst):
             return True
     return False
 
+
 # True if all free variables have an value BEFORE the visit of this AST
 # E.g. "x=42" is False if x has no value BEFORE 
 def all_ids_known(node, env):
@@ -256,7 +257,17 @@ def all_ids_known(node, env):
                 return False
     return True
     
-
+# AST: P0 & P1 ...PN ->[P0,P1,..PN]
+# returns a list of predicates 
+def conj_tree_to_conj_list(ast):
+    if isinstance(ast, AConjunctPredicate):
+        lst0 = conj_tree_to_conj_list(ast.children[0])
+        lst1 = conj_tree_to_conj_list(ast.children[1])
+        return lst0 + lst1
+    else:
+        return [ast]
+        
+        
 # Helper for debugging                     
 def print_ast(root):
     print root

@@ -2,7 +2,7 @@
 from config import *
 from ast_nodes import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
-from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes
+from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
@@ -543,10 +543,17 @@ def interpret(node, env):
     elif isinstance(node, AConstraintsMachineClause):
         return interpret(node.children[-1], env)
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
-        result = interpret(node.children[-1], env)
-        if not result:
-            print "\nFALSE Predicates:"
-            print_predicate_fail(env, node.children[0])
+        lst = conj_tree_to_conj_list(node.children[0])
+        result = True
+        for n in lst:
+            try:
+                value = interpret(n, env)
+            except OverflowError:
+                print "FAIL (enumeration overflow) = ("+pretty_print(n)+")"
+                continue
+            if not value:
+                print "FALSE = ("+pretty_print(n)+")"
+            result = result and value
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)

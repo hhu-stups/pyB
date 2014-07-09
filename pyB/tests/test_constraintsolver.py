@@ -632,6 +632,22 @@ class TestConstraintSolver():
         root = str_ast_to_python_ast(ast_string) 
 
 
+    #TODO:
+    def test_constraint_set_gen_union7(self):
+        # Build AST:
+        string_to_file("#PREDICATE {1,3}=UNION(x).(x:dom({(1,2),(3,4)})|{x})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+
+    #TODO:
+    def test_constraint_set_gen_union8(self):
+        # Build AST:
+        string_to_file("#PREDICATE {2,4}=UNION(x).(x:ran({(1,2),(3,4)})|{x})", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+
+
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:

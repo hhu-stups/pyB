@@ -75,6 +75,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
+    # TODO: Handle OverflowError, print Error message and go on
     try:
         if PRINT_WARNINGS:
             print "WARNING! External constraint solver called. Caused by: %s" % pretty_print(predicate) 
@@ -356,7 +357,7 @@ def _is_solution(pred, env, interpreter_callable, varList, solution):
     env.push_new_frame(varList)
     for key in solution:
         value = solution[key]
-        print "set",key,"to",value
+        #print "set",key,"to",value
         env.set_value(key, value)
     try:
         result = interpreter_callable(pred, env)

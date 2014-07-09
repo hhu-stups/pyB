@@ -1,1 +1,1 @@
-#PREDICATE S={("a",1,"b"),("a",2,"c"),("c",3,"d"),("c",4,"a")} & {("b","c"),("d","a")}=UNION(a,b,c,d,e).(a|->c|->b:S & a|->e|->d:S & c<e|{b|->d})
+#PREDICATE A=bool(1<2)
