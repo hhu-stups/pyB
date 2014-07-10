@@ -397,7 +397,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)  
         
-    # TODO: direct product of composition set test
+    # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
     # TODO: symbolic powerset membership test - x:POW(INTEGER) 
     # TODO: more symbolic string id tests  (test_symbolic_id2)        
        

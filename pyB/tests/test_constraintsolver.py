@@ -653,10 +653,10 @@ class TestConstraintSolver():
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
 
-
+    #TODO: write testcase with other tuple combinations...
+    
+    
     # 3 variables have to be constraint (3+2)
-    import pytest
-    @pytest.mark.xfail
     def test_constraint_set_gen_union6(self):
         # Build AST:
         string_to_file("#PREDICATE S={(\"a\",1,\"b\"),(\"a\",2,\"c\"),(\"c\",3,\"d\"),(\"c\",4,\"a\")} & {(\"b\",\"c\"),(\"d\",\"a\")}=UNION(a,b,c,d,e).(a|->c|->b:S & a|->e|->d:S & c<e|{b|->d})", file_name)
@@ -683,7 +683,7 @@ class TestConstraintSolver():
         var4 = union_predicate.children[4]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var0, var1, var2, var3, var4])
-        print map  
+        env.add_ids_to_frame(["S"])
         assert interpret(root.children[0], env) 
 
 
