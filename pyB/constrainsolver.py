@@ -7,6 +7,7 @@ from quick_eval import quick_member_eval
 from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS
 from abstract_interpretation import estimate_computation_time
 from pretty_printer import pretty_print
+from helpers import remove_tuples, couple_tree_to_conj_list
 
 
 class PredicateDoesNotMatchException:
@@ -21,6 +22,7 @@ class PredicateDoesNotMatchException:
 # returns a list of dicts [{x1:value00, ... ,xN:valueN0}, ... ,{x1:value0N, ... ,xN:value1NN}]
 # TODO: move checking inside this function i.e. generate NO FALSE values
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
+    #print "calc_possible_solutions: ", pretty_print(predicate)
     assert isinstance(varList, list)
     # check which kind of predicate: 3 cases
 
@@ -47,6 +49,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
                     # or less elements than test_set
                     if test_set==None:
                         try:
+                            assert isinstance(pred, Predicate)
                             test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
                             break
                         except PredicateDoesNotMatchException: 
@@ -265,23 +268,27 @@ def _categorize_predicates(predicate, env, varList):
        return {predicate: (time, constraint_vars)}
 
 
-# input predicate is always a sub-predicate of a conjunction predicate 
+# Input predicate is always a sub-predicate of a conjunction predicate or a single predicate.
+# This helper may only be used to find test_set(constraint domain) generation candidates.
+# return: list of variable names, constraint by this predicated AND with possible test_set gen.  
 def find_constraint_vars(predicate, env, varList):
+    # (1) Base case. This case should only be matched by a recursive call of find_constraint_vars.
+    # otherwise it could produce wrong results!
+    # WARNING: before modifying this part, be sure "_compute_test_set" can handle it!     
+    if isinstance(predicate, AIdentifierExpression):
+        lst = [predicate.idName]
+        return lst
+    elif isinstance(predicate, ACoupleExpression):
+        lst0 = find_constraint_vars(predicate.children[0], env, varList)
+        lst1 = find_constraint_vars(predicate.children[1], env, varList)
+        lst  = list(set(lst0 + lst1)) # remove double entries
+        return lst
+        
+    # (2) implemented predicates (by _compute_test_set)
+    # WARNING: never add a case if "_compute_test_set" can not handle it!
     if isinstance(predicate, ABelongPredicate):
-        if isinstance(predicate.children[0], AIdentifierExpression):
-            test_set_var = [predicate.children[0].idName]
-            return test_set_var
-        elif isinstance(predicate.children[0], ACoupleExpression):
-            lst0 = []
-            lst1 = []
-            element0 = predicate.children[0].children[0]
-            element1 = predicate.children[0].children[1]
-            if isinstance(element0, AIdentifierExpression):
-                lst0 = [element0.idName]
-            if isinstance(element1, AIdentifierExpression):
-                lst1 = [element1.idName]
-            test_set_var = list(set(lst0 + lst1)) # remove double entries 
-            return test_set_var 
+        lst = find_constraint_vars(predicate.children[0], env, varList)
+        return lst
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
@@ -300,7 +307,8 @@ def find_constraint_vars(predicate, env, varList):
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
     return []
-        
+
+
 # TODO: be sure this cases have no side effect
 # XXX: not all cases implemented (maybe not possible)
 def _compute_test_set(node, env, var_node, interpreter_callable):
@@ -314,23 +322,37 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             value = interpreter_callable(node.children[0], env)
             return frozenset([value])
     elif isinstance(node, ABelongPredicate):
+        # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)
-            # e.g. (x){ x:Nat & x:{1,2,3}}
+            # e.g. x:{1,2,3} or x:S
+            # return finite set on the left as test_set/constraint domain
+            # FIXME: isinstance('x', frozenset) -> find enumeration order!
             assert isinstance(set, frozenset)
             return set
+        # belong-case 2: n-tuple on left side
         elif isinstance(node.children[0], ACoupleExpression):
-            # e.g. (x,y){x|->y:{(1,2),(3,4)}} (only one id-constraint found in this pass)
-            element0 = node.children[0].children[0]
-            element1 = node.children[0].children[1]
-            if isinstance(element0, AIdentifierExpression) and element0.idName==var_node.idName:
+            # e.g. (x,y){x|->y:{(1,2),(3,4)}...} (only one id-constraint found in this pass)
+            # e.g. (x,y,z){x|->(y|->z):{(1,(2,3)),(4,(5,6))..} 
+            # TODO: Handle ((x|->y),(z|->a)):S
+            
+            # 2.1 search n-tuple for matching var (to be constraint)
+            element_list = couple_tree_to_conj_list(node.children[0])
+            index = 0
+            match = False
+            for e in element_list:
+                if isinstance(e, AIdentifierExpression) and e.idName==var_node.idName:
+                    match = True
+                    break
+                index = index +1
+            
+            # 2.2. compute set if match found
+            if match:
                 set = interpreter_callable(node.children[1], env)
                 assert isinstance(set, frozenset)
-                return [t[0] for t in set]
-            if isinstance(element1, AIdentifierExpression) and element1.idName==var_node.idName:
-                set = interpreter_callable(node.children[1], env)
-                assert isinstance(set, frozenset)
-                return [t[1] for t in set]
+                # 2.3. return correct part of the set corresponding to position of
+                # searched variable inside the tuple on the left side
+                return [remove_tuples(t, [])[index] for t in set]
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):

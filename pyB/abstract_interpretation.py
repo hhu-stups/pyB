@@ -30,6 +30,8 @@ def estimate_computation_time(predicate, env):
 # TODO: AFirstProjectionExpression, ASecondProjectionExpression, 
 #       AParallelProductExpression, AQuantifiedIntersectionExpression, 
 #       AQuantifiedUnionExpression
+# FIXME: C578.EML.014/360_002 cause'str' minus 'int' in leaf case
+# FIXME: AMinusOrSetSubtractExpression instead of AIntegerExpression
 def _abs_int(node, env):
     #print node
     if isinstance(node, ABoolSetExpression):
@@ -70,13 +72,14 @@ def _abs_int(node, env):
         if isinstance(node.children[0], AIdentifierExpression):
             val0 = env.get_value(node.children[0].idName)
         else:
-        	assert isinstance(node.children[0], AIntegerExpression)
-        	val0 = node.children[0].intValue
+            assert isinstance(node.children[0], AIntegerExpression)
+            val0 = node.children[0].intValue
         if isinstance(node.children[1], AIdentifierExpression):
             val1 = env.get_value(node.children[1].idName)
         else:
-        	assert isinstance(node.children[1], AIntegerExpression)
-        	val1 = node.children[1].intValue
+            # fail: got AMinusOrSetSubtractExpression
+            assert isinstance(node.children[1], AIntegerExpression)
+            val1 = node.children[1].intValue
         return val1-val0
     ### "meet"
     elif isinstance(node, AConjunctPredicate):

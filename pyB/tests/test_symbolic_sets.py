@@ -258,7 +258,8 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root.children[0], env)      
 
-    
+    #TODO: implement equality for proj1 (x=prj1(INTEGER,INTEGER) & y=prj1(INTEGER,INTEGER) & x=y)
+ 
     def test_symbolic_relation_set(self):
         # Build AST
         string_to_file("#EXPRESSION INTEGER<->INTEGER", file_name)
@@ -394,7 +395,11 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
-        assert interpret(root, env)            
+        assert interpret(root, env)  
+        
+    # TODO: direct product of composition set test
+    # TODO: symbolic powerset membership test - x:POW(INTEGER) 
+    # TODO: more symbolic string id tests  (test_symbolic_id2)        
        
 
     import pytest

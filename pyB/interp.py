@@ -1229,6 +1229,7 @@ def interpret(node, env):
         env.pop_frame() # exit scope
         return frozenset(func_list)
     elif isinstance(node, AFunctionExpression):
+        #print "interpret: ", pretty_print(node)
         if isinstance(node.children[0], APredecessorExpression):
             value = interpret(node.children[1], env)
             return value-1

@@ -608,46 +608,131 @@ class TestConstraintSolver():
         assert interpret(root.children[0], env)
 
 
-    #TODO:
+    # 3 variables have to be constraint 
     def test_constraint_set_gen_union4(self):
         # Build AST:
         string_to_file("#PREDICATE {1,4}=UNION(x, y, z).(x|->(y|->z):{(1,(2,3)),(4,(5,6))} |{x})", file_name)
         ast_string = file_to_AST_str(file_name)
-        root = str_ast_to_python_ast(ast_string)        
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], []) 
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType) 
+        assert isinstance(get_type_by_name(env, "z"), IntegerType)  
+        union_predicate = root.children[0].children[1]  
+        assert isinstance(union_predicate, AQuantifiedUnionExpression)
+        set_predicate = union_predicate.children[3]
+        var0 = union_predicate.children[0]
+        var1 = union_predicate.children[1]
+        var2 = union_predicate.children[2]
+        assert isinstance(set_predicate, ABelongPredicate)
+        map = _categorize_predicates(set_predicate, env, [var0, var1, var2])  
+        (time, vars) = map[set_predicate]
+        assert set(vars)==set(["x", "y", "z"])
+        assert time<2**22 
+        assert interpret(root.children[0], env)      
 
 
-    #TODO:
+    # 3 variables have to be constraint + function app-constraint 
+    # TODO: the constraint solver musst finde out that x and y has to be enumerated before z
+    import pytest
+    @pytest.mark.xfail 
     def test_constraint_set_gen_union5(self):
         # Build AST:
         string_to_file("#PREDICATE {1,2}=UNION(x,y,z).(x|->y:{(\"a\",\"b\"),(\"c\",\"d\")} & z={(\"a\"|->(\"b\"|->1)),(\"c\"|->(\"d\"|->2))} [{x}][{y}]|z)", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
 
 
-    #TODO:
+    # 3 variables have to be constraint (3+2)
+    import pytest
+    @pytest.mark.xfail
     def test_constraint_set_gen_union6(self):
         # Build AST:
         string_to_file("#PREDICATE S={(\"a\",1,\"b\"),(\"a\",2,\"c\"),(\"c\",3,\"d\"),(\"c\",4,\"a\")} & {(\"b\",\"c\"),(\"d\",\"a\")}=UNION(a,b,c,d,e).(a|->c|->b:S & a|->e|->d:S & c<e|{b|->d})", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32 
+        type_with_known_types(root, env, [], ["S"])
+        assert isinstance(get_type_by_name(env, "a"), StringType)
+        assert isinstance(get_type_by_name(env, "b"), StringType) 
+        assert isinstance(get_type_by_name(env, "c"), IntegerType) 
+        assert isinstance(get_type_by_name(env, "d"), StringType) 
+        assert isinstance(get_type_by_name(env, "e"), IntegerType)  
+        union_predicate = root.children[0].children[1].children[1]  
+        assert isinstance(union_predicate, AQuantifiedUnionExpression)
+        set_predicate = union_predicate.children[5]
+        var0 = union_predicate.children[0]
+        var1 = union_predicate.children[1]
+        var2 = union_predicate.children[2]
+        var3 = union_predicate.children[3]
+        var4 = union_predicate.children[4]
+        assert isinstance(set_predicate, AConjunctPredicate)
+        map = _categorize_predicates(set_predicate, env, [var0, var1, var2, var3, var4])
+        print map  
+        assert interpret(root.children[0], env) 
 
 
-    #TODO:
     def test_constraint_set_gen_union7(self):
         # Build AST:
         string_to_file("#PREDICATE {1,3}=UNION(x).(x:dom({(1,2),(3,4)})|{x})", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
 
 
-    #TODO:
     def test_constraint_set_gen_union8(self):
         # Build AST:
         string_to_file("#PREDICATE {2,4}=UNION(x).(x:ran({(1,2),(3,4)})|{x})", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
 
 
+    # TODO: constraints with variables affecting each other
+    # the constraint solver musst finde out that x has to be enumerated before y
+    import pytest
+    @pytest.mark.xfail 
+    def test_constraint_affecting_variables(self):
+        # Build AST:
+        string_to_file("#PREDICATE {(0,\"A\"),(1,\"B\"),(2,\"C\"),(3,\"D\")}={x, y | x : {0,1,2,3,4,5,6,7,8,9,10} & y : {(\"A\"|->41),(\"B\"|->42),(\"C\"|->43),(\"D\"|->44)}~[{{(0|->41),(1|->42),(2|->43),(3|->44),(4|->45)}(x)}]}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
+    
+    
+    #TODO: write test of union which defines bound vars via other quantified predicates.
+    # see C578.EML.014/CF_ZMS_AUM_2
+    # implement recursion: calc_possible_solutions using calc_possible_solutions in case 2
     def test_constraint_pi(self):
         # PI (z).(P|E)
         # Build AST:
