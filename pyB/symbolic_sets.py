@@ -377,7 +377,9 @@ class SymbolicUnionSet(SymbolicSet):
 
 
 class SymbolicPowerSet(SymbolicSet):
-    pass #TODO: implement me
+    def __init__(self, aset, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.set = aset
 
 
 class SymbolicFirstProj(SymbolicSet):

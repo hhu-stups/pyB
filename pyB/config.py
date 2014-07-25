@@ -18,4 +18,6 @@ PRINT_WARNINGS = True   # prints deadlock warning and wrong substitution-warning
 BMACHINE_SEARCH_DIR = "examples/"
 BFILE_EXTENSION = ".mch"
 QUICK_EVAL_CONJ_PREDICATES = True
+PRINT_SUB_PROPERTIES = False # P0 & P1 & ...PN
+#PRINT_SUB_INVARIANT = True
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)

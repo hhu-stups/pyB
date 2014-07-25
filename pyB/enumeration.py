@@ -21,7 +21,9 @@ def all_values(node, env):
 
 
 # generate all values of a type (basetype or composed)
-def all_values_by_type(atype, env):
+# the node parameter is used for debugging 
+def all_values_by_type(atype, env, node):
+    print pretty_print(node), " caused enumeration"
     if isinstance(atype, IntegerType):
         #print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)
@@ -37,14 +39,14 @@ def all_values_by_type(atype, env):
         assert isinstance(value, frozenset)
         return value
     elif isinstance(atype, PowerSetType):
-        val_list = all_values_by_type(atype.data, env)
+        val_list = all_values_by_type(atype.data, env, node)
         res = powerset(val_list)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
         return lst
     elif isinstance(atype, CartType):
-        val_pi = all_values_by_type(atype.data[0].data, env)
-        val_i = all_values_by_type(atype.data[1].data, env)
+        val_pi = all_values_by_type(atype.data[0].data, env, node)
+        val_i = all_values_by_type(atype.data[1].data, env, node)
         # TODO: test for realtions, seams incomplete
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
@@ -58,7 +60,7 @@ def try_all_values(root, env, idNodes):
     from interp import interpret
     node = idNodes[0]
     atype = env.get_type_by_node(node)
-    all_values = all_values_by_type(atype, env)
+    all_values = all_values_by_type(atype, env, node)
     if len(idNodes)<=1:
         for val in all_values:
             try:

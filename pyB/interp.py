@@ -551,8 +551,8 @@ def interpret(node, env):
             except OverflowError:
                 print "FAIL (enumeration overflow) = ("+pretty_print(n)+")"
                 continue
-            if not value:
-                print "FALSE = ("+pretty_print(n)+")"
+            if PRINT_SUB_PROPERTIES: # config.py
+                print str(value) +" = ("+pretty_print(n)+")"
             result = result and value
         return result
     elif isinstance(node, AInvariantMachineClause):
@@ -725,6 +725,8 @@ def interpret(node, env):
         return result
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            return SymbolicPowerSet(aSet, env, interpret)
         res = powerset(aSet)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]

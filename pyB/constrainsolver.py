@@ -37,10 +37,13 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         pred_map = _categorize_predicates(predicate, env, varList)
         assert pred_map != []
         test_dict = {}
+        #print "DEBUG: varlist", [x.idName for x in varList]
         for var_node in varList:
+            #print "DEBUG: searching for", var_node.idName,"constraint"
             test_set = None 
             for pred in pred_map:
                 (time, vars) = pred_map[pred]
+                #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
                 # Avoid interference between bound variables: check find_constraint_vars
                 # This is less powerful, but correct
                 if time!=float("inf") and time<TO_MANY_ITEMS and var_node.idName in vars:
@@ -54,18 +57,18 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
                             break
                         except PredicateDoesNotMatchException: 
                             #.eg constraining y instead of x, or using unimplemented cases
-                            test_set = None 
-            if test_set==None:
-                break
-            else:
-                test_dict[var_node] = test_set
+                            test_set = None
+                #else:
+                #    print "DEBUG:  can not constrain:", var_node.idName 
+            # assigning constraint set or none
+            test_dict[var_node] = test_set
                         
         # check if a solution has been found for every bound variable
         solution_found = True
         for var_node in varList:   
-            if var_node not in test_dict:
-                solution_found = False
-            elif test_dict[var_node]==frozenset([]):
+            if test_dict[var_node]==None or test_dict[var_node]==frozenset([]):
+                if PRINT_WARNINGS:
+                    print "WARNING! Unable to constrain bound variable: %s" % var_node.idName
                 solution_found = False
                 
         # use this solution and return a generator        
@@ -99,7 +102,7 @@ def gen_all_values(env, varList, dic):
     idNode = varList[0]
     assert isinstance(idNode, AIdentifierExpression)
     atype = env.get_type_by_node(idNode)
-    domain = all_values_by_type(atype, env)
+    domain = all_values_by_type(atype, env, idNode)
     var_name = idNode.idName
     for value in domain:
         dic[var_name] = value
@@ -146,7 +149,7 @@ def _calc_constraint_domain(env, varList, predicate):
     for idNode in varList:
         assert isinstance(idNode, AIdentifierExpression)
         atype = env.get_type_by_node(idNode)
-        domain = all_values_by_type(atype, env)
+        domain = all_values_by_type(atype, env, idNode)
         tup = (idNode.idName, domain)
         var_and_domain_lst.append(tup)
     problem = Problem() # import from "constraint"
