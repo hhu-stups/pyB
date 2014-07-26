@@ -35,7 +35,10 @@ class SymbolicSet(object):
         #return True
 
 class LargeSet(SymbolicSet):
-    pass
+    def __sub__(self, other):
+        # TODO: add possible symbolic cases
+        assert isinstance(other, frozenset)
+        return self.enumerate()-other
     
 
 class InfiniteSet(SymbolicSet):
@@ -190,12 +193,10 @@ class IntegerSet(InfiniteSet):
 class NatSet(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >=0 and element <= self.env._max_int
-    
-    
+      
     def __len__(self):
         return self.env._max_int+1
      
-        
     def __le__(self, aset): # NatSet <=
         if isinstance(aset, (NatSet, IntSet, NaturalSet, IntegerSet)):
             return True
@@ -218,8 +219,7 @@ class NatSet(LargeSet):
                 if x<=0:
                     return False
             return True
-        raise NotImplementedError("inclusion with unknown set-type")
-        
+        raise NotImplementedError("inclusion with unknown set-type")       
 
     def __lt__(self, aset): # NatSet < aset
         if isinstance(aset,(IntegerSet, NaturalSet, IntSet)):
@@ -259,6 +259,16 @@ class NatSet(LargeSet):
         if self.__class__ == aset.__class__:
             return False
         return True
+
+    def enumerate(self):
+        return frozenset(range(0,self.env._max_int+1))
+    
+    def __len__(self):
+        return self.env._max_int+1
+
+    # not used for performance reasons
+    #def __getitem__(self, key):
+    #    return key
   
       
 class Nat1Set(LargeSet):
@@ -314,6 +324,17 @@ class Nat1Set(LargeSet):
         if self.__class__ == aset.__class__:
             return False
         return True
+    
+    def enumerate(self):
+        return frozenset(range(1,self.env._max_int+1))
+
+    def __len__(self):
+        return self.env._max_int
+
+    # not used for performance reasons
+    #def __getitem__(self, key):
+    #    return 1+key
+        
 
 class IntSet(LargeSet):
     def __contains__(self, element):
@@ -373,6 +394,15 @@ class IntSet(LargeSet):
             return False
         return True
 
+    def enumerate(self):
+        return frozenset(range(self.env._min_int, self.env._max_int+1))
+
+    def __len__(self):
+        return -1*self.env._min_int+self.env._max_int+1
+ 
+    # not used for performance reasons   
+    #def __getitem__(self, key):
+    #    return self.env._min_int+key
 
 class StringSet(SymbolicSet):
     def __contains__(self, element):

@@ -116,6 +116,8 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, APartialSurjectionExpression):
         #S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
+        if isinstance(T, LargeSet):
+            T = T.enumerate()
         preimage = []
         image = []
         for tup in element:
@@ -131,6 +133,8 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, APartialBijectionExpression):
         #S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
+        if isinstance(T, LargeSet):
+            T = T.enumerate()
         preimage = []
         image = []
         for tup in element:
@@ -148,6 +152,8 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, ATotalFunctionExpression):
         S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
+        if isinstance(S, LargeSet):
+            S = S.enumerate()
         preimage = []
         #image = []
         #print element
@@ -164,6 +170,8 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, ATotalInjectionExpression):
         S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
+        if isinstance(S, LargeSet):
+            S = S.enumerate()
         preimage = []
         image = []
         for tup in element:
@@ -181,6 +189,10 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, ATotalSurjectionExpression):
         S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
+        if isinstance(S, LargeSet):
+            S = S.enumerate()
+        if isinstance(T, LargeSet):
+            T = T.enumerate()
         preimage = []
         image = []
         for tup in element:
@@ -198,6 +210,10 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, ATotalBijectionExpression):
         S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
+        if isinstance(S, LargeSet):
+            S = S.enumerate()
+        if isinstance(T, LargeSet):
+            T = T.enumerate()
         preimage = []
         image = []
         for tup in element:

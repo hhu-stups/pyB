@@ -8,6 +8,7 @@ from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS
 from abstract_interpretation import estimate_computation_time
 from pretty_printer import pretty_print
 from helpers import remove_tuples, couple_tree_to_conj_list
+from symbolic_sets import LargeSet
 
 
 class PredicateDoesNotMatchException:
@@ -328,6 +329,8 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)
+            if isinstance(set, LargeSet):
+                set = set.enumerate()
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!
