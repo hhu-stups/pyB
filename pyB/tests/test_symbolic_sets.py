@@ -413,8 +413,51 @@ class TestSymbolicSets():
         # Test fapp
         env = Environment()
         assert interpret(root, env) 
-             
 
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare(self):
+        # Build AST:
+        string_to_file("#PREDICATE {x|x:INTEGER}={y|y:INTEGER}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env)  
+
+
+    # Its hard to compare two symbolic sets
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare2(self):
+        # Build AST:
+        string_to_file("#PREDICATE {x|x:INTEGER & x>0}={x|x:NATURAL}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert not interpret(root.children[0], env)               
+
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare3(self):
+        # Build AST:
+        string_to_file("#PREDICATE {x|x:INTEGER & x>=0}={x|x:NATURAL}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert not interpret(root.children[0], env)   
+        
     # TODO: symbolic intervall
     def test_symbolic_intervall_set(self):
         # Build AST

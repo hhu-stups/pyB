@@ -3,13 +3,13 @@
 # design decision: most functionality should implemented in this module. the goal is that
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
-from bexceptions import ValueNotInDomainException
+from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
 from btypes import *
 
 
 class SymbolicSet(object):
-    # min and max int values may be needed for large sets
-    # interpret for function call on tuple-sets
+    # evn: min and max int values may be needed for large sets 
+    # interpret: for function call on tuple-sets
     def __init__(self, env, interpret):
         self.env = env 
         self.interpret = interpret
@@ -21,14 +21,18 @@ class SymbolicSet(object):
         return SymbolicCartSet(aset, self, self.env, self.interpret)
     
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
-            return True
-        return False
+        print "WARNING: equalety not implemented for symbolic sets!", self
+        raise Exception("fail: can not compare symbolic set")
+        #if self.__class__ == aset.__class__:
+        #    return True
+        #return False
 
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
-            return False
-        return True
+        print "WARNING: equalety not implemented for symbolic sets!", self
+        raise Exception("fail: can not compare symbolic set")
+        #if self.__class__ == aset.__class__:
+        #    return False
+        #return True
 
 class LargeSet(SymbolicSet):
     pass
@@ -78,6 +82,15 @@ class NaturalSet(InfiniteSet):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  
     
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
         
 
 class Natural1Set(InfiniteSet):
@@ -116,6 +129,16 @@ class Natural1Set(InfiniteSet):
                 return True
         raise NotImplementedError("inclusion with unknown set-type")  
 
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
+
 
 # the infinite B-set INTEGER    
 class IntegerSet(InfiniteSet): 
@@ -151,6 +174,16 @@ class IntegerSet(InfiniteSet):
         elif isinstance(aset, (NatSet, Nat1Set, IntSet, NaturalSet, Natural1Set)):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  
+    
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
 
         
 # if min and max-int change over exec. this class will notice this change (env)
@@ -216,6 +249,16 @@ class NatSet(LargeSet):
             return aset
         else:
             raise NotImplementedError()
+
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
   
       
 class Nat1Set(LargeSet):
@@ -261,6 +304,16 @@ class Nat1Set(LargeSet):
                     return False
                 return True
         raise NotImplementedError("inclusion with unknown set-type")  
+
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
 
 class IntSet(LargeSet):
     def __contains__(self, element):
@@ -310,6 +363,16 @@ class IntSet(LargeSet):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  
 
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
+
 
 class StringSet(SymbolicSet):
     def __contains__(self, element):
@@ -332,6 +395,15 @@ class StringSet(SymbolicSet):
             return True
         return False
     
+    def __eq__(self, aset):
+        if self.__class__ == aset.__class__:
+            return True
+        return False
+    
+    def __ne__(self, aset):
+        if self.__class__ == aset.__class__:
+            return False
+        return True
     
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -380,6 +452,12 @@ class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
         self.set = aset
+
+    # e:S (element:self.set)
+    def __contains__(self, element):
+        print element
+        print self.set
+        raise Exception("not implemented")
 
 
 class SymbolicFirstProj(SymbolicSet):
@@ -457,7 +535,32 @@ class SymbolicLambda(SymbolicSet):
         result = self.interpret(self.expression, self.env)  
         self.env.pop_frame() # exit scope
         return result
-        
+
+    def __eq__(self, aset):
+        if aset==None:
+            return False
+        if isinstance(aset, SymbolicLambda):
+            if not len(self.variable_list)==len(aset.variable_list):
+                return False
+            # may throw a DontKnowIfEqualException
+            if not check_syntacticly_equal(self.predicate, aset.predicate):
+                return False
+            # may throw a DontKnowIfEqualException
+            if not check_syntacticly_equal(self.expression, aset.expression):
+                return False
+            return True
+        raise DontKnowIfEqualException("lambda compare not implemented")
+    
+    def __ne__(self, aset):
+        return not self.__eq__(aset)
+
+class SymbolicComprehensionSet(SymbolicSet):
+    def __init__(self, varList, pred, node, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.variable_list = varList
+        self.predicate = pred
+        self.node = node          
+
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -509,4 +612,29 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
 
 class SymbolicCompositionSet(SymbolicRelationSet):
     pass
+    
+# Ture:  these predicates are syntacticly equal
+# True examples:
+# {x|x:NAT}=={y|y:NAT}
+# False: these predicates are unequal
+# no false cases yet implemented
+# Exception: I dont know if they are equal (likely case)
+# DontKnow examples: 
+# {x|x>3 & x<5}=={y|y=4}
+# {x|x:NAT & x<200}=={y|y<200 & y:NAT}
+# {x|x:INTEGER & x>=0 }=={y|y:NATURAL}
+def check_syntacticly_equal(predicate0, predicate1):
+    if predicate0.__class__ == predicate1.__class__:
+        try:
+            length = range(len(predicate0.children))
+        except AttributeError:
+            return True #clase check was successful and no more children to check
+        for index in length:
+            child0 = predicate0.children[index]
+            child1 = predicate0.children[index]
+            if not check_syntacticly_equal(child0, child1):
+                return False
+        return True
+    else:
+        raise DontKnowIfEqualException()
     

@@ -653,7 +653,7 @@ class TestConstraintSolver():
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
 
-    #TODO: write testcase with other tuple combinations...
+
     
     
     # 3 variables have to be constraint (3+2)
@@ -712,7 +712,12 @@ class TestConstraintSolver():
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
 
-
+    
+    # Bug:
+    # instead of creating a symbolic set comp, this crashs the contraint solver.
+    # the cs trys to enumerate x and is unable to use the constraint in the predicate (powerset of inifnite)
+    import pytest
+    @pytest.mark.xfail 
     def test_constraint_set_comprehension(self):
         # Build AST:
         string_to_file("#EXPRESSION {x|x:POW(((0 .. 234) * {0,1}))}", file_name)
@@ -725,8 +730,9 @@ class TestConstraintSolver():
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
 
+
     # TODO: constraints with variables affecting each other
-    # the constraint solver musst finde out that x has to be enumerated before y
+    # the constraint solver musst find out that x has to be enumerated before y
     import pytest
     @pytest.mark.xfail 
     def test_constraint_affecting_variables(self):
@@ -739,9 +745,9 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert interpret(root.children[0], env) 
-    
-    
+        assert interpret(root.children[0], env)    
+  
+        
     #TODO: write test of union which defines bound vars via other quantified predicates.
     # see C578.EML.014/CF_ZMS_AUM_2
     # implement recursion: calc_possible_solutions using calc_possible_solutions in case 2
@@ -767,6 +773,7 @@ class TestConstraintSolver():
         domain = _calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([-4,-3,-2,-1,1,2,3,4])
         
+        
 # Write tests:        
 # TODO AComprehensionSetExpression:  see C578/2013_08_14/machines_14082013/Z_01_001.mch    
 # dr:0 .. 234 & dd:{0,1} & db:POW(0 .. 234*{0,1}*INTEGER) & dy:0 .. 234 & dr/:dom(dom(db))-{dy} & dz:{ds,de,ea,eb,|ds:INTEGER & de:INTEGER & ea:POW(INTEGER*INTEGER*INTEGER) & eb:INTEGER & ea=db & eb=dy & dr|->dd|->ds|->de:{0|->1|->2|->1,0|->1|->9|->0,234|->0|->228|->1} & ds:dom(dom(ea)) => {de}/=dom(ea)[{ds}]}
@@ -780,4 +787,4 @@ class TestConstraintSolver():
 # nx=%(pc,pd).(pd:hx & pc:hs|{bg|->mu(pc),bc|->iq(pc),bh|->is(pc),be|->ir(pc)}(pd))
 # TODO AComprehensionSetExpression:  verdi/verdi
 # seg:{"DR_SEG_0101001","DR_SEG_0101002","DR_SEG_0101003" }) & seg/:lim & suiv:{seg_suiv,dir_suiv,dist_suiv,lim_suiv,|seg_suiv:STRING & dir_suiv:INTEGER & dist_suiv:INTEGER & lim_suiv:POW(STRING) & seg|->dir|->seg_suiv|->dir_suiv:{"DR_SEG_0201106"|->0|->"DR_SEG_0201013"|->0,"DR_SEG_0201106"|->1|->"DR_SEG_0201105"|->1}& dist_suiv=dist-{"DR_SEG_0201106"|->2000}(seg_suiv) & lim_suiv=lim}
-
+#TODO: write testcase with other tuple combinations... (Klammerung)

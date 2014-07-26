@@ -106,7 +106,7 @@ class TestTeam():
         # C578/2013_08_14/machines_14082013/410_002_simple
         # C578/2013_08_14/machines_27082013/0021_002
         # C578/2013_08_14/machines_27082013/R_04_001
-        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/Z_01_001"
+        bfile_name="examples/not_public/Systerel/C578_Urgent_Jul13/151_001"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 
