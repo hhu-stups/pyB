@@ -872,14 +872,14 @@ def interpret(node, env):
         #return frozenset(range(1,env._max_int+1)) # TODO:(#ISSUE 17)
         return Natural1Set(env, interpret)
     elif isinstance(node, ANatSetExpression):
-        return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
-        #return NatSet(env, interpret)
+        #return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
+        return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
-        return frozenset(range(1,env._max_int+1))# TODO: Problem if to large
-        #return Nat1Set(env, interpret)
+        #return frozenset(range(1,env._max_int+1))# TODO: Problem if to large
+        return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
-        return frozenset(range(env._min_int, env._max_int+1)) # TODO: Problem if to large
-        #return IntSet(env, interpret)
+        #return frozenset(range(env._min_int, env._max_int+1)) # TODO: Problem if to large
+        return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
         #if VERBOSE:
         #    print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
@@ -1590,10 +1590,11 @@ def exec_substitution(sub, env):
         yield True # assign(s) was/were  successful 
     elif isinstance(sub, ABecomesElementOfSubstitution):
         values = interpret(sub.children[-1], env)
-        if list(values)==[]: #empty set has no elements -> subst. imposible
+        print "DEBUG becomes:",values
+        if values==frozenset([]): #empty set has no elements -> subst. imposible
             yield False
         else:
-            for value in list(values): 
+            for value in values: 
                 for child in sub.children[:-1]:
                     assert isinstance(child, AIdentifierExpression)
                     env.set_value(child.idName, value)

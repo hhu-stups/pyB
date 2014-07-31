@@ -4,6 +4,7 @@
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
+from helpers import double_element_check
 from btypes import *
 
 
@@ -21,14 +22,14 @@ class SymbolicSet(object):
         return SymbolicCartSet(aset, self, self.env, self.interpret)
     
     def __eq__(self, aset):
-        print "WARNING: equalety not implemented for symbolic sets!", self
+        print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
         raise Exception("fail: can not compare symbolic set")
         #if self.__class__ == aset.__class__:
         #    return True
         #return False
 
     def __ne__(self, aset):
-        print "WARNING: equalety not implemented for symbolic sets!", self
+        print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
         raise Exception("fail: can not compare symbolic set")
         #if self.__class__ == aset.__class__:
         #    return False
@@ -38,7 +39,7 @@ class LargeSet(SymbolicSet):
     def __sub__(self, other):
         # TODO: add possible symbolic cases
         assert isinstance(other, frozenset)
-        return self.enumerate()-other
+        return self.enumerate_all()-other
     
 
 class InfiniteSet(SymbolicSet):
@@ -260,7 +261,7 @@ class NatSet(LargeSet):
             return False
         return True
 
-    def enumerate(self):
+    def enumerate_all(self):
         return frozenset(range(0,self.env._max_int+1))
     
     def __len__(self):
@@ -325,7 +326,7 @@ class Nat1Set(LargeSet):
             return False
         return True
     
-    def enumerate(self):
+    def enumerate_all(self):
         return frozenset(range(1,self.env._max_int+1))
 
     def __len__(self):
@@ -394,7 +395,7 @@ class IntSet(LargeSet):
             return False
         return True
 
-    def enumerate(self):
+    def enumerate_all(self):
         return frozenset(range(self.env._min_int, self.env._max_int+1))
 
     def __len__(self):
@@ -612,14 +613,37 @@ class SymbolicRelationSet(SymbolicSet):
         else: 
             assert isinstance(element, tuple)
             return element[0] in self.left_set and element[1] in self.right_set 
-        raise Exception("Not implemented: relation symbolic membership")  
-
+        raise Exception("Not implemented: relation symbolic membership")
+    
+    def __eq__(self, aset):
+        # special case for performance
+        if aset==frozenset([]):
+            return False
+        raise Exception("Not implemented: relation symbolic equalety")
+        
+    def __ne__(self, aset):
+        return not self.__eq__(aset)
+        
+    def __iter__(self):
+        return self 
+    
+    def next(self):
+        raise Exception("Not implemented: relation symbolic iteration over explicit values")
 
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet):
-    pass
+    def next(self):
+        S = self.left_set
+        T = self.right_set
+        for relation_lst in make_explicit_set_of_realtion_lists(S,T): # S<->T
+            domain = [x[0] for x in relation_lst]
+            if double_element_check(domain): # check if function
+                continue
+            if not frozenset(domain) == S: # check if total
+                continue
+            return frozenset(relation_lst) 
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
     pass
@@ -667,4 +691,51 @@ def check_syntacticly_equal(predicate0, predicate1):
         return True
     else:
         raise DontKnowIfEqualException()
-    
+
+
+# This generator returns one relation(-list) between S and T S<-->T.
+# S and T can both be symbolic or explicit. If S or T is not finit enumerable, 
+# this function throws an exception. It returns no frozensets because some check
+# operations (e.g. function property) are more easy on lists.
+# TODO: returning a symbolic set here is possible, but needs more tests an
+# interpreter modification
+def make_explicit_set_of_realtion_lists(S,T):   
+    # convert to explicit  
+    if isinstance(S, frozenset):
+        left = S
+    else:
+        left = S.enumerate_all()
+    if isinstance(T, frozenset):
+        right = T
+    else:
+        right = T.enumerate_all()
+    # size = |S|*|T|
+    # TODO: it is also possible to lazy-generate this set,
+    # 		but the _take generator becomes more complicated if 
+    # 		its input is a generator instead of a set
+    all_combinations = [(x,y) for x in left for y in right]
+    size = len(all_combinations)
+    # empty relation
+    yield []
+    # calc all permutations
+    for i in range(size):
+        for lst in _take(all_combinations, i+1):
+            assert len(lst)==i+1
+            yield lst
+
+
+# This function takes n elements of a list and returns it.
+# It is a helper only used by make_explicit_set_of_realtion_lists to generate 
+# all combinations of length n.
+def _take(lst, n):
+    if n==1:
+        for k in range(len(lst)):
+            yield [lst[k]]
+    else:
+        assert n>1
+        for k in range(len(lst)):
+            e = lst[k]
+            lst2 = list(lst)
+            lst2.pop(k)
+            for L in _take(lst2, n-1):
+                yield L+[e]

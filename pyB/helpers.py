@@ -209,7 +209,8 @@ def build_arg_by_type(atype, value_list):
      return value_list.pop(0)
      
 
-# checks if a list contains a duplicate element
+# checks if a list contains a duplicate element. 
+# e.g used to check if a relation is a function
 def double_element_check(lst):
     for element in lst:
         if lst.count(element)>1:

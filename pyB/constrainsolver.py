@@ -330,7 +330,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)
             if isinstance(set, LargeSet):
-                set = set.enumerate()
+                set = set.enumerate_all()
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!

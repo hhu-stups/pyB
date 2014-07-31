@@ -35,7 +35,7 @@ def quick_member_eval(ast, env, element):
         elif isinstance(ast, AStringSetExpression):
             assert isinstance(element, str)
             return True
-        # fallback: enumerate right side. This 'should' never happen...
+        # fallback: enumerate_all right side. This 'should' never happen...
         S = interpret(ast, env)
         #print "quck eval of:", element, val
         #S = list(val)
@@ -117,7 +117,7 @@ def quick_member_eval(ast, env, element):
         #S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
         if isinstance(T, LargeSet):
-            T = T.enumerate()
+            T = T.enumerate_all()
         preimage = []
         image = []
         for tup in element:
@@ -134,7 +134,7 @@ def quick_member_eval(ast, env, element):
         #S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
         if isinstance(T, LargeSet):
-            T = T.enumerate()
+            T = T.enumerate_all()
         preimage = []
         image = []
         for tup in element:
@@ -153,7 +153,7 @@ def quick_member_eval(ast, env, element):
         S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
         if isinstance(S, LargeSet):
-            S = S.enumerate()
+            S = S.enumerate_all()
         preimage = []
         #image = []
         #print element
@@ -171,7 +171,7 @@ def quick_member_eval(ast, env, element):
         S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
         if isinstance(S, LargeSet):
-            S = S.enumerate()
+            S = S.enumerate_all()
         preimage = []
         image = []
         for tup in element:
@@ -190,9 +190,9 @@ def quick_member_eval(ast, env, element):
         S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
         if isinstance(S, LargeSet):
-            S = S.enumerate()
+            S = S.enumerate_all()
         if isinstance(T, LargeSet):
-            T = T.enumerate()
+            T = T.enumerate_all()
         preimage = []
         image = []
         for tup in element:
@@ -211,9 +211,9 @@ def quick_member_eval(ast, env, element):
         S = interpret(ast.children[0], env)
         T = interpret(ast.children[1], env)
         if isinstance(S, LargeSet):
-            S = S.enumerate()
+            S = S.enumerate_all()
         if isinstance(T, LargeSet):
-            T = T.enumerate()
+            T = T.enumerate_all()
         preimage = []
         image = []
         for tup in element:
