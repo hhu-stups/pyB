@@ -396,6 +396,17 @@ class TestSymbolicSets():
         # Test fapp
         env = Environment()
         assert interpret(root, env) 
+
+    # this checks if equality is symmetric 
+    def test_symbolic_lambda_composition6(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(25,42),(16,42),(42,42)};%x.(x:INTEGER|x*x))={(16,1764),(25,1764),(42,1764)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)         
         
     
     def test_symbolic_lambda_convert_explicit(self):

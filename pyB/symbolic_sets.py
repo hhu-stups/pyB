@@ -657,6 +657,9 @@ class SymbolicRelationSet(SymbolicSet):
         # special case for performance
         if aset==frozenset([]):
             return False
+        if isinstance(aset, frozenset):
+            explicit_set_repr = self.enumerate_all()
+            return aset == explicit_set_repr
         raise Exception("Not implemented: relation symbolic equalety")
         
     def __ne__(self, aset):
@@ -732,8 +735,8 @@ class SymbolicCompositionSet(SymbolicRelationSet):
             self.env.pop_frame() # exit scope
             return frozenset(result)
     	if PRINT_WARNINGS:
-        	print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(self.node)
-    	raise EnumerationNotPossibleException((self,self.node)) 
+        	print "convert symbolic to explicit set failed! Case not implemented"
+    	raise EnumerationNotPossibleException(self) 
     
     
 # Ture:  these predicates are syntacticly equal
