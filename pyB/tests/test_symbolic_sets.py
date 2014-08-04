@@ -395,7 +395,19 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
-        assert interpret(root, env)  
+        assert interpret(root, env) 
+        
+    
+    def test_symbolic_lambda_convert_explicit(self):
+        # Build AST
+        string_to_file("#PREDICATE %(x).(x:NATURAL & x<5|x)={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
         
     # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
     # TODO: symbolic powerset membership test - x:POW(INTEGER) 

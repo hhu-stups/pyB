@@ -4,8 +4,10 @@
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
-from helpers import double_element_check
+from helpers import double_element_check, remove_tuples, build_arg_by_type
 from btypes import *
+from config import PRINT_WARNINGS
+from pretty_printer import pretty_print
 
 
 class SymbolicSet(object):
@@ -543,12 +545,13 @@ class SymbolicSecondProj(SymbolicSet):
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
-    def __init__(self, varList, pred, expr, node, env, interpret):
+    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
         SymbolicSet.__init__(self, env, interpret)
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr
-        self.node = node  
+        self.node = node
+        self.generator = calc_possible_solutions  
         
     def __getitem__(self, args):
         varList = self.variable_list
@@ -584,6 +587,39 @@ class SymbolicLambda(SymbolicSet):
     
     def __ne__(self, aset):
         return not self.__eq__(aset)
+    
+    # convert to explicit frozenset
+    def enumerate_all(self):
+        varList = self.variable_list
+        pred    = self.predicate
+        expr    = self.expression 
+        func_list = []
+        # new scope
+        self.env.push_new_frame(varList)
+        domain_generator = self.generator(pred, env, varList, interpret)
+        # for every solution-entry found:
+        for entry in domain_generator:
+            # set all vars (of new frame/scope) to this solution
+            i = 0
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                self.env.set_value(name, value)
+                i = i + 1
+                if i==1:
+                    arg = value
+                else:
+                    arg = tuple([arg, value])
+            # test if it is really a solution
+            try:
+                if self.interpret(pred, env):  # test
+                    # yes it is! calculate lambda-fun image an add this tuple to func_list       
+                    image = interpret(expr, env)
+                    tup = tuple([arg, image])
+                    func_list.append(tup) 
+            except ValueNotInDomainException:
+                continue
+        env.pop_frame() # exit scope
+        return frozenset(func_list)
 
 class SymbolicComprehensionSet(SymbolicSet):
     def __init__(self, varList, pred, node, env, interpret):
@@ -599,6 +635,7 @@ class SymbolicRelationSet(SymbolicSet):
         self.left_set = aset0
         self.right_set = aset1   
     
+    # element in Set
     def __contains__(self, element):
         #print "SymbolicRelationSet", self.left_set , self.right_set
         #print "SymbolicRelationSet", element
@@ -615,6 +652,7 @@ class SymbolicRelationSet(SymbolicSet):
             return element[0] in self.left_set and element[1] in self.right_set 
         raise Exception("Not implemented: relation symbolic membership")
     
+    # TODO: write test
     def __eq__(self, aset):
         # special case for performance
         if aset==frozenset([]):
@@ -630,8 +668,10 @@ class SymbolicRelationSet(SymbolicSet):
     def next(self):
         raise Exception("Not implemented: relation symbolic iteration over explicit values")
 
+
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass
+
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet):
     def next(self):
@@ -644,6 +684,7 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet):
             if not frozenset(domain) == S: # check if total
                 continue
             return frozenset(relation_lst) 
+    
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
     pass
@@ -665,7 +706,35 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
     
 
 class SymbolicCompositionSet(SymbolicRelationSet):
-    pass
+    # convert to explicit set
+    def enumerate_all(self):
+        if isinstance(self.left_set, frozenset) and isinstance(self.right_set, SymbolicLambda):
+            result = []
+            lambda_function = self.right_set        
+            self.env.push_new_frame(lambda_function.variable_list)
+            for tup in self.left_set:
+                domain = tup[0]
+                args   = remove_tuples(tup[1],[])
+                for i in range(len(lambda_function.variable_list)):
+                    idNode = lambda_function.variable_list[i]
+                    #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
+                    # onne carttype can contain more...
+                    # set args to correct bound variable in lambda expression using type-info
+                    atype = self.env.get_type_by_node(idNode)
+                    value = build_arg_by_type(atype, args) 
+                    self.env.set_value(idNode.idName, value)
+                # check if value is in lambda domain
+                pre_result = self.interpret(lambda_function.predicate, self.env)
+                if pre_result:
+                    # calculate element of composition expression
+                    lambda_image = self.interpret(lambda_function.expression, self.env)
+                    result.append(tuple([domain, lambda_image]))
+            self.env.pop_frame() # exit scope
+            return frozenset(result)
+    	if PRINT_WARNINGS:
+        	print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(self.node)
+    	raise EnumerationNotPossibleException((self,self.node)) 
+    
     
 # Ture:  these predicates are syntacticly equal
 # True examples:
@@ -709,11 +778,11 @@ def make_explicit_set_of_realtion_lists(S,T):
         right = T
     else:
         right = T.enumerate_all()
-    # size = |S|*|T|
     # TODO: it is also possible to lazy-generate this set,
-    # 		but the _take generator becomes more complicated if 
-    # 		its input is a generator instead of a set
+    #       but the _take generator becomes more complicated if 
+    #       its input is a generator instead of a set
     all_combinations = [(x,y) for x in left for y in right]
+    # size = |S|*|T|
     size = len(all_combinations)
     # empty relation
     yield []
@@ -724,13 +793,15 @@ def make_explicit_set_of_realtion_lists(S,T):
             yield lst
 
 
-# This function takes n elements of a list and returns it.
+# This function takes n elements of a list and returns them.
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
-# all combinations of length n.
+# all combinations/sub-lists of length n.
 def _take(lst, n):
+    # Basecase, take all in a row
     if n==1:
         for k in range(len(lst)):
             yield [lst[k]]
+    # take one, remove it, take n-1, concatenate 
     else:
         assert n>1
         for k in range(len(lst)):

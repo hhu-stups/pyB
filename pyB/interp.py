@@ -647,11 +647,12 @@ def interpret(node, env):
         elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
             env.set_value(node.children[1].idName, expr1)
             return True
-        elif isinstance(expr1, SymbolicSet) and isinstance(expr2, frozenset):
-            expr1 = enum_symbolic(expr1, node)
-            return expr1 == expr2
+        #elif isinstance(expr1, SymbolicSet) and isinstance(expr2, frozenset):
+        #    expr1 = enum_symbolic(expr1, node)
+        #    return expr1 == expr2
+        # frozensets can only be compared to frozensets
         elif isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
-            expr2 = enum_symbolic(env, expr2, node)
+            expr2 = expr2.enumerate_all()
             return expr1 == expr2
         else:
             # else normal check, also symbolic (implemented by symbol classes)
@@ -683,7 +684,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-1]
         # check if symbolic representation make sense
-        #time = estimate_computation_time(pred, env)
+        time = estimate_computation_time(pred, env)
         # if min/max int is to big, a explicit representation is not possible
         # (at least one bound var may be of type int)
         #if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
@@ -777,7 +778,7 @@ def interpret(node, env):
                 if interpret(pred, env):  # test (|= ior)
                     aSet = interpret(expr, env)
                     if isinstance(aSet, SymbolicSet):
-                        aSet = enum_symbolic(env, aSet, node)    
+                        aSet = aSet.enumerate_all()  
                     result |= aSet
             except ValueNotInDomainException:
                 continue
@@ -802,7 +803,7 @@ def interpret(node, env):
                     else:
                         aSet = interpret(expr, env)
                         if isinstance(aSet, SymbolicSet):
-                            aSet = enum_symbolic(env, aSet, node)        
+                            aSet = aSet.enumerate_all()       
                         result &= aSet
             except ValueNotInDomainException:
                 continue
@@ -1209,7 +1210,7 @@ def interpret(node, env):
         # if min/max int is to big, a explicit representation is not possible
         # (at least one bound var may be of type int)
         if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
-            return SymbolicLambda(varList, pred, expr, node, env, interpret)
+            return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
         # new scope
         env.push_new_frame(varList)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)

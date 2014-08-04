@@ -239,38 +239,3 @@ def contains_infinit_enum(node, env):
             return True
     return False
 
-
-# convert symbolic set to finite frozen set, node arg needed for error msg
-# of course there are case when this approach will fail!
-def enum_symbolic(env, symbolic_set, node):
-    from interp import interpret
-    if isinstance(symbolic_set, SymbolicCompositionSet):
-        if isinstance(symbolic_set.left_set, frozenset) and isinstance(symbolic_set.right_set, SymbolicLambda):
-            result = []
-            lambda_function = symbolic_set.right_set        
-            env.push_new_frame(lambda_function.variable_list)
-            for tup in symbolic_set.left_set:
-                domain = tup[0]
-                args   = remove_tuples(tup[1],[])
-                for i in range(len(lambda_function.variable_list)):
-                    idNode = lambda_function.variable_list[i]
-                    #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
-                    # onne carttype can contain more...
-                    # set args to correct bound variable in lambda expression using type-info
-                    atype = env.get_type_by_node(idNode)
-                    value = build_arg_by_type(atype, args) 
-                    env.set_value(idNode.idName, value)
-                # check if value is in lambda domain
-                pre_result = interpret(lambda_function.predicate, env)
-                if pre_result:
-                    # calculate element of composition expression
-                    lambda_image = interpret(lambda_function.expression, env)
-                    result.append(tuple([domain, lambda_image]))
-            env.pop_frame() # exit scope
-            return frozenset(result)
-        else:
-            if PRINT_WARNINGS:
-                print "WARNING: SymbolicCompositionSet case not implemented!"
-    if PRINT_WARNINGS:
-        print "convert symbolic to explicit set failed! Case not implemented: %s" % pretty_print(node)
-    raise EnumerationNotPossibleException((symbolic_set,node)) 
