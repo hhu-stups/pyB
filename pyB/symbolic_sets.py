@@ -622,11 +622,57 @@ class SymbolicLambda(SymbolicSet):
         return frozenset(func_list)
 
 class SymbolicComprehensionSet(SymbolicSet):
-    def __init__(self, varList, pred, node, env, interpret):
+    def __init__(self, varList, pred, node, env, interpret, calc_possible_solutions):
         SymbolicSet.__init__(self, env, interpret)
         self.variable_list = varList
         self.predicate = pred
-        self.node = node          
+        self.node = node
+        self.generator = calc_possible_solutions    
+    
+    def __eq__(self, aset):
+        if aset==None:
+            return False
+        if isinstance(aset, SymbolicComprehensionSet):
+            if not len(self.variable_list)==len(aset.variable_list):
+                return False
+            # may throw a DontKnowIfEqualException
+            if not check_syntacticly_equal(self.predicate, aset.predicate):
+                return False
+            return True
+        if isinstance(aset, frozenset):
+            explicit_set_repr = self.enumerate_all()
+            return aset == explicit_set_repr
+        raise DontKnowIfEqualException("set comp compare not implemented")   
+        
+    # convert to explicit frozenset
+    def enumerate_all(self):
+        varList   = self.variable_list
+        pred      = self.predicate
+        env       = self.env
+        interpret = self.interpret
+        result = []
+        # new scope
+        self.env.push_new_frame(varList)
+        domain_generator = self.generator(pred, env, varList, interpret)        
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test
+                    i = 0
+                    for name in [x.idName for x in varList]:
+                        value = env.get_value(name)
+                        i = i + 1
+                        if i==1:
+                            tup = value
+                        else:
+                            tup = tuple([tup,value])
+                    result.append(tup)  
+            except ValueNotInDomainException:
+                continue
+        env.pop_frame()
+        return frozenset(result)      
 
 
 class SymbolicRelationSet(SymbolicSet):

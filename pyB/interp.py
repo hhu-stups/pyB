@@ -687,8 +687,8 @@ def interpret(node, env):
         time = estimate_computation_time(pred, env)
         # if min/max int is to big, a explicit representation is not possible
         # (at least one bound var may be of type int)
-        #if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
-        #    return SymbolicComprehensionSet(varList, pred, node, env, interpret)
+        if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
+            return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:

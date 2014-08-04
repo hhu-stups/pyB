@@ -437,8 +437,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
-    import pytest
-    @pytest.mark.xfail
+
     def test_constraint_symbolic_compare(self):
         # Build AST:
         string_to_file("#PREDICATE {x|x:INTEGER}={y|y:INTEGER}", file_name)
