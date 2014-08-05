@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE {x|x:INTEGER & x>=0}={x|x:NATURAL}

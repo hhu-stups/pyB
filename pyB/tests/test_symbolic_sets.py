@@ -478,7 +478,7 @@ class TestSymbolicSets():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert not interpret(root.children[0], env)   
+        assert interpret(root.children[0], env)   
         
     # TODO: symbolic intervall
     def test_symbolic_intervall_set(self):

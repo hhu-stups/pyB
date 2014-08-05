@@ -832,7 +832,9 @@ def check_syntacticly_equal(predicate0, predicate1):
                 return False
         return True
     else:
-        raise DontKnowIfEqualException()
+        message = "ERROR: failed to check if predicates are equal: '%s' and '%s'" %(pretty_print(predicate0),pretty_print(predicate1))
+        print message
+        raise DontKnowIfEqualException(message)
 
 
 # This generator returns one relation(-list) between S and T S<-->T.
