@@ -679,7 +679,6 @@ def interpret(node, env):
     elif isinstance(node, AComprehensionSetExpression):
         # new scope
         varList = node.children[:-1]
-        env.push_new_frame(varList)
         pred = node.children[-1]
         return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)      
     elif isinstance(node, AUnionExpression):
@@ -1176,43 +1175,10 @@ def interpret(node, env):
         bij_fun = filter_not_surjective(inj_fun,T)
         return bij_fun
     elif isinstance(node, ALambdaExpression):
-        #print pretty_print(node) 
-        func_list = []
         varList = node.children[:-2]
         pred = node.children[-2]
         expr = node.children[-1]
-        # check if symbolic representation make sense
-        time = estimate_computation_time(pred, env)
-        # if min/max int is to big, a explicit representation is not possible
-        # (at least one bound var may be of type int)
-        if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
-            return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
-        # new scope
-        env.push_new_frame(varList)
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        # for every solution-entry found:
-        for entry in domain_generator:
-            # set all vars (of new frame/scope) to this solution
-            i = 0
-            for name in [x.idName for x in varList]:
-                value = entry[name]
-                env.set_value(name, value)
-                i = i + 1
-                if i==1:
-                    arg = value
-                else:
-                    arg = tuple([arg, value])
-            # test if it is really a solution
-            try:
-                if interpret(pred, env):  # test
-                    # yes it is! calculate lambda-fun image an add this tuple to func_list       
-                    image = interpret(expr, env)
-                    tup = tuple([arg, image])
-                    func_list.append(tup) 
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame() # exit scope
-        return frozenset(func_list)
+        return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
     elif isinstance(node, AFunctionExpression):
         #print "interpret: ", pretty_print(node)
         if isinstance(node.children[0], APredecessorExpression):

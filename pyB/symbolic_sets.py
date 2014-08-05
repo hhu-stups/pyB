@@ -551,7 +551,8 @@ class SymbolicLambda(SymbolicSet):
         self.predicate = pred
         self.expression = expr
         self.node = node
-        self.generator = calc_possible_solutions  
+        self.generator = calc_possible_solutions
+        self.explicit_set_repr = None  
         
     def __getitem__(self, args):
         varList = self.variable_list
@@ -583,6 +584,10 @@ class SymbolicLambda(SymbolicSet):
             if not check_syntacticly_equal(self.expression, aset.expression):
                 return False
             return True
+        if isinstance(aset, frozenset):
+            if self.explicit_set_repr==None:
+                self.explicit_set_repr = self.enumerate_all()
+            return aset == self.explicit_set_repr
         raise DontKnowIfEqualException("lambda compare not implemented")
     
     def __ne__(self, aset):
@@ -593,9 +598,11 @@ class SymbolicLambda(SymbolicSet):
         varList = self.variable_list
         pred    = self.predicate
         expr    = self.expression 
+        env       = self.env
+        interpret = self.interpret
         func_list = []
         # new scope
-        self.env.push_new_frame(varList)
+        env.push_new_frame(varList)
         domain_generator = self.generator(pred, env, varList, interpret)
         # for every solution-entry found:
         for entry in domain_generator:
@@ -603,7 +610,7 @@ class SymbolicLambda(SymbolicSet):
             i = 0
             for name in [x.idName for x in varList]:
                 value = entry[name]
-                self.env.set_value(name, value)
+                env.set_value(name, value)
                 i = i + 1
                 if i==1:
                     arg = value
@@ -611,7 +618,7 @@ class SymbolicLambda(SymbolicSet):
                     arg = tuple([arg, value])
             # test if it is really a solution
             try:
-                if self.interpret(pred, env):  # test
+                if interpret(pred, env):  # test
                     # yes it is! calculate lambda-fun image an add this tuple to func_list       
                     image = interpret(expr, env)
                     tup = tuple([arg, image])
@@ -620,6 +627,7 @@ class SymbolicLambda(SymbolicSet):
                 continue
         env.pop_frame() # exit scope
         return frozenset(func_list)
+        
 
 class SymbolicComprehensionSet(SymbolicSet):
     def __init__(self, varList, pred, node, env, interpret, calc_possible_solutions):
@@ -627,7 +635,8 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.variable_list = varList
         self.predicate = pred
         self.node = node
-        self.generator = calc_possible_solutions    
+        self.generator = calc_possible_solutions
+        self.explicit_set_repr = None # not computed at init    
     
     def __eq__(self, aset):
         if aset==None:
@@ -640,8 +649,9 @@ class SymbolicComprehensionSet(SymbolicSet):
                 return False
             return True
         if isinstance(aset, frozenset):
-            explicit_set_repr = self.enumerate_all()
-            return aset == explicit_set_repr
+            if self.explicit_set_repr==None:
+                self.explicit_set_repr = self.enumerate_all()
+            return aset == self.explicit_set_repr
         raise DontKnowIfEqualException("set comp compare not implemented") 
 
     def __contains__(self, args):
