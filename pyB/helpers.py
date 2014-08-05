@@ -189,18 +189,19 @@ def flatten(lst, res):
     
     
 # ((3, 4), 5) -> [3,4,5]
-def remove_tuples(tup, res):
+def remove_tuples(tup):
     if isinstance(tup, tuple):
-        a = remove_tuples(tup[0], res)
-        b = remove_tuples(tup[1], res)
+        a = remove_tuples(tup[0])
+        b = remove_tuples(tup[1])
+        return a+b
     else:
-        res.append(tup)
-    return res
+        return [tup]
 
 
 # this helper gets the type of an id and calcs how many 
 # args are needed for this type. This is used by symbolic compositions to set
 # id nodes of symbolic lambda expressions. E.g ((a,b),c)= 3 args
+# SIDE-EFFECT: modifies value_list
 def build_arg_by_type(atype, value_list):
      if isinstance(atype, CartType):
          a = build_arg_by_type(atype.data[0], value_list)

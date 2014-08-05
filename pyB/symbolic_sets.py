@@ -642,7 +642,21 @@ class SymbolicComprehensionSet(SymbolicSet):
         if isinstance(aset, frozenset):
             explicit_set_repr = self.enumerate_all()
             return aset == explicit_set_repr
-        raise DontKnowIfEqualException("set comp compare not implemented")   
+        raise DontKnowIfEqualException("set comp compare not implemented") 
+
+    def __contains__(self, args):
+        args = remove_tuples(args)
+        varList = self.variable_list
+        self.env.push_new_frame(varList)
+        print len(varList), varList
+        for i in range(len(varList)):
+            idNode = varList[i]
+            atype = self.env.get_type_by_node(idNode)
+            value = build_arg_by_type(atype, args)
+            self.env.set_value(idNode.idName, value)
+        result = self.interpret(self.predicate, self.env) 
+        self.env.pop_frame() # exit scope
+        return result  
         
     # convert to explicit frozenset
     def enumerate_all(self):
@@ -763,14 +777,14 @@ class SymbolicCompositionSet(SymbolicRelationSet):
             self.env.push_new_frame(lambda_function.variable_list)
             for tup in self.left_set:
                 domain = tup[0]
-                args   = remove_tuples(tup[1],[])
+                args   = remove_tuples(tup[1])
                 for i in range(len(lambda_function.variable_list)):
                     idNode = lambda_function.variable_list[i]
                     #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
                     # onne carttype can contain more...
                     # set args to correct bound variable in lambda expression using type-info
                     atype = self.env.get_type_by_node(idNode)
-                    value = build_arg_by_type(atype, args) 
+                    value = build_arg_by_type(atype, args) # args-mod via sideeffect
                     self.env.set_value(idNode.idName, value)
                 # check if value is in lambda domain
                 pre_result = self.interpret(lambda_function.predicate, self.env)
@@ -780,9 +794,9 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                     result.append(tuple([domain, lambda_image]))
             self.env.pop_frame() # exit scope
             return frozenset(result)
-    	if PRINT_WARNINGS:
-        	print "convert symbolic to explicit set failed! Case not implemented"
-    	raise EnumerationNotPossibleException(self) 
+        if PRINT_WARNINGS:
+            print "convert symbolic to explicit set failed! Case not implemented"
+        raise EnumerationNotPossibleException(self) 
     
     
 # Ture:  these predicates are syntacticly equal

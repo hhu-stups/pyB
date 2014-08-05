@@ -677,38 +677,11 @@ def interpret(node, env):
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
     elif isinstance(node, AComprehensionSetExpression):
-        #print pretty_print(node) 
-        result = []
         # new scope
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        # check if symbolic representation make sense
-        time = estimate_computation_time(pred, env)
-        # if min/max int is to big, a explicit representation is not possible
-        # (at least one bound var may be of type int)
-        if time==float("inf") or time>=TO_MANY_ITEMS or env._min_int*-1+env._max_int>=TO_MANY_ITEMS:
-            return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = entry[name]
-                env.set_value(name, value)
-            try:
-                if interpret(pred, env):  # test
-                    i = 0
-                    for name in [x.idName for x in varList]:
-                        value = env.get_value(name)
-                        i = i + 1
-                        if i==1:
-                            tup = value
-                        else:
-                            tup = tuple([tup,value])
-                    result.append(tup)  
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame()
-        return frozenset(result)       
+        return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)      
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -798,8 +771,11 @@ def interpret(node, env):
                 env.set_value(name, value)
             try:
                 if interpret(pred, env):  # test
-                    if result==frozenset([]):
-                        result = interpret(expr, env)  
+                    # intersection with empty set is always empty: two cases are needed
+                    if result==frozenset([]): 
+                        result = interpret(expr, env)
+                        if isinstance(result, SymbolicSet):
+                            result = result.enumerate_all()   
                     else:
                         aSet = interpret(expr, env)
                         if isinstance(aSet, SymbolicSet):

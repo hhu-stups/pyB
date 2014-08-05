@@ -358,7 +358,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
                 assert isinstance(set, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side
-                return [remove_tuples(t, [])[index] for t in set]
+                return [remove_tuples(t)[index] for t in set]
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):
