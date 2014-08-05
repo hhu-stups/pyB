@@ -419,7 +419,28 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
         
+       
+    def test_symbolic_powerset(self):
+        # Build AST
+        string_to_file("#PREDICATE {1,2,3}:POW(NATURAL)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
         
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)       
+
+
+    def test_symbolic_powerset2(self):
+        # Build AST
+        string_to_file("#PREDICATE {-1,2,3}:POW(NATURAL)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert not interpret(root, env)   
+               
     # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
     # TODO: symbolic powerset membership test - x:POW(INTEGER) 
     # TODO: more symbolic string id tests  (test_symbolic_id2)        
