@@ -446,16 +446,16 @@ class TestSymbolicSets():
     # TODO: more symbolic string id tests  (test_symbolic_id2)        
        
 
-    import pytest
-    @pytest.mark.xfail
     def test_symbolic_id(self):
         # Build AST
+        # {}=({("a",("b",3)),("c",("d",6))};{("a"|->("b"|->9)),("c"|->("d"|->6))}~)-id(STRING)
         string_to_file("#PREDICATE {}=({(\"a\",(\"b\",3)),(\"c\",(\"d\",6))};{(\"a\"|->(\"b\"|->9)),(\"c\"|->(\"d\"|->6))}~)-id(STRING)", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
         # Test fapp
         env = Environment()
+        env.get_all_strings(root)
         assert interpret(root, env) 
 
 

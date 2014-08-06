@@ -438,6 +438,9 @@ class StringSet(SymbolicSet):
             return False
         return True
     
+    def enumerate_all(self):
+        return frozenset(self.env.all_strings)
+    
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
@@ -741,6 +744,17 @@ class SymbolicRelationSet(SymbolicSet):
     def next(self):
         raise Exception("Not implemented: relation symbolic iteration over explicit values")
 
+
+class SymbolicIdentitySet(SymbolicRelationSet):
+    def enumerate_all(self):
+        assert self.left_set==self.right_set
+        if isinstance(self.left_set, SymbolicSet):
+            aSet = self.left_set.enumerate_all()
+        else:
+            aSet = self.left_set 
+        id_r = [(x,x) for x in aSet]
+        return frozenset(id_r)
+    
 
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
     pass

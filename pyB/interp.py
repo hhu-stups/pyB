@@ -874,6 +874,8 @@ def interpret(node, env):
     elif isinstance(node, AMinusOrSetSubtractExpression) or isinstance(node, ASetSubtractionExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        if isinstance(expr2, SymbolicSet):
+            expr2 = expr2.enumerate_all()
         return expr1 - expr2
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.children[0], env)
@@ -995,8 +997,7 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)
-        id_r = [(x,x) for x in aSet]
-        return frozenset(id_r)
+        return SymbolicIdentitySet(aSet, aSet, env, interpret)
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
@@ -1439,7 +1440,6 @@ def interpret(node, env):
         raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
         return StringSet(env, interpret)
-        #return frozenset(env.all_strings) # TODO: return set of "all" strings ;-)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         relation = []

@@ -41,6 +41,18 @@ class Environment():
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 
+    # This method is a dirty solution to enumerate the set of all strings.
+    # It collects all string expressions inside the machine
+    def get_all_strings(self, node):
+        if isinstance(node, AStringExpression):
+            self.all_strings.append(node.string)
+        try:
+            for child in node.children:
+                self.get_all_strings(child)
+        except AttributeError:
+            return
+            
+
     # A KeyError or a false assert is a typechecking bug
     # Used by the eumerator: all_values
     def get_type_by_node(self, node):

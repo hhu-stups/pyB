@@ -105,19 +105,7 @@ class BMachine:
                 raise Exception("Unknown clause:",child )
         self.self_check()
         #print self, "Bmachine created",self.name
-
-
-    # This method is a dirty solution to enumerate the set of all strings.
-    # It collects all string expressions inside the machine
-    def get_all_strings(self, node, env):
-        if isinstance(node, AStringExpression):
-            env.all_strings.append(node.string)
-        try:
-            for child in node.children:
-                self.get_all_strings(child, env)
-        except AttributeError:
-            return
-
+        
 
     # parse all child machines (constructs BMachine objects)
     def recursive_self_parsing(self, env):        
@@ -136,7 +124,7 @@ class BMachine:
                 self.parse_operation(op, env)
         bstate = env.state_space.get_state()
         bstate.register_new_bmachine(self, all_names)        
-        self.get_all_strings(self.root, env) # get string expressions inside mch.
+        env.get_all_strings(self.root) # get string expressions inside mch.
 
 
     def parse_operation(self, operation, env):
