@@ -442,10 +442,9 @@ class TestSymbolicSets():
         assert not interpret(root, env)   
                
     # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
-    # TODO: symbolic powerset membership test - x:POW(INTEGER) 
+    
+    
     # TODO: more symbolic string id tests  (test_symbolic_id2)        
-       
-
     def test_symbolic_id(self):
         # Build AST
         # {}=({("a",("b",3)),("c",("d",6))};{("a"|->("b"|->9)),("c"|->("d"|->6))}~)-id(STRING)

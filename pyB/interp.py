@@ -11,7 +11,6 @@ from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 from symbolic_sets import *
-from abstract_interpretation import estimate_computation_time
 
 
 def eval_Invariant(root, env, mch):

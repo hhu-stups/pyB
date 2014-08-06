@@ -438,7 +438,7 @@ class StringSet(SymbolicSet):
             return False
         return True
     
-    def enumerate_all(self):
+    def enumerate_all(self): # FIXME: hack
         return frozenset(self.env.all_strings)
     
 class SymbolicCartSet(SymbolicSet):

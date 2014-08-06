@@ -1,5 +1,6 @@
 from ast_nodes import *
 from config import TO_MANY_ITEMS
+from pretty_printer import pretty_print
 import math
 
 
@@ -71,15 +72,17 @@ def _abs_int(node, env):
     elif isinstance(node, AIntervalExpression):
         if isinstance(node.children[0], AIdentifierExpression):
             val0 = env.get_value(node.children[0].idName)
-        else:
-            assert isinstance(node.children[0], AIntegerExpression)
+        elif isinstance(node.children[0], AIntegerExpression):
             val0 = node.children[0].intValue
+        else:
+            val0 = env._min_int
         if isinstance(node.children[1], AIdentifierExpression):
             val1 = env.get_value(node.children[1].idName)
-        else:
-            # fail: got AMinusOrSetSubtractExpression
-            assert isinstance(node.children[1], AIntegerExpression)
+        elif isinstance(node.children[1], AIntegerExpression):
             val1 = node.children[1].intValue
+        else:
+            # over approximation to avoid interpretation
+            val1 = env._max_int 
         return val1-val0
     ### "meet"
     elif isinstance(node, AConjunctPredicate):
