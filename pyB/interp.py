@@ -485,7 +485,7 @@ def interpret(node, env):
 #        0. Interpretation-mode 
 #
 # ********************************************
-    #print "interpret: ", pretty_print(node), node  # DEBUG
+    #print "DEBUG! interpret: ", pretty_print(node)  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
         type_check_predicate(node, env)
@@ -548,7 +548,7 @@ def interpret(node, env):
             try:
                 value = interpret(n, env)
             except OverflowError:
-                print "FAIL (enumeration overflow) = ("+pretty_print(n)+")"
+                print "FAIL! Enumeration overflow cause by: ("+pretty_print(n)+")"
                 continue
             if PRINT_SUB_PROPERTIES: # config.py
                 print str(value) +" = ("+pretty_print(n)+")"

@@ -23,7 +23,8 @@ def all_values(node, env):
 # generate all values of a type (basetype or composed)
 # the node parameter is used for debugging 
 def all_values_by_type(atype, env, node):
-    print pretty_print(node), " caused enumeration"
+    if PRINT_WARNINGS:
+        print "WARNING!",pretty_print(node), " caused brute force enumeration"
     if isinstance(atype, IntegerType):
         #print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)

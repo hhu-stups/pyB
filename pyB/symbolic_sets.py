@@ -24,6 +24,8 @@ class SymbolicSet(object):
         return SymbolicCartSet(aset, self, self.env, self.interpret)
     
     def __eq__(self, aset):
+        if aset==None:
+            return False
         print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
         raise Exception("fail: can not compare symbolic set")
         #if self.__class__ == aset.__class__:
@@ -31,6 +33,8 @@ class SymbolicSet(object):
         #return False
 
     def __ne__(self, aset):
+        if aset==None:
+            return True
         print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
         raise Exception("fail: can not compare symbolic set")
         #if self.__class__ == aset.__class__:
@@ -471,6 +475,7 @@ class SymbolicUnionSet(SymbolicSet):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1
+        self.explicit_set_repr = None
     
     # function call of set
     def __getitem__(self, arg):
@@ -483,6 +488,18 @@ class SymbolicUnionSet(SymbolicSet):
                 return result
         raise Exception("Not implemented: relation symbolic membership")  
 
+    def __eq__(self, aset):
+        if aset==None:
+            return False
+        if isinstance(aset, SymbolicUnionSet):
+            # may throw a DontKnowIfEqualException
+            if check_syntacticly_equal(self, aset):
+                return True
+        if isinstance(aset, frozenset):
+            if self.explicit_set_repr==None:
+                self.explicit_set_repr = self.enumerate_all()
+            return aset == self.explicit_set_repr
+        raise DontKnowIfEqualException("lambda compare not implemented")
 
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
