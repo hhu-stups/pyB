@@ -653,7 +653,6 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)
 
-    # TODO: test of symbolic sequences and all operations
     # TODO: union and inter tests for symbolic instances  
     # TODO: AMultOrCartExpression test         
     # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex

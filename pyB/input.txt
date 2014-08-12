@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE (0,0):%x.(x:NATURAL|x) & first(%x.(x:NATURAL|x))=1
