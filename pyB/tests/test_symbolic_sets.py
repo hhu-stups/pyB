@@ -15,12 +15,12 @@ file_name = "input.txt"
 class TestSymbolicSets():
     def test_symbolic_cart_prod_right(self):
         string = '''
-		MACHINE Test
-		VARIABLES x, y, z
-		INVARIANT x=INTEGER & y={1,2,3} & z=x*y
-		INITIALISATION x:=INTEGER ; y:={1,2,3} ; z:=x*y
-		END'''
-		# Build AST
+        MACHINE Test
+        VARIABLES x, y, z
+        INVARIANT x=INTEGER & y={1,2,3} & z=x*y
+        INITIALISATION x:=INTEGER ; y:={1,2,3} ; z:=x*y
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -37,12 +37,12 @@ class TestSymbolicSets():
 
     def test_symbolic_cart_prod_left(self):
         string = '''
-		MACHINE Test
-		VARIABLES x, y, z
-		INVARIANT y=INTEGER & x={1,2,3} & z=x*y
-		INITIALISATION y:=INTEGER ; x:={1,2,3} ; z:=x*y
-		END'''
-		# Build AST
+        MACHINE Test
+        VARIABLES x, y, z
+        INVARIANT y=INTEGER & x={1,2,3} & z=x*y
+        INITIALISATION y:=INTEGER ; x:={1,2,3} ; z:=x*y
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -408,14 +408,78 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)         
         
-    
+
+    # checks lambda image app. (get_item method)
+    def test_symbolic_lambda_composition7(self):
+        # Build AST
+        string_to_file("#PREDICATE maxi = 4 & S = 0..maxi-1 & (%(x,y).(x: S & y: NATURAL | x|->1|->y))[S<|{0|->19189,1|->9877,2|->28924,3|->877,4|->0, 5|->0}]={((0|->1)|->19189),((1|->1)|->9877), ((2|->1)|->28924), ((3|->1)|-> 877)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)   
+        
+ 
+    # checks lambda image app. (get_item method) with empty argument
+    def test_symbolic_lambda_composition8(self):
+        # Build AST
+        string_to_file("#PREDICATE {}=(%(x,y).(x:0..4 & y:NATURAL|x|->1|->y)[{}])", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)            
+
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda_ran(self):
+        # Build AST
+        string_to_file("#PREDICATE ran((%x.(x:NAT|42)))={42}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32 
+        assert 1==2 # prevent Timeout (timeout not implemented yet)
+        assert interpret(root, env) 
+
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_set_comp_ran(self):
+        # Build AST
+        string_to_file("#PREDICATE ran({x| #(y).(y:NAT & x:NAT*NAT & x=(y,42))})={42}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
+    import pytest
+    @pytest.mark.xfail        
+    def test_symbolic_set_comp_dom(self):
+        # Build AST
+        string_to_file("#PREDICATE dom({x| #(y).(y:NAT & x:NAT*NAT & x=(42,y))})={42}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+
     def test_symbolic_lambda_convert_explicit(self):
         # Build AST
         string_to_file("#PREDICATE %(x).(x:NATURAL & x<5|x)={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
-        # Test fapp
+        # Test enum
         env = Environment()
         assert interpret(root, env) 
         
@@ -426,7 +490,7 @@ class TestSymbolicSets():
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
-        # Test fapp
+        # Test 
         env = Environment()
         assert interpret(root, env)       
 
@@ -437,12 +501,163 @@ class TestSymbolicSets():
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)  
         
-        # Test fapp
+        # Test 
         env = Environment()
-        assert not interpret(root, env)   
-               
-    # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
+        assert not interpret(root, env)
+
+ 
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_powerset3(self):
+        # Build AST
+        string_to_file("#PREDICATE POW(NATURAL)/\{{1,2,3}}={{1,2,3}} ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test 
+        env = Environment()
+        assert not interpret(root, env)       
+        
+    def test_symbolic_power1set(self):
+        # Build AST
+        string_to_file("#PREDICATE {1,2,3}:POW1(NATURAL)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)       
+
+
+    def test_symbolic_power1set2(self):
+        # Build AST
+        string_to_file("#PREDICATE {}:POW1(NATURAL)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert not interpret(root, env)
+
+
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_subset(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,1)}<:%x.(x:NATURAL|x) ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_min(self):
+        # Build AST
+        string_to_file("#PREDICATE min({x|x:NATURAL})=0", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_max(self):
+        # Build AST
+        string_to_file("#PREDICATE max({x|x:NATURAL & x<42})=41", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+
+    # TODO: Timeout, pi
+    # BUG: min and max int cause constraint solver bug. returns 15!
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_sigma(self):
+        # Build AST
+        string_to_file("#PREDICATE SIGMA(x).(x:NATURAL & x<42|x)=861", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_card(self):
+        # Build AST
+        string_to_file("#PREDICATE card(%x.(x:NATURAL & x<42|x))=42 ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)   
     
+    # TODO: domain subtraction test
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_domain_res(self):
+        # Build AST
+        string_to_file("#PREDICATE 0..4<|%x.(x:NAT|x)={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env) 
+
+    # TODO: range subtraction test
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_range_res(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT|x)|>0..4={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env) 
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_inverse_realtion(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT & x<5 |x+1)~={(1,0),(2,1),(3,2),(4,3),(5,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_overwrite(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT & x<5 |x)<+{(1,0)}={(0,0),(1,0),(2,2),(3,3),(4,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+
+    # TODO: test of symbolic sequences and all operations
+    # TODO: union and inter tests for symbolic instances  
+    # TODO: AMultOrCartExpression test         
+    # TODO: direct product of composition set test e.g. (%(x).(x:NAT|x+1);%(x).(x:NAT|x*x))><%(x).(x:NAT|-1) or more complex
+    # TODO: find real world problem for this testcase
     
     # TODO: more symbolic string id tests  (test_symbolic_id2)        
     def test_symbolic_id(self):
@@ -499,8 +714,25 @@ class TestSymbolicSets():
         env._min_int = -2**32
         env._max_int = 2**32  
         assert interpret(root.children[0], env)   
+
+
+    # test for symmetric implementation of unequality
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare4(self):
+        # Build AST:
+        string_to_file("#PREDICATE %x.(x:NAT & x:{0,1,2,3}|x)/={(0,0),(1,1),(2,2),(3,3)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
         
-    # TODO: symbolic intervall
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
+
+       
+
     def test_symbolic_intervall_set(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:0..999999|x*x)(4)=16", file_name)
@@ -512,4 +744,83 @@ class TestSymbolicSets():
         env._min_int = -2**31
         env._max_int = 2**31
         assert interpret(root, env)  
+   
+    # TODO: symbolic intervall  
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_intervall_set2(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:-2**3..2**32|x*x)(4)=16", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)
+        
+ 
+    # check membership
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_intervall_set3(self):
+        # Build AST
+        string_to_file("#PREDICATE (4,16):%x.(x:-2**3..2**32|x*x)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)       
+  
+               
+    # check enumeration
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_intervall_set4(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,1)}=%x.(x:-2**0..2**0|x*x)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)       
+        
+
+    import pytest
+    @pytest.mark.xfail        
+    def test_symbolic_intersection_set(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NATURAL & x:{1,2,3}|x*x)/\%x.(x:NATURAL & x:{1,2,3}|x*2)={(2,4)} ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)     
+ 
+
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_union_set(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NATURAL & x:{1,2,3}|x*x)\/%x.(x:NATURAL & x:{1,2,3}|x*2)={(1,1),(1,2),(2,4),(3,6),(3,9)}  ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)        
+             
+        
         

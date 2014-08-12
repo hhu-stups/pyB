@@ -299,7 +299,7 @@ def quick_member_eval(ast, env, element):
     else:
         #TODO:(#ISSUE 18) no quick eval, can crash
         aSet = interpret(ast, env)
-        print "element, set:", element, aSet
+        #print "element, set:", element, aSet
         return element in aSet                                             
 
 

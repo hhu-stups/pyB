@@ -500,6 +500,13 @@ class SymbolicUnionSet(SymbolicSet):
                 self.explicit_set_repr = self.enumerate_all()
             return aset == self.explicit_set_repr
         raise DontKnowIfEqualException("lambda compare not implemented")
+    
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            L = self.left_set.enumerate_all()
+            R = self.right_set.enumerate_all()
+            self.explicit_set_repr = L + R
+        return self.explicit_set_repr 
 
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
@@ -573,7 +580,9 @@ class SymbolicLambda(SymbolicSet):
         self.node = node
         self.generator = calc_possible_solutions
         self.explicit_set_repr = None  
-        
+    
+    # TODO: all __getitem__ methods have problems with implicit enum
+    # e.g. [x for x in R] with R  SymbolicLambda   
     def __getitem__(self, args):
         varList = self.variable_list
         self.env.push_new_frame(varList)

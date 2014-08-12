@@ -733,6 +733,9 @@ class TestConstraintSolver():
 
     # TODO: constraints with variables affecting each other
     # the constraint solver musst find out that x has to be enumerated before y
+    # e.g C578.EML.014/662_001 {cb,cc,cd,ce,cf,cg,|cb|->cc|->ce:bq & cf=cc & cd=0 & cg=(be;bj)(cb|->cc)} with cb cc not set
+    # C578.EML.014/623_001 {bp,bq,br,bs,bt,bu,|bp|->bq|->bs:bj & bt=bq & br=1 & bu=(az;bb)(bp|->bq)} with preimage = ('bp', 'bq')
+    # enumeration.py 99
     import pytest
     @pytest.mark.xfail 
     def test_constraint_affecting_variables(self):

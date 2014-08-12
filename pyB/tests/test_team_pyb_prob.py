@@ -102,7 +102,7 @@ class TestTeam():
     def test_team_systerel(self):
         # C578_Urgent_Jul13/151_001
         # C578_Final_Jul13/m-PROP_SCL_VTT_0304_001 
-        # C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001 XXX
+        # C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001 
         # C578_Final_Jul13/machines2/0682_002 (27 min)
         # C578/2013_08_14/machines_14082013/410_002_simple
         # C578/2013_08_14/machines_27082013/0021_002

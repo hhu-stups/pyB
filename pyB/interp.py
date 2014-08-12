@@ -659,6 +659,7 @@ def interpret(node, env):
     elif isinstance(node, AUnequalPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        # TODO: handle symbolic sets
         return expr1 != expr2
 
 
@@ -676,7 +677,6 @@ def interpret(node, env):
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
     elif isinstance(node, AComprehensionSetExpression):
-        # new scope
         varList = node.children[:-1]
         pred = node.children[-1]
         return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)      
@@ -689,6 +689,7 @@ def interpret(node, env):
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        # TODO: symbolic intersection instance
         return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
         result = None
@@ -794,7 +795,7 @@ def interpret(node, env):
         #print pretty_print(node)
         if contains_infinit_enum(node, env):
             result = infinity_belong_check(node, env)
-            print result
+            #print result
             return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
@@ -837,28 +838,16 @@ def interpret(node, env):
 #
 # *****************
     elif isinstance(node, ANaturalSetExpression):
-        #if VERBOSE:
-        #    print "WARNING: NATURAL = 0.."+str(env._max_int)
-        #return frozenset(range(0,env._max_int+1)) # TODO:(#ISSUE 17)
         return NaturalSet(env, interpret)
     elif isinstance(node, ANatural1SetExpression):
-        #if VERBOSE:
-        #    print "WARNING: NATURAL1 = 1.."+str(env._max_int)
-        #return frozenset(range(1,env._max_int+1)) # TODO:(#ISSUE 17)
         return Natural1Set(env, interpret)
     elif isinstance(node, ANatSetExpression):
-        #return frozenset(range(0,env._max_int+1))# TODO: Problem if to large
         return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
-        #return frozenset(range(1,env._max_int+1))# TODO: Problem if to large
         return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
-        #return frozenset(range(env._min_int, env._max_int+1)) # TODO: Problem if to large
         return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
-        #if VERBOSE:
-        #    print "WARNING: INTEGER = "+str(env._min_int)+".."+str(env._max_int)
-        #return frozenset(range(env._min_int,env._max_int+1)) # TODO:(#ISSUE 17)
         return IntegerSet(env, interpret)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
@@ -1022,11 +1011,22 @@ def interpret(node, env):
         new_rel = [(x[1],x[0]) for x in rel]
         return frozenset(new_rel)
     elif isinstance(node, AImageExpression):
+        #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        #if rel==None or aSet==None:
-        #    return None
-        image = [x[1] for x in rel if x[0] in aSet ]
+        #print rel,
+        #print aSet
+        if isinstance(rel, SymbolicSet):
+            image = []
+            if isinstance(aSet, SymbolicSet):
+                aSet = aSet.enumerate_all()
+            for x in aSet:
+                try:
+                    image.append(rel[x])
+                except ValueNotInDomainException:
+                    continue
+        else:
+            image = [x[1] for x in rel if x[0] in aSet ]
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
         r1 = interpret(node.children[0], env)
@@ -1180,7 +1180,7 @@ def interpret(node, env):
         expr = node.children[-1]
         return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
     elif isinstance(node, AFunctionExpression):
-        #print "interpret: ", pretty_print(node)
+        #print "interpret AFunctionExpression: ", pretty_print(node)
         if isinstance(node.children[0], APredecessorExpression):
             value = interpret(node.children[1], env)
             return value-1

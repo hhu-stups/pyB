@@ -243,6 +243,17 @@ class TestInterpRelations():
         env.set_value("f", frozenset([("a","1"),("a","42")]))
         env.set_value("r", frozenset([("a","1"),("a","42"),("c","777")]))
         assert interpret(root.children[0],env)
+        
+        
+    def test_genAST_pred_rel_domres2(self):
+        # Build AST
+        string_to_file("#PREDICATE {0|->19189,1|->9877,2|->28924,3|->877}=0..4-1<|{0|->19189,1|->9877,2|->28924,3|->877,4|->0,5|->0}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)  
 
 
     def test_genAST_pred_rel_domsub(self):
