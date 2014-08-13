@@ -11,7 +11,7 @@ from symbolic_sets import *
 
 file_name = "input.txt"
 
-# TODO: front, tail, conc, last, conc
+# TODO: conc and maybe more cases (some operations have only one testcase)
 # maybe this is only importent in theory...
 class TestSymbolicSequences():
     import pytest
@@ -70,6 +70,19 @@ class TestSymbolicSequences():
         assert interpret(root, env)    
         
         
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_sequences_last(self):
+        # Build AST
+        string_to_file("#PREDICATE last(%x.(x:NAT|x))=MAXINT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env) 
+
+                
     # TODO: undefined size. Throw exception
     import pytest
     @pytest.mark.xfail     
@@ -164,4 +177,31 @@ class TestSymbolicSequences():
         # Test 
         env = Environment()
         assert interpret(root, env)    
+        
+        
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_sequences_front(self):
+        # Build AST
+        string_to_file("#PREDICATE front((%x.(x:NAT1|x)))<-MAXINT=(%x.(x:NAT1|x))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+        
+    import pytest
+    @pytest.mark.xfail 
+    def test_symbolic_sequences_tail(self):
+        # Build AST
+        string_to_file("#PREDICATE 1->tail((%x.(x:NAT1|x)))=(%x.(x:NAT1|x))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)        
+                   
+        
     
