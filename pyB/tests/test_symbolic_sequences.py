@@ -11,7 +11,7 @@ from symbolic_sets import *
 
 file_name = "input.txt"
 
-# TODO: conc and maybe more cases (some operations have only one testcase)
+# TODO: maybe more cases (some operations have only one testcase)
 # maybe this is only importent in theory...
 class TestSymbolicSequences():
     import pytest
@@ -201,7 +201,97 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
-        assert interpret(root, env)        
-                   
+        assert interpret(root, env)       
         
+ 
+    import pytest
+    @pytest.mark.xfail  
+    def test_symbolic_sequences_perm(self):
+        # Build AST
+        string_to_file("#PREDICATE s:perm(NAT) & s(1)=42", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert 1==2 # Timeout exception missing
+        assert interpret(root, env)         
+
+        
+    import pytest
+    @pytest.mark.xfail   
+    def test_symbolic_sequences_perm2(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT1|x):perm(NAT1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)               
+    
+
+    import pytest
+    @pytest.mark.xfail         
+    def test_symbolic_sequences_seq(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT1|x):seq(NAT1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)  
+    
+    
+    import pytest
+    @pytest.mark.xfail              
+    def test_symbolic_sequences_seq1(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT1|x):seq1(NAT1)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)        
+    
+    
+    import pytest
+    @pytest.mark.xfail   
+    def test_symbolic_sequences_iseq1(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT1|x):iseq1(NAT)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)    
+
+
+    import pytest
+    @pytest.mark.xfail   
+    def test_symbolic_sequences_seq_perm(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:{1,2,3} | %x.(x:{1,2,3}|x)):seq(perm({1,2,3}))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)     
+  
+    
+    import pytest
+    @pytest.mark.xfail   
+    def test_symbolic_sequences_conc2(self):
+        # Build AST
+        string_to_file("#PREDICATE conc(%x.(x:{1,2,3} | %x.(x:{1,2,3}|x)))=[1,2,3,1,2,3,1,2,3]", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)       
     
