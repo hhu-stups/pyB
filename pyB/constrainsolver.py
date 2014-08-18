@@ -7,7 +7,7 @@ from quick_eval import quick_member_eval
 from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS
 from abstract_interpretation import estimate_computation_time
 from pretty_printer import pretty_print
-from helpers import remove_tuples, couple_tree_to_conj_list
+from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
 from symbolic_sets import LargeSet
 
 
@@ -43,7 +43,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
             #print "DEBUG: searching for", var_node.idName,"constraint"
             test_set = None 
             for pred in pred_map:
-                (time, vars) = pred_map[pred]
+                (time, vars, must_be_computed_first) = pred_map[pred]
                 #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
                 # Avoid interference between bound variables: check find_constraint_vars
                 # This is less powerful, but correct
@@ -259,7 +259,7 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 # FIMXE: doesnt finds finite-time computable sub-predicates. 
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
 # input: P0 & P1 & ...PN or in special cases one predicate (like x=42)
-# output(example): mapping {P0->(time0, vars0), , P1->(time1, vars1),... PN->(timeN, varsN)}        
+# output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
 def _categorize_predicates(predicate, env, varList):
     if isinstance(predicate, AConjunctPredicate):
         map0 = _categorize_predicates(predicate.children[0], env, varList)
@@ -268,49 +268,58 @@ def _categorize_predicates(predicate, env, varList):
         return map0
     else:
        time = estimate_computation_time(predicate, env)
-       constraint_vars = find_constraint_vars(predicate, env, varList)
-       return {predicate: (time, constraint_vars)}
+       constraint_vars, and_vars_need_to_be_set_first = find_constraint_vars(predicate, env, varList)
+       return {predicate: (time, constraint_vars, and_vars_need_to_be_set_first)}
 
 
 # Input predicate is always a sub-predicate of a conjunction predicate or a single predicate.
 # This helper may only be used to find test_set(constraint domain) generation candidates.
-# return: list of variable names, constraint by this predicated AND with possible test_set gen.  
+# The test sets (constraint domains of bound vars with possible false elements) are
+# computed in a second step because of the predicate-selection process. 
+# return: list of variable names, constraint by this predicated AND with possible test_set gen.
+# AND a list of variable names (second return value) which need a value before the computation
+# e.g. "x:{1,2,3} & y=x+1" here x is constraint by {1,2,3} and y is constraint by x   
 def find_constraint_vars(predicate, env, varList):
     # (1) Base case. This case should only be matched by a recursive call of find_constraint_vars.
     # otherwise it could produce wrong results!
     # WARNING: before modifying this part, be sure "_compute_test_set" can handle it!     
     if isinstance(predicate, AIdentifierExpression):
         lst = [predicate.idName]
-        return lst
+        return lst, []
     elif isinstance(predicate, ACoupleExpression):
-        lst0 = find_constraint_vars(predicate.children[0], env, varList)
-        lst1 = find_constraint_vars(predicate.children[1], env, varList)
+        lst0, _ = find_constraint_vars(predicate.children[0], env, varList)
+        lst1, _ = find_constraint_vars(predicate.children[1], env, varList)
         lst  = list(set(lst0 + lst1)) # remove double entries
-        return lst
+        return lst, []
         
     # (2) implemented predicates (by _compute_test_set)
-    # WARNING: never add a case if "_compute_test_set" can not handle it!
+    # WARNING: never add a case if the method "_compute_test_set" can not handle it.
+    # This may introduce a Bug!
     if isinstance(predicate, ABelongPredicate):
-        lst = find_constraint_vars(predicate.children[0], env, varList)
-        return lst
+        lst, _ = find_constraint_vars(predicate.children[0], env, varList)
+        constraint_by_vars = find_constraining_var_nodes(predicate.children[1])
+        return lst, [x.idName for x in constraint_by_vars]
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
-            return test_set_var
+            constraint_by_vars = find_constraining_var_nodes(predicate.children[1])
+            return test_set_var, [x.idName for x in constraint_by_vars]
         elif isinstance(predicate.children[1], AIdentifierExpression):
             test_set_var = [predicate.children[1].idName]
-            return test_set_var
+            constraint_by_vars = find_constraining_var_nodes(predicate.children[0])
+            return test_set_var, [x.idName for x in constraint_by_vars]
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
     elif isinstance(predicate, (ADisjunctPredicate, AConjunctPredicate)):
-        lst0 = find_constraint_vars(predicate.children[0], env, varList)
-        lst1 = find_constraint_vars(predicate.children[1], env, varList)
+        lst0, cvarlst0 = find_constraint_vars(predicate.children[0], env, varList)
+        lst1, cvarlst1 = find_constraint_vars(predicate.children[1], env, varList)
         test_set_var = list(set(lst0 + lst1)) # remove double entries 
-        return test_set_var
+        c_set_var = list(set(cvarlst0 + cvarlst1)) # remove double entries 
+        return test_set_var, c_set_var
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
-    return []
+    return [], []
 
 
 # TODO: be sure this cases have no side effect

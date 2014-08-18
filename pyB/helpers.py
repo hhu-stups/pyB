@@ -106,6 +106,12 @@ def string_to_file(string, file_name, path=""):
     f.close
     return f
 
+# input is computation part of a membership or equal node.
+# Used to find all variables to be computed first.
+def find_constraining_var_nodes(node):
+    lst = []
+    _find_var_nodes(node, lst) #side-effect: fills list
+    return lst    
 
 def find_var_nodes(node):
     assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)

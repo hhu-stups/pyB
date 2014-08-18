@@ -98,7 +98,8 @@ class TestTeam():
 #         res = run_with_pyb(bfile_name)
 #         assert res
 #         
-#        
+#   
+    # TODO: move command line input to config.py     
     def test_team_systerel(self):
         # C578_Urgent_Jul13/151_001
         # C578_Final_Jul13/m-PROP_SCL_VTT_0304_001 
