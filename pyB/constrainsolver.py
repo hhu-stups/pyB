@@ -72,7 +72,7 @@ def gen_all_values(env, varList, dic):
                 yield d
 
 
-# wrapper-function for contraint solver 
+# wrapper-function for external contraint solver 
 # WARNING: asumes that every variable in varList has no value!
 def _calc_constraint_domain(env, varList, predicate):
     # TODO: import at module level
@@ -199,10 +199,13 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 # Todo: generate constraint set by using all "fast computable" predicates
 # Todo: call generator to return solution      
 def _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable):
+    # 1. score predicates
     pred_map = _categorize_predicates(predicate, env, varList)
     assert pred_map != []
+    # 2. find possible variable enum order
+    varList  = _compute_variable_enum_order(pred_map, varList)
+    # 3. calc variable domains
     test_dict = {}
-    #print "DEBUG: varlist", [x.idName for x in varList]
     for var_node in varList:
         #print "DEBUG: searching for", var_node.idName,"constraint"
         test_set = None 
@@ -220,10 +223,33 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                     try:
                         assert isinstance(pred, Predicate)
                         # This predicate needs the computation of an other variable
-                        # in test_dict first. e.g x={(0,1),(2,3)}(y)
+                        # in test_dict first. e.g x={(0,1),(2,3)}(y).
+                        # If step 2 was successful, the values of the needed bound vars
+                        # are already computed
                         if not must_be_computed_first==[]:
-                             # TODO: set all needed vars. Check if code reuse possible 
-                            raise NotImplementedError("must constrain first %s" % must_be_computed_first)
+                            already_computed_var_List = list(varList)
+                            # remove uncomputed entries 
+                            for key in varList:
+                                if not key in test_dict:
+                                    already_computed_var_List.remove(key)
+                            assert not test_dict=={}
+                            # generate partial solution: all domain combinations of a subset of bound vars
+                            a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
+                            # use partial solution to gen testset
+                            test_set = frozenset([])
+                            env.push_new_frame(varList)
+                            for part_sol in a_cross_product_iterator:
+                                for v in already_computed_var_List:
+                                    name  = v.idName
+                                    value = part_sol[name] 
+                                    env.set_value(name, value)
+                                    try:
+                                        part_testset = _compute_test_set(pred, env, var_node, interpreter_callable)
+                                    except ValueNotInDomainException:
+                                        continue
+                                    test_set = test_set.union(part_testset)
+                            env.pop_frame()
+                            break
                         else:
                             test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
                             break
@@ -279,6 +305,50 @@ def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_c
         if _is_solution(predicate, env, interpreter_callable, varList, solution=maybe_solution):
             solution = maybe_solution.copy()
             yield solution
+
+
+# computed the order of variables
+def _compute_variable_enum_order(pred_map, varList):
+    # 0. init
+    result = []
+    graph  = {}
+    # 1. construct directed graph: 
+    # nodes: variables
+    # edges: variable has to be enumerated first
+    # node-degree zero: variable can be enumerated
+    for varNode in varList:
+        name = varNode.idName
+        # search for variables to be enumerated first)
+        for entry in pred_map.values():
+            if name in entry[1]:
+               listOfidNames = entry[2] # edges 
+               graph[name] = (varNode, listOfidNames)
+        # no constraints known: default init
+        if not name in graph:
+            graph[name] = (varNode, [])
+
+    # 2. topologic sorting
+    removed = [] # list of removed nodes (implicit list of removed edges)
+    while not graph=={}:
+        change = False
+        for varNode in varList:
+            # check if node degree
+            name = varNode.idName
+            tup = graph[name]
+            edges = [x for x in tup[1] if x not in removed]
+            if edges==[]:
+                result.append(varNode)
+                removed.append(name)
+                del graph[name]
+                change = True
+        if not change:
+            # TODO: maybe an exception is a better idea 
+            if PRINT_WARNINGS:
+                print "WARNING! Unable to compute topologic order od bound vars"
+            return varList
+    # 3. return result
+    assert len(result)==len(varList)
+    return result
             
 
 # TODO: support more than one variable

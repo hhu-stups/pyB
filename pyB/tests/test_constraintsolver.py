@@ -781,8 +781,8 @@ class TestConstraintSolver():
     # e.g C578.EML.014/662_001 {cb,cc,cd,ce,cf,cg,|cb|->cc|->ce:bq & cf=cc & cd=0 & cg=(be;bj)(cb|->cc)} with cb cc not set
     # C578.EML.014/623_001 {bp,bq,br,bs,bt,bu,|bp|->bq|->bs:bj & bt=bq & br=1 & bu=(az;bb)(bp|->bq)} with preimage = ('bp', 'bq')
     # enumeration.py 99
-    import pytest
-    @pytest.mark.xfail #NotImplementedError
+    #import pytest
+    #@pytest.mark.xfail #NotImplementedError
     def test_constraint_affecting_variables(self):
         # Build AST:
         string_to_file("#PREDICATE {(0,\"A\"),(1,\"B\"),(2,\"C\"),(3,\"D\")}={x, y | x : {0,1,2,3,4,5,6,7,8,9,10} & y : {(\"A\"|->41),(\"B\"|->42),(\"C\"|->43),(\"D\"|->44)}~[{{(0|->41),(1|->42),(2|->43),(3|->44),(4|->45)}(x)}]}", file_name)
@@ -814,6 +814,8 @@ class TestConstraintSolver():
         assert compute_first1 == ["x"]       
         assert interpret(root.children[0], env)    
   
+    # TODO: write testcase for this:
+    # {3}={y| {(1,7),(2,6),(3,3)}(y)=y}
         
     #TODO: write test of union which defines bound vars via other quantified predicates.
     # see C578.EML.014/CF_ZMS_AUM_2
