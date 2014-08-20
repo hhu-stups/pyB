@@ -121,7 +121,7 @@ class BState():
         var_map = {}
         for node in nodes:
             assert isinstance(node, AIdentifierExpression)
-            var_map[node.idName] = node.idName
+            var_map[node.idName] = node.idName + "_NO_VALUE"
         value_stack = self.bmch_dict[bmachine]
         value_stack.append(var_map) # ref
 

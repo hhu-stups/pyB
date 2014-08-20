@@ -35,51 +35,10 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     if QUICK_EVAL_CONJ_PREDICATES:
-        pred_map = _categorize_predicates(predicate, env, varList)
-        assert pred_map != []
-        test_dict = {}
-        #print "DEBUG: varlist", [x.idName for x in varList]
-        for var_node in varList:
-            #print "DEBUG: searching for", var_node.idName,"constraint"
-            test_set = None 
-            for pred in pred_map:
-                (time, vars, must_be_computed_first) = pred_map[pred]
-                #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
-                # Avoid interference between bound variables: check find_constraint_vars
-                # This is less powerful, but correct
-                if time!=float("inf") and time<TO_MANY_ITEMS and var_node.idName in vars:
-                    # at least on predicate of this conjunction can easiely be used
-                    # to compute a testset. The exact solution musst contain all 
-                    # or less elements than test_set
-                    if test_set==None:
-                        try:
-                            assert isinstance(pred, Predicate)
-                            test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
-                            break
-                        except PredicateDoesNotMatchException: 
-                            #.eg constraining y instead of x, or using unimplemented cases
-                            test_set = None
-                #else:
-                #    print "DEBUG:  can not constrain:", var_node.idName 
-            # assigning constraint set or none
-            test_dict[var_node] = test_set
-                        
-        # check if a solution has been found for every bound variable
-        solution_found = True
-        for var_node in varList:   
-            if test_dict[var_node]==None or test_dict[var_node]==frozenset([]):
-                if PRINT_WARNINGS:
-                    print "WARNING! Unable to constrain bound variable: %s" % var_node.idName
-                solution_found = False
-                
-        # use this solution and return a generator        
-        if solution_found:          
-            iterator = _dict_to_iterator(env, varList, test_dict, predicate, interpreter_callable, {})
-            return iterator
-        # Todo: generate constraint set by using all "fast computable" predicates
-        # Todo: call generator to return solution
-        
-    
+        generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
+        if generator: # None if fail
+            return generator
+
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
     # TODO: Handle OverflowError, print Error message and go on
@@ -96,8 +55,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
-        
-    
+
 
 def gen_all_values(env, varList, dic):
     idNode = varList[0]
@@ -112,24 +70,6 @@ def gen_all_values(env, varList, dic):
         else:
             for d in gen_all_values(env, varList[1:], dic):
                 yield d
-
-
-def _dict_to_iterator(env, varList, test_dict, pred, interpreter_callable, partial_solution):
-    idNode = varList[0]
-    aSet = test_dict[idNode]
-    assert not aSet==frozenset([])
-    assert isinstance(idNode, AIdentifierExpression)
-    var_name = idNode.idName 
-    for element in aSet:
-        partial_solution[var_name] = element
-        if len(varList)==1:
-            if _is_solution(pred, env, interpreter_callable, varList, solution=partial_solution.copy()):
-                solution = partial_solution.copy()
-                yield solution
-        else:
-            for solution in _dict_to_iterator(env, varList[1:], test_dict, pred, interpreter_callable, partial_solution):
-                yield solution
-
 
 
 # wrapper-function for contraint solver 
@@ -255,6 +195,92 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
     raise ConstraintNotImplementedException(node)
 
 
+# returns a generator or None if fail (e.g. special case not implemented)   
+# Todo: generate constraint set by using all "fast computable" predicates
+# Todo: call generator to return solution      
+def _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable):
+    pred_map = _categorize_predicates(predicate, env, varList)
+    assert pred_map != []
+    test_dict = {}
+    #print "DEBUG: varlist", [x.idName for x in varList]
+    for var_node in varList:
+        #print "DEBUG: searching for", var_node.idName,"constraint"
+        test_set = None 
+        for pred in pred_map:
+            (time, vars, must_be_computed_first) = pred_map[pred]
+            #print [x.idName for x in test_dict.keys()], must_be_computed_first
+            #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
+            # Avoid interference between bound variables: check find_constraint_vars
+            # This is less powerful, but correct
+            if time!=float("inf") and time<TO_MANY_ITEMS and var_node.idName in vars:
+                # at least on predicate of this conjunction can easiely be used
+                # to compute a testset. The exact solution musst contain all 
+                # or less elements than test_set
+                if test_set==None:
+                    try:
+                        assert isinstance(pred, Predicate)
+                        # This predicate needs the computation of an other variable
+                        # in test_dict first. e.g x={(0,1),(2,3)}(y)
+                        if not must_be_computed_first==[]:
+                             # TODO: set all needed vars. Check if code reuse possible 
+                            raise NotImplementedError("must constrain first %s" % must_be_computed_first)
+                        else:
+                            test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
+                            break
+                    except PredicateDoesNotMatchException: 
+                        #.eg constraining y instead of x, or using unimplemented cases
+                        test_set = None
+        # assigning constraint set or none
+        test_dict[var_node] = test_set
+                    
+    # check if a solution has been found for every bound variable
+    solution_found = True
+    for var_node in varList:
+        if test_dict[var_node]==None or test_dict[var_node]==frozenset([]):
+            if PRINT_WARNINGS:
+                print "WARNING! Unable to constrain bound variable: %s" % var_node.idName
+            solution_found = False
+            
+    # use this solution and return a generator        
+    if solution_found:          
+        a_cross_product_iterator = _cross_product_iterator(varList, test_dict, {})
+        iterator = _solution_generator(a_cross_product_iterator, predicate, env, interpreter_callable, varList)
+        return iterator
+    else:
+        return None
+
+
+# this generator yield every combination of values for some variables with finite domains
+# partial_cross_product is a accumulator which is reseted to the empty dict {} at every call
+def _cross_product_iterator(varList, domain_dict, partial_cross_product):
+    # 1. get next variable and non-empty finite domain
+    idNode = varList[0]
+    aSet = domain_dict[idNode]
+    assert not aSet==frozenset([])
+    assert isinstance(idNode, AIdentifierExpression)
+    var_name = idNode.idName
+    # 2. compute partial cross product for every element/value 
+    for element in aSet:
+        partial_cross_product[var_name] = element
+        # case 2.1: if it was the last variable, the "cross product-element" has been computed
+        if len(varList)==1:
+            solution = partial_cross_product.copy()
+            yield solution
+        # case 2.2: more variables to handel
+        else:
+            for solution in _cross_product_iterator(varList[1:], domain_dict, partial_cross_product):
+                # give solution to highest level of recursion
+                yield solution
+
+
+# this generator yields all combinations of values which satisfy a given predicate
+def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_callable, varList):
+    for maybe_solution in a_cross_product_iterator:
+        if _is_solution(predicate, env, interpreter_callable, varList, solution=maybe_solution):
+            solution = maybe_solution.copy()
+            yield solution
+            
+
 # TODO: support more than one variable
 # FIMXE: doesnt finds finite-time computable sub-predicates. 
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
@@ -297,23 +323,23 @@ def find_constraint_vars(predicate, env, varList):
     # This may introduce a Bug!
     if isinstance(predicate, ABelongPredicate):
         lst, _ = find_constraint_vars(predicate.children[0], env, varList)
-        constraint_by_vars = find_constraining_var_nodes(predicate.children[1])
+        constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
         return lst, [x.idName for x in constraint_by_vars]
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
-            constraint_by_vars = find_constraining_var_nodes(predicate.children[1])
+            constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
             return test_set_var, [x.idName for x in constraint_by_vars]
         elif isinstance(predicate.children[1], AIdentifierExpression):
             test_set_var = [predicate.children[1].idName]
-            constraint_by_vars = find_constraining_var_nodes(predicate.children[0])
+            constraint_by_vars = find_constraining_var_nodes(predicate.children[0], varList)
             return test_set_var, [x.idName for x in constraint_by_vars]
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
     elif isinstance(predicate, (ADisjunctPredicate, AConjunctPredicate)):
         lst0, cvarlst0 = find_constraint_vars(predicate.children[0], env, varList)
-        lst1, cvarlst1 = find_constraint_vars(predicate.children[1], env, varList)
+        lst1, cvarlst1 = find_constraint_vars(predicate.children[1], env, varList) 
         test_set_var = list(set(lst0 + lst1)) # remove double entries 
         c_set_var = list(set(cvarlst0 + cvarlst1)) # remove double entries 
         return test_set_var, c_set_var

@@ -108,10 +108,16 @@ def string_to_file(string, file_name, path=""):
 
 # input is computation part of a membership or equal node.
 # Used to find all variables to be computed first.
-def find_constraining_var_nodes(node):
+def find_constraining_var_nodes(node, varList):
     lst = []
     _find_var_nodes(node, lst) #side-effect: fills list
-    return lst    
+    # varList is a list of all bound variables of the set defined by the predicate(node).
+    # only bound vars are of interest. 
+    result = []
+    for var in lst:
+        if var.idName in [x.idName for x in varList]:
+            result.append(var) 
+    return result    
 
 def find_var_nodes(node):
     assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
