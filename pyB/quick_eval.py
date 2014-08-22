@@ -3,6 +3,8 @@ from ast_nodes import *
 from btypes import *
 from pretty_printer import pretty_print
 from symbolic_sets import *
+from symbolic_functions import *
+from symbolic_functions_with_predicate import *
 from abstract_interpretation import var_constraint_by_predicate
 
 # This function is used in an Belong(member)-Node. x : S

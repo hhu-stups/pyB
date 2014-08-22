@@ -295,3 +295,4 @@ class TestSymbolicSequences():
         env = Environment()
         assert interpret(root, env)       
     
+    # C578.EML.014/019_100 DontKnowIfEqualException

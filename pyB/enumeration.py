@@ -3,6 +3,8 @@ from config import *
 from ast_nodes import *
 from btypes import *
 from symbolic_sets import *
+from symbolic_functions import *
+from symbolic_functions_with_predicate import *
 from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples, build_arg_by_type
 from bexceptions import *
 from pretty_printer import pretty_print
