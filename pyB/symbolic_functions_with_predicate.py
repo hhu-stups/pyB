@@ -54,6 +54,21 @@ class SymbolicLambda(SymbolicSet):
     
     def __ne__(self, aset):
         return not self.__eq__(aset)
+
+    # membership test. New Fame. Set bound variables to value. Eval. Return
+    def __contains__(self, args):
+        args = remove_tuples(args)
+        varList = self.variable_list
+        self.env.push_new_frame(varList) 
+        for i in range(len(varList)):
+            idNode = varList[i]
+            atype = self.env.get_type_by_node(idNode)
+            value = build_arg_by_type(atype, args)
+            self.env.set_value(idNode.idName, value)
+        domain_value = self.interpret(self.predicate, self.env)
+        image_value  = self.interpret(self.expression, self.env) 
+        self.env.pop_frame() # exit scope
+        return domain_value and image_value==args[-1]
     
     # convert to explicit frozenset
     def enumerate_all(self):

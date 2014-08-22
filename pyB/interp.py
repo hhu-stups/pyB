@@ -888,7 +888,8 @@ def interpret(node, env):
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
-        return frozenset(range(left, right+1)) # TODO: Problem if to large
+        #return SymbolicIntervalSet(left, right, env, interpret)
+        return frozenset(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
@@ -1031,6 +1032,10 @@ def interpret(node, env):
     elif isinstance(node, AOverwriteExpression):
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
+        #if isinstance(r1, SymbolicSet):
+        #    r1 = r1.enumerate_all()
+        #if isinstance(r2, SymbolicSet):
+        #    r2 = r2.enumerate_all()
         dom_r2 = [x[0] for x in r2]
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]

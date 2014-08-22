@@ -200,7 +200,7 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 # Todo: call generator to return solution      
 def _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable):
     # 1. score predicates
-    pred_map = _categorize_predicates(predicate, env, varList)
+    pred_map = _categorize_predicates(predicate, env, varList, interpreter_callable)
     assert pred_map != []
     # 2. find possible variable enum order
     varList  = _compute_variable_enum_order(pred_map, varList)
@@ -211,6 +211,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
         test_set = None 
         for pred in pred_map:
             (time, vars, must_be_computed_first) = pred_map[pred]
+            print (time, vars, must_be_computed_first, pred)
             #print [x.idName for x in test_dict.keys()], must_be_computed_first
             #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
             # Avoid interference between bound variables: check find_constraint_vars
@@ -356,14 +357,14 @@ def _compute_variable_enum_order(pred_map, varList):
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
 # input: P0 & P1 & ...PN or in special cases one predicate (like x=42)
 # output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
-def _categorize_predicates(predicate, env, varList):
+def _categorize_predicates(predicate, env, varList, interpreter_callable):
     if isinstance(predicate, AConjunctPredicate):
-        map0 = _categorize_predicates(predicate.children[0], env, varList)
-        map1 = _categorize_predicates(predicate.children[1], env, varList)
+        map0 = _categorize_predicates(predicate.children[0], env, varList, interpreter_callable)
+        map1 = _categorize_predicates(predicate.children[1], env, varList, interpreter_callable)
         map0.update(map1)
         return map0
     else:
-       time = estimate_computation_time(predicate, env)
+       time = estimate_computation_time(predicate, env, interpreter_callable)
        constraint_vars, and_vars_need_to_be_set_first = find_constraint_vars(predicate, env, varList)
        return {predicate: (time, constraint_vars, and_vars_need_to_be_set_first)}
 

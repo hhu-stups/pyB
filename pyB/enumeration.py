@@ -190,6 +190,8 @@ def all_records(value_dict, result, acc, index):
     else:
         name = list(value_dict.keys())[index]
         values = list(value_dict.values())[index]
+        if isinstance(values, SymbolicSet):
+            values = values.enumerate_all()
         for v in values:
             acc[name] = v
             all_records(value_dict, result, acc, index+1)

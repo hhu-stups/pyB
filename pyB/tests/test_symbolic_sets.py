@@ -778,8 +778,8 @@ class TestSymbolicSets():
   
                
     # check enumeration
-    import pytest
-    @pytest.mark.xfail
+    #import pytest
+    #@pytest.mark.xfail
     def test_symbolic_intervall_set4(self):
         # Build AST
         string_to_file("#PREDICATE {(1,1)}=%x.(x:-2**0..2**0|x*x)", file_name)

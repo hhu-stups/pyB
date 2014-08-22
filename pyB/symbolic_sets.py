@@ -524,5 +524,22 @@ class SymbolicPowerSet(SymbolicSet):
 
 
 class SymbolicIntervalSet(LargeSet):
-    pass    
+    def __init__(self, l, r, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.l = l
+        self.r = r
+        
+    # e:S (element:l..r)
+    def __contains__(self, element):
+        if not isinstance(element, int):
+            raise Exception("Interval membership with non-integer")
+        if element<=self.r and element>=self.l:
+            return True
+        else:
+            return False
+    
+    def enumerate_all(self):
+        left = self.l
+        right = self.r        
+        return frozenset(range(left, right+1)) # TODO: Problem if to large
 
