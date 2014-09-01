@@ -511,9 +511,7 @@ class TestSymbolicSets():
         env = Environment()
         assert not interpret(root, env)
 
- 
-    #import pytest
-    #@pytest.mark.xfail 
+
     def test_symbolic_powerset3(self):
         # Build AST
         string_to_file("#PREDICATE POW(NATURAL)/\{{1,2,3}}={{1,2,3}} ", file_name)
@@ -522,7 +520,7 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
-        assert not interpret(root, env)       
+        assert interpret(root, env)       
         
     def test_symbolic_power1set(self):
         # Build AST

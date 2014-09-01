@@ -48,6 +48,17 @@ class SymbolicSet(object):
         #    return False
         #return True
 
+    def intersection(self, aset): 
+        result = []
+        if isinstance(aset, frozenset):
+            for e in aset:
+               if e in self:
+                   result.append(e)
+        else:
+            raise NotImplementedError("symbolicset intersection") 
+        return frozenset(result)
+
+
 class LargeSet(SymbolicSet):
     def __sub__(self, other):
         # TODO: add possible symbolic cases
@@ -519,9 +530,13 @@ class SymbolicPowerSet(SymbolicSet):
 
     # e:S (element:self.set)
     def __contains__(self, element):
-        print element
-        print self.set
-        raise Exception("not implemented")    
+        if isinstance(element, frozenset):
+            for e in element:
+                if e not in self.set:
+                    return False
+            return True
+        else:
+            raise NotImplementedError("symbolic powerset contains") 
 
 
 class SymbolicIntervalSet(LargeSet):
