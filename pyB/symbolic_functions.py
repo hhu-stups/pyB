@@ -133,40 +133,45 @@ class SymbolicSecondProj(SymbolicSet):
     
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
-        assert self.left_set==self.right_set
-        if isinstance(self.left_set, SymbolicSet):
-            aSet = self.left_set.enumerate_all()
-        else:
-            aSet = self.left_set 
-        id_r = [(x,x) for x in aSet]
-        return frozenset(id_r)
+        if self.explicit_set_repr==None:
+            assert self.left_set==self.right_set
+            if isinstance(self.left_set, SymbolicSet):
+                aSet = self.left_set.enumerate_all()
+            else:
+                aSet = self.left_set 
+            id_r = [(x,x) for x in aSet]
+            self.explicit_set_repr = frozenset(id_r)
+        return self.explicit_set_repr
 
 class SymbolicCompositionSet(SymbolicRelationSet):
     # convert to explicit set
     def enumerate_all(self):
-        if isinstance(self.left_set, frozenset) and isinstance(self.right_set, SymbolicLambda):
-            result = []
-            lambda_function = self.right_set        
-            self.env.push_new_frame(lambda_function.variable_list)
-            for tup in self.left_set:
-                domain = tup[0]
-                args   = remove_tuples(tup[1])
-                for i in range(len(lambda_function.variable_list)):
-                    idNode = lambda_function.variable_list[i]
-                    #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
-                    # onne carttype can contain more...
-                    # set args to correct bound variable in lambda expression using type-info
-                    atype = self.env.get_type_by_node(idNode)
-                    value = build_arg_by_type(atype, args) # args-mod via sideeffect
-                    self.env.set_value(idNode.idName, value)
-                # check if value is in lambda domain
-                pre_result = self.interpret(lambda_function.predicate, self.env)
-                if pre_result:
-                    # calculate element of composition expression
-                    lambda_image = self.interpret(lambda_function.expression, self.env)
-                    result.append(tuple([domain, lambda_image]))
-            self.env.pop_frame() # exit scope
-            return frozenset(result)
-        if PRINT_WARNINGS:
-            print "convert symbolic to explicit set failed! Case not implemented"
-        raise EnumerationNotPossibleException(self) 
+        if self.explicit_set_repr==None:      
+            if isinstance(self.left_set, frozenset) and isinstance(self.right_set, SymbolicLambda):
+                result = []
+                lambda_function = self.right_set        
+                self.env.push_new_frame(lambda_function.variable_list)
+                for tup in self.left_set:
+                    domain = tup[0]
+                    args   = remove_tuples(tup[1])
+                    for i in range(len(lambda_function.variable_list)):
+                        idNode = lambda_function.variable_list[i]
+                        #TODO: check all tuple confusion e.g x:(NAT*(NAT*NAT)
+                        # onne carttype can contain more...
+                        # set args to correct bound variable in lambda expression using type-info
+                        atype = self.env.get_type_by_node(idNode)
+                        value = build_arg_by_type(atype, args) # args-mod via sideeffect
+                        self.env.set_value(idNode.idName, value)
+                    # check if value is in lambda domain
+                    pre_result = self.interpret(lambda_function.predicate, self.env)
+                    if pre_result:
+                        # calculate element of composition expression
+                        lambda_image = self.interpret(lambda_function.expression, self.env)
+                        result.append(tuple([domain, lambda_image]))
+                self.env.pop_frame() # exit scope
+                self.explicit_set_repr = frozenset(result)
+            else:
+                if PRINT_WARNINGS:
+                    print "convert symbolic to explicit set failed! Case not implemented"
+                raise EnumerationNotPossibleException(self)
+        return self.explicit_set_repr

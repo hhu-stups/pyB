@@ -17,6 +17,7 @@ class SymbolicSet(object):
     def __init__(self, env, interpret):
         self.env = env 
         self.interpret = interpret
+        self.explicit_set_repr = None
         
     def __and__(self, aset):
         return self.intersection(aset)
@@ -287,7 +288,9 @@ class NatSet(LargeSet):
         return True
 
     def enumerate_all(self):
-        return frozenset(range(0,self.env._max_int+1))
+        if self.explicit_set_repr==None:
+            self.explicit_set_repr = frozenset(range(0,self.env._max_int+1))
+        return self.explicit_set_repr
     
 
     # not used for performance reasons
@@ -350,7 +353,9 @@ class Nat1Set(LargeSet):
         return True
     
     def enumerate_all(self):
-        return frozenset(range(1,self.env._max_int+1))
+        if self.explicit_set_repr==None:
+            self.explicit_set_repr = frozenset(range(1,self.env._max_int+1))
+        return self.explicit_set_repr
 
 
     # not used for performance reasons
@@ -414,7 +419,9 @@ class IntSet(LargeSet):
         return True
 
     def enumerate_all(self):
-        return frozenset(range(self.env._min_int, self.env._max_int+1))
+        if self.explicit_set_repr==None:
+            self.explicit_set_repr = frozenset(range(self.env._min_int, self.env._max_int+1))
+        return self.explicit_set_repr
 
     def __len__(self):
         return -1*self.env._min_int+self.env._max_int+1
@@ -456,7 +463,9 @@ class StringSet(SymbolicSet):
         return True
     
     def enumerate_all(self): # FIXME: hack
-        return frozenset(self.env.all_strings)
+        if self.explicit_set_repr==None:
+            self.explicit_set_repr = frozenset(self.env.all_strings)
+        return self.explicit_set_repr
   
     
 class SymbolicCartSet(SymbolicSet):
@@ -490,7 +499,6 @@ class SymbolicUnionSet(SymbolicSet):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1
-        self.explicit_set_repr = None
     
     # function call of set
     def __getitem__(self, arg):
@@ -555,7 +563,9 @@ class SymbolicIntervalSet(LargeSet):
             return False
     
     def enumerate_all(self):
-        left = self.l
-        right = self.r        
-        return frozenset(range(left, right+1)) # TODO: Problem if to large
+        if self.explicit_set_repr==None:
+            left = self.l
+            right = self.r   
+            self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large     
+        return self.explicit_set_repr
 
