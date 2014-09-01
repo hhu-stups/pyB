@@ -51,7 +51,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         return iterator 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
-            print "WARNING! Brute force enumeration caused by: %s" % pretty_print(predicate) 
+            print "WARNING! Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
@@ -211,7 +211,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
         test_set = None 
         for pred in pred_map:
             (time, vars, must_be_computed_first) = pred_map[pred]
-            print (time, vars, must_be_computed_first, pred)
+            #print (time, vars, must_be_computed_first, pred)
             #print [x.idName for x in test_dict.keys()], must_be_computed_first
             #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
             # Avoid interference between bound variables: check find_constraint_vars

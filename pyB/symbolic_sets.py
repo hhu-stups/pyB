@@ -17,6 +17,12 @@ class SymbolicSet(object):
     def __init__(self, env, interpret):
         self.env = env 
         self.interpret = interpret
+        
+    def __and__(self, aset):
+        return self.intersection(aset)
+    
+    def __or__(self, aset):
+        return self.union(aset)       
     
     def __mul__(self, aset):
         return SymbolicCartSet(self, aset, self.env, self.interpret)
@@ -245,18 +251,19 @@ class NatSet(LargeSet):
         elif isinstance(aset, Nat1Set):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")         
-        
-    def __or__(self, aset):
+    
+       
+    def union(self, aset):
         if isinstance(aset, NatSet):
             return self
         elif isinstance(aset, Nat1Set):
-            return aset
+            return self
         elif isinstance(aset, IntSet):
             return aset
         elif isinstance(aset, InfiniteSet):
             return aset
         else:
-            raise NotImplementedError()
+            raise NotImplementedError("Union of NAT1 and %s" % aset)
 
     def __eq__(self, aset):
         if self.__class__ == aset.__class__:

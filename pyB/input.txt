@@ -1,1 +1,1 @@
-#PREDICATE %x.(x:NAT|x*x)(25)=625
+#PREDICATE %x.(x:NATURAL & x:{1,2,3}|x*x)\/%x.(x:NATURAL & x:{1,2,3}|x*2)={(1,1),(1,2),(2,4),(3,6),(3,9)}  

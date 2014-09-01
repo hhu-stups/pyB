@@ -173,7 +173,7 @@ class TestSymbolicSets():
         integer_set = IntegerSet(env, interpret)
         
         assert (nat_set | nat_set) ==nat_set
-        assert (nat_set | nat1_set)==nat1_set
+        assert (nat_set | nat1_set)==nat_set
         assert (nat_set | int_set) ==int_set
         assert (nat_set | natural_set) ==natural_set
         assert (nat_set | natural1_set) ==natural1_set
@@ -449,8 +449,12 @@ class TestSymbolicSets():
         assert 1==2 # prevent Timeout (timeout not implemented yet)
         assert interpret(root, env) 
 
+
     import pytest
     @pytest.mark.xfail 
+    # Fail! pyB computes the wrong result : empty function
+    # cause: brute force enum. of outer compreh. {(-1,-1)..(5,5)}, (y,42) not in set!
+    # cant solve  #(y).(y:NAT & x:NAT*NAT & x=(y,42) without x values
     def test_symbolic_set_comp_ran(self):
         # Build AST
         string_to_file("#PREDICATE ran({x| #(y).(y:NAT & x:NAT*NAT & x=(y,42))})={42}", file_name)
@@ -462,7 +466,8 @@ class TestSymbolicSets():
         assert interpret(root, env) 
         
     import pytest
-    @pytest.mark.xfail        
+    @pytest.mark.xfail  
+    # same cause as test_symbolic_set_comp_ran   
     def test_symbolic_set_comp_dom(self):
         # Build AST
         string_to_file("#PREDICATE dom({x| #(y).(y:NAT & x:NAT*NAT & x=(42,y))})={42}", file_name)
@@ -507,8 +512,8 @@ class TestSymbolicSets():
         assert not interpret(root, env)
 
  
-    import pytest
-    @pytest.mark.xfail 
+    #import pytest
+    #@pytest.mark.xfail 
     def test_symbolic_powerset3(self):
         # Build AST
         string_to_file("#PREDICATE POW(NATURAL)/\{{1,2,3}}={{1,2,3}} ", file_name)

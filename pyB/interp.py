@@ -969,11 +969,15 @@ def interpret(node, env):
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            aSet = aSet.enumerate_all()
         dom = [e[0] for e in list(aSet)]
         return frozenset(dom)
     elif isinstance(node, ARangeExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            aSet = aSet.enumerate_all()
         ran = [e[1] for e in list(aSet)]
         return frozenset(ran)
     elif isinstance(node, ACompositionExpression):

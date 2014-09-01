@@ -113,7 +113,11 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.predicate = pred
         self.node = node
         self.generator = calc_possible_solutions
-        self.explicit_set_repr = None # not computed at init    
+        self.explicit_set_repr = None # not computed at init  
+    
+    def __getitem__(self, args):
+        print args
+        raise NotImplementedError()  
     
     def __eq__(self, aset):
         if aset==None:
