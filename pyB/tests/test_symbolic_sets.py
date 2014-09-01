@@ -270,11 +270,11 @@ class TestSymbolicSets():
         env = Environment()
         print interpret(root.children[0], env)  
         
-    import pytest
-    @pytest.mark.xfail 
+
+    # munis one not element of NAT
     def test_symbolic_function_set1(self):
         # Build AST
-        string_to_file("#PREDICATE S={1,2} & {(1,1),(2,-1)}:S-->NAT ", file_name)
+        string_to_file("#PREDICATE {(1,1),(2,-1)}:{1,2}-->NAT ", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
         
@@ -294,9 +294,7 @@ class TestSymbolicSets():
         assert interpret(root, env)         
                
 
-    # TODO: use symbolic natset on default
-    import pytest
-    @pytest.mark.xfail
+    # This test fails if max_int=5. (25 is not in domain)
     def test_symbolic_lambda1(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT|x*x)(25)=625", file_name)
@@ -305,6 +303,8 @@ class TestSymbolicSets():
 
         # Test fapp
         env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32 
         assert interpret(root, env)        
 
 
@@ -329,6 +329,7 @@ class TestSymbolicSets():
         # Test fapp
         env = Environment()
         assert interpret(root, env)  
+
    
     # TODO: Handle timeout enumeration
     import pytest

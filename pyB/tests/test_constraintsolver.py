@@ -628,7 +628,7 @@ class TestConstraintSolver():
         var0 = union_predicate.children[0]
         var1 = union_predicate.children[1]
         assert isinstance(set_predicate, ABelongPredicate)
-        map = _categorize_predicates(set_predicate, env, [var0, var1])  
+        map = _categorize_predicates(set_predicate, env, [var0, var1], interpret)  
         (time0, vars0, compute_first0) = map[set_predicate]
         assert set(vars0)==set(["x", "y"])
         assert time0<2**22

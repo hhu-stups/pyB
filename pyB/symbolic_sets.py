@@ -271,8 +271,6 @@ class NatSet(LargeSet):
     def enumerate_all(self):
         return frozenset(range(0,self.env._max_int+1))
     
-    def __len__(self):
-        return self.env._max_int+1
 
     # not used for performance reasons
     #def __getitem__(self, key):
@@ -336,8 +334,6 @@ class Nat1Set(LargeSet):
     def enumerate_all(self):
         return frozenset(range(1,self.env._max_int+1))
 
-    def __len__(self):
-        return self.env._max_int
 
     # not used for performance reasons
     #def __getitem__(self, key):
@@ -347,9 +343,6 @@ class Nat1Set(LargeSet):
 class IntSet(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >= self.env._min_int and element <= self.env._max_int
-
-    def __len__(self):
-        return self.env._max_int + (-1)*self.env._min_int + 1 
     
     def __le__(self, aset): # IntSet <=
         if isinstance(aset, (IntSet, IntegerSet)):
@@ -407,6 +400,7 @@ class IntSet(LargeSet):
 
     def __len__(self):
         return -1*self.env._min_int+self.env._max_int+1
+
  
     # not used for performance reasons   
     #def __getitem__(self, key):
