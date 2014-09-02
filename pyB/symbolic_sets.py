@@ -34,6 +34,8 @@ class SymbolicSet(object):
     def __eq__(self, aset):
         if aset==None:
             return False
+        if isinstance(aset, frozenset):
+            return aset == self.enumerate_all()
         print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
         raise Exception("fail: can not compare symbolic set")
         #if self.__class__ == aset.__class__:
@@ -510,6 +512,15 @@ class SymbolicCartSet(SymbolicSet):
     
     def __ne__(self, aset):
         return not self.__eq__(aset)
+        
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            aset0 = self.left_set.enumerate_all()
+            aset1 = self.right_set.enumerate_all()
+            self.explicit_set_repr = frozenset(((x,y) for x in aset0 for y in aset1))
+        return self.explicit_set_repr
+            
+        
 
 
 class SymbolicUnionSet(SymbolicSet):
@@ -537,9 +548,7 @@ class SymbolicUnionSet(SymbolicSet):
             if check_syntacticly_equal(self, aset):
                 return True
         if isinstance(aset, frozenset):
-            if self.explicit_set_repr==None:
-                self.explicit_set_repr = self.enumerate_all()
-            return aset == self.explicit_set_repr
+            return aset == self.enumerate_all()
         raise DontKnowIfEqualException("lambda compare not implemented")
     
     def enumerate_all(self):
@@ -586,4 +595,15 @@ class SymbolicIntervalSet(LargeSet):
             right = self.r   
             self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large     
         return self.explicit_set_repr
+    
+    def __iter__(self):
+        self.generator = self.make_generator()
+        return self 
+    
+    def next(self):
+        return self.generator.next()
 
+    def make_generator(self):
+        for i in range(self.l, self.r+1):
+            yield i         
+        

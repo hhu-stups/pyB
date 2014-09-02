@@ -996,6 +996,8 @@ def interpret(node, env):
         rel = interpret(node.children[1], env)
         if isinstance(rel, SymbolicSet):
             #avoid infinit enum
+            if isinstance(aSet, SymbolicSet):
+                aSet = aSet.enumerate_all()
             new_rel = [(x,rel[x]) for x in aSet]
         else:
             new_rel = [x for x in rel if x[0] in aSet]

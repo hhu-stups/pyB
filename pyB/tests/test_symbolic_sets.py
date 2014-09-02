@@ -670,8 +670,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
-    #import pytest
-    #@pytest.mark.xfail
+
     def test_symbolic_inverse_realtion(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT & x<5 |x+1)~={(1,0),(2,1),(3,2),(4,3),(5,4)}", file_name)
@@ -683,8 +682,27 @@ class TestSymbolicSets():
         assert interpret(root, env)
 
 
-    #import pytest
-    #@pytest.mark.xfail
+    def test_symbolic_inverse_realtion2(self):
+        # Build AST
+        string_to_file("#PREDICATE  (1,0):%x.(x:NATURAL & x<5 |x+1)~", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)
+        
+ 
+    def test_symbolic_inverse_realtion3(self):
+        # Build AST
+        string_to_file("#PREDICATE (1,0):%x.(x:NATURAL|x+1)~", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        assert interpret(root, env)       
+
     def test_symbolic_overwrite(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT & x<5 |x)<+{(1,0)}={(0,0),(1,0),(2,2),(3,3),(4,4)}", file_name)

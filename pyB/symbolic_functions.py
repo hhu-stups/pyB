@@ -51,15 +51,20 @@ class SymbolicPartialFunctionSet(SymbolicRelationSet):
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet):
     def next(self):
-        S = self.left_set
-        T = self.right_set
-        for relation_lst in make_explicit_set_of_realtion_lists(S,T): # S<->T
+        while True: # StopIterationException exit loop
+            relation_lst = self.generator.next()
             domain = [x[0] for x in relation_lst]
             if double_element_check(domain): # check if function
                 continue
-            if not frozenset(domain) == S: # check if total
+            if not frozenset(domain) == self.left_set: # check if total (domain equal S)
                 continue
             return frozenset(relation_lst) 
+    
+    def __iter__(self):
+        S = self.left_set
+        T = self.right_set
+        self.generator = make_explicit_set_of_realtion_lists(S,T)
+        return self
     
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
