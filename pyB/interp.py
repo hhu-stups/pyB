@@ -994,7 +994,11 @@ def interpret(node, env):
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
-        new_rel = [x for x in rel if x[0] in aSet]
+        if isinstance(rel, SymbolicSet):
+            #avoid infinit enum
+            new_rel = [(x,rel[x]) for x in aSet]
+        else:
+            new_rel = [x for x in rel if x[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)
@@ -1013,8 +1017,11 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
+        if isinstance(rel, SymbolicSet):
+            rel = rel.enumerate_all()
         new_rel = [(x[1],x[0]) for x in rel]
         return frozenset(new_rel)
+        #return SymbolicInverseRelation(rel, env, interpret)
     elif isinstance(node, AImageExpression):
         #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
         rel = interpret(node.children[0], env)
@@ -1036,10 +1043,10 @@ def interpret(node, env):
     elif isinstance(node, AOverwriteExpression):
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
-        #if isinstance(r1, SymbolicSet):
-        #    r1 = r1.enumerate_all()
-        #if isinstance(r2, SymbolicSet):
-        #    r2 = r2.enumerate_all()
+        if isinstance(r1, SymbolicSet):
+            r1 = r1.enumerate_all()
+        if isinstance(r2, SymbolicSet):
+            r2 = r2.enumerate_all()
         dom_r2 = [x[0] for x in r2]
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]

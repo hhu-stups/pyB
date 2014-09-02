@@ -161,6 +161,44 @@ class TestSymbolicSets():
         assert integer_set>=integer_set
 
 
+    def test_symbolic_set_subset2(self):
+        # Build AST
+        string_to_file("#PREDICATE NAT1<:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test 
+        env = Environment()
+        assert interpret(root.children[0], env)
+        
+        # Build AST
+        string_to_file("#PREDICATE NAT1<<:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test 
+        env = Environment()
+        assert interpret(root.children[0], env)
+        
+        # Build AST
+        string_to_file("#PREDICATE INT/<:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test 
+        env = Environment()
+        assert interpret(root.children[0], env)
+        
+        # Build AST
+        string_to_file("#PREDICATE NAT/<<:NAT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test 
+        env = Environment()
+        assert interpret(root.children[0], env)
+ 
+        
     def test_symbolic_set_union(self):
         env = Environment()
         env._min_int = -2**31
@@ -398,6 +436,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
+
     # this checks if equality is symmetric 
     def test_symbolic_lambda_composition6(self):
         # Build AST
@@ -544,8 +583,6 @@ class TestSymbolicSets():
         assert not interpret(root, env)
 
 
-    import pytest
-    @pytest.mark.xfail 
     def test_symbolic_subset(self):
         # Build AST
         string_to_file("#PREDICATE {(1,1)}<:%x.(x:NATURAL|x) ", file_name)
@@ -606,10 +643,9 @@ class TestSymbolicSets():
         # Test 
         env = Environment()
         assert interpret(root, env)   
+
     
     # TODO: domain subtraction test
-    import pytest
-    @pytest.mark.xfail
     def test_symbolic_domain_res(self):
         # Build AST
         string_to_file("#PREDICATE 0..4<|%x.(x:NAT|x)={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
@@ -619,6 +655,7 @@ class TestSymbolicSets():
         # Test 
         env = Environment()
         assert interpret(root, env) 
+
 
     # TODO: range subtraction test
     import pytest
@@ -633,8 +670,8 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
-    import pytest
-    @pytest.mark.xfail
+    #import pytest
+    #@pytest.mark.xfail
     def test_symbolic_inverse_realtion(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT & x<5 |x+1)~={(1,0),(2,1),(3,2),(4,3),(5,4)}", file_name)
@@ -645,8 +682,9 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)
 
-    import pytest
-    @pytest.mark.xfail
+
+    #import pytest
+    #@pytest.mark.xfail
     def test_symbolic_overwrite(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT & x<5 |x)<+{(1,0)}={(0,0),(1,0),(2,2),(3,3),(4,4)}", file_name)

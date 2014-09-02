@@ -49,6 +49,7 @@ class SymbolicSet(object):
         #    return False
         #return True
 
+    # default implementation
     def intersection(self, aset): 
         result = []
         if isinstance(aset, frozenset):
@@ -58,6 +59,23 @@ class SymbolicSet(object):
         else:
             raise NotImplementedError("symbolicset intersection") 
         return frozenset(result)
+    
+    def __ge__(self, aset):
+        return self.issuperset(aset)
+        
+    def __le__(self, aset):
+        return self.issubset(aset)
+        
+    # default implementation
+    def issuperset(self, aset):
+        if isinstance(aset, frozenset):
+            for e in aset:
+               if e not in self: 
+                   return False
+            return True           
+        else:
+            raise NotImplementedError("symbolicset issuperset")         
+    
 
 
 class LargeSet(SymbolicSet):
@@ -77,12 +95,12 @@ class NaturalSet(InfiniteSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >= 0 
     
-    def __le__(self, aset): # NaturalSet <= aset
+    def issubset(self, aset): # NaturalSet <= aset
         if isinstance(aset, (NaturalSet,IntegerSet)):
             return True
         return False 
     
-    def __ge__(self, aset): # NaturalSet >= aset
+    def issuperset(self, aset): # NaturalSet >= aset
         if isinstance(aset, (IntegerSet, IntSet)): # no neg nums
             return False
         elif isinstance(aset, frozenset):
@@ -126,12 +144,12 @@ class Natural1Set(InfiniteSet):
     def __contains__(self, element):
         return isinstance(element, int) and element > 0  
     
-    def __le__(self, aset): # Natural1Set <= aset
+    def issubset(self, aset): # Natural1Set <= aset
         if isinstance(aset, InfiniteSet):
             return True
         return False
  
-    def __ge__(self, aset): # Natural1Set >= aset
+    def issuperset(self, aset): # Natural1Set >= aset
         if isinstance(aset, (NaturalSet, IntegerSet, NatSet, IntSet)): # zero
             return False
         elif isinstance(aset, frozenset):
@@ -174,12 +192,12 @@ class IntegerSet(InfiniteSet):
     def __contains__(self, element):
         return isinstance(element, int) or isinstance(element, IntegerType) #type for symbolic checks
     
-    def __le__(self, aset): # IntegerSet <= aset
+    def issubset(self, aset): # IntegerSet <= aset
         if isinstance(aset, IntegerSet):
             return True
         return False
 
-    def __ge__(self, aset): # IntegerSet >= aset
+    def issuperset(self, aset): # IntegerSet >= aset
         if isinstance(aset, SymbolicSet): 
             return True
         elif isinstance(aset, frozenset):
@@ -223,7 +241,7 @@ class NatSet(LargeSet):
     def __len__(self):
         return self.env._max_int+1
      
-    def __le__(self, aset): # NatSet <=
+    def issubset(self, aset): # NatSet <=
         if isinstance(aset, (NatSet, IntSet, NaturalSet, IntegerSet)):
             return True
         elif isinstance(aset, frozenset):
@@ -235,7 +253,7 @@ class NatSet(LargeSet):
             return False
         raise NotImplementedError("inclusion with unknown set-type")
     
-    def __ge__(self, aset): # NatSet >= aset
+    def issuperset(self, aset): # NatSet >= aset
         if isinstance(aset, (InfiniteSet, IntSet)): 
             return False
         elif isinstance(aset, (NatSet, Nat1Set)):
@@ -305,7 +323,7 @@ class Nat1Set(LargeSet):
     def __len__(self):
         return self.env._max_int
     
-    def __le__(self, aset): # Nat1Set <=
+    def issubset(self, aset): # Nat1Set <=
         if isinstance(aset, (InfiniteSet, LargeSet)):
             return True
         elif isinstance(aset, frozenset):
@@ -315,7 +333,7 @@ class Nat1Set(LargeSet):
             return len(aset)>=self.__len__()
         raise NotImplementedError("inclusion with unknown set-type")
     
-    def __ge__(self, aset): # Nat1Set >= aset
+    def issuperset(self, aset): # Nat1Set >= aset
         if isinstance(aset, (NatSet, IntSet,InfiniteSet)): 
             return False
         elif isinstance(aset, Nat1Set):
@@ -367,7 +385,7 @@ class IntSet(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >= self.env._min_int and element <= self.env._max_int
     
-    def __le__(self, aset): # IntSet <=
+    def issubset(self, aset): # IntSet <=
         if isinstance(aset, (IntSet, IntegerSet)):
             return True
         elif isinstance(aset, frozenset):
@@ -379,7 +397,7 @@ class IntSet(LargeSet):
             return False
         raise NotImplementedError("inclusion with unknown set-type")
     
-    def __ge__(self, aset): # IntSet >= aset
+    def issuperset(self, aset): # IntSet >= aset
         if isinstance(aset, InfiniteSet): 
             return False
         elif isinstance(aset, LargeSet):

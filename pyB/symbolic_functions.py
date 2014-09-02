@@ -175,3 +175,16 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                     print "convert symbolic to explicit set failed! Case not implemented"
                 raise EnumerationNotPossibleException(self)
         return self.explicit_set_repr
+
+
+class SymbolicInverseRelation(SymbolicRelationSet):
+    def __init__(self, relation, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.relation = relation
+        
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:  
+            rel = self.relation.enumerate_all()
+            inv_rel = [(x[1],x[0]) for x in rel]
+            self.explicit_set_repr = frozenset(inv_rel)
+        return self.explicit_set_repr
