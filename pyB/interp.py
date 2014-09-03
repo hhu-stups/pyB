@@ -799,8 +799,8 @@ def interpret(node, env):
             return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
-            #print elm
             result = quick_member_eval(node.children[1], env, elm)
+            #print result
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
@@ -888,8 +888,8 @@ def interpret(node, env):
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
-        #return SymbolicIntervalSet(left, right, env, interpret)
-        return frozenset(range(left, right+1))
+        return SymbolicIntervalSet(left, right, env, interpret)
+        #return frozenset(range(left, right+1))
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
@@ -1276,6 +1276,7 @@ def interpret(node, env):
             sequence_list += create_all_seq_w_fixlen(list(S),i)
         inj_sequence_list = filter_not_injective(sequence_list)
         perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
+        #print perm_sequence_list
         return frozenset(perm_sequence_list)
     elif isinstance(node, AConcatExpression):
         # u:= s^t
@@ -1304,6 +1305,7 @@ def interpret(node, env):
             i = i+1
             e = interpret(child, env)
             sequence.append(tuple([i,e]))
+        #print "sequence", sequence
         return frozenset(sequence)
     elif isinstance(node, ASizeExpression):
         sequence = interpret(node.children[0], env)

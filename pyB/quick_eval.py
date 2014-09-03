@@ -268,6 +268,9 @@ def quick_member_eval(ast, env, element):
     elif isinstance(ast, APermExpression):
         preimage = []
         image = []
+        S = interpret(ast.children[0], env)
+        if isinstance(S, SymbolicSet):
+            S = S.enumerate_all()
         for tup in element:
             assert isinstance(tup[0], int)
             preimage.append(tup[0])
@@ -278,7 +281,7 @@ def quick_member_eval(ast, env, element):
             return False        
         if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
             return False
-        if not (set(image)==interpret(ast.children[0], env)): # test bijection/perm
+        if not (set(image)==S): # test bijection/perm
             return False 
         return True            
     elif isinstance(ast, APowSubsetExpression):

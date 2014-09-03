@@ -515,8 +515,14 @@ class SymbolicCartSet(SymbolicSet):
         
     def enumerate_all(self):
         if self.explicit_set_repr==None:
-            aset0 = self.left_set.enumerate_all()
-            aset1 = self.right_set.enumerate_all()
+            if isinstance(self.left_set, SymbolicSet):
+                aset0 = self.left_set.enumerate_all()
+            else:
+                aset0 = self.left_set
+            if isinstance(self.right_set, SymbolicSet):
+                aset1 = self.right_set.enumerate_all()
+            else:
+                aset1 = self.right_set
             self.explicit_set_repr = frozenset(((x,y) for x in aset0 for y in aset1))
         return self.explicit_set_repr
             
