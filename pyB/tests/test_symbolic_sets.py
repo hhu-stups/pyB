@@ -806,8 +806,6 @@ class TestSymbolicSets():
         assert interpret(root, env)  
    
     # TODO: symbolic intervall  
-    import pytest
-    @pytest.mark.xfail 
     def test_symbolic_intervall_set2(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:-2**3..2**32|x*x)(4)=16", file_name)
@@ -822,8 +820,6 @@ class TestSymbolicSets():
         
  
     # check membership
-    import pytest
-    @pytest.mark.xfail
     def test_symbolic_intervall_set3(self):
         # Build AST
         string_to_file("#PREDICATE (4,16):%x.(x:-2**3..2**32|x*x)", file_name)
@@ -838,8 +834,6 @@ class TestSymbolicSets():
   
                
     # check enumeration
-    #import pytest
-    #@pytest.mark.xfail
     def test_symbolic_intervall_set4(self):
         # Build AST
         string_to_file("#PREDICATE {(1,1)}=%x.(x:-2**0..2**0|x*x)", file_name)
