@@ -605,7 +605,7 @@ class SymbolicUnionSet(SymbolicSet):
         if self.explicit_set_repr==None:
             L = self.left_set.enumerate_all()
             R = self.right_set.enumerate_all()
-            self.explicit_set_repr = L + R
+            self.explicit_set_repr = L | R
         return self.explicit_set_repr 
 
 class SymbolicPowerSet(SymbolicSet):
