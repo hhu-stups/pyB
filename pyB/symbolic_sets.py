@@ -18,72 +18,117 @@ class SymbolicSet(object):
         self.env = env 
         self.interpret = interpret
         self.explicit_set_repr = None
-        
-    def __and__(self, aset):
-        return self.intersection(aset)
-    
-    def __or__(self, aset):
-        return self.union(aset)       
-    
+
     def __mul__(self, aset):
         return SymbolicCartSet(self, aset, self.env, self.interpret)
     
     def __rmul__(self, aset):
         return SymbolicCartSet(aset, self, self.env, self.interpret)
+            
+    # delegate to method if syntactic suger is used S & T    
+    def __and__(self, aset):
+        return self.intersection(aset)
+    
+    # delegate to method if syntactic suger is used S | T
+    def __or__(self, aset):
+        return self.union(aset)       
+    
+    # delegate to method if syntactic suger is used S > T
+    def __ge__(self, aset):
+        return self.issuperset(aset)
+
+    # delegate to method if syntactic suger is used S < T        
+    def __le__(self, aset):
+        return self.issubset(aset)
     
     def __eq__(self, aset):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) equality implementation called", self, aset
         if aset==None:
             return False
-        if isinstance(aset, frozenset):
-            return aset == self.enumerate_all()
-        print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
-        raise Exception("fail: can not compare symbolic set")
-        #if self.__class__ == aset.__class__:
-        #    return True
-        #return False
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        return aset == self.enumerate_all()  
+
 
     def __ne__(self, aset):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) unequality implementation called", self, aset
         if aset==None:
             return True
-        print "WARNING: equalety not implemented for symbolic sets!", self," and", aset
-        raise Exception("fail: can not compare symbolic set")
-        #if self.__class__ == aset.__class__:
-        #    return False
-        #return True
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        return aset != self.enumerate_all()        
+
 
     # default implementation
     def intersection(self, aset): 
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) intersection implementation called", self, aset
         result = []
+        # Use enumerate all to avoid push/pop in every interation
         if not isinstance(aset, frozenset):
             aset = aset.enumerate_all()
-        for e in aset:
+        for e in aset: 
             if e in self:
                 result.append(e)
         return frozenset(result)
-    
-    def __ge__(self, aset):
-        return self.issuperset(aset)
-        
-    def __le__(self, aset):
-        return self.issubset(aset)
+
+
+    # default implementation
+    def union(self, aset): 
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) union implementation called", self, aset
+        result = []
+        # Use enumerate all to avoid push/pop in every interation
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        return aset.union(self.enumerate_all())
         
     # default implementation
     def issuperset(self, aset):
-        if isinstance(aset, frozenset):
-            for e in aset:
-               if e not in self: 
-                   return False
-            return True           
-        else:
-            raise NotImplementedError("symbolicset issuperset")         
-    
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) superset-check implementation called", self, aset
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        for e in aset:
+           if e not in self: 
+               return False
+        return True           
+      
+    # default implementation
+    def issubset(self, aset):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) subset-check implementation called", self, aset
+        for e in self:
+            if e not in aset: 
+               return False
+        return True        
 
+    # default implementation
+    def __contains__(self, element):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) membership-check implementation called", self, element
+        return element in self.enumerate_all() 
+
+        
+    # default implementation
+    def __getitem__(self, args):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) function app f(x) implementation called", self, args
+        return self.enumerate_all()[args]
+
+    # default implementation
+    def __sub__(self, aset):
+        if PRINT_WARNINGS:
+            print "WARNING: default (brute force) function sub implementation called", self, aset
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        return self.enumerate_all()-aset
+        
 
 class LargeSet(SymbolicSet):
-    def __sub__(self, other):
-        # TODO: add possible symbolic cases
-        assert isinstance(other, frozenset)
-        return self.enumerate_all()-other
+    pass
     
 
 class InfiniteSet(SymbolicSet):

@@ -10,7 +10,7 @@ class SymbolicLambda(SymbolicSet):
         self.predicate = pred
         self.expression = expr
         self.node = node
-        self.generator = calc_possible_solutions
+        self.domain_generator = calc_possible_solutions
         self.explicit_set_repr = None  
     
     # TODO: all __getitem__ methods have problems with implicit enum
@@ -71,6 +71,7 @@ class SymbolicLambda(SymbolicSet):
         return domain_value and image_value==args[-1]
     
     # convert to explicit frozenset
+    # dont use generator to avoid rapid frame push/pop
     def enumerate_all(self):
         if self.explicit_set_repr==None:
             varList = self.variable_list
@@ -81,7 +82,7 @@ class SymbolicLambda(SymbolicSet):
             func_list = []
             # new scope
             env.push_new_frame(varList)
-            domain_generator = self.generator(pred, env, varList, interpret)
+            domain_generator = self.domain_generator(pred, env, varList, interpret)
             # for every solution-entry found:
             for entry in domain_generator:
                 # set all vars (of new frame/scope) to this solution
@@ -106,6 +107,51 @@ class SymbolicLambda(SymbolicSet):
             env.pop_frame() # exit scope
             self.explicit_set_repr = frozenset(func_list)
         return self.explicit_set_repr
+
+    def __iter__(self):
+        self.generator = self.make_generator()
+        return self 
+    
+    def next(self):
+        return self.generator.next()
+
+    # Warning! push/pop frame
+    def make_generator(self):
+        varList = self.variable_list
+        pred    = self.predicate
+        expr    = self.expression 
+        env       = self.env
+        interpret = self.interpret
+        func_list = []
+        # new scope
+        env.push_new_frame(varList)
+        domain_generator = self.domain_generator(pred, env, varList, interpret)
+        # for every solution-entry found:
+        for entry in domain_generator:
+            # set all vars (of new frame/scope) to this solution
+            i = 0
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.set_value(name, value)
+                i = i + 1
+                if i==1:
+                    arg = value
+                else:
+                    arg = tuple([arg, value])
+            # test if it is really a solution
+            try:
+                if interpret(pred, env):  # test
+                    # yes it is! calculate lambda-fun image an add this tuple to func_list       
+                    image = interpret(expr, env)
+                    tup = tuple([arg, image])
+                    env.pop_frame() # exit scope
+                    yield tup
+                    env.push_new_frame(varList)
+            except ValueNotInDomainException:
+                continue
+                
+        env.pop_frame() # exit scope
+        self.explicit_set_repr = frozenset(func_list) 
         
 
 class SymbolicComprehensionSet(SymbolicSet):
