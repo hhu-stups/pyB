@@ -54,12 +54,11 @@ class SymbolicSet(object):
     # default implementation
     def intersection(self, aset): 
         result = []
-        if isinstance(aset, frozenset):
-            for e in aset:
-               if e in self:
-                   result.append(e)
-        else:
-            raise NotImplementedError("symbolicset intersection") 
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        for e in aset:
+            if e in self:
+                result.append(e)
         return frozenset(result)
     
     def __ge__(self, aset):
