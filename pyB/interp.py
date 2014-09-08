@@ -963,7 +963,7 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicRelationSet(aSet1, aSet2, env, interpret)
+            return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
         aSet = make_set_of_realtions(aSet1, aSet2)
         return aSet
     elif isinstance(node, ADomainExpression):
@@ -984,13 +984,13 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicCompositionSet(aSet1, aSet2, env, interpret)
+            return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
         # p and q: tuples representing domain and image
         new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicIdentitySet(aSet, aSet, env, interpret)
+        return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
@@ -1023,7 +1023,7 @@ def interpret(node, env):
             rel = rel.enumerate_all()
         new_rel = [(x[1],x[0]) for x in rel]
         return frozenset(new_rel)
-        #return SymbolicInverseRelation(rel, env, interpret)
+        #return SymbolicInverseRelation(rel, env, interpret, node)
     elif isinstance(node, AImageExpression):
         #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
         rel = interpret(node.children[0], env)
@@ -1085,7 +1085,10 @@ def interpret(node, env):
                 return frozenset(rel)
             rel =list(frozenset(new_rel).union(frozenset(rel)))
     elif isinstance(node, AClosureExpression):
+        #print pretty_print(node)
         arel = interpret(node.children[0], env)
+        if isinstance(arel, SymbolicSet):
+            arel = arel.enumerate_all()
         rel = list(arel)
         while True: # fixpoint-search (do-while-loop)
             new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
@@ -1096,7 +1099,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicFirstProj(S,T, env, interpret)
+            return SymbolicFirstProj(S,T, env, interpret, node)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[0]) for t in cart]
         return frozenset(proj)
@@ -1104,7 +1107,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicSecondProj(S,T, env, interpret)
+            return SymbolicSecondProj(S,T, env, interpret, node)
         cart = frozenset(((x,y) for x in S for y in T))
         proj = [(t,t[1]) for t in cart]
         return frozenset(proj)
@@ -1120,7 +1123,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialFunctionSet(S, T, env, interpret)
+            return SymbolicPartialFunctionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         return fun
@@ -1128,7 +1131,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalFunctionSet(S, T, env, interpret)
+            return SymbolicTotalFunctionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         total_fun = filter_not_total(fun, S) # S-->T
@@ -1137,7 +1140,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialInjectionSet(S, T, env, interpret)
+            return SymbolicPartialInjectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1146,7 +1149,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalInjectionSet(S, T, env, interpret)
+            return SymbolicTotalInjectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1156,7 +1159,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialSurjectionSet(S, T, env, interpret)
+            return SymbolicPartialSurjectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1165,7 +1168,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalSurjectionSet(S, T, env, interpret)
+            return SymbolicTotalSurjectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         surj_fun = filter_not_surjective(fun, T) # S+->>T
@@ -1175,7 +1178,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicTotalBijectionSet(S, T, env, interpret)
+            return SymbolicTotalBijectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T
@@ -1186,7 +1189,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicPartialBijectionSet(S, T, env, interpret)
+            return SymbolicPartialBijectionSet(S, T, env, interpret, node)
         relation_set = make_set_of_realtions(S,T) # S<->T
         fun = filter_no_function(relation_set) # S+->T
         inj_fun = filter_not_injective(fun) # S>+>T

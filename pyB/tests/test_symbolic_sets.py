@@ -860,8 +860,7 @@ class TestSymbolicSets():
         assert interpret(root, env)     
  
 
-    #import pytest
-    #@pytest.mark.xfail 
+
     def test_symbolic_union_set(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NATURAL & x:{1,2,3}|x*x)\/%x.(x:NATURAL & x:{1,2,3}|x*2)={(1,1),(1,2),(2,4),(3,6),(3,9)}  ", file_name)

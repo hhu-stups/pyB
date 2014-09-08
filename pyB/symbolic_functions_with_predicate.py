@@ -1,6 +1,7 @@
 # symbolic functions defined by a predicate
 from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
 from symbolic_sets import *
+from pretty_printer import pretty_print
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
@@ -50,7 +51,12 @@ class SymbolicLambda(SymbolicSet):
             if self.explicit_set_repr==None:
                 self.explicit_set_repr = self.enumerate_all()
             return aset == self.explicit_set_repr
-        raise DontKnowIfEqualException("lambda compare not implemented")
+        # FAIL!
+        pp_self = pretty_print(self.node)
+        pp_other = pretty_print(aset.node)
+        string = "lambda compare not implemented %s = %s" % (pp_self, pp_other)
+        print string
+        raise DontKnowIfEqualException(string)
     
     def __ne__(self, aset):
         return not self.__eq__(aset)

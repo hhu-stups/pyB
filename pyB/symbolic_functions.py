@@ -3,10 +3,11 @@ from symbolic_sets import *
 from symbolic_functions_with_predicate import *
 
 class SymbolicRelationSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
+    def __init__(self, aset0, aset1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
-        self.right_set = aset1   
+        self.right_set = aset1
+        self.node = node   
     
     # element in Set
     def __contains__(self, element):
@@ -86,10 +87,11 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
     pass
     
 class SymbolicFirstProj(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
+    def __init__(self, aset0, aset1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
-        self.right_set = aset1  
+        self.right_set = aset1
+        self.node = node  
         
     # ((x,y),z):proj1(S,T)
     def __contains__(self, element):
@@ -110,10 +112,11 @@ class SymbolicFirstProj(SymbolicSet):
 
 
 class SymbolicSecondProj(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
+    def __init__(self, aset0, aset1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1  
+        self.node = node
     
     # ((x,y),z):proj2(S,T)
     def __contains__(self, element):
@@ -183,9 +186,10 @@ class SymbolicCompositionSet(SymbolicRelationSet):
 
 
 class SymbolicInverseRelation(SymbolicRelationSet):
-    def __init__(self, relation, env, interpret):
+    def __init__(self, relation, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
         self.relation = relation
+        self.node = node
         
     def enumerate_all(self):
         if self.explicit_set_repr==None:  
