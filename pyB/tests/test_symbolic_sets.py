@@ -791,6 +791,20 @@ class TestSymbolicSets():
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
 
+    # e.g. C578.EML.014/019_100
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare5(self):
+        # Build AST:
+        string_to_file("#PREDICATE %(prj_arg__1,prj_arg__2).(prj_arg__1:INTEGER & prj_arg__2:INTEGER|prj_arg__1) = prj1(INTEGER,INTEGER)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env)  
        
 
     def test_symbolic_intervall_set(self):
@@ -871,7 +885,38 @@ class TestSymbolicSets():
         env = Environment()
         env._min_int = -2**31
         env._max_int = 2**31
-        assert interpret(root, env)        
+        assert interpret(root, env) 
+        
+        
+    def test_symbolic_cart_set(self):
+        # Build AST
+        string_to_file("#PREDICATE (3,3):INTEGER*{3}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)     
+ 
+ 
+    # e.g. C578/2013_08_14/machines_14082013/PS_00611_006
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_cart_set2(self):
+        # Build AST
+        string_to_file("#PREDICATE INTEGER*{3}<+{0|->1,1|->0,2|->2}= {z_|z_ : INTEGER * INTEGER & (z_ : {(0|->1),(1|->0),(2|->2)} or (prj1(INTEGER,INTEGER)(z_) /: dom({(0|->1),(1|->0),(2|->2)}) & z_ : INTEGER * {3}))}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**31
+        env._max_int = 2**31
+        assert interpret(root, env)      
+
+      
              
         
         

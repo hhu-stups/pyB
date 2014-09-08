@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 from ast_nodes import *
 from config import VERBOSE
 from btypes import CartType
+#from pretty_printer import pretty_print
 #from boperation import BOperation
  
 command_str = "java -Xms64m -Xmx1024m -cp "
@@ -108,6 +109,7 @@ def string_to_file(string, file_name, path=""):
 
 # input is computation part of a membership or equal node.
 # Used to find all variables to be computed first.
+# TODO: find expr. like y = f(g(x))
 def find_constraining_var_nodes(node, varList):
     lst = []
     _find_var_nodes(node, lst) #side-effect: fills list
@@ -115,11 +117,14 @@ def find_constraining_var_nodes(node, varList):
     # only bound vars are of interest. 
     result = []
     for var in lst:
-        if var.idName in [x.idName for x in varList]:
-            result.append(var) 
+        name = var.idName
+        if name in [x.idName for x in varList]:
+            result.append(var)
+    #print [x.idName for x in result]
     return result    
 
 def find_var_nodes(node):
+    #print pretty_print(node.children[0])
     assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
     lst = []
     _find_var_nodes(node, lst) #side-effect: fills list

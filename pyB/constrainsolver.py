@@ -310,7 +310,7 @@ def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_c
 
 # computed the order of variables
 def _compute_variable_enum_order(pred_map, varList):
-    # 0. init
+    # 0. init of data structures 
     result = []
     graph  = {}
     # 1. construct directed graph: 
@@ -319,35 +319,36 @@ def _compute_variable_enum_order(pred_map, varList):
     # node-degree zero: variable can be enumerated
     for varNode in varList:
         name = varNode.idName
-        # search for variables to be enumerated first)
+        # search for all variables to be enumerated before 'name'
+        listOfidNames = frozenset([]) # set-type to avoid more than one edge between two nodes
         for entry in pred_map.values():
             if name in entry[1]:
-               listOfidNames = entry[2] # edges 
-               graph[name] = (varNode, listOfidNames)
-        # no constraints known: default init
-        if not name in graph:
-            graph[name] = (varNode, [])
+               listOfidNames.union(frozenset(entry[2])) # edges
+        graph[name] = list(listOfidNames)
 
     # 2. topologic sorting
     removed = [] # list of removed nodes (implicit list of removed edges)
     while not graph=={}:
         change = False
         for varNode in varList:
-            # check if node degree
+            # check if node degree is zero
             name = varNode.idName
-            tup = graph[name]
-            edges = [x for x in tup[1] if x not in removed]
+            try:
+                constraint_by = graph[name]
+            except KeyError: # done/removed in prev. interation 
+                continue
+            edges = [x for x in constraint_by if x not in removed]
             if edges==[]:
                 result.append(varNode)
                 removed.append(name)
                 del graph[name]
                 change = True
         if not change:
-            # TODO: maybe an exception is a better idea 
             if PRINT_WARNINGS:
-                print "WARNING! Unable to compute topologic order od bound vars"
-            return varList
-    # 3. return result
+                print "Error! Unable to compute topologic order of bound vars %s" % [x.idName for x in varList]
+                raise Exception()
+    
+    # 3. variable order found. return result
     assert len(result)==len(varList)
     return result
             
@@ -375,11 +376,12 @@ def _categorize_predicates(predicate, env, varList, interpreter_callable):
 # computed in a second step because of the predicate-selection process. 
 # return: list of variable names, constraint by this predicated AND with possible test_set gen.
 # AND a list of variable names (second return value) which need a value before the computation
-# e.g. "x:{1,2,3} & y=x+1" here x is constraint by {1,2,3} and y is constraint by x   
+# e.g. "x:{1,2,3} & y=x+1" here x is constraint by {1,2,3} and y is constraint by x 
+#
+# WARNING: before modifying this part, be sure "_compute_test_set" can handle it!  
 def find_constraint_vars(predicate, env, varList):
     # (1) Base case. This case should only be matched by a recursive call of find_constraint_vars.
-    # otherwise it could produce wrong results!
-    # WARNING: before modifying this part, be sure "_compute_test_set" can handle it!     
+    # otherwise it could produce wrong results!     
     if isinstance(predicate, AIdentifierExpression):
         lst = [predicate.idName]
         return lst, []

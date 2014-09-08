@@ -504,7 +504,7 @@ def interpret(node, env):
                 if env.get_value(n.idName)==None:
                     not_set.append(n)
             # enumerate only unknown vars
-            # Dont enums quantified vars like !x.(P=>Q)
+            # Dont enums quantified vars like !x.(P=>Q). This is done later
             if not_set:
                 if VERBOSE:
                     print "enum. vars:", [n.idName for n in not_set]
@@ -1043,6 +1043,7 @@ def interpret(node, env):
             image = [x[1] for x in rel if x[0] in aSet ]
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
+        #print pretty_print(node)
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
         if isinstance(r1, SymbolicSet):
