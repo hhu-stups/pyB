@@ -44,14 +44,14 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # TODO: Handle OverflowError, print Error message and go on
     try:
         if PRINT_WARNINGS:
-            print "WARNING! External constraint solver called. Caused by: %s" % pretty_print(predicate) 
+            print "\033[1m\033[91mWARNING\033[00m: External constraint solver called. Caused by: %s" % pretty_print(predicate) 
         iterator = _calc_constraint_domain(env, varList, predicate)
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
         return iterator 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
-            print "WARNING! Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
+            print "\033[1m\033[91mWARNING\033[00m: Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
@@ -265,7 +265,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
     for var_node in varList:
         if test_dict[var_node]==None or test_dict[var_node]==frozenset([]):
             if PRINT_WARNINGS:
-                print "WARNING! Unable to constrain bound variable: %s" % var_node.idName
+                print "\033[1m\033[91mWARNING\033[00m: Unable to constrain bound variable: %s" % var_node.idName
             solution_found = False
             
     # use this solution and return a generator        
@@ -345,7 +345,7 @@ def _compute_variable_enum_order(pred_map, varList):
                 change = True
         if not change:
             if PRINT_WARNINGS:
-                print "Error! Unable to compute topologic order of bound vars %s" % [x.idName for x in varList]
+                print "\033[1m\033[91mError\033[00m: Unable to compute topologic order of bound vars %s" % [x.idName for x in varList]
                 raise Exception()
     
     # 3. variable order found. return result

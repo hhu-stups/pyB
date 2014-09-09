@@ -41,9 +41,10 @@ class SymbolicSet(object):
     def __le__(self, aset):
         return self.issubset(aset)
     
+    # default implementation
     def __eq__(self, aset):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) equality implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) equality implementation called", self, aset
         if aset==None:
             return False
         if not isinstance(aset, frozenset):
@@ -51,20 +52,17 @@ class SymbolicSet(object):
         return aset == self.enumerate_all()  
 
 
+    # default implementation
     def __ne__(self, aset):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) unequality implementation called", self, aset
-        if aset==None:
-            return True
-        if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        return aset != self.enumerate_all()        
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) unequality implementation called", self, aset
+        return self.__eq__(aset)       
 
 
     # default implementation
     def intersection(self, aset): 
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) intersection implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) intersection implementation called", self, aset
         result = []
         # Use enumerate all to avoid push/pop in every interation
         if not isinstance(aset, frozenset):
@@ -78,7 +76,7 @@ class SymbolicSet(object):
     # default implementation
     def union(self, aset): 
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) union implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) union implementation called", self, aset
         result = []
         # Use enumerate all to avoid push/pop in every interation
         if not isinstance(aset, frozenset):
@@ -88,7 +86,7 @@ class SymbolicSet(object):
     # default implementation
     def issuperset(self, aset):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) superset-check implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) superset-check implementation called", self, aset
         if not isinstance(aset, frozenset):
             aset = aset.enumerate_all()
         for e in aset:
@@ -99,7 +97,7 @@ class SymbolicSet(object):
     # default implementation
     def issubset(self, aset):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) subset-check implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) subset-check implementation called", self, aset
         for e in self:
             if e not in aset: 
                return False
@@ -108,20 +106,20 @@ class SymbolicSet(object):
     # default implementation
     def __contains__(self, element):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) membership-check implementation called", self, element
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) membership-check implementation called", self, element
         return element in self.enumerate_all() 
 
         
     # default implementation
     def __getitem__(self, args):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) function app f(x) implementation called", self, args
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) function app f(x) implementation called", self, args
         return self.enumerate_all()[args]
 
     # default implementation
     def __sub__(self, aset):
         if PRINT_WARNINGS:
-            print "WARNING: default (brute force) function sub implementation called", self, aset
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) function sub implementation called", self, aset
         if not isinstance(aset, frozenset):
             aset = aset.enumerate_all()
         return self.enumerate_all()-aset
@@ -144,6 +142,7 @@ class NaturalSet(InfiniteSet):
     def issubset(self, aset): # NaturalSet <= aset
         if isinstance(aset, (NaturalSet,IntegerSet)):
             return True
+        # TODO: SetComp {x|x:NATURAL}, union, inter, UNION, INTER
         return False 
     
     def issuperset(self, aset): # NaturalSet >= aset
@@ -581,7 +580,7 @@ class SymbolicUnionSet(SymbolicSet):
     
     # function call of set
     def __getitem__(self, arg):
-        if isinstance(self.left_set, SymbolicLambda) and isinstance(self.right_set, SymbolicLambda):
+        if isinstance(self.left_set, SymbolicSet) and isinstance(self.right_set, SymbolicSet):
             try:
                 result = self.left_set[arg] 
                 return result

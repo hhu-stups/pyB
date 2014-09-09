@@ -1,6 +1,6 @@
 from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
 from symbolic_sets import *
-from symbolic_functions_with_predicate import *
+from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
@@ -180,7 +180,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 self.explicit_set_repr = frozenset(result)
             else:
                 if PRINT_WARNINGS:
-                    print "convert symbolic to explicit set failed! Case not implemented"
+                    print "\033[1m\033[91mWARNING\033[00m: convert symbolic to explicit set failed! Case not implemented"
                 raise EnumerationNotPossibleException(self)
         return self.explicit_set_repr
 

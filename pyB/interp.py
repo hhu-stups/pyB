@@ -548,10 +548,16 @@ def interpret(node, env):
             try:
                 value = interpret(n, env)
             except OverflowError:
-                print "FAIL! Enumeration overflow cause by: ("+pretty_print(n)+")"
+                print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow cause by: ("+pretty_print(n)+")"
                 continue
             if PRINT_SUB_PROPERTIES: # config.py
-                print str(value) +" = ("+pretty_print(n)+")"
+                string = str(value)
+                if string=="False":
+                   print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
+                elif string=="True":
+                   print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
+                else: #XXX
+                   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
             result = result and value
         return result
     elif isinstance(node, AInvariantMachineClause):
