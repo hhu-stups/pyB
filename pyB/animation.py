@@ -113,7 +113,7 @@ def calc_next_states(env, bmachine):
                         env.state_space.undo() #pop bstate (all paths for this solution/parameters found) 
             env.state_space.undo() # pop ref_bstate (all states for this operation found)
     if result==[] and PRINT_WARNINGS:
-        print "WARNING: Deadlock!"
+        print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
     # alphabetic sort of results
     result = sorted(result, key = lambda state: state[0])
     return result

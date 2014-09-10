@@ -26,7 +26,7 @@ def all_values(node, env):
 # the node parameter is used for debugging 
 def all_values_by_type(atype, env, node):
     if PRINT_WARNINGS:
-        print "WARNING!",pretty_print(node), " caused brute force enumeration"
+        print "\033[1m\033[91mWARNING\033[00m:",pretty_print(node), " caused brute force enumeration"
     if isinstance(atype, IntegerType):
         #print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)

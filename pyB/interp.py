@@ -38,7 +38,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         pre_set_up_state = env.state_space.get_state()
         unset_lst = __find_unset_constants(mch, pre_set_up_state)
         if unset_lst and VERBOSE:
-            print "WARNING: Set Up from solution file was not complete! \nunset:%s" % unset_lst
+            print "\033[1m\033[91mWARNING\033[00m: Set Up from solution file was not complete! \nunset:%s" % unset_lst
         
         env.state_space.add_state(pre_set_up_state)
         # TODO: Parameter set up
@@ -277,7 +277,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
         pre_init_state = env.state_space.get_state()
         unset_lst = __find_unset_variables(mch, pre_init_state)
         if unset_lst and VERBOSE:
-            print "WARNING: Init from solution file was not complete! unset:%s" % unset_lst
+            print "\033[1m\033[91mWARNING\033[00m: Init from solution file was not complete! unset:%s" % unset_lst
         
         env.state_space.add_state(pre_init_state)
         if not mch.aInvariantMachineClause==None and not interpret(mch.aInvariantMachineClause, env):
@@ -357,7 +357,7 @@ def __exec_initialisation_generator(root, env, mch):
                     yield True
                     env.state_space.revert(ref_bstate) # revert to current child-init-solution
             if not at_least_one_possible:
-                raise INITNotPossibleException("\nWARNING: Problem while exec init. No init found/possible! in %s" % mch.name)
+                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m:: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
 # TODO: use solutions of child mch (seen, used mch)
@@ -531,7 +531,7 @@ def interpret(node, env):
             result = interpret(node.children[0], env)
             return result
         else:
-            return "Warning: Expressions with variables are not implemented now"
+            return "\033[1m\033[91mWARNING\033[00m: Expressions with variables are not implemented now"
             
 
 # ********************************************
@@ -1641,7 +1641,7 @@ def exec_substitution(sub, env):
             yield possible
     elif isinstance(sub, AWhileSubstitution):
         if PRINT_WARNINGS:
-            print "WARNING: WHILE inside abstract MACHINE!" # TODO: replace/move warning
+            print "\033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!" # TODO: replace/move warning
         condition = sub.children[0]
         doSubst   = sub.children[1]
         invariant = sub.children[2]

@@ -47,8 +47,8 @@ class SymbolicLambda(SymbolicSet):
             if not check_syntacticly_equal(self.expression, aset.expression):
                 return False
             return True
-        #if isinstance(aset, SymbolicSet):
-        #    return aset==self # impl. use of symbolicSet.__eq__
+        if isinstance(aset, SymbolicSet):
+            return aset==self # impl. use of symbolicSet.__eq__
         if isinstance(aset, frozenset):
             if self.explicit_set_repr==None:
                 self.explicit_set_repr = self.enumerate_all()

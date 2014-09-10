@@ -1,6 +1,7 @@
 from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
 from symbolic_sets import *
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
+from ast_nodes import *
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
@@ -109,6 +110,33 @@ class SymbolicFirstProj(SymbolicSet):
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
         return arg[0]  
+    
+    def __eq__(self, other):
+        # check importent special case first
+        # %(x,y).(x:S & y:T|x) = prj1(S,T)
+        if isinstance(other, SymbolicLambda): 
+            if not len(other.variable_list)==2:
+                return False
+            if isinstance(other.predicate, AConjunctPredicate):    
+                belong_pred0 = other.predicate.children[0]
+                belong_pred1 = other.predicate.children[1]
+                if isinstance(belong_pred0, ABelongPredicate) and isinstance(belong_pred1, ABelongPredicate):                
+                    x = other.variable_list[0].idName
+                    y = other.variable_list[1].idName
+                    xx = belong_pred0.children[0]
+                    yy = belong_pred1.children[0]
+                    if isinstance(xx, AIdentifierExpression) and xx.idName==x:
+                        S = self.interpret(belong_pred0.children[1], self.env)
+                    if isinstance(yy, AIdentifierExpression) and yy.idName==y:
+                        T = self.interpret(belong_pred1.children[1], self.env)
+                    if isinstance(other.expression, AIdentifierExpression): # else: maybe equal.            
+                        try:
+                            if self.left_set==S and self.right_set==T and x==other.expression.idName:
+                                return True              
+                        except NameError:
+                            pass # maybe equal. use brute-force in symbolic set              
+            return SymbolicSet.__eq__(self, other)
+        
 
 
 class SymbolicSecondProj(SymbolicSet):
@@ -137,6 +165,33 @@ class SymbolicSecondProj(SymbolicSet):
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
         return arg[1] 
+
+
+    def __eq__(self, other):
+        # check importent special case first
+        # %(x,y).(x:S & y:T|y) = prj2(S,T)
+        if isinstance(other, SymbolicLambda): 
+            if not len(other.variable_list)==2:
+                return False
+            if isinstance(other.predicate, AConjunctPredicate):    
+                belong_pred0 = other.predicate.children[0]
+                belong_pred1 = other.predicate.children[1]
+                if isinstance(belong_pred0, ABelongPredicate) and isinstance(belong_pred1, ABelongPredicate):                
+                    x = other.variable_list[0].idName
+                    y = other.variable_list[1].idName
+                    xx = belong_pred0.children[0]
+                    yy = belong_pred1.children[0]
+                    if isinstance(xx, AIdentifierExpression) and xx.idName==x:
+                        S = self.interpret(belong_pred0.children[1], self.env)
+                    if isinstance(yy, AIdentifierExpression) and yy.idName==y:
+                        T = self.interpret(belong_pred1.children[1], self.env)
+                    if isinstance(other.expression, AIdentifierExpression): # else: maybe equal.            
+                        try:
+                            if self.left_set==S and self.right_set==T and y==other.expression.idName:
+                                return True              
+                        except NameError:
+                            pass # maybe equal. use brute-force in symbolic set              
+            return SymbolicSet.__eq__(self, other)
         
     
 class SymbolicIdentitySet(SymbolicRelationSet):

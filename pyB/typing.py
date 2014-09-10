@@ -407,7 +407,7 @@ def unknown_closure(atype):
         if atype in seen_types:
             break
         seen_types.append(atype)    
-    string = "WARNING: cyclic type chain found while unknown_closure. %s" % seen_types
+    string = "\033[1m\033[91mWARNING\033[00m: cyclic type chain found while unknown_closure. %s" % seen_types
     raise PYBBugException(string)
 
 
