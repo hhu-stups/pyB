@@ -201,9 +201,11 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 def _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable):
     # 1. score predicates
     pred_map = _categorize_predicates(predicate, env, varList, interpreter_callable)
-    assert pred_map != []
-    # 2. find possible variable enum order
+    assert pred_map != {}
+    # 2. find possible variable enum order. 
+    # variable(-domains) not constraint by others will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
+    #print [x.idName for x in varList]
     # 3. calc variable domains
     test_dict = {}
     for var_node in varList:
@@ -226,19 +228,24 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                         # This predicate needs the computation of an other variable
                         # in test_dict first. e.g x={(0,1),(2,3)}(y).
                         # If step 2 was successful, the values of the needed bound vars
-                        # are already computed
+                        # are already computed for some pred in pred_map
+                        # This may NOT be this pred!
                         if not must_be_computed_first==[]:
-                            already_computed_var_List = list(varList)
-                            # remove uncomputed entries 
-                            for key in varList:
-                                if not key in test_dict:
-                                    already_computed_var_List.remove(key)
+                            # all alredy computed variables have to be considered to
+                            # find a domain for 'var_node'. must_be_computed_first contains
+                            # only variables with direct constraints e.g 'var_node=f(x)' but not 'x=y+1'
+                            already_computed_var_List = [key for key in varList if key in test_dict]
+                            # check if all informations are present to use 'pred' to compute domain of 'var_node'
+                            for mbcf in must_be_computed_first:
+                                if mbcf not in [x.idName for x in already_computed_var_List]:
+                                    raise PredicateDoesNotMatchException()
                             assert not test_dict=={}
                             # generate partial solution: all domain combinations of a subset of bound vars
                             a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
                             # use partial solution to gen testset
                             test_set = frozenset([])
                             env.push_new_frame(varList)
+                            #print "XXX:", pretty_print(pred)
                             for part_sol in a_cross_product_iterator:
                                 for v in already_computed_var_List:
                                     name  = v.idName
@@ -252,6 +259,8 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                             env.pop_frame()
                             break
                         else:
+                            # no constrains by other vars. just use this sub-predicate to 
+                            # compute the domain of the current variable
                             test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
                             break
                     except PredicateDoesNotMatchException: 
@@ -323,7 +332,12 @@ def _compute_variable_enum_order(pred_map, varList):
         listOfidNames = frozenset([]) # set-type to avoid more than one edge between two nodes
         for entry in pred_map.values():
             if name in entry[1]:
+               # XXX: intersection instead of union 
+               # e.g "x=z+1 & x=y+1 & x=5" in this case x can be enumerated without knowing y or z!
+               # But it is importend if predicates are inf. computable. 
+               # e.g. "x=y & x={a lot of time needed} & y:{1,2,...43}" here y has to be computed first
                listOfidNames.union(frozenset(entry[2])) # edges
+        # all variables found: add edges to this nodes:
         graph[name] = list(listOfidNames)
 
     # 2. topologic sorting
@@ -335,8 +349,8 @@ def _compute_variable_enum_order(pred_map, varList):
             name = varNode.idName
             try:
                 constraint_by = graph[name]
-            except KeyError: # done/removed in prev. interation 
-                continue
+            except KeyError: # done/removed in prev. iteration 
+                continue # skip and handle next var in varList
             edges = [x for x in constraint_by if x not in removed]
             if edges==[]:
                 result.append(varNode)

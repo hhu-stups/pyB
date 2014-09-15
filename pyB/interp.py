@@ -1063,6 +1063,10 @@ def interpret(node, env):
     elif isinstance(node, ADirectProductExpression):
         p = interpret(node.children[0], env)
         q = interpret(node.children[1], env)
+        if isinstance(p, SymbolicSet):
+            p = p.enumerate_all()
+        if isinstance(q, SymbolicSet):
+            q = q.enumerate_all()        
         d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
         return frozenset(d_prod)
     elif isinstance(node, AParallelProductExpression):

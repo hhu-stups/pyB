@@ -792,8 +792,6 @@ class TestSymbolicSets():
         assert interpret(root.children[0], env) 
 
     # e.g. C578.EML.014/019_100
-    #import pytest
-    #@pytest.mark.xfail
     def test_constraint_symbolic_compare5(self):
         # Build AST:
         string_to_file("#PREDICATE %(prj_arg__1,prj_arg__2).(prj_arg__1:INTEGER & prj_arg__2:INTEGER|prj_arg__1) = prj1(INTEGER,INTEGER)", file_name)
@@ -818,7 +816,39 @@ class TestSymbolicSets():
         env._min_int = -2**32
         env._max_int = 2**32  
         assert interpret(root.children[0], env) 
-      
+
+
+    # C578/2013_08_14/machines_14082013/PB_00611_005
+    # INTEGER*{3}<+{0|->1,1|->0,2|->2}={z_|z_ : INTEGER * INTEGER & (z_ : {(0|->1),(1|->0),(2|->2)} or (prj1(INTEGER,INTEGER)(z_) /: dom({(0|->1),(1|->0),(2|->2)}) & z_ : INTEGER * {3}))}
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare7(self):
+        # Build AST:
+        string_to_file("#PREDICATE  INTEGER*{3}<+{(0|->1)}={x|x:INTEGER*INTEGER & x:INTEGER*{3} & (x:{(0|->1)} or prj1(INTEGER,INTEGER)(x)/:{0})}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
+
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_symbolic_compare8(self):
+        # Build AST:
+        string_to_file("#PREDICATE INT*{3}<+{0|->1,1|->0,2|->2}={z_|z_ : INT * INT & (z_ : {(0|->1),(1|->0),(2|->2)} or (prj1(INT,INT)(z_) /: dom({(0|->1),(1|->0),(2|->2)}) & z_ : INT * {3}))}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32  
+        assert interpret(root.children[0], env) 
+
+
     def test_symbolic_intervall_set(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:0..999999|x*x)(4)=16", file_name)
