@@ -40,6 +40,10 @@ class SymbolicRelationSet(SymbolicSet):
     def __ne__(self, aset):
         return not self.__eq__(aset)
 
+    def make_generator(self):
+        S = self.left_set
+        T = self.right_set
+        return make_explicit_set_of_realtion_lists(S,T)
 
         
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
@@ -57,6 +61,7 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet):
                 continue
             return frozenset(relation_lst) 
     
+    # XXX
     def make_generator(self):
         S = self.left_set
         T = self.right_set

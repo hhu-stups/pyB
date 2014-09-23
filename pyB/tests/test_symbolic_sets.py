@@ -8,6 +8,7 @@ from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 from ast_nodes import *
 from symbolic_sets import *
+from symbolic_functions import *
 
 file_name = "input.txt"
 
@@ -58,30 +59,97 @@ class TestSymbolicSets():
 
 
     def test_symbolic_lazy_enum(self):
-        def check_enum(aSet, i):
+        def check_enum(aSet, i, atype):
             for j in aSet:
-                assert isinstance(j, int)
+                assert isinstance(j, atype)
                 if i==0:
                     break
                 i = i-1    
         env = Environment()
         
         aSet = NatSet(env, interpret)
-        check_enum(aSet, 10)
+        check_enum(aSet, 10, int)
         aSet = Nat1Set(env, interpret)
-        check_enum(aSet, 10)
+        check_enum(aSet, 10, int)
         aSet = IntSet(env, interpret)
-        check_enum(aSet, 10)
+        check_enum(aSet, 10, int)
         aSet = NaturalSet(env, interpret)
-        check_enum(aSet, 10)        
+        check_enum(aSet, 10, int)        
         aSet = Natural1Set(env, interpret)
-        check_enum(aSet, 10)          
+        check_enum(aSet, 10, int)          
         aSet = IntegerSet(env, interpret)
-        check_enum(aSet, 10)   
+        check_enum(aSet, 10, int)   
+        aSet = StringSet(env, interpret)
+        check_enum(aSet, 10, str)  
 
     
-            
-    
+    def test_symbolic_lazy_enum2(self):
+        def check_enum(aSet, i, atype):
+            for j in aSet:
+                assert isinstance(j, atype)
+                if i==0:
+                    break
+                i = i-1    
+        env = Environment()
+        
+        aSet = SymbolicCartSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret)
+        check_enum(aSet, 10, tuple) 
+        aSet = SymbolicCartSet(frozenset([1,2,3]), frozenset(['a','b']), env, interpret)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [(1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')]
+        aSet = SymbolicUnionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret)
+        check_enum(aSet, 10, int)
+        aSet = SymbolicUnionSet(frozenset([1,2,3]), frozenset([4, 5]), env, interpret)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [1,2,3,4,5]    
+        aSet = SymbolicUnionSet(frozenset([1,2,3]), frozenset([3, 4, 5]), env, interpret)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [1,2,3,4,5]
+        aSet = SymbolicIntervalSet(-5, 4, env, interpret)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [-5,-4,-3,-2,-1,0,1,2,3,4]
+
+    # powerset lazy enumeration not implemented
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lazy_enum3(self):
+        def check_enum(aSet, i, atype):
+            for j in aSet:
+                assert isinstance(j, atype)
+                if i==0:
+                    break
+                i = i-1    
+        env = Environment()
+        aSet = SymbolicPowerSet(NatSet(env, interpret), env, interpret)
+        check_enum(aSet, 10, frozenset)
+        aSet = SymbolicPowerSet(frozenset([1,2]), env, interpret)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [frozenset([]),frozenset([1]),frozenset([2]),frozenset([1,2])]
+
+    import pytest
+    @pytest.mark.xfail    
+    def test_symbolic_lazy_enum4(self):
+        def check_enum(aSet, i, atype):
+            for j in aSet:
+                assert isinstance(j, atype)
+                if i==0:
+                    break
+                i = i-1    
+        env = Environment()
+        
+        aSet = SymbolicRelationSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+                     
     def test_symbolic_set_element_of(self):
         env = Environment()
         inf_set = IntegerSet(env, interpret)

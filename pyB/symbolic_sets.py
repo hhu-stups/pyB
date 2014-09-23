@@ -570,6 +570,10 @@ class StringSet(SymbolicSet):
         if self.explicit_set_repr==None:
             self.explicit_set_repr = frozenset(self.env.all_strings)
         return self.explicit_set_repr
+    
+    def make_generator(self):
+        for i in self.env.all_strings:
+            yield i         
   
     
 class SymbolicCartSet(SymbolicSet):
@@ -609,7 +613,11 @@ class SymbolicCartSet(SymbolicSet):
                 aset1 = self.right_set
             self.explicit_set_repr = frozenset(((x,y) for x in aset0 for y in aset1))
         return self.explicit_set_repr
-            
+
+    def make_generator(self):
+        for x in self.left_set:
+            for y in self.right_set:
+                yield (x,y)               
         
 
 
@@ -646,7 +654,18 @@ class SymbolicUnionSet(SymbolicSet):
             L = self.left_set.enumerate_all()
             R = self.right_set.enumerate_all()
             self.explicit_set_repr = L | R
-        return self.explicit_set_repr 
+        return self.explicit_set_repr
+
+    # TODO: think of caching possibilities 
+    def make_generator(self):
+        double = []
+        for x in self.left_set:
+            double.append(x)
+            yield x
+        for y in self.right_set:
+            if y not in double:
+                yield y
+       
 
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
@@ -662,6 +681,10 @@ class SymbolicPowerSet(SymbolicSet):
             return True
         else:
             raise NotImplementedError("symbolic powerset contains") 
+
+    def make_generator(self):
+        yield frozenset([])
+        raise NotImplementedError("symbolic powerset lazy enum") 
 
 
 class SymbolicIntervalSet(LargeSet):
