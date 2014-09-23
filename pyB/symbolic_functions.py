@@ -61,7 +61,7 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet):
                 continue
             return frozenset(relation_lst) 
     
-    # XXX
+    # XXX, aplay filter functions from enumeration.py
     def make_generator(self):
         S = self.left_set
         T = self.right_set

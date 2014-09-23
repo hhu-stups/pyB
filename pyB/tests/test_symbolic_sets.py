@@ -149,7 +149,27 @@ class TestSymbolicSets():
         
         aSet = SymbolicRelationSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
         check_enum(aSet, 10, frozenset) 
-                     
+ 
+    def test_symbolic_lazy_enum5(self):
+        def check_enum(aSet, i, atype):
+            for j in aSet:
+                assert isinstance(j, atype)
+                if i==0:
+                    break
+                i = i-1    
+        env = Environment()
+        
+        aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        res = []
+        for i in aSet:
+            res.append(i)
+        res  == [frozenset([]), frozenset([(1, 3)]), frozenset([(2, 3)]), frozenset([(2, 3), (1, 3)])]
+        aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        res = []
+        for i in aSet:
+            res.append(i)
+        assert res == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (1, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)]), frozenset([(2, 3), (2, 4)]), frozenset([(1, 3), (2, 3), (1, 4)]), frozenset([(1, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4)]), frozenset([(2, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4), (1, 4)])]
+                             
     def test_symbolic_set_element_of(self):
         env = Environment()
         inf_set = IntegerSet(env, interpret)

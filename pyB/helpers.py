@@ -294,7 +294,13 @@ def couple_tree_to_conj_list(ast):
         lst1 = couple_tree_to_conj_list(ast.children[1])
         return lst0 + lst1
     else:
-        return [ast]       
+        return [ast]     
+
+
+def enumerate_cross_product(S,T):
+    for x in S:
+        for y in T:
+            yield (x,y)  
         
 # Helper for debugging                     
 def print_ast(root):

@@ -1,3 +1,4 @@
+from helpers import enumerate_cross_product
 # helper functions for symbolic set operations
 
 # True:  these predicates are syntacticly equal
@@ -35,44 +36,39 @@ def check_syntacticly_equal(predicate0, predicate1):
 # TODO: returning a symbolic set here is possible, but needs more tests an
 # interpreter modification
 def make_explicit_set_of_realtion_lists(S,T):   
-    # convert to explicit  
-    if isinstance(S, frozenset):
-        left = S
-    else:
-        left = S.enumerate_all()
-    if isinstance(T, frozenset):
-        right = T
-    else:
-        right = T.enumerate_all()
-    # TODO: it is also possible to lazy-generate this set,
-    #       but the _take generator becomes more complicated if 
-    #       its input is a generator instead of a set
-    all_combinations = [(x,y) for x in left for y in right]
     # size = |S|*|T|
-    size = len(all_combinations)
+    size = len(S)*len(T)
     # empty relation
-    yield []
+    yield frozenset([])
     # calc all permutations
     for i in range(size):
-        for lst in _take(all_combinations, i+1):
+        for lst in _generate_relation(S,T, i+1, skip=0):
             assert len(lst)==i+1
-            yield lst
+            yield frozenset(lst)
 
 
-# This function takes n elements of a list and returns them.
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
 # all combinations/sub-lists of length n.
-def _take(lst, n):
-    # Basecase, take all in a row
+def _generate_relation(S, T, n, skip):
+    # yield one element of all combinations (x,y)
     if n==1:
-        for k in range(len(lst)):
-            yield [lst[k]]
-    # take one, remove it, take n-1, concatenate 
+        for element in enumerate_cross_product(S,T):
+            if skip==0:
+                yield [element]
+            else:
+               skip = skip -1
+    # yield n elements of all combinations (x,y)
     else:
         assert n>1
-        for k in range(len(lst)):
-            e = lst[k]
-            lst2 = list(lst)
-            lst2.pop(k)
-            for L in _take(lst2, n-1):
-                yield L+[e]
+        skip2 = 0
+        for element in enumerate_cross_product(S,T):
+            skip2 = skip2 +1
+            if not skip==0:
+                skip = skip -1
+                continue
+            for L in _generate_relation(S, T, n-1, skip2):
+                if element in L:
+                    continue
+                res = L+[element]
+                if len(res)==n:
+                    yield res

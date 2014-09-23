@@ -4,11 +4,11 @@
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
-from helpers import double_element_check, remove_tuples, build_arg_by_type
+from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from btypes import *
 from config import PRINT_WARNINGS
 from pretty_printer import pretty_print
-from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
+from symbolic_helpers import check_syntacticly_equal 
 
 
 class SymbolicSet(object):
@@ -615,10 +615,7 @@ class SymbolicCartSet(SymbolicSet):
         return self.explicit_set_repr
 
     def make_generator(self):
-        for x in self.left_set:
-            for y in self.right_set:
-                yield (x,y)               
-        
+        return enumerate_cross_product(self.left_set, self.right_set)
 
 
 class SymbolicUnionSet(SymbolicSet):

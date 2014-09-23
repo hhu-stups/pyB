@@ -1,5 +1,5 @@
 # symbolic functions defined by a predicate
-from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
+from symbolic_helpers import check_syntacticly_equal 
 from symbolic_sets import *
 from pretty_printer import pretty_print
 
