@@ -39,12 +39,7 @@ class SymbolicRelationSet(SymbolicSet):
         
     def __ne__(self, aset):
         return not self.__eq__(aset)
-        
-    def __iter__(self):
-        return self 
-    
-    def next(self):
-        raise Exception("Not implemented: relation symbolic iteration over explicit values")
+
 
         
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
@@ -62,12 +57,10 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet):
                 continue
             return frozenset(relation_lst) 
     
-    def __iter__(self):
+    def make_generator(self):
         S = self.left_set
         T = self.right_set
-        self.generator = make_explicit_set_of_realtion_lists(S,T)
-        return self
-    
+        return make_explicit_set_of_realtion_lists(S,T)
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
     pass

@@ -56,6 +56,31 @@ class TestSymbolicSets():
         assert isinstance(value.left_set, frozenset)
         assert isinstance(value.right_set, IntegerSet)
 
+
+    def test_symbolic_lazy_enum(self):
+        def check_enum(aSet, i):
+            for j in aSet:
+                assert isinstance(j, int)
+                if i==0:
+                    break
+                i = i-1    
+        env = Environment()
+        
+        aSet = NatSet(env, interpret)
+        check_enum(aSet, 10)
+        aSet = Nat1Set(env, interpret)
+        check_enum(aSet, 10)
+        aSet = IntSet(env, interpret)
+        check_enum(aSet, 10)
+        aSet = NaturalSet(env, interpret)
+        check_enum(aSet, 10)        
+        aSet = Natural1Set(env, interpret)
+        check_enum(aSet, 10)          
+        aSet = IntegerSet(env, interpret)
+        check_enum(aSet, 10)   
+
+    
+            
     
     def test_symbolic_set_element_of(self):
         env = Environment()

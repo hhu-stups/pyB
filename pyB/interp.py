@@ -544,21 +544,27 @@ def interpret(node, env):
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
         lst = conj_tree_to_conj_list(node.children[0])
         result = True
+        ok = 0
+        fail = 0
         for n in lst:
             try:
                 value = interpret(n, env)
             except OverflowError:
                 print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow cause by: ("+pretty_print(n)+")"
+                fail = fail +1
                 continue
             if PRINT_SUB_PROPERTIES: # config.py
                 string = str(value)
                 if string=="False":
                    print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
+                   fail = fail +1
                 elif string=="True":
                    print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
+                   ok = ok +1
                 else: #XXX
                    print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
             result = result and value
+        print "properties clause - ok:%s fail:%s" % (ok,fail)
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)

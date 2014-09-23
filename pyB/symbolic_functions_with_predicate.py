@@ -116,13 +116,6 @@ class SymbolicLambda(SymbolicSet):
             self.explicit_set_repr = frozenset(func_list)
         return self.explicit_set_repr
 
-    def __iter__(self):
-        self.generator = self.make_generator()
-        return self 
-    
-    def next(self):
-        return self.generator.next()
-
     # Warning! push/pop frame
     def make_generator(self):
         varList = self.variable_list
@@ -168,7 +161,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.variable_list = varList
         self.predicate = pred
         self.node = node
-        self.generator = calc_possible_solutions
+        self.domain_generator = calc_possible_solutions
         self.explicit_set_repr = None # not computed at init  
     
     def __getitem__(self, args):
@@ -216,7 +209,7 @@ class SymbolicComprehensionSet(SymbolicSet):
             result = []
             # new scope
             self.env.push_new_frame(varList)
-            domain_generator = self.generator(pred, env, varList, interpret)        
+            domain_generator = self.domain_generator(pred, env, varList, interpret)        
             for entry in domain_generator:
                 for name in [x.idName for x in varList]:
                     value = entry[name]

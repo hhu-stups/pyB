@@ -43,10 +43,10 @@ class SymbolicSet(object):
     
     # default implementation
     def __eq__(self, aset):
-        if PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: default (brute force) equality implementation called", self, aset
         if aset==None:
             return False
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) equality implementation called", self, aset
         if not isinstance(aset, frozenset):
             aset = aset.enumerate_all()
         return aset == self.enumerate_all()  
@@ -124,6 +124,13 @@ class SymbolicSet(object):
             aset = aset.enumerate_all()
         return self.enumerate_all()-aset
         
+    def __iter__(self):
+        self.generator = self.make_generator()
+        return self 
+    
+    def next(self):
+        return self.generator.next()
+        
 
 class LargeSet(SymbolicSet):
     pass
@@ -183,6 +190,13 @@ class NaturalSet(InfiniteSet):
         if self.__class__ == aset.__class__:
             return False
         return True
+
+    def make_generator(self):
+        i = 0
+        while True:
+            yield i
+            i = i +1  
+    
         
 
 class Natural1Set(InfiniteSet):
@@ -230,6 +244,12 @@ class Natural1Set(InfiniteSet):
         if self.__class__ == aset.__class__:
             return False
         return True
+    
+    def make_generator(self):
+        i = 1
+        while True:
+            yield i
+            i = i +1  
 
 
 # the infinite B-set INTEGER    
@@ -276,6 +296,15 @@ class IntegerSet(InfiniteSet):
         if self.__class__ == aset.__class__:
             return False
         return True
+    
+    def make_generator(self):
+        i = 1
+        yield 0
+        while True:
+            yield i
+            yield -i
+            i = i +1     
+
 
         
 # if min and max-int change over exec. this class will notice this change (env)
@@ -354,7 +383,10 @@ class NatSet(LargeSet):
         if self.explicit_set_repr==None:
             self.explicit_set_repr = frozenset(range(0,self.env._max_int+1))
         return self.explicit_set_repr
-    
+
+    def make_generator(self):
+        for i in range(0, self.env._max_int+1):
+            yield i         
 
     # not used for performance reasons
     #def __getitem__(self, key):
@@ -419,6 +451,11 @@ class Nat1Set(LargeSet):
         if self.explicit_set_repr==None:
             self.explicit_set_repr = frozenset(range(1,self.env._max_int+1))
         return self.explicit_set_repr
+        
+    def make_generator(self):
+        for i in range(1, self.env._max_int+1):
+            yield i         
+
 
 
     # not used for performance reasons
@@ -489,6 +526,10 @@ class IntSet(LargeSet):
     def __len__(self):
         return -1*self.env._min_int+self.env._max_int+1
 
+    # TODO: alternate positive and negative values
+    def make_generator(self):
+        for i in range(self.env._min_int, self.env._max_int+1):
+            yield i         
  
     # not used for performance reasons   
     #def __getitem__(self, key):
@@ -644,13 +685,6 @@ class SymbolicIntervalSet(LargeSet):
             right = self.r   
             self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large     
         return self.explicit_set_repr
-    
-    def __iter__(self):
-        self.generator = self.make_generator()
-        return self 
-    
-    def next(self):
-        return self.generator.next()
 
     def make_generator(self):
         for i in range(self.l, self.r+1):

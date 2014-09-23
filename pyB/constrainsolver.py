@@ -318,6 +318,7 @@ def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_c
 
 
 # computed the order of variables
+# TODO:only correct if abstract interpretation computed predicate eval-time correct
 def _compute_variable_enum_order(pred_map, varList):
     # 0. init of data structures 
     result = []
