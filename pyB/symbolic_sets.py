@@ -137,9 +137,9 @@ class LargeSet(SymbolicSet):
     
 
 class InfiniteSet(SymbolicSet):
-    ## WARNING: python only accept int as return values
-    ## so __len__ is not implemented
-    pass
+    def __len__(self):
+        from bexceptions import InfiniteSetLengthException
+        raise InfiniteSetLengthException(self)
 
 
 class NaturalSet(InfiniteSet):

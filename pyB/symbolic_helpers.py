@@ -1,4 +1,5 @@
 from helpers import enumerate_cross_product
+from bexceptions import InfiniteSetLengthException
 # helper functions for symbolic set operations
 
 # True:  these predicates are syntacticly equal
@@ -37,14 +38,21 @@ def check_syntacticly_equal(predicate0, predicate1):
 # interpreter modification
 def make_explicit_set_of_realtion_lists(S,T):   
     # size = |S|*|T|
-    size = len(S)*len(T)
+    try:
+        size = len(S)*len(T)
+    except InfiniteSetLengthException:
+        size = float("inf")
     # empty relation
     yield frozenset([])
     # calc all permutations
-    for i in range(size):
+    i=0
+    while True:
         for lst in _generate_relation(S,T, i+1, skip=0):
             assert len(lst)==i+1
             yield frozenset(lst)
+        i = i+1
+        if i==size:
+            break
 
 
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 

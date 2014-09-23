@@ -41,3 +41,7 @@ class DontKnowIfEqualException(BTypeException):
 class EnumerationNotPossibleException(BTypeException):   
     def __init__(self, value):
         self.value = value
+
+class InfiniteSetLengthException(BTypeException):   
+    def __init__(self, value):
+        self.value = value

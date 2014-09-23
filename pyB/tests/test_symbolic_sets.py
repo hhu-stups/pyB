@@ -136,8 +136,7 @@ class TestSymbolicSets():
             res.append(i)
         assert res == [frozenset([]),frozenset([1]),frozenset([2]),frozenset([1,2])]
 
-    import pytest
-    @pytest.mark.xfail    
+   
     def test_symbolic_lazy_enum4(self):
         def check_enum(aSet, i, atype):
             for j in aSet:
