@@ -137,6 +137,7 @@ class LargeSet(SymbolicSet):
     
 
 class InfiniteSet(SymbolicSet):
+    # musst return an integer, returning float("inf") is not an option
     def __len__(self):
         from bexceptions import InfiniteSetLengthException
         raise InfiniteSetLengthException(self)

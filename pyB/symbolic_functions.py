@@ -2,6 +2,7 @@ from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realti
 from symbolic_sets import *
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 from ast_nodes import *
+from relation_helpers import *
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
@@ -47,43 +48,60 @@ class SymbolicRelationSet(SymbolicSet):
 
         
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation):
+                yield relation
 
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet):
-    def next(self):
-        while True: # StopIterationException exit loop
-            relation_lst = self.generator.next()
-            domain = [x[0] for x in relation_lst]
-            if double_element_check(domain): # check if function
-                continue
-            if not frozenset(domain) == self.left_set: # check if total (domain equal S)
-                continue
-            return frozenset(relation_lst) 
-    
-    # XXX, aplay filter functions from enumeration.py
     def make_generator(self):
-        S = self.left_set
-        T = self.right_set
-        return make_explicit_set_of_realtion_lists(S,T)
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_total_function(relation, self.left_set):
+                yield relation
+
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_inje_function(relation):
+                yield relation
+
     
 class SymbolicTotalInjectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_inje_function(relation):
+                yield relation
+    
     
 class SymbolicPartialSurjectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_surj_function(relation,self.right_set):
+                yield relation
+    
     
 class SymbolicTotalSurjectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set):
+                yield relation
+
     
 class SymbolicTotalBijectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
+                yield relation
+
     
 class SymbolicPartialBijectionSet(SymbolicRelationSet):
-    pass
+    def make_generator(self):
+        for relation in SymbolicRelationSet.make_generator(self):
+            if is_a_function(relation) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
+                yield relation
+
     
 class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):

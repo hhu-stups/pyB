@@ -147,7 +147,24 @@ class TestSymbolicSets():
         env = Environment()
         
         aSet = SymbolicRelationSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset)     
+        SymbolicPartialFunctionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
         check_enum(aSet, 10, frozenset) 
+        SymbolicTotalFunctionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicPartialInjectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicTotalInjectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicPartialSurjectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicTotalSurjectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicPartialBijectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+        SymbolicTotalBijectionSet(NatSet(env, interpret), IntegerSet(env, interpret), env, interpret, node=None)
+        check_enum(aSet, 10, frozenset) 
+
  
     def test_symbolic_lazy_enum5(self):
         def check_enum(aSet, i, atype):
@@ -159,16 +176,51 @@ class TestSymbolicSets():
         env = Environment()
         
         aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
-        res = []
-        for i in aSet:
-            res.append(i)
-        res  == [frozenset([]), frozenset([(1, 3)]), frozenset([(2, 3)]), frozenset([(2, 3), (1, 3)])]
+        assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(2, 3)]), frozenset([(2, 3), (1, 3)])]
         aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
-        res = []
-        for i in aSet:
-            res.append(i)
-        assert res == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (1, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)]), frozenset([(2, 3), (2, 4)]), frozenset([(1, 3), (2, 3), (1, 4)]), frozenset([(1, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4)]), frozenset([(2, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4), (1, 4)])]
-                             
+        assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (1, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)]), frozenset([(2, 3), (2, 4)]), frozenset([(1, 3), (2, 3), (1, 4)]), frozenset([(1, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4)]), frozenset([(2, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4), (1, 4)])]
+
+        aSet = SymbolicTotalFunctionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(2, 3), (1, 3)])]
+        aSet = SymbolicTotalFunctionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)])]
+        
+        aSet = SymbolicPartialFunctionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([]), frozenset([(1,3)]),frozenset([(2,3)]),frozenset([(1,3),(2,3)])]
+        aSet = SymbolicPartialFunctionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)])]
+     
+        aSet = SymbolicPartialInjectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] ==[frozenset([]), frozenset([(1,3)]),frozenset([(2,3)])]
+        aSet = SymbolicPartialInjectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+             
+        aSet = SymbolicTotalInjectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == []
+        aSet = SymbolicTotalInjectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+        
+        aSet = SymbolicPartialSurjectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1,3)]),frozenset([(2,3)]),frozenset([(1,3),(2,3)])]
+        aSet = SymbolicPartialSurjectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None) 
+        assert [x for x in aSet] == [ frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+            
+        aSet = SymbolicTotalSurjectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1,3),(2,3)])]
+        aSet = SymbolicTotalSurjectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+        
+        aSet = SymbolicTotalBijectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == []
+        aSet = SymbolicTotalBijectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+        
+        aSet = SymbolicPartialBijectionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1,3)]),frozenset([(2,3)])]
+        aSet = SymbolicPartialBijectionSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
+        assert [x for x in aSet] == [frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)])]
+        
+                                    
     def test_symbolic_set_element_of(self):
         env = Environment()
         inf_set = IntegerSet(env, interpret)

@@ -11,6 +11,7 @@ from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 from symbolic_sets import *
+from relation_helpers import *
 
 
 def eval_Invariant(root, env, mch):
