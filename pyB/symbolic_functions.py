@@ -1,8 +1,9 @@
-from symbolic_helpers import check_syntacticly_equal,make_explicit_set_of_realtion_lists 
+from symbolic_helpers import check_syntacticly_equal, make_explicit_set_of_realtion_lists 
 from symbolic_sets import *
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 from ast_nodes import *
 from relation_helpers import *
+from helpers import enumerate_cross_product
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
@@ -27,24 +28,14 @@ class SymbolicRelationSet(SymbolicSet):
             assert isinstance(element, tuple)
             return element[0] in self.left_set and element[1] in self.right_set 
         raise Exception("Not implemented: relation symbolic membership")
-    
-    # TODO: write test
-    def __eq__(self, aset):
-        # special case for performance
-        if aset==frozenset([]):
-            return False
-        if isinstance(aset, frozenset):
-            explicit_set_repr = self.enumerate_all()
-            return aset == explicit_set_repr
-        raise Exception("Not implemented: relation symbolic equalety")
-        
-    def __ne__(self, aset):
-        return not self.__eq__(aset)
 
     def make_generator(self):
         S = self.left_set
         T = self.right_set
         return make_explicit_set_of_realtion_lists(S,T)
+    
+    def __eq__(self, other):
+        return SymbolicSet.__eq__(self, other)
 
         
 class SymbolicPartialFunctionSet(SymbolicRelationSet):
@@ -59,7 +50,7 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set):
                 yield relation
-
+                
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet):
     def make_generator(self):
@@ -102,7 +93,6 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
             if is_a_function(relation) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
                 yield relation
 
-    
 class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
@@ -152,7 +142,10 @@ class SymbolicFirstProj(SymbolicSet):
                         except NameError:
                             pass # maybe equal. use brute-force in symbolic set              
             return SymbolicSet.__eq__(self, other)
-        
+    
+    def make_generator(self):
+        for cross_prod in enumerate_cross_product(self.left_set, self.right_set):
+             yield tuple([cross_prod,cross_prod[0]])      
 
 
 class SymbolicSecondProj(SymbolicSet):
@@ -208,7 +201,11 @@ class SymbolicSecondProj(SymbolicSet):
                         except NameError:
                             pass # maybe equal. use brute-force in symbolic set              
             return SymbolicSet.__eq__(self, other)
-        
+
+    def make_generator(self):
+        for cross_prod in enumerate_cross_product(self.left_set, self.right_set):
+             yield tuple([cross_prod,cross_prod[1]])
+                         
     
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
@@ -221,6 +218,12 @@ class SymbolicIdentitySet(SymbolicRelationSet):
             id_r = [(x,x) for x in aSet]
             self.explicit_set_repr = frozenset(id_r)
         return self.explicit_set_repr
+
+    def make_generator(self):
+        assert self.left_set==self.right_set
+        for e in self.left_set:
+            yield tuple([e,e])
+
 
 class SymbolicCompositionSet(SymbolicRelationSet):
     # convert to explicit set
@@ -268,3 +271,7 @@ class SymbolicInverseRelation(SymbolicRelationSet):
             inv_rel = [(x[1],x[0]) for x in rel]
             self.explicit_set_repr = frozenset(inv_rel)
         return self.explicit_set_repr
+    
+    def make_generator(self):
+        for e in self.relation:
+            yield tuple([e[1],e[0]])

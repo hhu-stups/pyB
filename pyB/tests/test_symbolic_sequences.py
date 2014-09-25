@@ -166,8 +166,7 @@ class TestSymbolicSequences():
         env = Environment()
         assert interpret(root, env)    
     
-    import pytest
-    @pytest.mark.xfail 
+ 
     def test_symbolic_sequences_drop(self):
         # Build AST
         string_to_file("#PREDICATE (%x.(x:NAT1|x+1))\\|/MAXINT-3=[MAXINT-1,MAXINT,MAXINT+1]", file_name)
@@ -179,8 +178,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)    
         
         
-    import pytest
-    @pytest.mark.xfail 
+
     def test_symbolic_sequences_front(self):
         # Build AST
         string_to_file("#PREDICATE front((%x.(x:NAT1|x)))<-MAXINT=(%x.(x:NAT1|x))", file_name)
@@ -217,9 +215,7 @@ class TestSymbolicSequences():
         assert 1==2 # Timeout exception missing
         assert interpret(root, env)         
 
-        
-    import pytest
-    @pytest.mark.xfail   
+         
     def test_symbolic_sequences_perm2(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT1|x):perm(NAT1)", file_name)
@@ -231,8 +227,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)               
     
 
-    import pytest
-    @pytest.mark.xfail         
+      
     def test_symbolic_sequences_seq(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT1|x):seq(NAT1)", file_name)
@@ -244,8 +239,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)  
     
     
-    import pytest
-    @pytest.mark.xfail              
+           
     def test_symbolic_sequences_seq1(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT1|x):seq1(NAT1)", file_name)
@@ -257,8 +251,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)        
     
     
-    import pytest
-    @pytest.mark.xfail   
+  
     def test_symbolic_sequences_iseq1(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT1|x):iseq1(NAT)", file_name)
@@ -270,8 +263,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)    
 
 
-    import pytest
-    @pytest.mark.xfail   
+  
     def test_symbolic_sequences_seq_perm(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:{1,2,3} | %x.(x:{1,2,3}|x)):seq(perm({1,2,3}))", file_name)
@@ -283,8 +275,7 @@ class TestSymbolicSequences():
         assert interpret(root, env)     
   
     
-    import pytest
-    @pytest.mark.xfail   
+   
     def test_symbolic_sequences_conc2(self):
         # Build AST
         string_to_file("#PREDICATE conc(%x.(x:{1,2,3} | %x.(x:{1,2,3}|x)))=[1,2,3,1,2,3,1,2,3]", file_name)

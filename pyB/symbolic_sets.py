@@ -130,6 +130,15 @@ class SymbolicSet(object):
     
     def next(self):
         return self.generator.next()
+
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            self.generator = self.make_generator()
+            result = []  
+            for e in self.generator:
+                result.append(e)
+            self.explicit_set_repr = frozenset(result)
+        return self.explicit_set_repr
         
 
 class LargeSet(SymbolicSet):
