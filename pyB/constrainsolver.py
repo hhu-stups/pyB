@@ -14,6 +14,9 @@ from symbolic_sets import LargeSet
 class PredicateDoesNotMatchException:
     pass # TODO: refactor me
 
+class SpecialCaseEnumerationFailedException:
+    pass
+
 # assumption: the variables of varList are typed may constraint by the
 # predicate. If predicate is None(no constraint), all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
@@ -35,9 +38,11 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     if QUICK_EVAL_CONJ_PREDICATES:
-        generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
-        if generator: # None if fail
+        try:
+            generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
             return generator
+        except SpecialCaseEnumerationFailedException:
+            pass
 
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
@@ -266,6 +271,9 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                     except PredicateDoesNotMatchException: 
                         #.eg constraining y instead of x, or using unimplemented cases
                         test_set = None
+        if test_set==None:
+            # there is no predicate to constrain this variable in finite time. FAIL!
+            raise SpecialCaseEnumerationFailedException()
         # assigning constraint set or none
         test_dict[var_node] = test_set
                     
@@ -283,7 +291,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
         iterator = _solution_generator(a_cross_product_iterator, predicate, env, interpreter_callable, varList)
         return iterator
     else:
-        return None
+        raise SpecialCaseEnumerationFailedException()
 
 
 # this generator yield every combination of values for some variables with finite domains

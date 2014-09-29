@@ -2,7 +2,7 @@
 import pytest
 from interp import interpret
 from environment import Environment
-from util import arbitrary_init_machine
+from util import arbitrary_init_machine, type_with_known_types
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
@@ -177,12 +177,13 @@ class TestSymbolicSets():
         string_to_file("#EXPRESSION {(x,y)|x:INTEGER & y=x*x}", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
+        type_with_known_types(root, env, [], [])
         
         node = root.children[0]  
         varList = node.children[:-1]
         pred = node.children[-1]
         aSet = SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)
-        #check_enum(aSet, 10, tuple) 
+        check_enum(aSet, 10, tuple) 
 
 
     def test_symbolic_lazy_enum5(self):
@@ -274,8 +275,6 @@ class TestSymbolicSets():
         pred = node.children[-1]
         aSet = SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions) 
         assert [x for x in aSet]==[(0, 0), (1, 1), (2, 4), (3, 9)]
-
-         
             
                
                                     
