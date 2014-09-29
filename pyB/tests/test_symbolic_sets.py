@@ -117,9 +117,7 @@ class TestSymbolicSets():
             res.append(i)
         assert res == [-5,-4,-3,-2,-1,0,1,2,3,4]
 
-    # powerset lazy enumeration not implemented
-    import pytest
-    @pytest.mark.xfail
+
     def test_symbolic_lazy_enum3(self):
         def check_enum(aSet, i, atype):
             for j in aSet:
@@ -172,10 +170,10 @@ class TestSymbolicSets():
         check_enum(aSet, 10, tuple)  
         aSet = SymbolicInverseRelation(aSet, env, interpret, node=None)
         check_enum(aSet, 10, tuple)   
+        aSet = SymbolicPowerSet(IntegerSet(env, interpret), env, interpret)
+        check_enum(aSet, 10, frozenset)
 
 
-    import pytest
-    @pytest.mark.xfail 
     def test_symbolic_lazy_enum5(self):
         def check_enum(aSet, i, atype):
             for j in aSet:
@@ -246,7 +244,16 @@ class TestSymbolicSets():
         assert [x for x in aSet] == [(1,1), (2,2), (3,3), (4,4)]   
 
         aSet = SymbolicInverseRelation(frozenset([(1,5),(2,6),(3,7),(4,8)]), env, interpret, node=None)
-        assert [x for x in aSet] == [(8,4),(5,1),(6,2),(7,3)]       
+        assert [x for x in aSet] == [(8,4),(5,1),(6,2),(7,3)]    
+        
+        #({(5,1),(6,2),(7,3),(8,4)};{(1,1),(2,4),(3,9),(4,16)}) = {(5,1),(6,4),(7,9),(8,16)}
+        aSet = SymbolicCompositionSet(frozenset([(5,1),(6,2),(7,3),(8,4)]),frozenset([(1,1),(2,4),(3,9),(4,16)]), env, interpret, node=None)
+        assert [x for x in aSet] == [(8, 16), (5, 1), (6, 4), (7, 9)]
+        # POW({1,2,3})={{},{1},{2},{3},{1,2},{2,3},{1,3},{1,2,3}}
+        aSet = SymbolicPowerSet(frozenset([1,2,3]), env, interpret)
+        assert [x for x in aSet] == [frozenset([]),frozenset([1]),frozenset([2]),frozenset([3]),frozenset([1,2]),frozenset([1,3]),frozenset([2,3]),frozenset([1,2,3])] 
+        # TODO:
+        #SymbolicComprehensionSet  
             
                
                                     

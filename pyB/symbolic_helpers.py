@@ -46,20 +46,45 @@ def make_explicit_set_of_realtion_lists(S,T):
     yield frozenset([])
     # calc all permutations
     i=0
-    while True:
-        for lst in _generate_relation(S,T, i+1, skip=0):
+    while i!=size:
+        for lst in _generate_relation(S,T,size=i+1, skip=0):
             assert len(lst)==i+1
             yield frozenset(lst)
         i = i+1
-        if i==size:
-            break
+
+
+# TODO: this is copy-pase from _generate_relation. Use Metha-programming to 
+# to write generalization 
+def generate_powerset(S, size, skip):
+    # yield one element of all combinations (x,y)
+    if size==1:
+        for element in S:
+            if skip==0:
+                yield [element]
+            else:
+               skip = skip -1
+    # yield n elements of all combinations (x,y)
+    else:
+        assert size>1
+        skip2 = 0
+        for element in S:
+            skip2 = skip2 +1
+            if not skip==0:
+                skip = skip -1
+                continue
+            for L in generate_powerset(S, size-1, skip2):
+                if element in L:
+                    continue
+                res = L+[element]
+                if len(res)==size:
+                    yield res
 
 
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
 # all combinations/sub-lists of length n.
-def _generate_relation(S, T, n, skip):
+def _generate_relation(S, T, size, skip):
     # yield one element of all combinations (x,y)
-    if n==1:
+    if size==1:
         for element in enumerate_cross_product(S,T):
             if skip==0:
                 yield [element]
@@ -67,16 +92,16 @@ def _generate_relation(S, T, n, skip):
                skip = skip -1
     # yield n elements of all combinations (x,y)
     else:
-        assert n>1
+        assert size>1
         skip2 = 0
         for element in enumerate_cross_product(S,T):
             skip2 = skip2 +1
             if not skip==0:
                 skip = skip -1
                 continue
-            for L in _generate_relation(S, T, n-1, skip2):
+            for L in _generate_relation(S, T, size-1, skip2):
                 if element in L:
                     continue
                 res = L+[element]
-                if len(res)==n:
+                if len(res)==size:
                     yield res

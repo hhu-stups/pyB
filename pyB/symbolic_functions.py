@@ -35,6 +35,7 @@ class SymbolicRelationSet(SymbolicSet):
         return make_explicit_set_of_realtion_lists(S,T)
     
     def __eq__(self, other):
+        # TODO: handle empty set
         return SymbolicSet.__eq__(self, other)
 
         
@@ -226,14 +227,20 @@ class SymbolicIdentitySet(SymbolicRelationSet):
 
 
 class SymbolicCompositionSet(SymbolicRelationSet):
+    def __init__(self, arelation0, arelation1, env, interpret, node):
+        SymbolicSet.__init__(self, env, interpret)
+        self.left_relation = arelation0
+        self.right_relation = arelation1
+        self.node = node 
+        
     # convert to explicit set
     def enumerate_all(self):
         if self.explicit_set_repr==None:      
-            if isinstance(self.left_set, frozenset) and isinstance(self.right_set, SymbolicLambda):
+            if isinstance(self.left_relation, frozenset) and isinstance(self.right_relation, SymbolicLambda):
                 result = []
-                lambda_function = self.right_set        
+                lambda_function = self.right_relation        
                 self.env.push_new_frame(lambda_function.variable_list)
-                for tup in self.left_set:
+                for tup in self.left_relation:
                     domain = tup[0]
                     args   = remove_tuples(tup[1])
                     for i in range(len(lambda_function.variable_list)):
@@ -258,6 +265,11 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 raise EnumerationNotPossibleException(self)
         return self.explicit_set_repr
 
+    def make_generator(self):
+        for e0 in self.left_relation:
+            for e1 in self.right_relation:
+                if e0[1]==e1[0]:
+                    yield (e0[0],e1[1])
 
 class SymbolicInverseRelation(SymbolicRelationSet):
     def __init__(self, relation, env, interpret, node):

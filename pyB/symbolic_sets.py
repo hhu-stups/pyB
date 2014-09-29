@@ -3,12 +3,12 @@
 # design decision: most functionality should implemented in this module. the goal is that
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
-from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
+from bexceptions import ValueNotInDomainException, DontKnowIfEqualException, InfiniteSetLengthException
 from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from btypes import *
 from config import PRINT_WARNINGS
 from pretty_printer import pretty_print
-from symbolic_helpers import check_syntacticly_equal 
+from symbolic_helpers import check_syntacticly_equal, generate_powerset
 
 
 class SymbolicSet(object):
@@ -677,13 +677,13 @@ class SymbolicUnionSet(SymbolicSet):
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
-        self.set = aset
+        self.aSet = aset
 
     # e:S (element:self.set)
     def __contains__(self, element):
         if isinstance(element, frozenset):
             for e in element:
-                if e not in self.set:
+                if e not in self.aSet:
                     return False
             return True
         else:
@@ -691,7 +691,18 @@ class SymbolicPowerSet(SymbolicSet):
 
     def make_generator(self):
         yield frozenset([])
-        raise NotImplementedError("symbolic powerset lazy enum") 
+        # size = |S|*|T|
+        try:
+            size = len(self.aSet)
+        except InfiniteSetLengthException:
+            size = float("inf")
+        i =0
+        while i!=size:
+            for lst in generate_powerset(self.aSet, size=i+1, skip=0):
+                assert len(lst)==i+1
+                yield frozenset(lst)
+            i = i+1
+        
 
 
 class SymbolicIntervalSet(LargeSet):
