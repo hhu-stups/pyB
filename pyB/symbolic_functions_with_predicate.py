@@ -230,4 +230,34 @@ class SymbolicComprehensionSet(SymbolicSet):
             env.pop_frame()
             self.explicit_set_repr = frozenset(result) 
         return self.explicit_set_repr 
+    
+    
+    # Warning! push/pop frame
+    def make_generator(self):
+        varList   = self.variable_list
+        pred      = self.predicate
+        env       = self.env
+        interpret = self.interpret
+        env.push_new_frame(varList)
+        domain_generator = self.domain_generator(pred, env, varList, interpret) 
+        for entry in domain_generator:
+                for name in [x.idName for x in varList]:
+                    value = entry[name]
+                    env.set_value(name, value)
+                try:
+                    if interpret(pred, env):  # test
+                        i = 0
+                        for name in [x.idName for x in varList]:
+                            value = env.get_value(name)
+                            i = i + 1
+                            if i==1:
+                                tup = value
+                            else:
+                                tup = tuple([tup,value])
+                        env.pop_frame()
+                        yield tup
+                        env.push_new_frame(varList)   
+                except ValueNotInDomainException:
+                    continue
+        env.pop_frame()
         

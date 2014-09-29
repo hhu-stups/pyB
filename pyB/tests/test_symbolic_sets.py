@@ -6,6 +6,7 @@ from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
+from constrainsolver import calc_possible_solutions
 from ast_nodes import *
 from symbolic_sets import *
 from symbolic_functions import *
@@ -172,6 +173,16 @@ class TestSymbolicSets():
         check_enum(aSet, 10, tuple)   
         aSet = SymbolicPowerSet(IntegerSet(env, interpret), env, interpret)
         check_enum(aSet, 10, frozenset)
+        # Build AST:
+        string_to_file("#EXPRESSION {(x,y)|x:INTEGER & y=x*x}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        node = root.children[0]  
+        varList = node.children[:-1]
+        pred = node.children[-1]
+        aSet = SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)
+        #check_enum(aSet, 10, tuple) 
 
 
     def test_symbolic_lazy_enum5(self):
@@ -252,8 +263,19 @@ class TestSymbolicSets():
         # POW({1,2,3})={{},{1},{2},{3},{1,2},{2,3},{1,3},{1,2,3}}
         aSet = SymbolicPowerSet(frozenset([1,2,3]), env, interpret)
         assert [x for x in aSet] == [frozenset([]),frozenset([1]),frozenset([2]),frozenset([3]),frozenset([1,2]),frozenset([1,3]),frozenset([2,3]),frozenset([1,2,3])] 
-        # TODO:
-        #SymbolicComprehensionSet  
+        
+        # Build AST:
+        string_to_file("#EXPRESSION {(x,y)|x:{0,1,2,3} & y=x*x}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        node = root.children[0]  
+        varList = node.children[:-1]
+        pred = node.children[-1]
+        aSet = SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions) 
+        assert [x for x in aSet]==[(0, 0), (1, 1), (2, 4), (3, 9)]
+
+         
             
                
                                     

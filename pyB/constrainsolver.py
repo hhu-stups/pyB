@@ -295,6 +295,7 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
     assert not aSet==frozenset([])
     assert isinstance(idNode, AIdentifierExpression)
     var_name = idNode.idName
+    #print "DEBUG: enum: %s" % var_name
     # 2. compute partial cross product for every element/value 
     for element in aSet:
         partial_cross_product[var_name] = element
