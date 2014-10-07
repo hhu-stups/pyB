@@ -56,7 +56,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         return iterator 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
+            print "\033[1m\033[91mWARNING\033[00m: External constraint solver faild. Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
@@ -81,7 +81,7 @@ def gen_all_values(env, varList, dic):
 # WARNING: asumes that every variable in varList has no value!
 def _calc_constraint_domain(env, varList, predicate):
     # TODO: import at module level
-    # extern software:
+    # external software:
     # install http://labix.org/python-constraint
     # download and unzip python-constraint-1.1.tar.bz2
     # python setup.py build
@@ -461,12 +461,11 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)
-            if isinstance(set, LargeSet):
-                set = set.enumerate_all()
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!
-            assert isinstance(set, frozenset)
+            if not isinstance(set, frozenset):
+                return set.enumerate_all() # explicit domain needed
             return set
         # belong-case 2: n-tuple on left side
         elif isinstance(node.children[0], ACoupleExpression):

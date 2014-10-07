@@ -658,8 +658,14 @@ class SymbolicUnionSet(SymbolicSet):
     
     def enumerate_all(self):
         if self.explicit_set_repr==None:
-            L = self.left_set.enumerate_all()
-            R = self.right_set.enumerate_all()
+            if isinstance(self.left_set, SymbolicSet):
+                L = self.left_set.enumerate_all()
+            else:
+                L = self.left_set
+            if isinstance(self.right_set, SymbolicSet):
+                R = self.right_set.enumerate_all()
+            else:
+                R = self.right_set
             self.explicit_set_repr = L | R
         return self.explicit_set_repr
 

@@ -57,8 +57,9 @@ class Environment():
     # Used by the eumerator: all_values
     def get_type_by_node(self, node):
         assert isinstance(node, AIdentifierExpression)
-        #print "DEBUG - get_type_by_node:",node.idName, node
-        assert node in self.node_to_type_map
+        if not node in self.node_to_type_map:
+            print "\033[1m\033[91mPYB-FAIL\033[00m: unable to compute type of %s" % node.idName
+            raise Exception()
         atype = self.node_to_type_map[node]
         assert isinstance(atype, BType)
         return atype

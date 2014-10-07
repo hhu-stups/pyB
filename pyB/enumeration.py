@@ -26,7 +26,7 @@ def all_values(node, env):
 # the node parameter is used for debugging 
 def all_values_by_type(atype, env, node):
     if PRINT_WARNINGS:
-        print "\033[1m\033[91mWARNING\033[00m:",pretty_print(node), " caused brute force enumeration"
+        print "\033[1m\033[91mWARNING\033[00m:",pretty_print(node), "caused brute force enumeration. MIN_INT:%s MAX_INT:%s" % (env._min_int, env._max_int)
     if isinstance(atype, IntegerType):
         #print env._min_int, env._max_int
         return range(env._min_int, env._max_int+1)
@@ -104,6 +104,8 @@ def get_image(function, preimage):
 # returns S<-->T
 # WARNING: this could take some time...
 def make_set_of_realtions(S,T):
+    if PRINT_WARNINGS:
+        print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing set of relations of %s %s " % (S,T)
     cartSet = frozenset(((x,y) for x in S for y in T))
     res = powerset(cartSet)
     powerlist = list(res)
@@ -114,12 +116,12 @@ def make_set_of_realtions(S,T):
 # from http://docs.python.org/library/itertools.html
 # WARNING: this could take some time...
 def powerset(iterable):
+    if PRINT_WARNINGS:
+        print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing powerset of %s" % iterable
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     from itertools import chain, combinations
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
-
-
 
 
 # WARNING: this could take some time...
@@ -150,6 +152,8 @@ def create_all_seq_w_fixlen(images, length):
 
 # WARNING: this could take some time...
 def create_sequence(images, number, length):
+    if PRINT_WARNINGS:
+        print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing all sequences of %s" % images
     result = []
     basis = len(images)
     for i in range(length):

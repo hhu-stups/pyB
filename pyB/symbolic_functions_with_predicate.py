@@ -123,14 +123,13 @@ class SymbolicLambda(SymbolicSet):
         expr    = self.expression 
         env       = self.env
         interpret = self.interpret
-        func_list = []
         # new scope
         env.push_new_frame(varList)
         domain_generator = self.domain_generator(pred, env, varList, interpret)
         # for every solution-entry found:
         for entry in domain_generator:
             # set all vars (of new frame/scope) to this solution
-            i = 0
+            i = 0 #i-th argument 
             for name in [x.idName for x in varList]:
                 value = entry[name]
                 env.set_value(name, value)
@@ -142,17 +141,15 @@ class SymbolicLambda(SymbolicSet):
             # test if it is really a solution
             try:
                 if interpret(pred, env):  # test
-                    # yes it is! calculate lambda-fun image an add this tuple to func_list       
+                    # yes it is! calculate lambda-fun image and yield result (tuple-type)      
                     image = interpret(expr, env)
                     tup = tuple([arg, image])
                     env.pop_frame() # exit scope
                     yield tup
                     env.push_new_frame(varList)
             except ValueNotInDomainException:
-                continue
-                
+                continue                
         env.pop_frame() # exit scope
-        self.explicit_set_repr = frozenset(func_list) 
         
 
 class SymbolicComprehensionSet(SymbolicSet):

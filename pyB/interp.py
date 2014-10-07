@@ -574,13 +574,20 @@ def interpret(node, env):
             print_predicate_fail(env, node.children[0])
         return result
     elif isinstance(node, AAssertionsMachineClause):
-        if ENABLE_ASSERTIONS:
+        if ENABLE_ASSERTIONS: #config.py
+            ok = 0
+            fail = 0
             print "checking assertions"
             for child in node.children:
                 #print_ast(child)
                 result = interpret(child, env)
-                print result,": \t", pretty_print(child)
-            print "checking done."
+                if result==True:
+                    print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(child)
+                    ok = ok +1
+                else:
+                    print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
+                    fail = fail +1
+            print "checking done - ok:%s fail:%s" % (ok,fail)
 
 
 # *********************

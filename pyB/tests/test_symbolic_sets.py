@@ -530,6 +530,23 @@ class TestSymbolicSets():
         print interpret(root.children[0], env)  
         
 
+    # e.g. C578.EML.014/670_005
+    import pytest
+    @pytest.mark.xfail   
+    def test_symbolic_relation_set2(self):
+        # Build AST
+        string_to_file("#PREDICATE {z_|z_ : (INTEGER * INTEGER) * INTEGER & (z_ : {((2|->0)|->83)})}:INT*INT<->INT", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32 
+        assert 1==2 # timeout
+        assert interpret(root.children[0], env) 
+        
+
     # munis one not element of NAT
     def test_symbolic_function_set1(self):
         # Build AST
@@ -693,6 +710,29 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)            
 
+
+    def test_symbolic_lambda_composition_contains(self):
+        # Build AST
+        string_to_file("#PREDICATE (2,16):({(2,4)};(%x.(x:NATURAL|x*x)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+    # enumeration.py: constraint domain only for min/max int values. This is a bug
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda_composition_contains2(self):
+        # Build AST
+        string_to_file("#PREDICATE (2,256):({(2,16)};(%x.(x:NATURAL|x*x)))", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
 
     import pytest
     @pytest.mark.xfail

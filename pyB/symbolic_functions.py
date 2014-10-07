@@ -232,7 +232,24 @@ class SymbolicCompositionSet(SymbolicRelationSet):
         self.left_relation = arelation0
         self.right_relation = arelation1
         self.node = node 
-        
+
+
+    # element in Set
+    # WARNING: may cause Timeout
+    # FIXME: works only for min/max int because of all types enumeration in enumeration.py
+    def __contains__(self, element):
+        #for t in [y for y in self.right_relation]:
+        #    print t
+        #    if t[1]>1000:
+        #        break
+        assert isinstance(element, tuple)
+        for tup in [x for x in self.left_relation if x[0]== element[0]]:
+            for tup2 in [y for y in self.right_relation if y[0]==tup[1]]:
+                if tup2[1]==element[1]:
+                    return True
+        return False
+        return SymbolicRelationSet.__contains__(self, element)
+                
     # convert to explicit set
     def enumerate_all(self):
         if self.explicit_set_repr==None:      
@@ -278,8 +295,11 @@ class SymbolicInverseRelation(SymbolicRelationSet):
         self.node = node
         
     def enumerate_all(self):
-        if self.explicit_set_repr==None:  
-            rel = self.relation.enumerate_all()
+        if self.explicit_set_repr==None:
+            if isinstance(self.relation, SymbolicSet):  
+                rel = self.relation.enumerate_all()
+            else:
+                rel = self.relation
             inv_rel = [(x[1],x[0]) for x in rel]
             self.explicit_set_repr = frozenset(inv_rel)
         return self.explicit_set_repr

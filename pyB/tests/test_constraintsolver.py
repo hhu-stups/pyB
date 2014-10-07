@@ -667,9 +667,7 @@ class TestConstraintSolver():
 
 
     # 3 variables have to be constraint + function app-constraint 
-    # TODO: the constraint solver musst finde out that x and y has to be enumerated before z
-    import pytest
-    @pytest.mark.xfail 
+    # the constraint solver musst finde out that x and y has to be enumerated before z
     def test_constraint_set_gen_union5(self):
         # Build AST:
         string_to_file("#PREDICATE {1,2}=UNION(x,y,z).(x|->y:{(\"a\",\"b\"),(\"c\",\"d\")} & z={(\"a\"|->(\"b\"|->1)),(\"c\"|->(\"d\"|->2))} [{x}][{y}]|z)", file_name)
@@ -742,14 +740,9 @@ class TestConstraintSolver():
         assert interpret(root.children[0], env) 
 
     
-    # Bug:
-    # instead of creating a symbolic set comp, this crashs the contraint solver.
-    # the cs trys to enumerate x and is unable to use the constraint in the predicate (powerset of inifnite)
-    import pytest
-    @pytest.mark.xfail 
     def test_constraint_set_comprehension(self):
         # Build AST:
-        string_to_file("#EXPRESSION {x|x:POW(((0 .. 234) * {0,1}))}", file_name)
+        string_to_file("#PREDICATE {(234,1)}:{x|x:POW(((0 .. 234) * {0,1}))}", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string) 
         
@@ -757,7 +750,7 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
         
  
     # This must cause a crash
