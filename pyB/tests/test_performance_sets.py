@@ -92,7 +92,7 @@ def test_performance_cart_prod():
 		env.add_ids_to_frame(["T","S"])
 		env.set_value("S", frozenset(range(i)))
 		t = time.clock()
-		result = interpret(root.children[0],env)
+		#result = interpret(root.children[0],env)
 		#print i ,":", time.clock()-t,"seconds. Itmes:",len(result)  
 
 #test_performance_cart_prod()

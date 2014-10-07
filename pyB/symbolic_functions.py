@@ -15,7 +15,7 @@ class SymbolicRelationSet(SymbolicSet):
     # element in Set
     def __contains__(self, element):
         #print "SymbolicRelationSet", self.left_set , self.right_set
-        #print "SymbolicRelationSet", element
+        print "SymbolicRelationSet", element
         if isinstance(element, SymbolicSet):
             assert isinstance(element, SymbolicCartSet)
             return element.left_set in self.left_set and element.right_set in self.right_set
@@ -35,7 +35,7 @@ class SymbolicRelationSet(SymbolicSet):
         return make_explicit_set_of_realtion_lists(S,T)
     
     def __eq__(self, other):
-        # TODO: handle empty set
+        # TODO: handle empty set and maybe more sp. cases
         return SymbolicSet.__eq__(self, other)
 
         
@@ -224,8 +224,7 @@ class SymbolicIdentitySet(SymbolicRelationSet):
         assert self.left_set==self.right_set
         for e in self.left_set:
             yield tuple([e,e])
-
-
+        
 class SymbolicCompositionSet(SymbolicRelationSet):
     def __init__(self, arelation0, arelation1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
@@ -288,6 +287,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 if e0[1]==e1[0]:
                     yield (e0[0],e1[1])
 
+# XXX: not enabled. see interpreter.py AReverseExpression
 class SymbolicInverseRelation(SymbolicRelationSet):
     def __init__(self, relation, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)

@@ -678,7 +678,10 @@ class SymbolicUnionSet(SymbolicSet):
         for y in self.right_set:
             if y not in double:
                 yield y
-       
+
+    # TODO: write test-case
+    #def __contains__(self, element):
+    #    return element in self.right_set or element in self.left_set
 
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
@@ -735,5 +738,10 @@ class SymbolicIntervalSet(LargeSet):
 
     def make_generator(self):
         for i in range(self.l, self.r+1):
-            yield i         
+            yield i   
+    
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            return other.l==self.l and other.r==self.r
+        return SymbolicSet.__eq__(self,other)      
         
