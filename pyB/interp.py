@@ -1039,11 +1039,7 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
-        if isinstance(rel, SymbolicSet):
-            rel = rel.enumerate_all()
-        new_rel = [(x[1],x[0]) for x in rel]
-        return frozenset(new_rel)
-        #return SymbolicInverseRelation(rel, env, interpret, node)
+        return SymbolicInverseRelation(rel, env, interpret, node)
     elif isinstance(node, AImageExpression):
         #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
         rel = interpret(node.children[0], env)

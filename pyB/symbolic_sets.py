@@ -114,7 +114,11 @@ class SymbolicSet(object):
     def __getitem__(self, args):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) function app f(x) implementation called", self, args
-        return self.enumerate_all()[args]
+        aset = self.enumerate_all()
+        for t in aset:
+            if t[0]==args:
+                return t[1]
+        raise ValueNotInDomainException(args) 
 
     # default implementation
     def __sub__(self, aset):

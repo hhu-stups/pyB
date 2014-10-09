@@ -276,9 +276,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 self.env.pop_frame() # exit scope
                 self.explicit_set_repr = frozenset(result)
             else:
-                if PRINT_WARNINGS:
-                    print "\033[1m\033[91mWARNING\033[00m: convert symbolic to explicit set failed! Case not implemented"
-                raise EnumerationNotPossibleException(self)
+                self.explicit_set_repr = SymbolicRelationSet.enumerate_all(self)
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -307,3 +305,7 @@ class SymbolicInverseRelation(SymbolicRelationSet):
     def make_generator(self):
         for e in self.relation:
             yield tuple([e[1],e[0]])
+    
+    def __contains__(self, other):
+        inv_element = tuple([other[1],other[0]])
+        return inv_element in self.relation
