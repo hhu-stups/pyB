@@ -618,6 +618,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
         assert interpret(root, env)  
  
   
@@ -854,8 +856,7 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env)
 
-    import pytest
-    @pytest.mark.xfail 
+ 
     def test_symbolic_min(self):
         # Build AST
         string_to_file("#PREDICATE min({x|x:NATURAL})=0", file_name)
@@ -865,6 +866,7 @@ class TestSymbolicSets():
         # Test 
         env = Environment()
         assert interpret(root, env)
+
 
     import pytest
     @pytest.mark.xfail 
@@ -918,9 +920,7 @@ class TestSymbolicSets():
         assert interpret(root, env) 
 
 
-    # TODO: range subtraction test
-    import pytest
-    @pytest.mark.xfail
+    # range subtraction test
     def test_symbolic_range_res(self):
         # Build AST
         string_to_file("#PREDICATE %x.(x:NAT|x)|>0..4={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
@@ -931,6 +931,21 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
+
+    # TODO: avoid enumeration in this case
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_range_res2(self):
+        # Build AST
+        string_to_file("#PREDICATE %x.(x:NAT|x)|>0..4={(0,0),(1,1),(2,2),(3,3),(4,4)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test 
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        assert interpret(root, env) 
 
     def test_symbolic_inverse_realtion(self):
         # Build AST

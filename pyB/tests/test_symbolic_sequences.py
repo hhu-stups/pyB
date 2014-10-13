@@ -145,7 +145,7 @@ class TestSymbolicSequences():
     def test_symbolic_sequences_prepend(self):
         # Build AST
         # {(1,32),(2,2)...(128,128)}
-        string_to_file("#EXPRESSION 42->(%x.(x:NAT1|x+1))  ", file_name)
+        string_to_file("#PREDICATE (42->(%x.(x:NAT1|x+1)))(128)=128  ", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
         
