@@ -358,22 +358,21 @@ def __exec_initialisation_generator(root, env, mch):
                     yield True
                     env.state_space.revert(ref_bstate) # revert to current child-init-solution
             if not at_least_one_possible:
-                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m:: Problem while exec init. No init found/possible! in %s" % mch.name)
+                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m: Problem while exec init. No init found/possible! in %s" % mch.name)
 
 
 # TODO: use solutions of child mch (seen, used mch)
 def use_prob_solutions(env, idNames):
-    for name in env.solutions:
-        # TODO: ordering of solutions (important!)
-        #print "use_prob_solutions"
-        if name in idNames:
+    #print "use_prob_solutions"
+    for name in idNames:
+        try:
             node = env.solutions[name]
-            #print
-            #print
-            #print "setting ",name, " to:", pretty_print(node) 
+            #print "setting ",name #, " to:", pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
-        #print "ProB solutions set to env"
+        except KeyError:
+            print "\n\033[1m\033[91mWARNING\033[00m: Reading solution file. Missing solution for %s" % name
+    #print "ProB solutions set to env"
         
 
 
@@ -1576,7 +1575,7 @@ def exec_substitution(sub, env):
         yield True # assign(s) was/were  successful 
     elif isinstance(sub, ABecomesElementOfSubstitution):
         values = interpret(sub.children[-1], env)
-        print "DEBUG becomes:",values
+        #print "DEBUG becomes:",values
         if values==frozenset([]): #empty set has no elements -> subst. imposible
             yield False
         else:

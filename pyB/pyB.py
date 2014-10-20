@@ -221,13 +221,14 @@ def run_checking_mode():
 
 ###### MAIN PROGRAM ######
 try:
-	if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
-		run_repl()
-	elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
-		result = run_checking_mode()
-		print "Invariant:", result
-	else:
-		run_animation_mode()
+    if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
+        run_repl()
+    elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
+        result = run_checking_mode()
+        print "Invariant:", result
+    else:
+        run_animation_mode()
 except Exception as e:
-    print "Error in pyB:", type(e), e.args, e
+    #print "Error in pyB:", type(e), e.args, e
+    print "Usage: python pyB.py MachineFile <SolutionFile>"
     #print e.value
