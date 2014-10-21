@@ -23,7 +23,9 @@ def run_repl():
                 continue
             else:
                 print error
-                exit()  
+                exit()
+        else:
+            print output  
     exit()
 
 # returns value of expression, True/False or an Error, 
