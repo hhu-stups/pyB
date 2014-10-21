@@ -273,6 +273,8 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                         test_set = None
         if test_set==None:
             # there is no predicate to constrain this variable in finite time. FAIL!
+            if PRINT_WARNINGS:
+                print "\033[1m\033[91mWARNING\033[00m: Quick enumeration fails. Unable to constrain domain of %s" % var_node.idName
             raise SpecialCaseEnumerationFailedException()
         # assigning constraint set or none
         test_dict[var_node] = test_set
