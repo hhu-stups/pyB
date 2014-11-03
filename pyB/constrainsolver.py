@@ -236,7 +236,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                         # are already computed for some pred in pred_map
                         # This may NOT be this pred!
                         if not must_be_computed_first==[]:
-                            # all alredy computed variables have to be considered to
+                            # all already computed variables have to be considered to
                             # find a domain for 'var_node'. must_be_computed_first contains
                             # only variables with direct constraints e.g 'var_node=f(x)' but not 'x=y+1'
                             already_computed_var_List = [key for key in varList if key in test_dict]
