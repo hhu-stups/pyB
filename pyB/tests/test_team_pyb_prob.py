@@ -58,8 +58,8 @@ def run_with_pyb(bfile_name, dir=""):
     if mch.aInvariantMachineClause:
         print "team-test:eval invariant..."
         assert interpret(mch.aInvariantMachineClause, env)
-    #if mch.aAssertionsMachineClause:
-    #    interpret(mch.aAssertionsMachineClause, env)
+    if mch.aAssertionsMachineClause:
+        interpret(mch.aAssertionsMachineClause, env)
 
     
 
@@ -115,7 +115,7 @@ class TestTeam():
         
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
         
-        bfile_name="examples/not_public/Systerel/C578_Urgent_Jul13/151_001"
+        bfile_name="examples/not_public/Systerel/C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 

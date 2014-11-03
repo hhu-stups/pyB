@@ -190,7 +190,7 @@ class NaturalSet(InfiniteSet):
             for x in aset:
                 if x<0:
                     return False
-                return True
+            return True
         elif isinstance(aset, (NatSet, Nat1Set, Natural1Set)):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  

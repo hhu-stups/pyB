@@ -367,7 +367,7 @@ def use_prob_solutions(env, idNames):
     for name in idNames:
         try:
             node = env.solutions[name]
-            print "setting",name #, " to:", pretty_print(node) 
+            #print "setting",name #, " to:", pretty_print(node) 
             value = interpret(node, env)
             env.set_value(name, value)
         except KeyError:

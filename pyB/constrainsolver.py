@@ -376,6 +376,7 @@ def _compute_variable_enum_order(pred_map, varList):
     
     # 3. variable order found. return result
     assert len(result)==len(varList)
+    #print "variable enumeration order: ", [x.idName for x in result]
     return result
             
 
