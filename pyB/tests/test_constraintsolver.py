@@ -864,6 +864,15 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
+        a = root.children[0].children[0]
+        b = root.children[0].children[1]
+        c = root.children[0].children[2]
+        equal_predicate = root.children[0].children[-1]
+        map = _categorize_predicates(equal_predicate, env, [a, b, c],interpret) 
+        (time, vars, compute_first) =map[equal_predicate]
+        assert time<2**32
+        assert set(vars) ==set(["a","b","c"])
+        assert compute_first == []
         assert interpret(root, env) 
 
         

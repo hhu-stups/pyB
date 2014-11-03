@@ -400,7 +400,7 @@ def _categorize_predicates(predicate, env, varList, interpreter_callable):
 # Input predicate is always a sub-predicate of a conjunction predicate or a single predicate.
 # This helper may only be used to find test_set(constraint domain) generation candidates.
 # The test sets (constraint domains of bound vars with possible false elements) are
-# computed in a second step because of the predicate-selection process. 
+# computed in a second step (not in this function!) because of the predicate-selection process. 
 # return: list of variable names, constraint by this predicated AND with possible test_set gen.
 # AND a list of variable names (second return value) which need a value before the computation
 # e.g. "x:{1,2,3} & y=x+1" here x is constraint by {1,2,3} and y is constraint by x 
@@ -411,12 +411,12 @@ def find_constraint_vars(predicate, env, varList):
     # otherwise it could produce wrong results!     
     if isinstance(predicate, AIdentifierExpression):
         lst = [predicate.idName]
-        return lst, []
+        return lst, [] #predicate constrain idName and no computation constraint by other variables
     elif isinstance(predicate, ACoupleExpression):
         lst0, _ = find_constraint_vars(predicate.children[0], env, varList)
         lst1, _ = find_constraint_vars(predicate.children[1], env, varList)
         lst  = list(set(lst0 + lst1)) # remove double entries
-        return lst, []
+        return lst, [] #predicate constrain idName and no computation constraint by other variables
         
     # (2) implemented predicates (by _compute_test_set)
     # WARNING: never add a case if the method "_compute_test_set" can not handle it.
@@ -434,6 +434,12 @@ def find_constraint_vars(predicate, env, varList):
             test_set_var = [predicate.children[1].idName]
             constraint_by_vars = find_constraining_var_nodes(predicate.children[0], varList)
             return test_set_var, [x.idName for x in constraint_by_vars]
+        elif isinstance(predicate.children[0], ACoupleExpression):
+            # FIXME not symmetrical! a|->b = (1,2) found but not (1,2)=a|->b
+            lst, _ = find_constraint_vars(predicate.children[0], env, varList)
+            constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
+            return lst, [x.idName for x in constraint_by_vars]
+            
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
@@ -460,6 +466,26 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         if isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName==var_node.idName:
             value = interpreter_callable(node.children[0], env)
             return frozenset([value])
+        if isinstance(node.children[0], ACoupleExpression):
+            # 2.1 search n-tuple for matching var (to be constraint)
+            element_list = couple_tree_to_conj_list(node.children[0])
+            index = 0
+            match = False
+            for e in element_list:
+                if isinstance(e, AIdentifierExpression) and e.idName==var_node.idName:
+                    match = True
+                    break
+                index = index +1
+            
+            # 2.2. compute set if match found
+            if match:
+                # FIXME: no caching! Recomputation at every call
+                set = interpreter_callable(node.children[1], env)
+                #print 
+                #assert isinstance(set, frozenset)
+                # 2.3. return correct part of the set corresponding to position of
+                # searched variable inside the tuple on the left side
+                return [remove_tuples(set)[index]]
     elif isinstance(node, ABelongPredicate):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:

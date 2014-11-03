@@ -1,1 +1,1 @@
-#PREDICATE #(a,b,c).(a|->b|->c = (1,1,1))
+#PREDICATE A=bool(1<2)
