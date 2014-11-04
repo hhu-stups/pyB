@@ -737,8 +737,7 @@ class TestSymbolicSets():
         assert interpret(root, env) 
 
 
-    import pytest
-    @pytest.mark.xfail
+
     def test_symbolic_lambda_composition_get_item1(self):
         # Build AST
         string_to_file("#PREDICATE -1=({((0,0)|->\"a\"),((0,1)|->\"b\")};%x.(x:STRING-{\"b\"}|-1))(0,0)", file_name)
@@ -747,6 +746,7 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env.get_all_strings(root)
         assert interpret(root, env) 
 
     import pytest
@@ -759,7 +759,7 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
-        assert 1==2 # timeout
+        assert 1==2 # timeout: 5:INTEGER-{5}
         assert interpret(root, env) 
 
 

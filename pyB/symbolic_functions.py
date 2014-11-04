@@ -284,6 +284,19 @@ class SymbolicCompositionSet(SymbolicRelationSet):
             for e1 in self.right_relation:
                 if e0[1]==e1[0]:
                     yield (e0[0],e1[1])
+    
+    # may throw valueNotInDomainException
+    def __getitem__(self, arg):
+        if isinstance(self.left_relation, frozenset):
+            z = [t[1] for t in self.left_relation if t[0]==arg][0]
+        else:
+            z = self.left_relation[arg]
+        if isinstance(self.right_relation, frozenset):
+            image = [t[1] for t in self.right_relation if t[0]==z][0]
+        else:
+            image = self.right_relation[z]
+        return image
+
 
 # XXX: not enabled. see interpreter.py AReverseExpression
 class SymbolicInverseRelation(SymbolicRelationSet):

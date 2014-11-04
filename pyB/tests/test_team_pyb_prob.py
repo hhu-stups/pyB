@@ -58,8 +58,8 @@ def run_with_pyb(bfile_name, dir=""):
     if mch.aInvariantMachineClause:
         print "team-test:eval invariant..."
         assert interpret(mch.aInvariantMachineClause, env)
-    if mch.aAssertionsMachineClause:
-        interpret(mch.aAssertionsMachineClause, env)
+    #if mch.aAssertionsMachineClause:
+    #    interpret(mch.aAssertionsMachineClause, env)
 
     
 
