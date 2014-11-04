@@ -214,7 +214,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
     # 3. calc variable domains
     test_dict = {}
     for var_node in varList:
-        #print "DEBUG: searching for", var_node.idName,"constraint"
+        print "DEBUG: searching for", var_node.idName,"constraint"
         test_set = None 
         for pred in pred_map:
             (time, vars, must_be_computed_first) = pred_map[pred]

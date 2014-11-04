@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE -1=({((0,0)|->4),((0,1)|->5)};%x.(x:INTEGER-{5}|-1))(0,0)

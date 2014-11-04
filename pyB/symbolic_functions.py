@@ -15,7 +15,7 @@ class SymbolicRelationSet(SymbolicSet):
     # element in Set
     def __contains__(self, element):
         #print "SymbolicRelationSet", self.left_set , self.right_set
-        print "SymbolicRelationSet", element
+        #print "SymbolicRelationSet", element
         if isinstance(element, SymbolicSet):
             assert isinstance(element, SymbolicCartSet)
             return element.left_set in self.left_set and element.right_set in self.right_set

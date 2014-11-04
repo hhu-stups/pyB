@@ -736,6 +736,33 @@ class TestSymbolicSets():
         env = Environment()
         assert interpret(root, env) 
 
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda_composition_get_item1(self):
+        # Build AST
+        string_to_file("#PREDICATE -1=({((0,0)|->\"a\"),((0,1)|->\"b\")};%x.(x:STRING-{\"b\"}|-1))(0,0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+    import pytest
+    @pytest.mark.xfail
+    def test_symbolic_lambda_composition_get_item2(self):
+        # Build AST
+        string_to_file("#PREDICATE -1=({((0,0)|->4),((0,1)|->5)};%x.(x:INTEGER-{5}|-1))(0,0)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert 1==2 # timeout
+        assert interpret(root, env) 
+
+
     import pytest
     @pytest.mark.xfail
     def test_symbolic_lambda_ran(self):
