@@ -707,8 +707,6 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
-        # TODO: symbolic intersection instance
-        #return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
         result = None
         i = 0
@@ -730,6 +728,8 @@ def interpret(node, env):
         return frozenset(lst)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            return SymbolicPower1Set(aSet, env, interpret)
         res = powerset(aSet)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]

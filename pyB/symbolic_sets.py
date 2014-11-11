@@ -760,13 +760,12 @@ class SymbolicPowerSet(SymbolicSet):
 
     # e:S (element:self.set)
     def __contains__(self, element):
-        if isinstance(element, frozenset):
-            for e in element:
-                if e not in self.aSet:
-                    return False
-            return True
-        else:
-            raise NotImplementedError("symbolic powerset contains") 
+        if not isinstance(element, frozenset):
+            element = element.enumerate_all()
+        for e in element:
+            if e not in self.aSet:
+                return False
+        return True
 
     def make_generator(self):
         yield frozenset([])
@@ -784,7 +783,34 @@ class SymbolicPowerSet(SymbolicSet):
 
 
 class SymbolicPower1Set(SymbolicSet):
-    pass        
+    def __init__(self, aset, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.aSet = aset
+
+    # e:S (element:self.set)
+    def __contains__(self, element):
+        if not isinstance(element, frozenset):
+            element = element.enumerate_all()
+        if element==frozenset([]):
+            return False
+        for e in element:
+            if e not in self.aSet:
+                return False
+        return True
+
+    def make_generator(self):
+        # size = |S|*|T|
+        try:
+            size = len(self.aSet)
+        except InfiniteSetLengthException:
+            size = float("inf")
+        i =0
+        while i!=size:
+            for lst in generate_powerset(self.aSet, size=i+1, skip=0):
+                assert len(lst)==i+1
+                yield frozenset(lst)
+            i = i+1
+      
 
 
 class SymbolicIntervalSet(LargeSet):
