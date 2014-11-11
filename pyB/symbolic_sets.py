@@ -637,7 +637,6 @@ class SymbolicUnionSet(SymbolicSet):
                 return result
         # TODO frozensets
         raise Exception("Not implemented: relation symbolic membership")  
-
     
     def enumerate_all(self):
         if self.explicit_set_repr==None:
@@ -670,7 +669,24 @@ class SymbolicUnionSet(SymbolicSet):
           
 
 class SymbolicIntersectionSet(SymbolicSet):
-    pass
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.left_set = aset0
+        self.right_set = aset1
+    
+    # try to iterate the finite one    
+    def make_generator(self):
+        if isinstance(self.left_set, frozenset):
+            for x in self.left_set:
+                if x in self.right_set:
+                    yield x
+        else:
+            for x in self.right_set:
+                if x in self.left_set:
+                    yield x        
+        
+    def __contains__(self, element):
+        return element in self.right_set and element in self.left_set
     
 
 class SymbolicDifferenceSet(SymbolicSet):

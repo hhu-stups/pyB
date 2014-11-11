@@ -706,8 +706,9 @@ def interpret(node, env):
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
         # TODO: symbolic intersection instance
-        return aSet1.intersection(aSet2)
+        #return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
         result = None
         i = 0
