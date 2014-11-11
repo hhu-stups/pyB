@@ -720,21 +720,21 @@ def interpret(node, env):
         return result
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
-        if isinstance(aSet, SymbolicSet):
-            return SymbolicPowerSet(aSet, env, interpret)
-        res = powerset(aSet)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        return frozenset(lst)
+        #if isinstance(aSet, SymbolicSet):
+        return SymbolicPowerSet(aSet, env, interpret)
+        #res = powerset(aSet)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #return frozenset(lst)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
-        if isinstance(aSet, SymbolicSet):
-            return SymbolicPower1Set(aSet, env, interpret)
-        res = powerset(aSet)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        lst.remove(frozenset([]))
-        return frozenset(lst)
+        #if isinstance(aSet, SymbolicSet):
+        return SymbolicPower1Set(aSet, env, interpret)
+        #res = powerset(aSet)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #lst.remove(frozenset([]))
+        #return frozenset(lst)
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return len(aSet)
