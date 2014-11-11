@@ -10,6 +10,12 @@ from config import PRINT_WARNINGS
 from pretty_printer import pretty_print
 from symbolic_helpers import check_syntacticly_equal, generate_powerset
 
+##############
+# Base-class and Primitive Sets
+###############
+# SymbolicSet, LargeSet, InfiniteSet
+# Int-,Nat-,Nat1-,Natural-,Natural1-,Integer and StringSet
+
 
 class SymbolicSet(object):
     # evn: min and max int values may be needed for large sets 
@@ -24,14 +30,31 @@ class SymbolicSet(object):
     
     def __rmul__(self, aset):
         return SymbolicCartSet(aset, self, self.env, self.interpret)
+        
+    # default implementation
+    def __sub__(self, aset):
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: default (brute force) function sub implementation called", self, aset
+        if not isinstance(aset, frozenset):
+            aset = aset.enumerate_all()
+        return self.enumerate_all()-aset
+    
+    def __rsub__(self, aset):
+        return self.__sub__(aset, self)
             
     # delegate to method if syntactic suger is used S & T    
     def __and__(self, aset):
         return self.intersection(aset)
+        
+    def __rand__(self, aset):
+        return self.__and__(aset, self)
     
     # delegate to method if syntactic suger is used S | T
     def __or__(self, aset):
-        return self.union(aset)       
+        return self.union(aset)  
+    
+    def __ror__(self, aset):
+        return self.__or__(aset, self)     
     
     # delegate to method if syntactic suger is used S > T
     def __ge__(self, aset):
@@ -41,6 +64,9 @@ class SymbolicSet(object):
     def __le__(self, aset):
         return self.issubset(aset)
     
+    def __len__(self):
+        return len(self.enumerate_all())
+            
     # default implementation
     def __eq__(self, aset):
         if aset==None:
@@ -56,7 +82,7 @@ class SymbolicSet(object):
     def __ne__(self, aset):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) unequality implementation called", self, aset
-        return self.__eq__(aset)       
+        return not self.__eq__(aset)       
 
 
     # default implementation
@@ -119,14 +145,6 @@ class SymbolicSet(object):
             if t[0]==args:
                 return t[1]
         raise ValueNotInDomainException(args) 
-
-    # default implementation
-    def __sub__(self, aset):
-        if PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: default (brute force) function sub implementation called", self, aset
-        if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        return self.enumerate_all()-aset
         
     def __iter__(self):
         self.generator = self.make_generator()
@@ -150,12 +168,13 @@ class LargeSet(SymbolicSet):
     
 
 class InfiniteSet(SymbolicSet):
-    # musst return an integer, returning float("inf") is not an option
+    # must return an integer, returning float("inf") is not an option
     def __len__(self):
         from bexceptions import InfiniteSetLengthException
         raise InfiniteSetLengthException(self)
 
 
+# FIXME: set comprehension
 class NaturalSet(InfiniteSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >= 0 
@@ -211,8 +230,7 @@ class NaturalSet(InfiniteSet):
             yield i
             i = i +1  
     
-        
-
+# FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
     def __contains__(self, element):
         return isinstance(element, int) and element > 0  
@@ -253,7 +271,7 @@ class Natural1Set(InfiniteSet):
         if self.__class__ == aset.__class__:
             return True
         return False
-    
+   
     def __ne__(self, aset):
         if self.__class__ == aset.__class__:
             return False
@@ -266,7 +284,8 @@ class Natural1Set(InfiniteSet):
             i = i +1  
 
 
-# the infinite B-set INTEGER    
+# the infinite B-set INTEGER 
+# FIXME: set comprehension   
 class IntegerSet(InfiniteSet): 
     def __contains__(self, element):
         return isinstance(element, int) or isinstance(element, IntegerType) #type for symbolic checks
@@ -300,12 +319,12 @@ class IntegerSet(InfiniteSet):
         elif isinstance(aset, (NatSet, Nat1Set, IntSet, NaturalSet, Natural1Set)):
             return True 
         raise NotImplementedError("inclusion with unknown set-type")  
-    
+   
     def __eq__(self, aset):
         if self.__class__ == aset.__class__:
             return True
         return False
-    
+
     def __ne__(self, aset):
         if self.__class__ == aset.__class__:
             return False
@@ -319,9 +338,9 @@ class IntegerSet(InfiniteSet):
             yield -i
             i = i +1     
 
-
         
 # if min and max-int change over exec. this class will notice this change (env)
+# FIXME: set comprehension
 class NatSet(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >=0 and element <= self.env._max_int
@@ -405,8 +424,9 @@ class NatSet(LargeSet):
     # not used for performance reasons
     #def __getitem__(self, key):
     #    return key
+ 
   
-      
+# FIXME: set comprehension      
 class Nat1Set(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >0 and element <= self.env._max_int
@@ -477,6 +497,7 @@ class Nat1Set(LargeSet):
     #    return 1+key
         
 
+# FIXME: set comprehension
 class IntSet(LargeSet):
     def __contains__(self, element):
         return isinstance(element, int) and element >= self.env._min_int and element <= self.env._max_int
@@ -549,6 +570,7 @@ class IntSet(LargeSet):
     #def __getitem__(self, key):
     #    return self.env._min_int+key
 
+
 class StringSet(SymbolicSet):
     def __contains__(self, element):
         return isinstance(element, str) or isinstance(element, StringType)
@@ -588,8 +610,84 @@ class StringSet(SymbolicSet):
     def make_generator(self):
         for i in self.env.all_strings:
             yield i         
-  
+
+
+##############
+# Symbolic binary operations 
+##############
+# No symbolic implementation: singelton, set enum, empty set, pair
+# Set comprehension in module: symbolic_functions_with_predicate.py
+# Union, Intersection, Difference, Cartesian product
+
+
+class SymbolicUnionSet(SymbolicSet):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.left_set = aset0
+        self.right_set = aset1
     
+    # function call of set
+    def __getitem__(self, arg):
+        if isinstance(self.left_set, SymbolicSet) and isinstance(self.right_set, SymbolicSet):
+            try:
+                result = self.left_set[arg] 
+                return result
+            except:
+                result = self.right_set[arg] 
+                return result
+        # TODO frozensets
+        raise Exception("Not implemented: relation symbolic membership")  
+
+    
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            if isinstance(self.left_set, SymbolicSet):
+                L = self.left_set.enumerate_all()
+            else:
+                L = self.left_set
+            if isinstance(self.right_set, SymbolicSet):
+                R = self.right_set.enumerate_all()
+            else:                
+                R = self.right_set
+            assert isinstance(L, frozenset)
+            assert isinstance(R, frozenset)
+            self.explicit_set_repr = L | R
+        return self.explicit_set_repr
+
+    # TODO: think of caching possibilities 
+    def make_generator(self):
+        double = []
+        for x in self.left_set:
+            double.append(x)
+            yield x
+        for y in self.right_set:
+            if y not in double:
+                yield y
+
+    # TODO: write test-case
+    def __contains__(self, element):
+        return element in self.right_set or element in self.left_set
+          
+
+class SymbolicIntersectionSet(SymbolicSet):
+    pass
+    
+
+class SymbolicDifferenceSet(SymbolicSet):
+    def __init__(self, aset0, aset1, env, interpret):
+        SymbolicSet.__init__(self, env, interpret)
+        self.left_set = aset0
+        self.right_set = aset1
+
+    def make_generator(self):
+        for x in self.left_set:
+            if x not in self.right_set:
+                yield x
+
+    def __contains__(self, element):
+        return element in self.left_set and element not in self.right_set
+        
+        
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
@@ -630,63 +728,15 @@ class SymbolicCartSet(SymbolicSet):
 
     def make_generator(self):
         return enumerate_cross_product(self.left_set, self.right_set)
+ 
 
-
-class SymbolicUnionSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
-        self.left_set = aset0
-        self.right_set = aset1
-    
-    # function call of set
-    def __getitem__(self, arg):
-        if isinstance(self.left_set, SymbolicSet) and isinstance(self.right_set, SymbolicSet):
-            try:
-                result = self.left_set[arg] 
-                return result
-            except:
-                result = self.right_set[arg] 
-                return result
-        raise Exception("Not implemented: relation symbolic membership")  
-
-    def __eq__(self, aset):
-        if aset==None:
-            return False
-        if isinstance(aset, SymbolicUnionSet):
-            # may throw a DontKnowIfEqualException
-            if check_syntacticly_equal(self, aset):
-                return True
-        if isinstance(aset, frozenset):
-            return aset == self.enumerate_all()
-        raise DontKnowIfEqualException("lambda compare not implemented")
-    
-    def enumerate_all(self):
-        if self.explicit_set_repr==None:
-            if isinstance(self.left_set, SymbolicSet):
-                L = self.left_set.enumerate_all()
-            else:
-                L = self.left_set
-            if isinstance(self.right_set, SymbolicSet):
-                R = self.right_set.enumerate_all()
-            else:
-                R = self.right_set
-            self.explicit_set_repr = L | R
-        return self.explicit_set_repr
-
-    # TODO: think of caching possibilities 
-    def make_generator(self):
-        double = []
-        for x in self.left_set:
-            double.append(x)
-            yield x
-        for y in self.right_set:
-            if y not in double:
-                yield y
-
-    # TODO: write test-case
-    #def __contains__(self, element):
-    #    return element in self.right_set or element in self.left_set
-
+#################
+# Unary Set operations
+#################
+# No implementation: FIN, FIN1   
+# POW, POW1
+# missing: union, inter, UNION, INTER
+        
 class SymbolicPowerSet(SymbolicSet):
     def __init__(self, aset, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
@@ -715,7 +765,10 @@ class SymbolicPowerSet(SymbolicSet):
                 assert len(lst)==i+1
                 yield frozenset(lst)
             i = i+1
-        
+
+
+class SymbolicPower1Set(SymbolicSet):
+    pass        
 
 
 class SymbolicIntervalSet(LargeSet):

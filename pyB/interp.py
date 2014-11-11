@@ -702,9 +702,7 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicUnionSet(aSet1, aSet2, env, interpret)
-        return aSet1.union(aSet2)
+        return SymbolicUnionSet(aSet1, aSet2, env, interpret)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -881,6 +879,8 @@ def interpret(node, env):
     elif isinstance(node, AMinusOrSetSubtractExpression) or isinstance(node, ASetSubtractionExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        if isinstance(expr1, (SymbolicSet, frozenset)) or isinstance(expr2, (SymbolicSet, frozenset)):
+            return SymbolicDifferenceSet(expr1, expr2, env, interpret)
         if isinstance(expr2, SymbolicSet):
             expr2 = expr2.enumerate_all()
         return expr1 - expr2
@@ -1623,6 +1623,7 @@ def exec_substitution(sub, env):
             yield False
         else:
             ref_state = env.get_state().clone()
+            #print "AParallelSubstitution:", ref_state
             new_values = [] # values changed by this path
             # for explanation see function comments  
             ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, new_values)
@@ -1693,7 +1694,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
         if not interpret(sub.children[0], env):
-            print "ASSERT violated:", pretty_print(sub.children[0])
+            print "ASSERT-Substitution violated:", pretty_print(sub.children[0])
             yield False  #TODO: What is correct: False or crash\Exception?
         ex_generator = exec_substitution(sub.children[1], env)
         for possible in ex_generator:

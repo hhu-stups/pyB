@@ -84,9 +84,13 @@ class BState():
     # TODO: (maybe) check if value has the correct type - but this can be better done static
     # used by tests and enumeration and substitution
     def set_value(self, id_Name, value, bmachine):
+        #print
         #print value, id_Name
         assert isinstance(bmachine, BMachine) or bmachine==None
         value_stack = self.bmch_dict[bmachine]
+        #from symbolic_sets import SymbolicSet
+        #if isinstance(value, SymbolicSet):
+        #    value = value.enumerate_all() 
         for i in range(len(value_stack)):
             top_map = value_stack[-(i+1)]
             if id_Name in top_map:

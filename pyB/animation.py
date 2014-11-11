@@ -57,15 +57,17 @@ def calc_next_states(env, bmachine):
             if op_has_no_parameters:
                 ex_sub_generator = exec_substitution(substitution, env)
                 bstate = ref_bstate.clone() # new state for first exec-path (nondeterminism)
+                #print "bstate:",bstate
                 env.state_space.add_state(bstate) 
                 for possible in ex_sub_generator:
                     if possible:
                         return_value_list = _get_value_list(env, return_val_idNodes)
                         env.pop_frame()
-                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?         
+                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?        
                         result.append([op.opName, [], return_value_list, bstate])
                     env.state_space.undo() # pop last bstate
                     bstate = ref_bstate.clone() # new state for next exec-path (nondeterminism)
+                    #print "refstate:", bstate
                     env.state_space.add_state(bstate)
                 env.state_space.undo()  # pop bstate (all paths found)
             # (3.2) case two: find parameter values

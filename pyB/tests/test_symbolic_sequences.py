@@ -84,8 +84,8 @@ class TestSymbolicSequences():
 
                 
     # TODO: undefined size. Throw exception
-    import pytest
-    @pytest.mark.xfail     
+    #import pytest
+    #@pytest.mark.xfail     
     def test_symbolic_sequences_size2(self):
         # Build AST
         string_to_file("#EXPRESSION size(%x.(x:NATURAL|x))", file_name)
@@ -112,8 +112,8 @@ class TestSymbolicSequences():
         
 
     #missing or wrong impl. for __getitem__
-    import pytest
-    @pytest.mark.xfail         
+    #import pytest
+    #@pytest.mark.xfail         
     def test_symbolic_sequences_conc(self):
         # Build AST
         string_to_file("#EXPRESSION (%x.(x:NAT1|x+1))^(%x.(x:NAT1|x*x))", file_name)
@@ -126,8 +126,8 @@ class TestSymbolicSequences():
  
         
     #missing  or wrong impl. for __getitem__
-    import pytest
-    @pytest.mark.xfail    
+    #import pytest
+    #@pytest.mark.xfail    
     def test_symbolic_sequences_append(self):
         # Build AST
         # {(1,2)...(127,128),(128,42)}

@@ -477,7 +477,20 @@ class TestSymbolicSets():
         env = Environment()
         assert not interpret(root.children[0], env)
 
-            
+
+    def test_symbolic_diff_set(self):
+        # Build AST
+        string_to_file("#PREDICATE 5:INTEGER-{42} ", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test 
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        assert interpret(root.children[0], env) 
+
+          
     def test_symbolic_proj1(self):
         # Build AST
         string_to_file("#PREDICATE prj1(INTEGER*INTEGER,INTEGER)((1,42,1))=(1|->42)", file_name)
