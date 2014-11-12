@@ -1,5 +1,5 @@
 from symbolic_helpers import check_syntacticly_equal, make_explicit_set_of_realtion_lists 
-from symbolic_sets import *
+from symbolic_sets import SymbolicSet, PowerSetType, SymbolicCartSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 from ast_nodes import *
 from relation_helpers import *

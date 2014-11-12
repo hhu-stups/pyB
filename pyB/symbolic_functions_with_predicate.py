@@ -1,6 +1,7 @@
 # symbolic functions defined by a predicate
+from helpers import remove_tuples, build_arg_by_type
 from symbolic_helpers import check_syntacticly_equal 
-from symbolic_sets import *
+from symbolic_sets import SymbolicSet
 from pretty_printer import pretty_print
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
