@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from btypes import *
+from bexceptions import ValueNotInDomainException
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from util import type_with_known_types, get_type_by_name
@@ -889,8 +890,40 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
-        assert interpret(root, env)    
+        assert interpret(root, env)   
+        
 
+    # C578_Urgent_Jul13/151_001 
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_interval_fun_app_one_args(self):
+        # solution a,b,c,d,e = 1,1,1,1,1
+        string_to_file("#PREDICATE !x,y.(x:{3,4,5} & y:0..{0 |-> 4,1 |-> 4,2 |-> 4,3 |-> 4}(x)-1 => 1<2)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        py.test.raises(ValueNotInDomainException, "assert interpret(root, env)")       
+
+
+    # C578_Urgent_Jul13/151_001 
+    import pytest
+    @pytest.mark.xfail
+    def test_constraint_interval_fun_app_two_args(self):
+        # solution a,b,c,d,e = 1,1,1,1,1
+        string_to_file("#PREDICATE !x,y,z.(x:{3,4,5} & y:{1,2,3} & z:0..{3|->{0 |-> 4,1 |-> 4,2 |-> 4,3 |-> 4}}(x)(y)-1 => 1<2)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        py.test.raises(ValueNotInDomainException, "assert interpret(root, env)")
+        
 # Write tests:        
 # TODO AComprehensionSetExpression:  see C578/2013_08_14/machines_14082013/Z_01_001.mch    
 # dr:0 .. 234 & dd:{0,1} & db:POW(0 .. 234*{0,1}*INTEGER) & dy:0 .. 234 & dr/:dom(dom(db))-{dy} & dz:{ds,de,ea,eb,|ds:INTEGER & de:INTEGER & ea:POW(INTEGER*INTEGER*INTEGER) & eb:INTEGER & ea=db & eb=dy & dr|->dd|->ds|->de:{0|->1|->2|->1,0|->1|->9|->0,234|->0|->228|->1} & ds:dom(dom(ea)) => {de}/=dom(ea)[{ds}]}

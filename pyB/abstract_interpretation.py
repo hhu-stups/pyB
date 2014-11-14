@@ -77,6 +77,8 @@ def _abs_int(node, env, ic):
         time1 = _abs_int(right_node, env, ic)
         #print time0, time1
         if time0<TO_MANY_ITEMS and time1<TO_MANY_ITEMS:
+            # BUG: if this interpreter call cause the lookup of an unset variable,
+            # this will crash.
             val0 = ic(left_node, env)
             val1 = ic(right_node, env)
         else:

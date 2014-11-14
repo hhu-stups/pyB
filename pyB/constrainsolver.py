@@ -251,6 +251,9 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                             test_set = frozenset([])
                             env.push_new_frame(varList)
                             #print "XXX:", pretty_print(pred)
+                            # TODO: throwing away the partial solution makes no sense,
+                            # because it will be computed anyway. Refactor this code
+                            # by computing the cross product after every iteration
                             for part_sol in a_cross_product_iterator:
                                 for v in already_computed_var_List:
                                     name  = v.idName
