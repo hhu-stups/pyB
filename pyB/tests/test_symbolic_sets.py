@@ -778,6 +778,21 @@ class TestSymbolicSets():
 
     import pytest
     @pytest.mark.xfail
+    # cause unimplemented _getitem_ of symb. set comp.
+    def test_symbolic_composition_domain_restriction(self):
+        # Build AST
+        string_to_file("#PREDICATE {-1,1}<|{(x,z)| x:NAT & z=x*10}={(1,10)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        env.get_all_strings(root)
+        assert interpret(root, env) 
+        
+
+    import pytest
+    @pytest.mark.xfail
     def test_symbolic_lambda_ran(self):
         # Build AST
         string_to_file("#PREDICATE ran((%x.(x:NAT|42)))={42}", file_name)

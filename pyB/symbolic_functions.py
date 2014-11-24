@@ -291,6 +291,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
             z = [t[1] for t in self.left_relation if t[0]==arg][0]
         else:
             z = self.left_relation[arg]
+        # TODO: z may not be an element of self.right_relation 
         if isinstance(self.right_relation, frozenset):
             image = [t[1] for t in self.right_relation if t[0]==z][0]
         else:

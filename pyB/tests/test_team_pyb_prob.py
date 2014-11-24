@@ -8,7 +8,7 @@ from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_root_bmch, type_check_predicate
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from definition_handler import DefinitionHandler
-
+from bexceptions import BTypeException
 
 def run_with_prob(option_str="", bfile_name="temp", dir=""):
     from subprocess import Popen, PIPE
@@ -107,8 +107,8 @@ class TestTeam():
         # 3.61 seconds:   C578/2013_08_14/machines_14082013/410_002_simple
         # 15.02 seconds:  C578/2013_08_14/machines_27082013/0021_002
         # 8.04 seconds:   C578/2013_08_14/machines_27082013/R_04_001
-        # 406.27 seconds: C578/2013_08_14/machines_27082013/R_02_002
-        # 379.40 seconds: C578/2013_08_14/machines_14082013/02_001
+        # 406.27 seconds: C578/2013_08_14/machines_27082013/R_02_002 - broken 19.11.2014 mb compute timeout
+        # 379.40 seconds: C578/2013_08_14/machines_14082013/02_001 -broken 19.11.2014 lj compute timeout
         # C578_Final_Jul13/machines2/0682_002 (27 min)
         # 405.81 seconds: C578/2013_08_14/machines_27082013/R_07_001
         
@@ -119,6 +119,16 @@ class TestTeam():
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 
+
+    # proB gens items {S1, S2, S3, S4 }:S. Typing of these elements fails. 
+    # FIXME: f={(S1|->0),(S2|->0),(S3|->0),(S4|->0)} type of f is known. this can be fixed
+    def test_team_defferd_set_items(self):
+        import py
+        bfile_name="examples/Scope"
+        run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
+        py.test.raises(BTypeException, "run_with_pyb(bfile_name)")  
+        
+        
 #
 #   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
 # 

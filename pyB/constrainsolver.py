@@ -25,6 +25,8 @@ class SpecialCaseEnumerationFailedException:
 # varList: variables need to be constraint
 # returns a list of dicts [{x1:value00, ... ,xN:valueN0}, ... ,{x1:value0N, ... ,xN:value1NN}]
 # TODO: move checking inside this function i.e. generate NO FALSE values
+# TODO: maybe a new argument containing a partial computation (e.g. on of many vars with 
+#       with domain constraint) would be a nice refactoring to solve get_item in symb. comp. set
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     #print "calc_possible_solutions: ", pretty_print(predicate)
     assert isinstance(varList, list)
@@ -57,6 +59,8 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: External constraint solver faild. Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
+        # TODO: maybe case 2 was able to constrain the domain of some variables but not all
+        # this computation is thrown away in this step. This makes no senese. Fix it!
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()

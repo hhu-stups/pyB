@@ -121,9 +121,12 @@ def __set_up_constants_generator(root, env, mch):
         for para_solution in param_generator: 
                 # case (3.1) 
                 # no constants to set up.
-                # so para_solution is the result of this set up     
+                # so para_solution is the result of this set up   
+                # Manual Page 110: If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.  
+                # 				   Visible Table: PROPERTIES-clause may read sets in SETS-clause
                 if mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None:
-                    assert mch.aPropertiesMachineClause==None
+                    if mch.aSetsMachineClause==None:
+                        assert mch.aPropertiesMachineClause==None
                     # if mch_list is empty, child_bstate_change is False:
                     if mch.scalar_params==[] and mch.set_params==[]:
                         yield child_bstate_change
@@ -1012,13 +1015,17 @@ def interpret(node, env):
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
-        if isinstance(rel, SymbolicSet):
-            #avoid infinit enum
-            if isinstance(aSet, SymbolicSet):
-                aSet = aSet.enumerate_all()
-            new_rel = [(x,rel[x]) for x in aSet]
-        else:
+        # TODO: always try to enumerate the finite one.
+        if isinstance(rel, frozenset):
             new_rel = [x for x in rel if x[0] in aSet]
+        else:
+            new_rel = []
+            for x in aSet:
+                try:
+                    e = (x,rel[x])
+                    new_rel.append(e)
+                except ValueNotInDomainException:
+                    continue              
         return frozenset(new_rel)
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)

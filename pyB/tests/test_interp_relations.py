@@ -275,6 +275,17 @@ class TestInterpRelations():
         assert interpret(root.children[0],env)
 
 
+    def test_genAST_pred_rel_domsub2(self):
+        # Build AST:
+        string_to_file("#PREDICATE {-1,1}<|{(1,10),(2,20),(3,30)}={(1,10)}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env)
+
+
     def test_genAST_pred_rel_ranres(self):
         # Build AST:
         string_to_file("#PREDICATE f=r|>T", file_name)
@@ -334,6 +345,17 @@ class TestInterpRelations():
     def test_genAST_pred_rel_inverse2(self):
         # Build AST:
         string_to_file("#PREDICATE {(\"c\",\"c\")}=({(\"a\",(\"b\",3)),(\"c\",(\"d\",6))};{(\"a\"|->(\"b\"|->9)),(\"c\"|->(\"d\"|->6))}~)", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env)
+
+
+    def test_genAST_pred_rel_inverse3(self):
+        # Build AST:
+        string_to_file("#PREDICATE {(1,10),(2,20),(3,30)}~(30)=3", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
 

@@ -163,8 +163,22 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.explicit_set_repr = None # not computed at init  
     
     def __getitem__(self, args):
-        print args
-        raise NotImplementedError()  
+        assert len(self.variable_list)>1
+        # 1. map args to var-nodes
+        args = remove_tuples(args)
+        self.env.push_new_frame(self.variable_list)
+        unset = len(self.variable_list)
+        for i in range(len(args)):
+            idNode = self.variable_list[i]
+            atype = self.env.get_type_by_node(idNode)
+            value = build_arg_by_type(atype, args)
+            self.env.set_value(idNode.idName, value)
+            unset = unset -1
+        # TODO: 2. compute missing bound variables 
+        print unset, "unset bound variables:", [x.idName for x in self.variable_list[unset:]]  
+        raise NotImplementedError()
+        self.env.pop_frame() # exit scope
+        return result    
     
     def __eq__(self, aset):
         if aset==None:
@@ -190,6 +204,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         #print len(varList), varList
         for i in range(len(varList)):
             idNode = varList[i]
+            # type needed to map args to value
             atype = self.env.get_type_by_node(idNode)
             value = build_arg_by_type(atype, args)
             self.env.set_value(idNode.idName, value)

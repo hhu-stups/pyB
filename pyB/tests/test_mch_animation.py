@@ -1924,3 +1924,29 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)
         assert len(bstates)==4
+        
+ 
+    def test_properties_without_constants(self):        
+        string = '''
+        MACHINE Scope /*modified Schnieder book page 115*/
+		SETS S
+		PROPERTIES card(S)=4 
+		VARIABLES f
+		INVARIANT f:S --> 0..6 
+		INITIALISATION f:=S*{0}
+		OPERATIONS
+		op1(rr, nn) = PRE rr:S & nn:1..6 & f(rr)=0 
+				  THEN f(rr):= nn
+				  END;
+		nn <-- op2 = nn:= SIGMA(zz).(zz:S | f(zz))
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)   
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)  
