@@ -125,8 +125,7 @@ def __set_up_constants_generator(root, env, mch):
                 # Manual Page 110: If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.  
                 # 				   Visible Table: PROPERTIES-clause may read sets in SETS-clause
                 if mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None:
-                    if mch.aSetsMachineClause==None:
-                        assert mch.aPropertiesMachineClause==None
+                    # TODO:Properties can always be present. e.g PROPERTIES 1<2
                     # if mch_list is empty, child_bstate_change is False:
                     if mch.scalar_params==[] and mch.set_params==[]:
                         yield child_bstate_change

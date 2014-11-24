@@ -529,7 +529,41 @@ class TestMCHLaod():
         arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 0    
     
-    
+
+    def test_only_properties(self):
+        string = '''
+  		MACHINE Only
+		PROPERTIES 4=4 	
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        arbitrary_init_machine(root, env, mch) 
+
+
+    def test_only_invariant(self):
+        string = '''
+  		MACHINE Only
+		INVARIANT 4=4 	
+		END'''
+		# Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        arbitrary_init_machine(root, env, mch) 
+
+  
     # issue 22
     import pytest
     @pytest.mark.xfail
