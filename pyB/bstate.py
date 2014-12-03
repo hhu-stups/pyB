@@ -115,6 +115,7 @@ class BState():
     # new scope:
     # push a new frame with new local vars
     def push_new_frame(self, nodes, bmachine):
+        #print "push_new_frame", [x.idName for x in nodes], bmachine
         # TODO: throw warning if local var with 
         # the same name like a global var. This is not a B error
         # but maybe not intended by the User. 
@@ -128,6 +129,7 @@ class BState():
 
 
     def add_ids_to_frame(self, ids, bmachine):
+        #print "add_ids_to_frame", ids, bmachine
         value_stack =  self.bmch_dict[bmachine]
         top_map = value_stack[-1]
         for i in ids:

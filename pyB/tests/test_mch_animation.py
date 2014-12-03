@@ -1925,7 +1925,9 @@ class TestMCHAnimation():
         bstates = set_up_constants(root, env, mch)
         assert len(bstates)==4
         
- 
+
+    import pytest
+    @pytest.mark.xfail 
     def test_properties_without_constants(self):        
         string = '''
         MACHINE Scope /*modified Schnieder book page 115*/
@@ -1949,4 +1951,7 @@ class TestMCHAnimation():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
-        bstates = set_up_constants(root, env, mch)  
+        # FIXME: setting deferred set elements to config.py value.
+        bstates = set_up_constants(root, env, mch) 
+        S=env.get_value("S")
+        assert len(S)==4 

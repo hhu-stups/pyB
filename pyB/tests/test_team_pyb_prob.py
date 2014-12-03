@@ -107,10 +107,10 @@ class TestTeam():
         # 3.61 seconds:   C578/2013_08_14/machines_14082013/410_002_simple
         # 15.02 seconds:  C578/2013_08_14/machines_27082013/0021_002
         # 8.04 seconds:   C578/2013_08_14/machines_27082013/R_04_001
-        # 406.27 seconds: C578/2013_08_14/machines_27082013/R_02_002 - broken 19.11.2014 mb compute timeout
-        # 379.40 seconds: C578/2013_08_14/machines_14082013/02_001 -broken 19.11.2014 lj compute timeout
+        # 406.27 seconds: C578/2013_08_14/machines_27082013/R_02_002 - broken since 19.11.2014 mb compute timeout
+        # 379.40 seconds: C578/2013_08_14/machines_14082013/02_001 -broken since 19.11.2014 lj compute timeout
         # C578_Final_Jul13/machines2/0682_002 (27 min)
-        # 405.81 seconds: C578/2013_08_14/machines_27082013/R_07_001
+        # 405.81 seconds: C578/2013_08_14/machines_27082013/R_07_001 - broken since 26.11.2014  ig 171.29 seconds
         
         
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
@@ -127,6 +127,7 @@ class TestTeam():
         bfile_name="examples/Scope"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         py.test.raises(BTypeException, "run_with_pyb(bfile_name)")  
+        #run_with_pyb(bfile_name)
         
         
 #
