@@ -101,12 +101,13 @@ class TestTeam():
 #   
     # TODO: move command line input to config.py     
     def test_team_systerel(self):
-        # 21.72 seconds:  C578_Urgent_Jul13/151_001
-        # 11.06 seconds:  C578_Final_Jul13/m-PROP_SCL_VTT_0304_001 
-        # 51.44 seconds:  C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001 
-        # 3.61 seconds:   C578/2013_08_14/machines_14082013/410_002_simple
-        # 15.02 seconds:  C578/2013_08_14/machines_27082013/0021_002
-        # 8.04 seconds:   C578/2013_08_14/machines_27082013/R_04_001
+        # Without/with Timeout
+        # 21.72 seconds/25.48:  C578_Urgent_Jul13/151_001
+        # 11.06 seconds/19.76:  C578_Final_Jul13/m-PROP_SCL_VTT_0304_001
+        # 51.44 seconds/74.37:  C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001 (87.32 sec Timeout=5sec)
+        # 3.61 seconds/3.85:    C578/2013_08_14/machines_14082013/410_002_simple
+        # 15.02 seconds/19.24:  C578/2013_08_14/machines_27082013/0021_002
+        # 8.04 seconds/10.20:   C578/2013_08_14/machines_27082013/R_04_001
         # 406.27 seconds: C578/2013_08_14/machines_27082013/R_02_002 - broken since 19.11.2014 mb compute timeout
         # 379.40 seconds: C578/2013_08_14/machines_14082013/02_001 -broken since 19.11.2014 lj compute timeout
         # C578_Final_Jul13/machines2/0682_002 (27 min)
@@ -115,7 +116,7 @@ class TestTeam():
         
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
         
-        bfile_name="examples/not_public/Systerel/C578_Urgent_Jul13/151_001"
+        bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 

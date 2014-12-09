@@ -123,7 +123,7 @@ def __set_up_constants_generator(root, env, mch):
                 # no constants to set up.
                 # so para_solution is the result of this set up   
                 # Manual Page 110: If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.  
-                # 				   Visible Table: PROPERTIES-clause may read sets in SETS-clause
+                #                  Visible Table: PROPERTIES-clause may read sets in SETS-clause
                 if mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None:
                     # TODO:Properties can always be present. e.g PROPERTIES 1<2
                     # if mch_list is empty, child_bstate_change is False:
@@ -548,11 +548,26 @@ def interpret(node, env):
         result = True
         ok = 0
         fail = 0
+        timeout = 0
         for n in lst:
             try:
-                value = interpret(n, env)
+                if PROPERTIES_TIMEOUT<=0:
+                    value = interpret(n, env)
+                else:
+                    import multiprocessing   
+                    que = multiprocessing.Queue()
+                    p = multiprocessing.Process(target = lambda q, n, env : q.put(interpret(n, env)), args = (que, n, env))
+                    p.start()
+                    p.join(PROPERTIES_TIMEOUT)
+                    if not que.empty():
+                        value = que.get()
+                    else:
+                        p.terminate()
+                        print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
+                        timeout = timeout +1
+                        continue
             except OverflowError:
-                print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow cause by: ("+pretty_print(n)+")"
+                print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
                 fail = fail +1
                 continue
             if PRINT_SUB_PROPERTIES: # config.py
@@ -566,7 +581,12 @@ def interpret(node, env):
                 else: #XXX
                    print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
             result = result and value
-        print "properties clause - ok:%s fail:%s" % (ok,fail)
+        if fail>0:
+            print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        elif timeout>0:
+            print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        else:
+            print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
