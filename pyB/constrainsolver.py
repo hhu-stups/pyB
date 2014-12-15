@@ -522,6 +522,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             # 2.2. compute set if match found
             if match:
                 set = interpreter_callable(node.children[1], env)
+                # FIXME: C578.EML.014/R_PLACE_MAINTENANCE_2 returns SymbolicUnionSet
                 assert isinstance(set, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side

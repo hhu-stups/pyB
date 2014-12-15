@@ -140,10 +140,18 @@ class SymbolicSet(object):
     def __getitem__(self, args):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) function app f(x) implementation called", self, args
+        # set may be a relation
         aset = self.enumerate_all()
+        result = []
         for t in aset:
             if t[0]==args:
-                return t[1]
+                result.append(t[1])
+        # if only one value, return value
+        if len(result)==1:
+            return result[0]
+        # else, return list of values (will be packed into a set by interp function)
+        elif len(result)>1:
+            return result
         raise ValueNotInDomainException(args) 
         
     def __iter__(self):

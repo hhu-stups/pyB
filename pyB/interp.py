@@ -1041,8 +1041,13 @@ def interpret(node, env):
             new_rel = []
             for x in aSet:
                 try:
-                    e = (x,rel[x])
-                    new_rel.append(e)
+                    img = rel[x]
+                    if isinstance(img, list):
+                        for i in img:
+                            new_rel.append((x,i))
+                    else:
+                        e = (x,img)
+                        new_rel.append(e)
                 except ValueNotInDomainException:
                     continue              
         return frozenset(new_rel)
@@ -1072,15 +1077,20 @@ def interpret(node, env):
         #print aSet
         if isinstance(rel, SymbolicSet):
             image = []
-            if isinstance(aSet, SymbolicSet):
-                aSet = aSet.enumerate_all()
+            #if isinstance(aSet, SymbolicSet):
+            #    aSet = aSet.enumerate_all()
             for x in aSet:
                 try:
-                    image.append(rel[x])
+                    img = rel[x]
+                    if isinstance(img, list):
+                        image = image + img
+                    else:
+                        image.append(img)
                 except ValueNotInDomainException:
                     continue
         else:
             image = [x[1] for x in rel if x[0] in aSet ]
+            
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
         #print pretty_print(node)
