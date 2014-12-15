@@ -1054,16 +1054,19 @@ def interpret(node, env):
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
+        # TODO: handle symbolic case
         new_rel = [x for x in rel if not x[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ARangeRestrictionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
+        # TODO: handle symbolic case
         new_rel = [x for x in rel if x[1] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ARangeSubtractionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
+        # TODO: handle symbolic case
         new_rel = [x for x in rel if not x[1] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
