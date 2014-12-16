@@ -224,7 +224,14 @@ class SymbolicIdentitySet(SymbolicRelationSet):
         assert self.left_set==self.right_set
         for e in self.left_set:
             yield tuple([e,e])
-        
+
+    def __contains__(self, element):
+        assert isinstance(element, tuple)
+        if element[0]==element[1] and element[0] in self.left_set:
+            return True
+        else:
+            return False 
+             
 class SymbolicCompositionSet(SymbolicRelationSet):
     def __init__(self, arelation0, arelation1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
@@ -282,6 +289,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
     def make_generator(self):
         for e0 in self.left_relation:
             for e1 in self.right_relation:
+                #print e0[1], e1[0], e0[1]==e1[0]
                 if e0[1]==e1[0]:
                     yield (e0[0],e1[1])
     
