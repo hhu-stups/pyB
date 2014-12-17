@@ -1096,6 +1096,7 @@ def interpret(node, env):
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
         #print pretty_print(node)
+        # r1 <+ r2
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
         if isinstance(r1, SymbolicSet):

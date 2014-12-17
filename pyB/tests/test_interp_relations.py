@@ -421,6 +421,16 @@ class TestInterpRelations():
         env.set_value("r2", frozenset([(3,5), (3,9), (6,3), (9,2)]))
         env.set_value("f", frozenset([(3,5), (3,9), (6,3), (9,2), (2,7), (5,1)]))
         assert interpret(root.children[0],env)
+        
+        env.set_value("f", frozenset([("a","1"),("b","42"),("c","777")]))
+        env.set_value("r2", frozenset([]))
+        env.set_value("r1", frozenset([("a","1"),("b","42"),("c","777")]))
+        assert interpret(root.children[0],env)
+        
+        env.set_value("f", frozenset([("a","1"),("b","42"),("c","777")]))
+        env.set_value("r2", frozenset([("a","1"),("b","42"),("c","777")]))
+        env.set_value("r1", frozenset([]))
+        assert interpret(root.children[0],env)
 
 
     def test_genAST_pred_rel_proj1(self):
