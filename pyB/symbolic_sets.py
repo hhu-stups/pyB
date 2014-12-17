@@ -728,11 +728,10 @@ class SymbolicCartSet(SymbolicSet):
         return l in self.left_set and r in self.right_set
     
     def __eq__(self, aset):
-        if not isinstance(aset, SymbolicCartSet):
-            return False
-        elif (self.left_set==aset.left_set) and (self.right_set==aset.right_set):
-            return True
-        return False
+        if isinstance(aset, SymbolicCartSet):
+            return (self.left_set==aset.left_set) and (self.right_set==aset.right_set)
+        else:
+            return SymbolicSet.__eq__(self, aset) 
     
     def __ne__(self, aset):
         return not self.__eq__(aset)

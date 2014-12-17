@@ -1,1 +1,1 @@
-#PREDICATE f=r1 <+ r2
+#PREDICATE A=bool(1<2)

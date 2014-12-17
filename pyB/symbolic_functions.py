@@ -4,6 +4,7 @@ from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehens
 from ast_nodes import *
 from relation_helpers import *
 from helpers import enumerate_cross_product
+from bexceptions import ValueNotInDomainException
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
