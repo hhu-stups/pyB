@@ -135,7 +135,7 @@ def find_var_nodes(node):
 # Quantified predicates are not visited because their variabels are enumerated separate. 
 def _find_var_nodes(node, lst):
     # (case 1) new scope needed, stop search. This variables will be typed later
-    if isinstance(node, (AUniversalQuantificationPredicate, AExistentialQuantificationPredicate, AComprehensionSetExpression, ALambdaExpression)):
+    if isinstance(node, (AQuantifiedUnionExpression, AQuantifiedIntersectionExpression, AUniversalQuantificationPredicate, AExistentialQuantificationPredicate, AComprehensionSetExpression, ALambdaExpression)):
         return
     elif isinstance(node,(AGeneralSumExpression, AGeneralProductExpression, AGeneralUnionExpression, AGeneralIntersectionExpression)):
         return

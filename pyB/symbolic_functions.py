@@ -308,6 +308,61 @@ class SymbolicCompositionSet(SymbolicRelationSet):
         return image
 
 
+# The SymbolicRelationSet methods asume a domain- and imageset present.
+# This type of relation has none(directly).
+class SymbolicTransRelation(SymbolicSet):
+    def __init__(self, function, env, interpret, node):
+        SymbolicSet.__init__(self, env, interpret)
+        self.function = function
+        self.node = node
+        
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            relation = []
+            for tup in self.function:
+                preimage = tup[0]
+                for image in tup[1]:
+                    relation.append(tuple([preimage, image]))
+            self.explicit_set_repr = frozenset(relation)
+        return self.explicit_set_repr
+    
+    def make_generator(self):
+        for tup in self.function:
+            preimage = tup[0]
+            for image in tup[1]:
+                yield tuple([preimage, image])
+
+
+# The SymbolicRelationSet methods asume a domain- and imageset present.
+# This type of relation has none.
+class SymbolicTransFunction(SymbolicSet):
+    def __init__(self, relation, env, interpret, node):
+        SymbolicSet.__init__(self, env, interpret)
+        self.relation = relation
+        self.node = node
+
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            function = []
+            for tup in self.relation:
+                image = []
+                preimage = tup[0]
+                for tup2 in self.relation:
+                    if tup2[0]==preimage:
+                        image.append(tup2[1])
+                function.append(tuple([preimage,frozenset(image)]))
+            self.explicit_set_repr = frozenset(function)
+        return self.explicit_set_repr        
+        
+    def make_generator(self):
+        for tup in self.relation:
+            image = []
+            preimage = tup[0]
+            for tup2 in self.relation:
+                if tup2[0]==preimage:
+                    image.append(tup2[1])
+            yield tuple([preimage,frozenset(image)])
+                                      
 # XXX: not enabled. see interpreter.py AReverseExpression
 class SymbolicInverseRelation(SymbolicRelationSet):
     def __init__(self, relation, env, interpret, node):

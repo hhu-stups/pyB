@@ -32,8 +32,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[3], AInvariantMachineClause)
-        assert interpret(root.children[3], env)
+        invariant = root.children[3]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
 
 
 
@@ -57,8 +58,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[3], AInvariantMachineClause)
-        assert interpret(root.children[3], env)
+        invariant = root.children[3]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==4
 
 
@@ -84,8 +86,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==3
 
 
@@ -109,8 +112,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==2
 
 
@@ -134,8 +138,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==4
 
 
@@ -158,8 +163,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
 
 
     def test_genAST_subst_def(self):
@@ -181,8 +187,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==2
         assert env.get_value("b")==True
 
@@ -206,8 +213,9 @@ class TestInterpDefinitions():
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch)# init VARIABLES and eval INVARIANT
-        assert isinstance(root.children[2], AInvariantMachineClause)
-        assert interpret(root.children[2], env)
+        invariant = root.children[2]
+        assert isinstance(invariant, AInvariantMachineClause)
+        assert interpret(invariant, env)
         assert env.get_value("z")==3
         assert env.get_value("b")==True
         assert env.get_value("x")==2

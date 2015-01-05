@@ -8,7 +8,7 @@ from parsing import str_ast_to_python_ast
 file_name = "input.txt"
 
 class TestQuickEnum():
-    def test_quick_relation_member(self):
+    def test_quick_relation_member1(self):
         # Build AST
         string_to_file("#PREDICATE S={1,2,3,4,5} & T={1,2,3,4,5} & {(1,2)}:S<->T", file_name)
         ast_string = file_to_AST_str(file_name)
@@ -16,8 +16,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member2(self):
@@ -28,8 +27,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)
+        assert not interpret(root, env)
 
 
     def test_quick_relation_member3(self):
@@ -40,8 +38,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member4(self):
@@ -52,8 +49,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member5(self):
@@ -64,8 +60,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member6(self):
@@ -76,8 +71,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member7(self):
@@ -88,8 +82,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)
+        assert not interpret(root, env)
 
 
     def test_quick_relation_member8(self):
@@ -100,8 +93,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)          
+        assert not interpret(root, env)          
  
  
     def test_quick_relation_member9(self):
@@ -112,8 +104,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member10(self):
@@ -124,8 +115,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)
+        assert not interpret(root, env)
 
 
     def test_quick_relation_member11(self):
@@ -136,8 +126,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member12(self):
@@ -148,8 +137,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)    
+        assert not interpret(root, env)    
 
 
     def test_quick_relation_member13(self):
@@ -160,8 +148,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member14(self):
@@ -172,8 +159,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member15(self):
@@ -184,8 +170,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_relation_member16(self):
@@ -196,8 +181,8 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        #env.add_ids_to_frame(["S","T"])
+        assert interpret(root, env)
 
 
     def test_quick_relation_member17(self):
@@ -208,8 +193,8 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)
+        #env.add_ids_to_frame(["S","T"])
+        assert not interpret(root, env)
 
 
     def test_quick_relation_member18(self):
@@ -220,8 +205,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
         
 
     def test_quick_powerset_member(self):
@@ -232,8 +216,8 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)
+        #env.add_ids_to_frame(["S"])
+        assert interpret(root, env)
 
 
     def test_quick_cart_member(self):
@@ -244,8 +228,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_power_cart_member(self):
@@ -256,8 +239,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
 
 
     def test_quick_power_cart_member2(self):
@@ -268,8 +250,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)
+        assert not interpret(root, env)
 
 
     def test_quick_power_cart_member3(self):
@@ -280,8 +261,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T"])
-        assert not interpret(root.children[0], env)         
+        assert not interpret(root, env)         
         
 
     def test_quick_squence_member(self):
@@ -292,8 +272,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S","T","R"])
-        assert interpret(root.children[0], env)	
+        assert interpret(root, env)	
   
         
     def test_quick_squence_member2(self):
@@ -304,8 +283,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)	        
+        assert interpret(root, env)	        
 
 
     def test_quick_squence_member3(self):
@@ -316,8 +294,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_squence_member4(self):
@@ -328,8 +305,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_quick_squence_member5(self):
@@ -340,8 +316,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_infinite_set_member(self):
@@ -352,7 +327,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_infinite_set_member2(self):
@@ -363,7 +338,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_infinite_set_member3(self):
@@ -374,7 +349,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     def test_infinite_set_member4(self):
@@ -385,7 +360,7 @@ class TestQuickEnum():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
     def test_quick_lambda(self):
         pass

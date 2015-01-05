@@ -288,7 +288,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_contains2(self):
@@ -299,7 +299,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not interpret(root.children[0],env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_set_contains3(self):
@@ -410,7 +410,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_couple2(self):
@@ -421,7 +421,7 @@ class TestInterpSets():
 
         # Test
         env = Environment()
-        assert not interpret(root.children[0],env)
+        assert not interpret(root,env)
 
 
     def test_genAST_pred_set_compreh(self):
@@ -433,7 +433,7 @@ class TestInterpSets():
         # Test
         env = Environment()
         type_with_known_types(root.children[0], env, [], [])
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_set_compreh2(self):
@@ -445,7 +445,7 @@ class TestInterpSets():
         # Test
         env = Environment()
         type_with_known_types(root.children[0], env, [], [])
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
         
 
     def test_genAST_pred_set_compreh3(self):      

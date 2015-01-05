@@ -1,0 +1,1 @@
+#PREDICATE card(%x.(x:1..100|x*x))=100

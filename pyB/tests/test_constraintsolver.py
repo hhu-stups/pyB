@@ -558,7 +558,7 @@ class TestConstraintSolver():
     def test_constraint_set_gen_union1(self):
         # Build AST:
         # UNION(x).(P(x)|E(x))
-        # find all values that settisfy  P(x)='x=1' and compute the union set of all 
+        # find all values that satisfy  P(x)='x=1' and compute the union set of all 
         # expressions E(X)(in this case one) for every x (in this case x doesnt constrain E(x) )
         string_to_file("#EXPRESSION UNION(x).(x=1|{\"a\",\"b\"}\/{\"b\",\"c\"})", file_name)
         ast_string = file_to_AST_str(file_name)
@@ -578,6 +578,7 @@ class TestConstraintSolver():
         assert vars0==["x"]
         assert time0<2**22   
         assert compute_first0 == []
+        # ExpressionParseUnit does not support variables
         result = interpret(root.children[0], env)
         assert result==frozenset(['a', 'c', 'b'])
 
@@ -607,8 +608,7 @@ class TestConstraintSolver():
         assert vars0==["x"]
         assert time0<2**22
         assert compute_first0 == []
-        env.add_ids_to_frame(["S","f"])
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
         
         
 
@@ -634,7 +634,7 @@ class TestConstraintSolver():
         assert set(vars0)==set(["x", "y"])
         assert time0<2**22
         assert compute_first0 == []
-        assert interpret(root.children[0], env)
+        assert interpret(root, env)
 
 
     # 3 variables have to be constraint 
@@ -664,7 +664,7 @@ class TestConstraintSolver():
         assert set(vars)==set(["x", "y", "z"])
         assert time<2**22 
         assert compute_first == []
-        assert interpret(root.children[0], env)      
+        assert interpret(root, env)      
 
 
     # 3 variables have to be constraint + function app-constraint 
@@ -679,7 +679,7 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
 
 
     
@@ -711,8 +711,7 @@ class TestConstraintSolver():
         var4 = union_predicate.children[4]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _categorize_predicates(set_predicate, env, [var0, var1, var2, var3, var4],interpret)  
-        env.add_ids_to_frame(["S"])
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
 
 
     def test_constraint_set_gen_union7(self):
@@ -725,7 +724,7 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
 
 
     def test_constraint_set_gen_union8(self):
@@ -738,7 +737,7 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
-        assert interpret(root.children[0], env) 
+        assert interpret(root, env) 
 
     
     def test_constraint_set_comprehension(self):
@@ -808,7 +807,7 @@ class TestConstraintSolver():
         assert set(vars1)==set(["y"])
         assert time1<2**22 
         assert compute_first1 == ["x"]       
-        assert interpret(root.children[0], env)    
+        assert interpret(root, env)    
 
 
     # topologic sort and test set generation fails
@@ -824,7 +823,7 @@ class TestConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
-        assert interpret(root.children[0], env)     
+        assert interpret(root, env)     
 
         
     #TODO: write test of union which defines bound vars via other quantified predicates.

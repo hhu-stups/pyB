@@ -422,7 +422,10 @@ def __find_unset_constants(mch, bstate):
     fail_lst = __check_unset(const_lst, bstate, mch)
     return fail_lst 
     
-    
+
+# called before the evaluation of a predicate.
+# If the pred. contains obvious equations like x=42 or S={1,2}, these equations ar
+# used like assignments to avoid unnecessary enumeration
 def learn_assigned_values(root, env):
     lst = []
     _learn_assigned_values(root, env, lst)
@@ -433,6 +436,7 @@ def learn_assigned_values(root, env):
 def _learn_assigned_values(root, env, lst):
     for node in root.children:
         if isinstance(node, AEqualPredicate):
+            # (1) X='Expression' found
             expression_node = None
             idNode          = None
             # special case: learn values if None (optimization)
@@ -447,27 +451,31 @@ def _learn_assigned_values(root, env, lst):
                 continue # case not implemented: skip
             
             assert not expression_node==None
+            var_name = idNode.idName
             # TODO: use idNodes-result to check if an eval. of expression node is possible
             # maybe this enum of node-classes becomes unnecessary
             
-            if isinstance(expression_node, (AIntegerExpression, ASetExtensionExpression, ABoolSetExpression, ATrueExpression, AFalseExpression, AEmptySetExpression)):
+            # (2) only compute if 'Expression' is computable in O(1)
+            # TODO: If the interpreter works in to symbolic mode, this is always the case
+            # this code block musst be simplified when this is done
+            if isinstance(expression_node, (AIntegerExpression, ASetExtensionExpression, ASequenceExtensionExpression, ABoolSetExpression, ATrueExpression, AFalseExpression, AEmptySetExpression)):
                 try:
-                    expr = interpret(expression_node, env)
-                    env.set_value(idNode.idName, expr)
-                    lst.append(idNode.idName)
+                    value = interpret(expression_node, env)
+                    env.set_value(var_name, value)
+                    lst.append(var_name)
                     continue
                 except Exception as e:
                     #TODO: this case is not covered by any test
                     continue 
-            # only uses lambda which can be solved instantly 
-            elif isinstance(expression_node, ALambdaExpression):# and idNodes==[]:
+            # XXX: hack. remove when all nodes are symbolic
+            elif isinstance(expression_node, (ALambdaExpression, AIntervalExpression, ATransFunctionExpression, ATransRelationExpression, AQuantifiedUnionExpression, AQuantifiedIntersectionExpression)):# and idNodes==[]:
                 try:
-                    expr = interpret(expression_node, env)
-                    env.set_value(idNode.idName, expr)
-                    lst.append(idNode.idName)
+                    value = interpret(expression_node, env)
+                    env.set_value(var_name, value)
+                    lst.append(var_name)
                     continue
                 except Exception as e:
-                    print "Exception:",e
+                    print "Exception: while search of known id values:",e
                     continue 
 
         # df-search for equations 
@@ -564,6 +572,7 @@ def interpret(node, env):
                     else:
                         p.terminate()
                         print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
+                        # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
                         timeout = timeout +1
                         continue
             except OverflowError:
@@ -680,17 +689,17 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         # special case: learn values if None (optimization)
-        if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
-            env.set_value(node.children[0].idName, expr2)
-            return True
-        elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
-            env.set_value(node.children[1].idName, expr1)
-            return True
+        #if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
+        #    env.set_value(node.children[0].idName, expr2)
+        #    return True
+        #elif isinstance(node.children[1], AIdentifierExpression) and env.get_value(node.children[1].idName)==None:
+        #    env.set_value(node.children[1].idName, expr1)
+        #    return True
         #elif isinstance(expr1, SymbolicSet) and isinstance(expr2, frozenset):
         #    expr1 = enum_symbolic(expr1, node)
         #    return expr1 == expr2
         # frozensets can only be compared to frozensets
-        elif isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
+        if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
             expr2 = expr2.enumerate_all()
             return expr1 == expr2
         else:
@@ -772,55 +781,58 @@ def interpret(node, env):
             acc = acc.intersection(aset)
         return acc
     elif isinstance(node, AQuantifiedUnionExpression):
-        result = frozenset([])
+        #result = frozenset([])
         # new scope
         varList = node.children[:-2]
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = entry[name]
-                env.set_value(name, value)
-            try:
-                if interpret(pred, env):  # test (|= ior)
-                    aSet = interpret(expr, env)
-                    if isinstance(aSet, SymbolicSet):
-                        aSet = aSet.enumerate_all() 
-                    result |= aSet
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame()
-        return result
+        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        #for entry in domain_generator:
+        #    for name in [x.idName for x in varList]:
+        #        value = entry[name]
+        #        env.set_value(name, value)
+        #    try:
+        #        if interpret(pred, env):  # test (|= ior)
+        #            aSet = interpret(expr, env)
+        #            if isinstance(aSet, SymbolicSet):
+        #                aSet = aSet.enumerate_all() 
+        #            result |= aSet
+        #    except ValueNotInDomainException:
+        #        continue
+        #env.pop_frame()
+        #return result
+        return SymbolicQuantifiedUnion(varList, pred, expr, node, env, interpret, calc_possible_solutions)
     elif isinstance(node, AQuantifiedIntersectionExpression):  
-        result = frozenset([])
+        #result = frozenset([])
         # new scope
         varList = node.children[:-2]
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = entry[name]
-                env.set_value(name, value)
-            try:
-                if interpret(pred, env):  # test
-                    # intersection with empty set is always empty: two cases are needed
-                    if result==frozenset([]): 
-                        result = interpret(expr, env)
-                        if isinstance(result, SymbolicSet):
-                            result = result.enumerate_all()   
-                    else:
-                        aSet = interpret(expr, env)
-                        if isinstance(aSet, SymbolicSet):
-                            aSet = aSet.enumerate_all()       
-                        result &= aSet
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame()
-        return result
+        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        #for entry in domain_generator:
+        #    for name in [x.idName for x in varList]:
+        #        value = entry[name]
+        #        env.set_value(name, value)
+        #    try:
+        #        if interpret(pred, env):  # test
+        #            # intersection with empty set is always empty: two cases are needed
+        #            if result==frozenset([]): 
+        #                result = interpret(expr, env)
+        #                if isinstance(result, SymbolicSet):
+        #                    result = result.enumerate_all()   
+        #            else:
+        #                aSet = interpret(expr, env)
+        #                if isinstance(aSet, SymbolicSet):
+        #                    aSet = aSet.enumerate_all()       
+        #                result &= aSet
+        #    except ValueNotInDomainException:
+        #        continue
+        #env.pop_frame()
+        #return result
+        return SymbolicQuantifiedIntersection(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+
 
 
 # *************************
@@ -1522,23 +1534,10 @@ def interpret(node, env):
         return StringSet(env, interpret)
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
-        relation = []
-        for tup in function:
-            preimage = tup[0]
-            for image in tup[1]:
-                relation.append(tuple([preimage, image]))
-        return frozenset(relation)
+        return SymbolicTransRelation(function, env, interpret, node)
     elif isinstance(node, ATransFunctionExpression):
         relation = interpret(node.children[0], env)
-        function = []
-        for tup in relation:
-            image = []
-            preimage = tup[0]
-            for tup2 in relation:
-                if tup2[0]==preimage:
-                    image.append(tup2[1])
-            function.append(tuple([preimage,frozenset(image)]))
-        return frozenset(function)
+        return SymbolicTransFunction(relation, env, interpret, node)
     elif isinstance(node, AExternalFunctionExpression):
         args = []
         for child in node.children:

@@ -274,4 +274,102 @@ class SymbolicComprehensionSet(SymbolicSet):
                 except ValueNotInDomainException:
                     continue
         env.pop_frame()
+
+
+class SymbolicQuantifiedIntersection(SymbolicSet):
+    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
+        SymbolicSet.__init__(self, env, interpret)
+        self.variable_list = varList
+        self.predicate = pred
+        self.expression = expr
+        self.node = node
+        self.domain_generator = calc_possible_solutions
+        self.explicit_set_repr = None                
         
+    # convert to explicit frozenset
+    # dont use generator to avoid rapid frame push/pop
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:
+            result = frozenset([])
+            varList = self.variable_list
+            pred    = self.predicate
+            expr    = self.expression 
+            env       = self.env
+            interpret = self.interpret
+            node    = self.node
+            func_list = []
+            # new scope
+            env.push_new_frame(varList)
+            domain_generator = self.domain_generator(pred, env, varList, interpret)
+            for entry in domain_generator:
+                for name in [x.idName for x in varList]:
+                    value = entry[name]
+                    env.set_value(name, value)
+                try:
+                    if interpret(pred, env):  # test
+                        # intersection with empty set is always empty: two cases are needed
+                        if result==frozenset([]): 
+                            result = interpret(expr, env)
+                            if isinstance(result, SymbolicSet):
+                                result = result.enumerate_all()   
+                        else:
+                            aSet = interpret(expr, env)
+                            if isinstance(aSet, SymbolicSet):
+                                aSet = aSet.enumerate_all()       
+                            result &= aSet
+                except ValueNotInDomainException:
+                    continue
+            env.pop_frame()
+            self.explicit_set_repr = result
+        return self.explicit_set_repr
+
+    def make_generator(self):
+        result = self.enumerate_all()
+        for e in result:
+            yield e
+
+
+class SymbolicQuantifiedUnion(SymbolicSet):
+    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
+        SymbolicSet.__init__(self, env, interpret)
+        self.variable_list = varList
+        self.predicate = pred
+        self.expression = expr
+        self.node = node
+        self.domain_generator = calc_possible_solutions
+        self.explicit_set_repr = None 
+
+    # convert to explicit frozenset
+    # dont use generator to avoid rapid frame push/pop
+    def enumerate_all(self):
+        if self.explicit_set_repr==None:        
+            result = frozenset([])
+            varList = self.variable_list
+            pred    = self.predicate
+            expr    = self.expression 
+            env       = self.env
+            interpret = self.interpret
+            node    = self.node
+            # new scope
+            env.push_new_frame(varList)
+            domain_generator = self.domain_generator(pred, env, varList, interpret)
+            for entry in domain_generator:
+                for name in [x.idName for x in varList]:
+                    value = entry[name]
+                    env.set_value(name, value)
+                try:
+                    if interpret(pred, env):  # test (|= ior)
+                        aSet = interpret(expr, env)
+                        if isinstance(aSet, SymbolicSet):
+                            aSet = aSet.enumerate_all() 
+                        result |= aSet
+                except ValueNotInDomainException:
+                    continue
+            env.pop_frame()
+            self.explicit_set_repr = result
+        return self.explicit_set_repr
+
+    def make_generator(self):
+        result = self.enumerate_all()
+        for e in result:
+            yield e

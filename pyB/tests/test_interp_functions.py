@@ -340,9 +340,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
-        env.add_ids_to_frame(["f"])
         type_with_known_types(root.children[0], env, [], ["f"])
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
 
 
     def test_genAST_pred_seq_empty(self):
@@ -352,7 +351,7 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
 
 
     def test_genAST_lambda(self):
@@ -684,8 +683,7 @@ class TestInterpFunctions():
 
         # Test
         env = Environment()
-        env.add_ids_to_frame(["R1","f"])
-        assert interpret(root.children[0],env)
+        assert interpret(root,env)
         assert env.get_value("f") == frozenset([(0,frozenset([1,2])),(1,frozenset([1,7])),(2,frozenset([3]))])
 
 
@@ -697,4 +695,4 @@ class TestInterpFunctions():
 
         # Test
         env = Environment()
-        assert not interpret(root.children[0], env)
+        assert not interpret(root, env)
