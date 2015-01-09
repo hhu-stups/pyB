@@ -565,6 +565,7 @@ def interpret(node, env):
                     import multiprocessing   
                     que = multiprocessing.Queue()
                     p = multiprocessing.Process(target = lambda q, n, env : q.put(interpret(n, env)), args = (que, n, env))
+                    #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
                     p.start()
                     p.join(PROPERTIES_TIMEOUT)
                     if not que.empty():

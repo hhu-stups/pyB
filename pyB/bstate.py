@@ -132,10 +132,10 @@ class BState():
         #print "add_ids_to_frame", ids, bmachine
         value_stack =  self.bmch_dict[bmachine]
         top_map = value_stack[-1]
-        for i in ids:
-            assert isinstance(i,str)
-            if not top_map.has_key(i):
-                top_map[i] = None
+        for id in ids:
+            assert isinstance(id,str)
+            if not top_map.has_key(id):
+                top_map[id] = None
     
     
     # used in use_constants_solutions and use_variables_solutions
@@ -145,3 +145,11 @@ class BState():
             if bmachine.name==name:
                 return bmachine
         raise Exception("BUG! unknown B-machine: %s" % name) 
+    
+    def get_valuestack_depth_of_all_bmachines(self):
+        result = []
+        # XXX: nondeterminism
+        for bm in self.bmch_dict:
+            valuestack_length = len(self.bmch_dict[bm])
+            result.append(tuple([bm,valuestack_length]))
+        return result.copy()
