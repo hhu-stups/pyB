@@ -565,6 +565,7 @@ def interpret(node, env):
                     import multiprocessing   
                     que = multiprocessing.Queue()
                     p = multiprocessing.Process(target = lambda q, n, env : q.put(interpret(n, env)), args = (que, n, env))
+                    # TODO: safe and restore stack depth if corruption occurs by thread termination
                     #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
                     p.start()
                     p.join(PROPERTIES_TIMEOUT)
@@ -1459,6 +1460,7 @@ def interpret(node, env):
         result = interpret(node.children[0], env)
         return result*(-1)
     elif isinstance(node, AIntegerExpression):
+        # TODO: add flag in config.py to enable switch to long integer here
         return node.intValue
     elif isinstance(node, AMinIntExpression):
         return env._min_int

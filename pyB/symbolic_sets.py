@@ -17,8 +17,8 @@ from symbolic_helpers import check_syntacticly_equal, generate_powerset
 # Int-,Nat-,Nat1-,Natural-,Natural1-,Integer and StringSet
 
 
-class SymbolicSet(object):
-    # evn: min and max int values may be needed for large sets 
+class SymbolicSet():
+    # env: min and max int values may be needed for large sets 
     # interpret: for function call on tuple-sets
     def __init__(self, env, interpret):
         self.env = env 
