@@ -6,7 +6,10 @@ from config import VERBOSE
 from btypes import CartType
 #from pretty_printer import pretty_print
 #from boperation import BOperation
- 
+
+# FIXME: automatic usage of 
+#'java -cp "..\jars\*" de.prob.cliparser.CliBParser %s %s'
+# on Windows 
 command_str = "java -Xms64m -Xmx1024m -cp "
 command_str += "../jars/bparser-2.0.67.jar"
 command_str += ":../jars/prologlib-2.0.67.jar"
