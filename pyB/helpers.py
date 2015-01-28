@@ -11,10 +11,11 @@ from btypes import CartType
 #'java -cp "..\jars\*" de.prob.cliparser.CliBParser %s %s'
 # on Windows 
 command_str = "java -Xms64m -Xmx1024m -cp "
-command_str += "../jars/bparser-2.0.67.jar"
-command_str += ":../jars/prologlib-2.0.67.jar"
-command_str += ":../jars/parserbase-2.0.67.jar"
-command_str += ":../jars/cliparser-2.0.67.jar"
+#command_str += "../jars/bparser-2.0.67.jar"
+#command_str += ":../jars/prologlib-2.0.67.jar"
+#command_str += ":../jars/parserbase-2.0.67.jar"
+#command_str += ":../jars/cliparser-2.0.67.jar"
+command_str += ":../jars/*"
 command_str += ":examples/"
 command_str += ":. de.prob.cliparser.CliBParser %s %s"
 #option_str = " -json"

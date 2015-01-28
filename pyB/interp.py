@@ -562,6 +562,9 @@ def interpret(node, env):
                 if PROPERTIES_TIMEOUT<=0:
                     value = interpret(n, env)
                 else:
+                    # FIXME: works on linux and mac, fails on windows:
+                    # PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>
+                    # https://docs.python.org/2/library/pickle.html#what-can-be-pickled-and-unpickled
                     import multiprocessing   
                     que = multiprocessing.Queue()
                     p = multiprocessing.Process(target = lambda q, n, env : q.put(interpret(n, env)), args = (que, n, env))
