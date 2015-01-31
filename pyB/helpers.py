@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # moved for testing-reasons
+import os
 from subprocess import Popen, PIPE
 from ast_nodes import *
-from config import VERBOSE
+from config import VERBOSE, EXAMPLE_DIR, JAR_DIR
 from btypes import CartType
 #from pretty_printer import pretty_print
 #from boperation import BOperation
@@ -10,14 +11,19 @@ from btypes import CartType
 # FIXME: automatic usage of 
 #'java -cp "..\jars\*" de.prob.cliparser.CliBParser %s %s'
 # on Windows 
-command_str = "java -Xms64m -Xmx1024m -cp "
 #command_str += "../jars/bparser-2.0.67.jar"
 #command_str += ":../jars/prologlib-2.0.67.jar"
 #command_str += ":../jars/parserbase-2.0.67.jar"
 #command_str += ":../jars/cliparser-2.0.67.jar"
-command_str += ":../jars/*"
-command_str += ":examples/"
-command_str += ":. de.prob.cliparser.CliBParser %s %s"
+command_str = "java -Xms64m -Xmx1024m -cp "
+if os.name=='nt':
+    command_str += ";"+JAR_DIR
+    command_str += ";"+EXAMPLE_DIR
+    command_str += ";. de.prob.cliparser.CliBParser %s %s"
+else:
+    command_str += ":"+JAR_DIR
+    command_str += ":"+EXAMPLE_DIR
+    command_str += ":. de.prob.cliparser.CliBParser %s %s"
 #option_str = " -json"
 option_str = " -python"
 

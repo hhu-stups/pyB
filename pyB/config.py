@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os 
+
 MIN_INT = -1
 MAX_INT = 5
 MAX_OP_SOLUTIONS = 4    # not implemented yet
@@ -22,3 +24,9 @@ PRINT_SUB_PROPERTIES = True # P0 & P1 & ...PN
 #PRINT_SUB_INVARIANT = True
 PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)
+if os.name=='nt': # Windows System
+    EXAMPLE_DIR = "examples\\"
+    JAR_DIR     = "..\jars\*"
+else: # Other OS 
+    EXAMPLE_DIR = "examples/"
+    JAR_DIR     = "../jars/*"

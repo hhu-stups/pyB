@@ -13,6 +13,11 @@ from animation_clui import print_values_b_style
 from symbolic_sets import *
 from relation_helpers import *
 
+# Wrapper used to avoid PicklingError on windows systems. ONLY(!) used in parallel calls
+# PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>
+# https://docs.python.org/2/library/pickle.html#what-can-be-pickled-and-unpickled
+def parallel_caller(q, n, env):
+    q.put(interpret(n, env))
 
 def eval_Invariant(root, env, mch):
     if mch.aInvariantMachineClause:
@@ -562,12 +567,9 @@ def interpret(node, env):
                 if PROPERTIES_TIMEOUT<=0:
                     value = interpret(n, env)
                 else:
-                    # FIXME: works on linux and mac, fails on windows:
-                    # PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>
-                    # https://docs.python.org/2/library/pickle.html#what-can-be-pickled-and-unpickled
                     import multiprocessing   
                     que = multiprocessing.Queue()
-                    p = multiprocessing.Process(target = lambda q, n, env : q.put(interpret(n, env)), args = (que, n, env))
+                    p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
                     # TODO: safe and restore stack depth if corruption occurs by thread termination
                     #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
                     p.start()
