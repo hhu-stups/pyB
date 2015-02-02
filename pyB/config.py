@@ -27,6 +27,6 @@ PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unl
 if os.name=='nt': # Windows System
     EXAMPLE_DIR = "examples\\"
     JAR_DIR     = "..\jars\*"
-else: # Other OS 
+else: # Other OS (e.g mac)
     EXAMPLE_DIR = "examples/"
     JAR_DIR     = "../jars/*"

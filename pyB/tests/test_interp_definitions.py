@@ -219,3 +219,26 @@ class TestInterpDefinitions():
         assert env.get_value("z")==3
         assert env.get_value("b")==True
         assert env.get_value("x")==2
+
+    # sees machine from testcase above 
+    # fails because of missing init. 
+    # TODO: Testcase that fails because of definitions inside the Seen machine
+    import pytest
+    @pytest.mark.xfail
+    def test_genAST_subst_def3(self):
+        string='''
+        MACHINE Test3
+        SEES UsingDefinitions
+        END'''
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        #Test
+        env = Environment()
+        dh = DefinitionHandler(env)
+        dh.repl_defs(root)
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch)        
+        

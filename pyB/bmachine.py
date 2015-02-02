@@ -158,6 +158,7 @@ class BMachine:
                 if error:
                     print error
                 exec ast_string
+                # TODO: Handle definitions in child-machine
                 mch = BMachine(root)
                 mch.recursive_self_parsing(env)
                 mch_list.append(mch)    
