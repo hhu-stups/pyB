@@ -27,7 +27,7 @@ class TestInterpDefinitions():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -53,7 +53,7 @@ class TestInterpDefinitions():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -81,7 +81,7 @@ class TestInterpDefinitions():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -107,7 +107,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -133,7 +133,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -158,7 +158,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -182,7 +182,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -208,7 +208,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -220,9 +220,13 @@ class TestInterpDefinitions():
         assert env.get_value("b")==True
         assert env.get_value("x")==2
 
+        
+        
     # sees machine from testcase above 
     # fails because of missing init. 
-    # TODO: Testcase that fails because of definitions inside the Seen machine
+    # TODO: Testcase that fails because of missing init in root machine.
+    # caused by unhandled definitions in see machine
+    # TODO: refactoring of parsing to avoid cyclic import
     import pytest
     @pytest.mark.xfail
     def test_genAST_subst_def3(self):
@@ -236,7 +240,7 @@ class TestInterpDefinitions():
 
         #Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend

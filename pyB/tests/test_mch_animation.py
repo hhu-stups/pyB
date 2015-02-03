@@ -8,7 +8,7 @@ from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states
 from definition_handler import DefinitionHandler
-from parsing import parse_ast, str_ast_to_python_ast
+from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_bmch
 
 file_name = "input.txt"
@@ -1674,7 +1674,7 @@ class TestMCHAnimation():
         
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, remove_defs_and_parse_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -1717,7 +1717,7 @@ class TestMCHAnimation():
         
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, remove_defs_and_parse_ast)
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend

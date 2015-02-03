@@ -5,13 +5,11 @@ from bmachine import BMachine
 from bexceptions import *
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
-from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast
+from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast, remove_defs_and_parse_ast
 from animation_clui import show_ui, print_set_up_bstates, print_init_bstates, print_values_b_style
 from animation import calc_next_states
-from definition_handler import DefinitionHandler
 from ast_nodes import *
 from config import DEFAULT_INPUT_FILENAME, VERBOSE
-from parsing import parse_ast
 from typing import type_check_root_bmch, type_check_predicate
 from repl import run_repl
 
@@ -59,10 +57,9 @@ def run_animation_mode():
     if solution_file_present:                                   # 5. parse solution-file and write to env.
         read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
                                                                 # the bmachine object-init time to the respective mch
-    
-    dh = DefinitionHandler(env)                                 # 6. replace defs and extern-functions inside mch and solution-file (if present) 
-    dh.repl_defs(root)
-    parse_object = parse_ast(root, env)                         # 7. which kind of ast?
+
+                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)      
+    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
         is_epu = isinstance(parse_object, ExpressionParseUnit) 
@@ -177,9 +174,8 @@ def run_checking_mode():
         read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
                                                                 # the bmachine object-init time to the respective mch
 
-    dh = DefinitionHandler(env)                                 # 6. replace defs and extern-functions inside mch and solution-file (if present)
-    dh.repl_defs(root)    
-    parse_object = parse_ast(root, env)                         # 7. which kind of ast?
+                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)  
+    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         result = interpret(parse_object.root, env)              # eval predicate or expression
         print result

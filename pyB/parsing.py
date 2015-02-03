@@ -2,6 +2,7 @@
 import json
 from ast_nodes import *
 from bmachine import BMachine
+from definition_handler import DefinitionHandler
 
 class PredicateParseUnit:
     def __init__(self, root):
@@ -21,7 +22,13 @@ def str_ast_to_python_ast(string):
     return root
 
 
-# just generate python wrappers.
+# remove definitions from AST and generate python wrappers.
+def remove_defs_and_parse_ast(root, env):
+    dh = DefinitionHandler(env, str_ast_to_python_ast)
+    dh.repl_defs(root) # side effect: change AST(root)
+    return parse_ast(root, env)
+    
+# remove definitions from AST and generate python wrappers.
 def parse_ast(root, env):
     if isinstance(root, APredicateParseUnit):
         return PredicateParseUnit(root)
@@ -29,7 +36,7 @@ def parse_ast(root, env):
         return ExpressionParseUnit(root)
     else:
         assert isinstance(root, AAbstractMachineParseUnit)
-        mch = BMachine(root) 
+        mch = BMachine(root, remove_defs_and_parse_ast) 
         mch.recursive_self_parsing(env) # recursive parsing of all included, seen, etc. ...
         env.root_mch = mch
         env.current_mch = mch #current mch

@@ -25,7 +25,7 @@ class TestTypesDefinitions():
 
         # Type
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         parse_ast(root,env)
         lst = []
@@ -48,7 +48,7 @@ class TestTypesDefinitions():
 
         # Type
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         parse_ast(root, env)
         lst = []

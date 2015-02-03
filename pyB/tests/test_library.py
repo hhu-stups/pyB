@@ -37,7 +37,7 @@ class TestLibrary():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)                                   
+        dh = DefinitionHandler(env, str_ast_to_python_ast)                                   
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
@@ -87,7 +87,7 @@ class TestLibrary():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)                                   
+        dh = DefinitionHandler(env, str_ast_to_python_ast)                                   
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
@@ -128,7 +128,7 @@ class TestLibrary():
 
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)                                   
+        dh = DefinitionHandler(env, str_ast_to_python_ast)                                   
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
@@ -193,7 +193,7 @@ class TestLibrary():
         
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)                                   
+        dh = DefinitionHandler(env, str_ast_to_python_ast)                                   
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
@@ -242,7 +242,7 @@ class TestLibrary():
         
         # Test
         env = Environment()
-        dh = DefinitionHandler(env)                                   
+        dh = DefinitionHandler(env, str_ast_to_python_ast)                                   
         dh.repl_defs(root)
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)

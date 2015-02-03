@@ -4,7 +4,7 @@ from ast_nodes import *
 from btypes import *
 from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str, find_var_nodes
 from environment import Environment
-from parsing import parse_ast, str_ast_to_python_ast
+from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_root_bmch, type_check_predicate
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
 from definition_handler import DefinitionHandler
@@ -37,7 +37,7 @@ def run_with_pyb(bfile_name, dir=""):
     env.write_solution_nodes_to_env(root)
 
     # Init B-mch
-    dh = DefinitionHandler(env)                                   
+    dh = DefinitionHandler(env, remove_defs_and_parse_ast)                                   
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
     type_check_root_bmch(ast_root, env, mch) # also checks all included, seen, used and extend 

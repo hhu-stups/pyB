@@ -20,7 +20,7 @@ class TestDefinitionHandler():
         root = str_ast_to_python_ast(ast_string)
         
         env = Environment()
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.save_definitions(root.children[4])
         assert isinstance(dh.def_map["Assign"], ASubstitutionDefinition)
 
@@ -43,7 +43,7 @@ class TestDefinitionHandler():
         subst = init.children[0]
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.save_definitions(root.children[4])
         def_free_ast = dh.replace_definitions(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
@@ -68,7 +68,7 @@ class TestDefinitionHandler():
         subst = init.children[0]
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
-        dh = DefinitionHandler(env)
+        dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.repl_defs(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
         assert isinstance(subst.children[2], AAssignSubstitution)
@@ -89,7 +89,7 @@ class TestDefinitionHandler():
         root = str_ast_to_python_ast(ast_string) 
         
         env = Environment()
-        dh = DefinitionHandler(env)                                    # 5. replace defs if present 
+        dh = DefinitionHandler(env, str_ast_to_python_ast)         # 5. replace defs if present 
         dh.repl_defs(root) 
         # test is successful if no exception occurred 
    
