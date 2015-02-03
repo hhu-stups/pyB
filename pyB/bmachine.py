@@ -7,7 +7,7 @@ from boperation import BOperation
 # -*- coding: utf-8 -*-
 # abstract machine object
 class BMachine:
-    def __init__(self, node, remove_defs_and_parse_ast):
+    def __init__(self, node, remove_definitions):
         self.name = None
         self.const_names = []
         self.var_names   = []
@@ -43,7 +43,7 @@ class BMachine:
         self.aExtendsMachineClause = None
         # avoid cyclic import: the parser creates BMachine instances, while this class
         # needs to parse its seen machines
-        self.remove_defs_and_parse_ast = remove_defs_and_parse_ast
+        self.remove_definitions = remove_definitions
 
         for child in node.children:
             # A clause may only appear at most once in an abstract machine
@@ -162,10 +162,9 @@ class BMachine:
                     print error
                 exec ast_string
                 # Handle definitions in child-machine
-                #dh = DefinitionHandler(env)                           
-                #dh.repl_defs(root)
+                root = self.remove_definitions(root, env)
                 # create B machine object
-                mch = BMachine(root, self.remove_defs_and_parse_ast)
+                mch = BMachine(root, self.remove_definitions)
                 mch.recursive_self_parsing(env)
                 mch_list.append(mch)    
 

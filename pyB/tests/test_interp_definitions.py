@@ -220,15 +220,8 @@ class TestInterpDefinitions():
         assert env.get_value("b")==True
         assert env.get_value("x")==2
 
-        
-        
+               
     # sees machine from testcase above 
-    # fails because of missing init. 
-    # TODO: Testcase that fails because of missing init in root machine.
-    # caused by unhandled definitions in see machine
-    # TODO: refactoring of parsing to avoid cyclic import
-    import pytest
-    @pytest.mark.xfail
     def test_genAST_subst_def3(self):
         string='''
         MACHINE Test3
