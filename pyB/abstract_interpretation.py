@@ -87,6 +87,7 @@ def _abs_int(node, env, ic):
             val1 = env._max_int 
         return val1-val0
     ### "meet"
+    # Werden hier abstrakte Interpretation und Datenflussanalyse durcheinander geworfen? Denk noch mal drueber nach....
     elif isinstance(node, AConjunctPredicate):
         # this information is used to generate test_sets for {x|P0(x) & P1(x)}
         # the predicate is a candidate, if P0 OR P1 is finite 

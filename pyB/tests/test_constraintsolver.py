@@ -811,19 +811,19 @@ class TestConstraintSolver():
 
 
     # topologic sort and test set generation fails
-    import pytest
-    @pytest.mark.xfail 
-    def test_constraint_affecting_variables_self_constraint(self):
-        # Build AST:
-        string_to_file("#PREDICATE {3}={y| {(1,7),(2,6),(3,3)}(y)=y}", file_name)
-        ast_string = file_to_AST_str(file_name)
-        root = str_ast_to_python_ast(ast_string) 
-        
-        # Test
-        env = Environment()
-        env._min_int = -2**32
-        env._max_int = 2**32
-        assert interpret(root, env)     
+    #import pytest
+    #@pytest.mark.xfail 
+    #def test_constraint_affecting_variables_self_constraint(self):
+    #    # Build AST:
+    #    string_to_file("#PREDICATE {3}={y| {(1,7),(2,6),(3,3)}(y)=y}", file_name)
+    #    ast_string = file_to_AST_str(file_name)
+    #    root = str_ast_to_python_ast(ast_string) 
+    #    
+    #    # Test
+    #    env = Environment()
+    #    env._min_int = -2**32
+    #    env._max_int = 2**32
+    #    assert interpret(root, env)     
 
         
     #TODO: write test of union which defines bound vars via other quantified predicates.

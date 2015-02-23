@@ -1,4 +1,1 @@
-
-        MACHINE Test3
-        SEES UsingDefinitions
-        END
+#PREDICATE A=bool(1<2)
