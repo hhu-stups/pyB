@@ -494,12 +494,12 @@ def _learn_assigned_values(root, env, lst):
 # Predicate Nodes Return True/False
 # Expression Nodes Return Values (int, frozenset, boolean, string or composed)
 def interpret(node, env):
-
 # ********************************************
 #
 #        0. Interpretation-mode 
 #
 # ********************************************
+
     #print "DEBUG! interpret: ", pretty_print(node)  # DEBUG
     assert not isinstance(node, Substitution) # TODO: refactor
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
@@ -547,7 +547,7 @@ def interpret(node, env):
             return result
         else:
             return "\033[1m\033[91mWARNING\033[00m: Expressions with variables are not implemented now"
-            
+       
 
 # ********************************************
 #
@@ -927,7 +927,12 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
-            return frozenset(((x,y) for x in expr1 for y in expr2))
+            # Not Rpython: frozenset(((x,y) for x in expr1 for y in expr2))
+            result = []
+            for x in expr1:
+                for y in expr2:
+                    result.append((x,y)) 
+            return frozenset(result)
         else:
             return expr1 * expr2
     elif isinstance(node, ADivExpression):
@@ -942,7 +947,12 @@ def interpret(node, env):
     elif isinstance(node, APowerOfExpression):
         basis = interpret(node.children[0], env)
         exp = interpret(node.children[1], env)
-        return basis ** exp
+        # not RPython: result = basis ** exp
+        assert exp >=0
+        result = 1
+        for i in range(exp):
+            result *= basis
+        return result
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.children[0], env)
         right = interpret(node.children[1], env)
@@ -1177,20 +1187,34 @@ def interpret(node, env):
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
             return SymbolicFirstProj(S,T, env, interpret, node)
-        cart = frozenset(((x,y) for x in S for y in T))
-        proj = [(t,t[0]) for t in cart]
+        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        cart = []
+        for x in S:
+            for y in T:
+                cart.append((x,y))
+        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+        proj = []
+        for t in cart:
+            proj.append((t,t[0]))
         return frozenset(proj)
     elif isinstance(node, ASecondProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
             return SymbolicSecondProj(S,T, env, interpret, node)
-        cart = frozenset(((x,y) for x in S for y in T))
-        proj = [(t,t[1]) for t in cart]
+        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        cart = []
+        for x in S:
+            for y in T:
+                cart.append((x,y))
+        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+        proj = []
+        for t in cart:
+            proj.append((t,t[1]))
         return frozenset(proj)
 
 
-
+    
 # *******************
 #
 #       4.1 Functions
