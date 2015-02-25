@@ -12,6 +12,7 @@ from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 from symbolic_sets import *
 from relation_helpers import *
+from objmodel import W_Integer, W_None
 
 # Wrapper used to avoid PicklingError on windows systems. ONLY(!) used in parallel calls
 # PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>
@@ -1487,7 +1488,7 @@ def interpret(node, env):
         return interpret(node.children[0], env)
     elif isinstance(node,AUnaryExpression):
         result = interpret(node.children[0], env)
-        return result*(-1)
+        return result.__neg__()
     elif isinstance(node, AIntegerExpression):
         # TODO: add flag in config.py to enable switch to long integer here
         return node.intValue
@@ -1579,6 +1580,7 @@ def interpret(node, env):
         return result
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
+        return W_None() # RPython: Avoid return of python None
 
 
 # side-effect: changes state while exec.
