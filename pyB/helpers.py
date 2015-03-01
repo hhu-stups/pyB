@@ -3,8 +3,11 @@
 import os
 from subprocess import Popen, PIPE
 from ast_nodes import *
-from config import VERBOSE, EXAMPLE_DIR, JAR_DIR
+from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_COSTUM_FROZENSET
 from btypes import CartType
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+     
 #from pretty_printer import pretty_print
 #from boperation import BOperation
 

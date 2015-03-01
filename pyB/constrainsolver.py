@@ -4,11 +4,13 @@ from ast_nodes import *
 from enumeration import all_values_by_type
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from quick_eval import quick_member_eval
-from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS
+from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET
 from abstract_interpretation import estimate_computation_time
 from pretty_printer import pretty_print
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
 from symbolic_sets import LargeSet
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 
 class PredicateDoesNotMatchException:
@@ -106,7 +108,7 @@ def _calc_constraint_domain(env, varList, predicate):
     for tup in var_and_domain_lst:
         name = tup[0]
         lst  = tup[1]
-        if type(lst)==frozenset:
+        if isinstance(lst, frozenset):
             lst = _set_to_list(lst) 
         problem.addVariable(name, lst)
     qme_nodes = []
@@ -123,8 +125,8 @@ def _calc_constraint_domain(env, varList, predicate):
     return problem.getSolutionIter()
 
 
-def _set_to_list(lst):
-    return list(lst) # TODO: list of lists
+def _set_to_list(aSet):
+    return list(aSet) # TODO: list of lists
 
 def function(env, func_name, key):
     f = env.get_value(func_name)

@@ -1,4 +1,5 @@
 # assumes pypy checkout at PYPYDIR
+from config import USE_COSTUM_FROZENSET
 file_name = "input.txt"
 PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to your checkout
 
@@ -63,6 +64,7 @@ class TestPyPyTranslationObjects():
         python_result, c_result = translate(code) 
         assert eval(python_result) == eval(c_result)     
  
+ 
     import pytest
     @pytest.mark.xfail 
     def test_pypy_genAST_expr_number4(self):
@@ -78,13 +80,32 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert eval(python_result) == eval(c_result)   
-   
+
+
+    # set config.USE_COSTUM_FROZENSET = True
     import pytest
-    @pytest.mark.xfail        
+    @pytest.mark.xfail    
     def test_pypy_create_env(self):
         code = """def main(argv):
             from environment import Environment
-            env = Environment()\n"""
+            env = Environment()
+            return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result   
+  
     
+    #import pytest
+    #@pytest.mark.xfail  
+    def test_pypy_check_frozenset_impl(self):
+        code = """def main(argv):
+            from rpython_frozenset import frozenset
+            S = frozenset([1,2,3])
+            for e in S:
+                print e
+            # maybe the next three will work with wrapped types + type hirachy
+            #T = frozenset(['a','b','c'])
+            #print 1 in S
+            #print 4 in S
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == c_result  

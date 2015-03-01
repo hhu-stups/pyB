@@ -11,6 +11,10 @@ from ast_nodes import *
 from symbolic_sets import *
 from symbolic_functions import *
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 file_name = "input.txt"
 
 
@@ -195,10 +199,11 @@ class TestSymbolicSets():
                 i = i-1    
         env = Environment()
         
-        aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
+        aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None) 
         assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(2, 3)]), frozenset([(2, 3), (1, 3)])]
         aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3,4]), env, interpret, node=None)
-        assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (1, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)]), frozenset([(2, 3), (2, 4)]), frozenset([(1, 3), (2, 3), (1, 4)]), frozenset([(1, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4)]), frozenset([(2, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4), (1, 4)])]
+        expected = [frozenset([]), frozenset([(1, 3)]), frozenset([(1, 4)]), frozenset([(2, 3)]), frozenset([(2, 4)]), frozenset([(1, 3), (1, 4)]), frozenset([(1, 3), (2, 3)]), frozenset([(1, 3), (2, 4)]), frozenset([(2, 3), (1, 4)]), frozenset([(2, 4), (1, 4)]), frozenset([(2, 3), (2, 4)]), frozenset([(1, 3), (2, 3), (1, 4)]), frozenset([(1, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4)]), frozenset([(2, 3), (2, 4), (1, 4)]), frozenset([(1, 3), (2, 3), (2, 4), (1, 4)])]
+        assert [x for x in aSet] == expected
 
         aSet = SymbolicTotalFunctionSet(frozenset([1,2]), frozenset([3]), env, interpret, node=None)
         assert [x for x in aSet] == [frozenset([(2, 3), (1, 3)])]
@@ -256,14 +261,14 @@ class TestSymbolicSets():
         assert [x for x in aSet] == [(1,1), (2,2), (3,3), (4,4)]   
 
         aSet = SymbolicInverseRelation(frozenset([(1,5),(2,6),(3,7),(4,8)]), env, interpret, node=None)
-        assert [x for x in aSet] == [(8,4),(5,1),(6,2),(7,3)]    
+        assert frozenset([x for x in aSet]) == frozenset([(8,4),(5,1),(6,2),(7,3)])   
         
         #({(5,1),(6,2),(7,3),(8,4)};{(1,1),(2,4),(3,9),(4,16)}) = {(5,1),(6,4),(7,9),(8,16)}
         aSet = SymbolicCompositionSet(frozenset([(5,1),(6,2),(7,3),(8,4)]),frozenset([(1,1),(2,4),(3,9),(4,16)]), env, interpret, node=None)
-        assert [x for x in aSet] == [(8, 16), (5, 1), (6, 4), (7, 9)]
+        assert frozenset([x for x in aSet]) == frozenset([(8, 16), (5, 1), (6, 4), (7, 9)])
         # POW({1,2,3})={{},{1},{2},{3},{1,2},{2,3},{1,3},{1,2,3}}
         aSet = SymbolicPowerSet(frozenset([1,2,3]), env, interpret)
-        assert [x for x in aSet] == [frozenset([]),frozenset([1]),frozenset([2]),frozenset([3]),frozenset([1,2]),frozenset([1,3]),frozenset([2,3]),frozenset([1,2,3])] 
+        assert frozenset([x for x in aSet]) == frozenset([frozenset([]),frozenset([1]),frozenset([2]),frozenset([3]),frozenset([1,2]),frozenset([1,3]),frozenset([2,3]),frozenset([1,2,3])]) 
         
         # Build AST:
         string_to_file("#EXPRESSION {(x,y)|x:{0,1,2,3} & y=x*x}", file_name)

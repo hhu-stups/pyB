@@ -6,6 +6,9 @@ from symbolic_sets import LargeSet, SymbolicSet
 from symbolic_functions import *
 from symbolic_functions_with_predicate import *
 from abstract_interpretation import var_constraint_by_predicate
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # This function is used in an Belong(member)-Node. x : S
 # It recursively checks if the right side(S) can 'generate' the element(x) of the left side.
@@ -97,7 +100,7 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
         return True
     elif isinstance(ast, APartialInjectionExpression):
@@ -110,9 +113,9 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
-        if not (len(set(image))==len(image)): # test injection
+        if not (len(frozenset(image))==len(image)): # test injection
             return False
         return True
     elif isinstance(ast, APartialSurjectionExpression):
@@ -127,9 +130,9 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(list(T))==set(image): 
+        if not frozenset(list(T))==frozenset(image): 
             return False # test surjection
         return True
     elif isinstance(ast, APartialBijectionExpression):
@@ -144,11 +147,11 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(list(T))==set(image): # test surjection
+        if not frozenset(list(T))==frozenset(image): # test surjection
             return False                    
-        if not (len(set(image))==len(image)): # test injection
+        if not (len(frozenset(image))==len(image)): # test injection
             return False
         return True
     elif isinstance(ast, ATotalFunctionExpression):
@@ -164,9 +167,9 @@ def quick_member_eval(ast, env, element):
             #image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
-        if not set(list(S))==set(preimage): # test total 
+        if not frozenset(list(S))==frozenset(preimage): # test total 
             return False
         return True  
     elif isinstance(ast, ATotalInjectionExpression):
@@ -181,11 +184,11 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False
-        if not (len(set(image))==len(image)): # test injection
+        if not (len(frozenset(image))==len(image)): # test injection
             return False            
-        if not set(list(S))==set(preimage): # test total 
+        if not frozenset(list(S))==frozenset(preimage): # test total 
             return False 
         return True   
     elif isinstance(ast, ATotalSurjectionExpression):
@@ -202,11 +205,11 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False         
-        if not set(list(S))==set(preimage): # test total 
+        if not frozenset(list(S))==frozenset(preimage): # test total 
             return False 
-        if not set(list(T))==set(image): # test surjection
+        if not frozenset(list(T))==frozenset(image): # test surjection
             return False            
         return True
     elif isinstance(ast, ATotalBijectionExpression):
@@ -223,13 +226,13 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if (not quick_member_eval(ast.children[0], env, tup[0])) or (not quick_member_eval(ast.children[1], env, tup[1])):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False         
-        if not set(list(S))==set(preimage): # test total
+        if not frozenset(list(S))==frozenset(preimage): # test total
             return False 
-        if not set(list(T))==set(image): # test surjection
+        if not frozenset(list(T))==frozenset(image): # test surjection
             return False 
-        if not (len(set(image))==len(image)): # test injection
+        if not (len(frozenset(image))==len(image)): # test injection
             return False
         return True
     elif isinstance(ast, ASeqExpression) or isinstance(ast, ASeq1Expression):
@@ -242,9 +245,9 @@ def quick_member_eval(ast, env, element):
             preimage.append(tup[0])
             if not quick_member_eval(ast.children[0], env, tup[1]):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False        
-        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+        if not frozenset(range(1,len(preimage)+1))==frozenset(preimage): # test sequence
             return False 
         return True
     elif isinstance(ast, AIseqExpression) or isinstance(ast, AIseq1Expression):
@@ -258,11 +261,11 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if not quick_member_eval(ast.children[0], env, tup[1]):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False        
-        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+        if not frozenset(range(1,len(preimage)+1))==frozenset(preimage): # test sequence
             return False
-        if not (len(set(image))==len(image)): # test injective
+        if not (len(frozenset(image))==len(image)): # test injective
             return False 
         return True
     elif isinstance(ast, APermExpression):
@@ -277,11 +280,11 @@ def quick_member_eval(ast, env, element):
             image.append(tup[1])
             if not quick_member_eval(ast.children[0], env, tup[1]):
                 return False
-        if not (len(set(preimage))==len(preimage)): # test function attribute
+        if not (len(frozenset(preimage))==len(preimage)): # test function attribute
             return False        
-        if not set(range(1,len(preimage)+1))==set(preimage): # test sequence
+        if not frozenset(range(1,len(preimage)+1))==frozenset(preimage): # test sequence
             return False
-        if not (set(image)==S): # test bijection/perm
+        if not (frozenset(image)==S): # test bijection/perm
             return False 
         return True            
     elif isinstance(ast, APowSubsetExpression):

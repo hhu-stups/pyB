@@ -1,5 +1,8 @@
 from btypes import *
 from bexceptions import ValueNotInDomainException
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # implementation of extern functions
 def pyB_ext_length(args):

@@ -9,6 +9,8 @@ from helpers import flatten, double_element_check, all_ids_known, print_ast, rem
 from bexceptions import *
 from pretty_printer import pretty_print
 from bexceptions import EnumerationNotPossibleException
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # WARNING: most of the functions in this module should only be used
 # if the full set is needed in an expression: The functions are very slow 

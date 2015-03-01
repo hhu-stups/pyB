@@ -2,6 +2,9 @@
 #
 # module-description: 
 # console user-interface
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # prints user-interface: state and options
 def show_ui(env, mch, op_list):

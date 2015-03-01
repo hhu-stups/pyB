@@ -11,6 +11,10 @@ from definition_handler import DefinitionHandler
 from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_bmch
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 file_name = "input.txt"
         
 class TestMCHAnimation():
@@ -1364,7 +1368,8 @@ class TestMCHAnimation():
         bstate = next_states[6][3]       
         # test PROMOTES:
         names = [op[0] for op in next_states]
-        assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
+        result = frozenset(names)
+        assert result==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
         empty = env.get_value("keys")
         assert empty==frozenset([])
         #exec_op(env, op_and_state_list[0], mch) # insert

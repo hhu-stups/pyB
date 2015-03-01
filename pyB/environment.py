@@ -5,6 +5,10 @@ from statespace import StateSpace
 from config import *
 from bexceptions import ValueNotInBStateException
 from pretty_printer import pretty_print
+# use overwritten frozenset. Otherwise Rpython translation to c will fail with
+# a AttributeError: 'FrozenDesc' object has no attribute 'pycall'
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # TODO: This must be a singelton object
 class Environment():

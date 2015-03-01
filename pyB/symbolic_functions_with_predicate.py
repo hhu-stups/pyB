@@ -4,6 +4,9 @@ from symbolic_helpers import check_syntacticly_equal
 from symbolic_sets import SymbolicSet
 from pretty_printer import pretty_print
 from bexceptions import ValueNotInDomainException
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
@@ -316,7 +319,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
                             aSet = interpret(expr, env)
                             if isinstance(aSet, SymbolicSet):
                                 aSet = aSet.enumerate_all()       
-                            result &= aSet
+                            result = result.intersection(aSet)
                 except ValueNotInDomainException:
                     continue
             env.pop_frame()
@@ -362,7 +365,7 @@ class SymbolicQuantifiedUnion(SymbolicSet):
                         aSet = interpret(expr, env)
                         if isinstance(aSet, SymbolicSet):
                             aSet = aSet.enumerate_all() 
-                        result |= aSet
+                        result = result.union(aSet)
                 except ValueNotInDomainException:
                     continue
             env.pop_frame()

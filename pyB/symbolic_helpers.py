@@ -1,5 +1,9 @@
 from helpers import enumerate_cross_product
 from bexceptions import InfiniteSetLengthException
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+     
 # helper functions for symbolic set operations
 
 # True:  these predicates are syntacticly equal
@@ -87,6 +91,7 @@ def _generate_relation(S, T, size, skip):
     if size==1:
         for element in enumerate_cross_product(S,T):
             if skip==0:
+                #print "x", [element]
                 yield [element]
             else:
                skip = skip -1

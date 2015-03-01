@@ -13,6 +13,8 @@ from animation_clui import print_values_b_style
 from symbolic_sets import *
 from relation_helpers import *
 from objmodel import W_Integer, W_None
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 # Wrapper used to avoid PicklingError on windows systems. ONLY(!) used in parallel calls
 # PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>
@@ -696,6 +698,7 @@ def interpret(node, env):
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        #print  "eq-pred:",expr1, expr2
         # special case: learn values if None (optimization)
         #if isinstance(node.children[0], AIdentifierExpression) and env.get_value(node.children[0].idName)==None:
         #    env.set_value(node.children[0].idName, expr2)
@@ -857,7 +860,7 @@ def interpret(node, env):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)
-            #print result
+            #print elm, result, node.children[1]
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)

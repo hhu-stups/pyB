@@ -8,6 +8,10 @@ from helpers import file_to_AST_str, string_to_file
 from typing import type_check_bmch
 from parsing import parse_ast, str_ast_to_python_ast
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 file_name = "input.txt"
 
 class TestInterpSets():
@@ -565,9 +569,9 @@ class TestInterpSets():
         env.set_value("u", frozenset([]))
         assert interpret(root.children[0],env)
         env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["c"]),frozenset(["a"])]))
-        env.set_value("u", set([]))
+        env.set_value("u", frozenset([]))
         assert interpret(root.children[0],env)
-        env.set_value("U", set([frozenset(["a","b"]),frozenset(["c","b"]),frozenset(["a","b"])]))
+        env.set_value("U", frozenset([frozenset(["a","b"]),frozenset(["c","b"]),frozenset(["a","b"])]))
         env.set_value("u", frozenset(["b"]))
         assert interpret(root.children[0],env)
 

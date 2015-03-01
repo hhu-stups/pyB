@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from helpers import file_to_AST_str_no_print
-from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION
+from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
 from boperation import BOperation
-
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+     
 # -*- coding: utf-8 -*-
 # abstract machine object
 class BMachine:

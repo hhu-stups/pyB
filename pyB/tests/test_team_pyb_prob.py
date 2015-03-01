@@ -10,6 +10,10 @@ from interp import interpret, set_up_constants, exec_initialisation, eval_Invari
 from definition_handler import DefinitionHandler
 from bexceptions import BTypeException
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 def run_with_prob(option_str="", bfile_name="temp", dir=""):
     from subprocess import Popen, PIPE
     cmd_string = "../ProB/probcli %s -sptxt %s%s_values.txt %s%s.mch" % (option_str, dir, bfile_name, dir, bfile_name)

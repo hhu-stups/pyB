@@ -3,6 +3,10 @@ from ast_nodes import *
 from environment import  Environment
 from interp import interpret
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+     
 class TestInterp_fixedAST():
 
     def test_simple_expr_add(self):

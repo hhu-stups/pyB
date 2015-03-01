@@ -7,6 +7,10 @@ from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
 from parsing import str_ast_to_python_ast
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 file_name = "input.txt"
 #  maximum size of a python list on a 32 bit system is 536,870,912 elements
 

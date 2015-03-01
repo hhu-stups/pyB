@@ -4,6 +4,10 @@ from helpers import file_to_AST_str, string_to_file
 from pretty_printer import pretty_print
 from parsing import str_ast_to_python_ast
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 file_name = "input.txt"
 
 class TestPrettyPrinter():

@@ -6,9 +6,11 @@
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException, InfiniteSetLengthException
 from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from btypes import *
-from config import PRINT_WARNINGS
+from config import PRINT_WARNINGS, USE_COSTUM_FROZENSET
 from pretty_printer import pretty_print
 from symbolic_helpers import check_syntacticly_equal, generate_powerset
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 ##############
 # Base-class and Primitive Sets
@@ -658,7 +660,7 @@ class SymbolicUnionSet(SymbolicSet):
                 R = self.right_set
             assert isinstance(L, frozenset)
             assert isinstance(R, frozenset)
-            self.explicit_set_repr = L | R
+            self.explicit_set_repr = L.union(R)
         return self.explicit_set_repr
 
     # TODO: think of caching possibilities 

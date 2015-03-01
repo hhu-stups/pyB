@@ -6,6 +6,10 @@ from parsing import parse_ast, str_ast_to_python_ast
 from repl import parse_repl_input
 from animation_clui import print_values_b_style
 
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
+
 class TestRepl():
     def test_repl_add(self):
         env = Environment() 

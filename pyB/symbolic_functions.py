@@ -5,6 +5,9 @@ from ast_nodes import *
 from relation_helpers import *
 from helpers import enumerate_cross_product
 from bexceptions import ValueNotInDomainException
+from config import USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+     from rpython_b_objmodel import frozenset
 
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
