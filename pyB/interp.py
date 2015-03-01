@@ -12,7 +12,7 @@ from pretty_printer import pretty_print
 from animation_clui import print_values_b_style
 from symbolic_sets import *
 from relation_helpers import *
-from objmodel import W_Integer, W_None
+from rpython_b_objmodel import W_Integer, W_None
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
 
