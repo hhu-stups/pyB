@@ -1,6 +1,7 @@
 from ast_nodes import *
 #TODO: Substitutions
 
+# returntype: String
 def pretty_print(node):
 # *********************
 #

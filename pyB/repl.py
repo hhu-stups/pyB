@@ -28,7 +28,8 @@ def run_repl():
             print output  
     exit()
 
-# returns value of expression, True/False or an Error, 
+# returns value of expression, True/False or an Error
+# returntype: BValue, String
 def parse_repl_input(input):
     try:   
         string_to_file("#EXPRESSION "+input, "temp.b")

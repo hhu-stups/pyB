@@ -8,10 +8,25 @@ class Node():
 
 # Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
 # inside the interpreter. (node classification )
+
+# Evaluation always returns a boolean
 class Predicate(Node):
     pass
 
+# Retruntype unknown: boolean, integer, string, frozenset or struct
 class Expression(Node):
+    pass
+
+# Evaluation always returns a frozenset
+class SetExpression(Expression):
+    pass
+    
+# Evaluation always returns a integer
+class IntegerExpression(Expression):
+    pass
+
+# Evaluation always returns a string
+class StringExpression(Expression):
     pass
 
 class Clause(Node):
@@ -105,10 +120,10 @@ class ADefinitionsMachineClause(Clause):
 class AOperationsMachineClause(Clause):
     pass
 
-class APowerOfExpression(Expression):
+class APowerOfExpression(IntegerExpression):
     pass
 
-class AUnaryExpression(Expression):
+class AUnaryExpression(IntegerExpression):
     pass
 
 class AConvertBoolExpression(Expression):
@@ -120,7 +135,7 @@ class AExpressionDefinition(Expression):
 class ADefinitionExpression(Expression):
     pass
 
-class ABoolSetExpression(Expression):
+class ABoolSetExpression(SetExpression):
     pass
 
 class ATrueExpression(Expression):
@@ -129,19 +144,19 @@ class ATrueExpression(Expression):
 class AFalseExpression(Expression):
     pass
 
-class AMinExpression(Expression):
+class AMinExpression(IntegerExpression):
     pass
 
-class AMaxExpression(Expression):
+class AMaxExpression(IntegerExpression):
     pass
 
-class AGeneralUnionExpression(Expression):
+class AGeneralUnionExpression(SetExpression):
     pass
 
-class AGeneralIntersectionExpression(Expression):
+class AGeneralIntersectionExpression(SetExpression):
     pass
 
-class AAddExpression(Expression):
+class AAddExpression(IntegerExpression):
     pass
 
 class AMinusOrSetSubtractExpression(Expression):
@@ -150,165 +165,165 @@ class AMinusOrSetSubtractExpression(Expression):
 class AMultOrCartExpression(Expression):
     pass
 
-class ADivExpression(Expression):
+class ADivExpression(IntegerExpression):
     pass
 
-class AModuloExpression(Expression):
+class AModuloExpression(IntegerExpression):
     pass
 
-class ACardExpression(Expression):
+class ACardExpression(IntegerExpression):
     pass
 
-class AUnionExpression(Expression):
+class AUnionExpression(SetExpression):
     pass
 
-class AIntersectionExpression(Expression):
+class AIntersectionExpression(SetExpression):
     pass
 
-class AEmptySetExpression(Expression):
+class AEmptySetExpression(SetExpression):
     pass
 
-class ASetExtensionExpression(Expression):
+class ASetExtensionExpression(SetExpression):
     pass
 
 class ACoupleExpression(Expression):
     pass
 
-class APowSubsetExpression(Expression):
+class APowSubsetExpression(SetExpression):
     pass
 
-class APow1SubsetExpression(Expression):
+class APow1SubsetExpression(SetExpression):
     pass
 
-class ARelationsExpression(Expression):
+class ARelationsExpression(SetExpression):
     pass
 
-class ADomainExpression(Expression):
+class ADomainExpression(SetExpression):
     pass
 
-class ARangeExpression(Expression):
+class ARangeExpression(SetExpression):
     pass
 
-class ACompositionExpression(Expression):
+class ACompositionExpression(SetExpression):
     pass
 
-class AIdentityExpression(Expression):
+class AIdentityExpression(SetExpression):
     pass
 
-class AIterationExpression(Expression):
+class AIterationExpression(SetExpression):
     pass
 
-class AReflexiveClosureExpression(Expression):
+class AReflexiveClosureExpression(SetExpression):
     pass
 
-class AClosureExpression(Expression):
+class AClosureExpression(SetExpression):
     pass
 
-class ADomainRestrictionExpression(Expression):
+class ADomainRestrictionExpression(SetExpression):
     pass
 
-class ADomainSubtractionExpression(Expression):
+class ADomainSubtractionExpression(SetExpression):
     pass
 
-class ARangeRestrictionExpression(Expression):
+class ARangeRestrictionExpression(SetExpression):
     pass
 
-class ARangeSubtractionExpression(Expression):
+class ARangeSubtractionExpression(SetExpression):
     pass
 
-class AReverseExpression(Expression):
+class AReverseExpression(SetExpression):
     pass
 
-class AImageExpression(Expression):
+class AImageExpression(SetExpression):
     pass
 
-class AOverwriteExpression(Expression):
+class AOverwriteExpression(SetExpression):
     pass
 
-class ADirectProductExpression(Expression):
+class ADirectProductExpression(SetExpression):
     pass
 
-class AFirstProjectionExpression(Expression):
+class AFirstProjectionExpression(SetExpression):
     pass
 
-class ASecondProjectionExpression(Expression):
+class ASecondProjectionExpression(SetExpression):
     pass
 
-class AParallelProductExpression(Expression):
+class AParallelProductExpression(SetExpression):
     pass
 
-class APartialFunctionExpression(Expression):
+class APartialFunctionExpression(SetExpression):
     pass
 
-class ATotalFunctionExpression(Expression):
+class ATotalFunctionExpression(SetExpression):
     pass
 
-class APartialInjectionExpression(Expression):
+class APartialInjectionExpression(SetExpression):
     pass
 
-class ATotalInjectionExpression(Expression):
+class ATotalInjectionExpression(SetExpression):
     pass
 
-class APartialSurjectionExpression(Expression):
+class APartialSurjectionExpression(SetExpression):
     pass
 
-class ATotalSurjectionExpression(Expression):
+class ATotalSurjectionExpression(SetExpression):
     pass
 
-class ATotalBijectionExpression(Expression):
+class ATotalBijectionExpression(SetExpression):
     pass
 
 
-class APartialBijectionExpression(Expression):
+class APartialBijectionExpression(SetExpression):
     pass
 
 # e.g. f(x) f~(x) proj1(S,T)(x) (x,y)(x) {(x,y)}(x) {(x|->y)}(x)
 class AFunctionExpression(Expression):
     pass
 
-class AEmptySequenceExpression(Expression):
+class AEmptySequenceExpression(SetExpression):
     pass
 
-class ASeqExpression(Expression):
+class ASeqExpression(SetExpression):
     pass
 
-class ASeq1Expression(Expression):
+class ASeq1Expression(SetExpression):
     pass
 
-class AIseqExpression(Expression):
+class AIseqExpression(SetExpression):
     pass
 
-class AIseq1Expression(Expression):
+class AIseq1Expression(SetExpression):
     pass
 
-class APermExpression(Expression):
+class APermExpression(SetExpression):
     pass
 
-class AConcatExpression(Expression):
+class AConcatExpression(SetExpression):
     pass
 
-class AInsertFrontExpression(Expression):
+class AInsertFrontExpression(SetExpression):
     pass
 
-class AInsertTailExpression(Expression):
+class AInsertTailExpression(SetExpression):
     pass
 
-class ASequenceExtensionExpression(Expression):
+class ASequenceExtensionExpression(SetExpression):
     pass
 
-class ASizeExpression(Expression):
+class ASizeExpression(IntegerExpression):
     pass
 
-class ARevExpression(Expression):
+class ARevExpression(SetExpression):
     pass
 
-class ARestrictFrontExpression(Expression):
+class ARestrictFrontExpression(SetExpression):
     pass
 
-class ARestrictTailExpression(Expression):
+class ARestrictTailExpression(SetExpression):
     pass
 
-class AGeneralConcatExpression(Expression):
+class AGeneralConcatExpression(SetExpression):
     pass
 
 class AFirstExpression(Expression):
@@ -317,58 +332,58 @@ class AFirstExpression(Expression):
 class ALastExpression(Expression):
     pass
 
-class ATailExpression(Expression):
+class ATailExpression(SetExpression):
     pass
 
-class AFrontExpression(Expression):
+class AFrontExpression(SetExpression):
     pass
 
-class AIntervalExpression(Expression):
+class AIntervalExpression(SetExpression):
     pass
 
-class AGeneralSumExpression(Expression):
+class AGeneralSumExpression(IntegerExpression):
     pass
 
-class AGeneralProductExpression(Expression):
+class AGeneralProductExpression(IntegerExpression):
     pass
 
-class ANatSetExpression(Expression):
+class ANatSetExpression(SetExpression):
     pass
 
-class ANaturalSetExpression(Expression):
+class ANaturalSetExpression(SetExpression):
     pass
 
-class ANatural1SetExpression(Expression):
+class ANatural1SetExpression(SetExpression):
     pass
 
-class ANat1SetExpression(Expression):
+class ANat1SetExpression(SetExpression):
     pass
 
-class AIntegerSetExpression(Expression):
+class AIntegerSetExpression(SetExpression):
     pass
 
-class AIntSetExpression(Expression):
+class AIntSetExpression(SetExpression):
     pass
 
-class ALambdaExpression(Expression):
+class ALambdaExpression(SetExpression):
     pass
 
-class AMinIntExpression(Expression):
+class AMinIntExpression(IntegerExpression):
     pass
 
-class AMaxIntExpression(Expression):
+class AMaxIntExpression(IntegerExpression):
     pass
 
-class APredecessorExpression(Expression):
+class APredecessorExpression(IntegerExpression):
     pass
 
-class ASuccessorExpression(Expression):
+class ASuccessorExpression(IntegerExpression):
     pass
 
-class AQuantifiedIntersectionExpression(Expression):
+class AQuantifiedIntersectionExpression(SetExpression):
     pass
 
-class AQuantifiedUnionExpression(Expression):
+class AQuantifiedUnionExpression(SetExpression):
     pass
 
 class ADefinitionPredicate(Predicate):
@@ -377,7 +392,7 @@ class ADefinitionPredicate(Predicate):
 class APredicateDefinition(Predicate):
     pass
 
-class AComprehensionSetExpression(Predicate):
+class AComprehensionSetExpression(SetExpression):
     pass
 
 class AExistentialQuantificationPredicate(Predicate):
@@ -527,19 +542,19 @@ class ARecordFieldExpression(Expression):
 class APrimedIdentifierExpression(Expression):
     pass
 
-class AStringSetExpression(Expression):
+class AStringSetExpression(SetExpression):
     pass
 
-class ASetSubtractionExpression(Expression):
+class ASetSubtractionExpression(SetExpression):
     pass
 
-class ATransRelationExpression(Expression):
+class ATransRelationExpression(SetExpression):
     pass
 
-class ATransFunctionExpression(Expression):
+class ATransFunctionExpression(SetExpression):
     pass
 
-class AStringExpression(Expression):
+class AStringExpression(StringExpression):
     def __init__(self, string):
         self.string = string
 

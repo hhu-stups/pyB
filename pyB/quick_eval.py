@@ -15,6 +15,7 @@ if USE_COSTUM_FROZENSET:
 # This function is quicker than fully generating the (potentially large) set (S) on the right side.
 # If some sets of the right side are 'generated' by this function then only 
 # if this shouldnt take much time and the full set is needed anyway
+# returntype: boolean
 def quick_member_eval(ast, env, element):
     from interp import interpret
     # Base case of recursion
@@ -312,6 +313,7 @@ def quick_member_eval(ast, env, element):
 
 
 # checks if the element (maybe a predicate) can generated of the infinite set on the right side
+# returntype: boolean
 def infinity_belong_check(node, env):
     assert isinstance(node, ABelongPredicate)
     if isinstance(node.children[1], APartialSurjectionExpression):

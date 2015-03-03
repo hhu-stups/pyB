@@ -6,6 +6,7 @@ if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
 
 # filters out every function which is not injective
+# returntype: frozenset
 def filter_not_injective(functions):
     injective_funs = []
     for fun in functions:
@@ -15,6 +16,7 @@ def filter_not_injective(functions):
 
 
 # filters out every function which is not surjective
+# returntype: frozenset
 def filter_not_surjective(functions, T):
     surj_funs = []
     for fun in functions:
@@ -23,6 +25,7 @@ def filter_not_surjective(functions, T):
     return frozenset(surj_funs)
 
 # filters out every set which is no function
+# returntype: frozenset
 def filter_no_function(relations):
     functions = []
     for r in relations:
@@ -32,6 +35,7 @@ def filter_no_function(relations):
     
 
 # filters out every function which is not total
+# returntype: frozenset
 def filter_not_total(functions, S):
     total_funs = []
     for fun in functions:
@@ -41,6 +45,7 @@ def filter_not_total(functions, S):
 
 
 # checks if the function it total 
+# returntype: frozenset
 def is_a_total_function(function, preimage_set):
     if isinstance(preimage_set, InfiniteSet):
         raise EnumerationNotPossibleException()
@@ -50,6 +55,7 @@ def is_a_total_function(function, preimage_set):
 
 
 # checks if the function it surjective
+# returntype: boolean
 def is_a_surj_function(function, image_set):
     if isinstance(image_set, InfiniteSet):
         raise EnumerationNotPossibleException()
@@ -57,12 +63,16 @@ def is_a_surj_function(function, image_set):
     image_set2= frozenset(image) # remove duplicate items
     return image_set == image_set2
 
+
 # checks if the function it injective
+# returntype: booelan
 def is_a_inje_function(function):
     image = [x[1] for x in function]
     return not double_element_check(image)
 
+
 # checks if a relation is a function
+# returntype: boolean
 def is_a_function(relation):
     preimage_set = [x[0] for x in relation]
     if double_element_check(preimage_set):

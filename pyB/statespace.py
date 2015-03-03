@@ -6,9 +6,11 @@ class StateSpace:
         self.stack = [BState()]
         self.history = [] # only strings
     
+    # returntype: BState
     def get_state(self):
         return self.stack[-1]
     
+    # returntype: boolean
     def empty(self):
         return len(self.stack)==1
     
@@ -20,6 +22,7 @@ class StateSpace:
         self.history.append(op_name)
         self.stack.append(bstate)
     
+    # returntype: int
     def get_stack_size(self):
         return len(self.stack)
     

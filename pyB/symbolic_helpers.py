@@ -16,6 +16,7 @@ if USE_COSTUM_FROZENSET:
 # {x|x>3 & x<5}=={y|y=4}
 # {x|x:NAT & x<200}=={y|y<200 & y:NAT}
 # {x|x:INTEGER & x>=0 }=={y|y:NATURAL}
+# returntype: boolean
 def check_syntacticly_equal(predicate0, predicate1):
     if predicate0.__class__ == predicate1.__class__:
         try:
@@ -32,6 +33,7 @@ def check_syntacticly_equal(predicate0, predicate1):
         message = "ERROR: failed to check if predicates are equal: '%s' and '%s'" %(pretty_print(predicate0),pretty_print(predicate1))
         print message
         raise DontKnowIfEqualException(message)
+        return False
 
 
 # This generator returns one relation(-list) between S and T S<-->T.
@@ -40,6 +42,7 @@ def check_syntacticly_equal(predicate0, predicate1):
 # operations (e.g. function property) are more easy on lists.
 # TODO: returning a symbolic set here is possible, but needs more tests an
 # interpreter modification
+# returntype: frozenset
 def make_explicit_set_of_realtion_lists(S,T):   
     # size = |S|*|T|
     try:
@@ -59,6 +62,7 @@ def make_explicit_set_of_realtion_lists(S,T):
 
 # TODO: this is copy-pase from _generate_relation. Use Metha-programming to 
 # to write generalization 
+# returntype: list
 def generate_powerset(S, size, skip):
     # yield one element of all combinations (x,y)
     if size==1:
@@ -86,6 +90,7 @@ def generate_powerset(S, size, skip):
 
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
 # all combinations/sub-lists of length n.
+# returntype: list
 def _generate_relation(S, T, size, skip):
     # yield one element of all combinations (x,y)
     if size==1:
