@@ -9,24 +9,28 @@ class Node():
 # Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
 # inside the interpreter. (node classification )
 
-# Evaluation always returns a boolean
-class Predicate(Node):
-    pass
 
-# Retruntype unknown: boolean, integer, string, frozenset or struct
+# Retrun type unknown: boolean, integer, string, frozenset or struct
 class Expression(Node):
     pass
+
 
 # Evaluation always returns a frozenset
 class SetExpression(Expression):
     pass
+
     
 # Evaluation always returns a integer
 class IntegerExpression(Expression):
     pass
 
+
 # Evaluation always returns a string
 class StringExpression(Expression):
+    pass
+    
+# Evaluation always returns a boolean
+class Predicate(Node):
     pass
 
 class Clause(Node):
@@ -563,7 +567,7 @@ class AIdentifierExpression(Expression):
         self.idName = idName
         self.enum_hint = None
 
-class AIntegerExpression(Expression):
+class AIntegerExpression(IntegerExpression):
     def __init__(self, intValue):
         self.intValue = intValue
 

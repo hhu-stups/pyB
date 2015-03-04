@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from config import *
+from animation_clui import print_values_b_style
 from ast_nodes import *
+from config import *
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from bmachine import BMachine
@@ -9,7 +10,6 @@ from enumeration import *
 from quick_eval import quick_member_eval, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
-from animation_clui import print_values_b_style
 from symbolic_sets import *
 from relation_helpers import *
 from rpython_b_objmodel import W_Integer, W_None
@@ -1584,7 +1584,7 @@ def interpret(node, env):
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
         return W_None() # RPython: Avoid return of python None
-
+  
 
 # side-effect: changes state while exec.
 # returns True if substitution was possible

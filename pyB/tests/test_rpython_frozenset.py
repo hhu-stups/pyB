@@ -6,6 +6,7 @@ class TestRPythonFrozenset():
          frozenset([1,2,3])
          frozenset([(1,"a"),(1,"b")])
          frozenset([frozenset([1,2,3]),frozenset([1,2])])
+         frozenset([(1,2),(3,4)])
     
     
     def test_rpython_frozenset_length(self):
@@ -23,6 +24,7 @@ class TestRPythonFrozenset():
          assert frozenset([1,1,2])==frozenset([1,2])
          assert frozenset([1,2])==frozenset([2,1])
          assert frozenset([frozenset([1,2]),frozenset([1,2,3])])==frozenset([frozenset([1,2,3]),frozenset([1,2])])
+         
          
          
          
