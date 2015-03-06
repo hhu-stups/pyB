@@ -131,8 +131,9 @@ def eval_int_expression(node, env):
         return env.get_value(node.idName)
         """
     else:
-        raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
+        raise Exception("\nError: Unknown/unimplemented node inside eval_int_expression: %s",node)
         return -1 # RPython: Avoid return of python None
+
 
 # That the result of node evaluation is an boolean,  must be ensured BY THE CALLER!
 def eval_bool_expression(node, env):
@@ -268,9 +269,90 @@ def eval_bool_expression(node, env):
         expr2 = eval_int_expression(node.get(1), env)
         return expr1 <= expr2
     else:
-        raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
+        raise Exception("\nError: Unknown/unimplemented node inside eval_bool_expression: %s",node)
         return False # RPython: Avoid return of python None
-        
+
+
+def eval_clause(node, env):
+    if isinstance(node, AConstraintsMachineClause):
+        return eval_bool_expression(node.get(-1), env)
+        """
+    elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
+        lst = conj_tree_to_conj_list(node.children[0])
+        result = True
+        ok = 0
+        fail = 0
+        timeout = 0
+        for n in lst:
+            try:
+                if PROPERTIES_TIMEOUT<=0:
+                    value = interpret(n, env)
+                else:
+                    import multiprocessing   
+                    que = multiprocessing.Queue()
+                    p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
+                    # TODO: safe and restore stack depth if corruption occurs by thread termination
+                    #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
+                    p.start()
+                    p.join(PROPERTIES_TIMEOUT)
+                    if not que.empty():
+                        value = que.get()
+                    else:
+                        p.terminate()
+                        print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
+                        # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
+                        timeout = timeout +1
+                        continue
+            except OverflowError:
+                print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
+                fail = fail +1
+                continue
+            if PRINT_SUB_PROPERTIES: # config.py
+                string = str(value)
+                if string=="False":
+                   print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
+                   fail = fail +1
+                elif string=="True":
+                   print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
+                   ok = ok +1
+                else: #XXX
+                   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
+            result = result and value
+        if fail>0:
+            print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        elif timeout>0:
+            print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        else:
+            print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
+        return result
+        """
+    elif isinstance(node, AInvariantMachineClause):
+        result = eval_bool_expression(node.get(0), env)
+        if not result:
+            print "\nFALSE Predicates:"
+            #print_predicate_fail(env, node.get(0))
+        return result
+        """
+    elif isinstance(node, AAssertionsMachineClause):
+        if ENABLE_ASSERTIONS: #config.py
+            ok = 0
+            fail = 0
+            print "checking assertions"
+            for child in node.children:
+                #print_ast(child)
+                result = interpret(child, env)
+                if result==True:
+                    print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(child)
+                    ok = ok +1
+                else:
+                    print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
+                    fail = fail +1
+            print "checking done - ok:%s fail:%s" % (ok,fail)
+        """
+    else:
+        raise Exception("\nError: Unknown/unimplemented node inside eval_clause: %s",node)
+        return -1 # RPython: Avoid return of python None      
+      
         
 def interpret(node, env):
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui

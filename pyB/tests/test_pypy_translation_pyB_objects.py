@@ -26,9 +26,9 @@ def translate(code):
     Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py temp.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./temp-c", shell=True, stdout=PIPE).stdout.read()
     # 5. delete temp. file
-    import os
-    os.remove("temp.py")
-    os.remove("temp-c")
+    #import os
+    #os.remove("temp.py")
+    #os.remove("temp-c")
     # 6. compare c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -252,10 +252,11 @@ class TestPyPyTranslationObjects():
         code =  """def main(argv):
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from bmachine import BMachine
             from environment import Environment
             from interp import set_up_constants, exec_initialisation
-            from parsing import parse_ast
-            from rpython_interp import interpret
+            from parsing import parse_ast, remove_definitions
+            from rpython_interp import interpret, eval_clause
             
             id0=AMachineHeader()
             id0.idName = "Empty "
@@ -273,15 +274,23 @@ class TestPyPyTranslationObjects():
             root = id5
             
             env = Environment()
-            mch = parse_ast(root, env)
-            bstates = set_up_constants(root, env, mch, solution_file_read=False)
-            if len(bstates)>0:
-                env.state_space.add_state(bstates[0])
-            bstates = exec_initialisation(root, env, mch, solution_file_read=False)
-            if len(bstates)>0:
-                env.state_space.add_state(bstates[0]) 
-            print isinstance(root.children[1], AInvariantMachineClause)
-            print interpret(root.children[1], env)
+            #mch = parse_ast(root, env) # has an (unused but seen) exec branch 
+            assert isinstance(root, AAbstractMachineParseUnit)
+            #mch = BMachine(root, remove_definitions) 
+            #env.root_mch = mch
+            #env.current_mch = mch #current mch
+            #mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            #bstates = set_up_constants(root, env, mch, solution_file_read=False)
+            #print len(bstates)
+            #if len(bstates)>0:
+            #    env.state_space.add_state(bstates[0])
+            #bstates = exec_initialisation(root, env, mch, solution_file_read=False)
+            #if len(bstates)>0:
+            #    env.state_space.add_state(bstates[0]) 
+            res = isinstance(root.children[1], AInvariantMachineClause)
+            print int(res)
+            res = eval_clause(root.children[1], env)
+            print int(res)
                           
             return 0\n"""
         python_result, c_result = translate(code) 

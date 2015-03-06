@@ -47,6 +47,9 @@ class BMachine:
         # needs to parse its seen machines
         self.remove_definitions = remove_definitions
 
+        # TODO: not Rpython
+        # x==None 
+        # x=Y # (Y!=None)
         for child in node.children:
             # A clause may only appear at most once in an abstract machine
             # B Language Reference Manual - Version 1.8.6 - Page 110
