@@ -5,12 +5,17 @@
 class Node():
     def __init__(self):
         self.children = []
+    
+    # Rpython typing fails on direct access like node.children[i].
+    # But it doesnt fails when a method does it
+    def get(self, index):
+        return self.children[index]
 
 # Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
 # inside the interpreter. (node classification )
 
 
-# Retrun type unknown: boolean, integer, string, frozenset or struct
+# Return type unknown: boolean, integer, string, frozenset or struct
 class Expression(Node):
     pass
 

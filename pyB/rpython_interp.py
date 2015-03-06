@@ -23,29 +23,29 @@ def eval_int_expression(node, env):
     #    aSet = interpret(node.children[0], env)
     #    return max(list(aSet))
     elif isinstance(node, AAddExpression):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 + expr2
     elif isinstance(node, AMinusOrSetSubtractExpression):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 - expr2
     elif isinstance(node, AMultOrCartExpression):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 * expr2
     elif isinstance(node, ADivExpression):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 // expr2
     elif isinstance(node, AModuloExpression):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         assert expr2 > 0
         return expr1 % expr2
     elif isinstance(node, APowerOfExpression):
-        basis = eval_int_expression(node.children[0], env)
-        exp = eval_int_expression(node.children[1], env)
+        basis = eval_int_expression(node.get(0), env)
+        exp = eval_int_expression(node.get(1), env)
         # not RPython: result = basis ** exp
         assert exp >=0
         result = 1
@@ -137,28 +137,28 @@ def eval_int_expression(node, env):
 # That the result of node evaluation is an boolean,  must be ensured BY THE CALLER!
 def eval_bool_expression(node, env):
     if isinstance(node, AConjunctPredicate):
-        expr1 = eval_bool_expression(node.children[0], env)
-        expr2 = eval_bool_expression(node.children[1], env)
-        return expr1 and expr2
+        bexpr1 = eval_bool_expression(node.get(0), env)
+        bexpr2 = eval_bool_expression(node.get(1), env)
+        return bexpr1 and bexpr2
     elif isinstance(node, ADisjunctPredicate):
-        expr1 = eval_bool_expression(node.children[0], env)
-        expr2 = eval_bool_expression(node.children[1], env)
-        return expr1 or expr2
+        bexpr1 = eval_bool_expression(node.get(0), env)
+        bexpr2 = eval_bool_expression(node.get(1), env)
+        return bexpr1 or bexpr2
     elif isinstance(node, AImplicationPredicate):
-        expr1 = eval_bool_expression(node.children[0], env)
-        expr2 = eval_bool_expression(node.children[1], env)
-        if expr1 and not expr2:
+        bexpr1 = eval_bool_expression(node.get(0), env)
+        bexpr2 = eval_bool_expression(node.get(1), env)
+        if bexpr1 and not bexpr2:
             return False # True=>False is False
         else:
             return True
     elif isinstance(node, AEquivalencePredicate):
-        expr1 = eval_bool_expression(node.children[0], env)
-        expr2 = eval_bool_expression(node.children[1], env)
-        assert isinstance(expr1, bool) and isinstance(expr2, bool)
-        return expr1 == expr2 
+        bexpr1 = eval_bool_expression(node.get(0), env)
+        bexpr2 = eval_bool_expression(node.get(1), env)
+        assert isinstance(bexpr1, bool) and isinstance(bexpr2, bool)
+        return bexpr1 == bexpr2 
     elif isinstance(node, ANegationPredicate):
-        expr = eval_bool_expression(node.children[0], env)
-        return not expr
+        bexpr = eval_bool_expression(node.get(0), env)
+        return not bexpr
         """
     elif isinstance(node, AUniversalQuantificationPredicate):
         # notice: the all and any keywords are not used, because they need the generation of the whole set
@@ -252,24 +252,25 @@ def eval_bool_expression(node, env):
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
         """
     elif isinstance(node, AGreaterPredicate):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 > expr2
     elif isinstance(node, ALessPredicate):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 < expr2
     elif isinstance(node, AGreaterEqualPredicate):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 >= expr2
     elif isinstance(node, ALessEqualPredicate):
-        expr1 = eval_int_expression(node.children[0], env)
-        expr2 = eval_int_expression(node.children[1], env)
+        expr1 = eval_int_expression(node.get(0), env)
+        expr2 = eval_int_expression(node.get(1), env)
         return expr1 <= expr2
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
         return False # RPython: Avoid return of python None
+        
         
 def interpret(node, env):
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui

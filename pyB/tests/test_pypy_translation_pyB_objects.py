@@ -67,6 +67,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result    
  
  
+    # "branch" not merged. Real interpreter is currently not Rpython 
     import pytest
     @pytest.mark.xfail 
     def test_pypy_genAST_expr_number4(self):
@@ -128,6 +129,33 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
  
  
+    def test_pypy_genAST_expr_number6(self):
+        code =  """def main(argv):
+            from ast_nodes import AIntegerExpression, AAddExpression
+            from ast_nodes import AMinusOrSetSubtractExpression, AMultOrCartExpression
+            from rpython_interp import eval_int_expression
+            node0 = AIntegerExpression(4)
+            node1 = AIntegerExpression(2)
+            node2 = AAddExpression()
+            node2.children.append(node0)
+            node2.children.append(node1)
+            print eval_int_expression(node2, None)
+            
+            node3 = AMinusOrSetSubtractExpression()
+            node3.children.append(node0)
+            node3.children.append(node1)
+            print eval_int_expression(node3, None)
+            
+            node4 = AMultOrCartExpression()
+            node4.children.append(node3)
+            node4.children.append(node2)
+            print eval_int_expression(node4, None)
+                        
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == c_result
+
+ 
     def test_pypy_genAST_predicate1(self):
         code =  """def main(argv):
             from ast_nodes import AIntegerExpression, ALessPredicate, AGreaterPredicate
@@ -150,46 +178,46 @@ class TestPyPyTranslationObjects():
             res = eval_bool_expression(node3, None)
             print int(res)            
 
-            #node4 = AGreaterEqualPredicate()
-            #node4.children.append(node0)
-            #node4.children.append(node1)
-            #res = eval_bool_expression(node4, None)
-            #print int(res) 
+            node4 = AGreaterEqualPredicate()
+            node4.children.append(node0)
+            node4.children.append(node1)
+            res = eval_bool_expression(node4, None)
+            print int(res) 
             
-            #node5 = ALessEqualPredicate()
-            #node5.children.append(node0)
-            #node5.children.append(node1)
-            #res = eval_bool_expression(node5, None)
-            #print int(res)  
+            node5 = ALessEqualPredicate()
+            node5.children.append(node0)
+            node5.children.append(node1)
+            res = eval_bool_expression(node5, None)
+            print int(res)  
             
-            #node6 = AConjunctPredicate()
-            #node6.children.append(node2)
-            #node6.children.append(node3)
-            #res = eval_bool_expression(node6, None)
-            #print int(res)
+            node6 = AConjunctPredicate()
+            node6.children.append(node2)
+            node6.children.append(node3)
+            res = eval_bool_expression(node6, None)
+            print int(res)
                         
-            #node7 = ADisjunctPredicate()
-            #node7.children.append(node2)
-            #node7.children.append(node3)
-            #res = eval_bool_expression(node7, None)
-            #print int(res)   
+            node7 = ADisjunctPredicate()
+            node7.children.append(node2)
+            node7.children.append(node3)
+            res = eval_bool_expression(node7, None)
+            print int(res)   
             
-            #node8 = AImplicationPredicate()
-            #node8.children.append(node2)
-            #node8.children.append(node3)
-            #res = eval_bool_expression(node8, None)
-            #print int(res)
+            node8 = AImplicationPredicate()
+            node8.children.append(node2)
+            node8.children.append(node3)
+            res = eval_bool_expression(node8, None)
+            print int(res)
                         
-            #node9 = AEquivalencePredicate()
-            #node9.children.append(node2)
-            #node9.children.append(node3)
-            #res = eval_bool_expression(node9, None)
-            #print int(res)           
+            node9 = AEquivalencePredicate()
+            node9.children.append(node2)
+            node9.children.append(node3)
+            res = eval_bool_expression(node9, None)
+            print int(res)           
 
-            #node10 = ANegationPredicate()
-            #node10.children.append(node9)
-            #res = eval_bool_expression(node10, None)
-            #print int(res)             
+            node10 = ANegationPredicate()
+            node10.children.append(node9)
+            res = eval_bool_expression(node10, None)
+            print int(res)             
                                            
             return 0\n"""
         python_result, c_result = translate(code) 
@@ -218,8 +246,8 @@ class TestPyPyTranslationObjects():
      
      
     # set config.USE_COSTUM_FROZENSET = True
-    import pytest
-    @pytest.mark.xfail    
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine1(self):
         code =  """def main(argv):
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -261,8 +289,8 @@ class TestPyPyTranslationObjects():
 
 
     # set config.USE_COSTUM_FROZENSET = True
-    import pytest
-    @pytest.mark.xfail  
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
         code =  """def main(argv):
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -359,8 +387,9 @@ class TestPyPyTranslationObjects():
 
 
     # set config.USE_COSTUM_FROZENSET = True
-    import pytest
-    @pytest.mark.xfail    
+    # set config.USE_COSTUM_FROZENSET = True
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")    
     def test_pypy_create_env(self):
         code = """def main(argv):
             from environment import Environment
@@ -370,8 +399,6 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result   
   
     
-    #import pytest
-    #@pytest.mark.xfail  
     def test_pypy_check_frozenset_impl(self):
         code = """def main(argv):
             from rpython_frozenset import frozenset
