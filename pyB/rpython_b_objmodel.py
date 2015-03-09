@@ -80,7 +80,8 @@ class W_None(W_Object):
 
 
 # an import of this module will overwrite the frozenset build-in type
-# TODO: replace with more efficient implementation 
+# TODO: replace with more efficient implementation.
+# Different enumeration order than build-in frozenset.
 class frozenset(W_Object):
     def __init__(self, lst=[]):
         self.lst = []

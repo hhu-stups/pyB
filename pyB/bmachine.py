@@ -47,7 +47,7 @@ class BMachine:
         # needs to parse its seen machines
         self.remove_definitions = remove_definitions
 
-        # TODO: not Rpython
+        # TODO: not Rpython, wrapp None Type 
         # x==None 
         # x=Y # (Y!=None)
         for child in node.children:
@@ -165,7 +165,8 @@ class BMachine:
                 ast_string, error = file_to_AST_str_no_print(file_path_and_name)
                 if error:
                     print error
-                exec ast_string
+                from parsing import str_ast_to_python_ast
+                root = str_ast_to_python_ast(ast_string)
                 # Handle definitions in child-machine
                 root = self.remove_definitions(root, env)
                 # create B machine object

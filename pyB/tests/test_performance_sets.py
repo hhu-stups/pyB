@@ -100,4 +100,4 @@ def test_performance_cart_prod():
 		#print i ,":", time.clock()-t,"seconds. Itmes:",len(result)  
 
 #test_performance_cart_prod()
-test_performance_cart_prod()
+#test_performance_cart_prod()

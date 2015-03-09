@@ -33,6 +33,8 @@ def translate(code):
     return python_result.split('\n'), c_result.split('\n')
 
 
+import pytest
+@pytest.mark.skipif(True, reason="tekes to much time") 
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
         code =  """def main(argv):
@@ -246,6 +248,12 @@ class TestPyPyTranslationObjects():
      
      
     # set config.USE_COSTUM_FROZENSET = True
+    # Two states, one transition (setups_const --> init)
+    #
+    # MACHINE EMPTY
+	# INVARIANT  1<2
+	# END
+	#
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine1(self):
@@ -298,6 +306,17 @@ class TestPyPyTranslationObjects():
 
 
     # set config.USE_COSTUM_FROZENSET = True
+    #
+    #
+    # MACHINE Lift
+	# CONCRETE_VARIABLES  floor
+	# INVARIANT  floor : 0..99 /* NAT */
+	# INITIALISATION floor := 4
+	# OPERATIONS
+	#	inc = PRE floor<99 THEN floor := floor + 1 END ;	
+	#	dec = BEGIN floor := floor - 1 END 
+	# END
+	#
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
