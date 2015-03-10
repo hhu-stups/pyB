@@ -1648,6 +1648,7 @@ public class ASTJSON extends DepthFirstAdapter{
     // visits and prints the node-List first
     private void printStdOut_manyChildren_nb(Node node, List<Node> children)
     {
+        // out.append("[\""); ??
         out.append("\"");
         out.append(getClassName(node));
         out.append("\"");
@@ -1656,5 +1657,6 @@ public class ASTJSON extends DepthFirstAdapter{
             out.append(",");
             n.apply(this);
         }
+        out.append("{\"childNum\":\""+children.size()+"\"}");
     }
 }

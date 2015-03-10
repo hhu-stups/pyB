@@ -22,13 +22,13 @@ command_str = "java -Xms64m -Xmx1024m -cp "
 if os.name=='nt':
     command_str += ";"+JAR_DIR
     command_str += ";"+EXAMPLE_DIR
-    command_str += ";. de.prob.cliparser.CliBParser %s %s"
+    command_str += ";. de.prob.cliparser.CliBParser "
 else:
     command_str += ":"+JAR_DIR
     command_str += ":"+EXAMPLE_DIR
-    command_str += ":. de.prob.cliparser.CliBParser %s %s"
+    command_str += ":. de.prob.cliparser.CliBParser "
 #option_str = " -json"
-option_str = " -python"
+option_str = " -python "
 
 
 def solution_file_to_AST_str(file_name_str):
@@ -54,27 +54,47 @@ def create_file(b_str, bfile_name):
 
 
 # no print of error-messages
-def file_to_AST_str_no_print(file_name_str): 
-    p =  Popen(command_str % (option_str ,file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
-    w, r, e = (p.stdin, p.stdout, p.stderr)
-    out = r.read()
-    err_out = e.read()
-    r.close()
-    w.close()
-    e.close()
-    return del_spaces(out), err_out
+def file_to_AST_str_no_print(file_name_str):
+    from config import USE_RPYTHON_POPEN
+    out = ""
+    c_str = command_str + option_str + " "+file_name_str
+    if USE_RPYTHON_POPEN:
+        # TODO: remove % s
+        from rpython.rlib.rfile import create_popen_file   
+        file = create_popen_file(c_str, "r")
+        out = file.read()
+        file.close()
+        return del_spaces(out), None
+    else:      
+        p =  Popen(c_str, shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+        w, r, e = (p.stdin, p.stdout, p.stderr)
+        out = r.read()
+        err_out = e.read()
+        r.close()
+        w.close()
+        e.close()
+        return del_spaces(out), err_out
 
 
 def file_to_AST_str(file_name_str, path=""):
-    p =  Popen(command_str % (option_str ,path+file_name_str), shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
-    w, r, e = (p.stdin, p.stdout, p.stderr)
-    out = r.read()
-    err_out = e.read()
-    if err_out:
-        print err_out
-    r.close()
-    w.close()
-    e.close()
+    from config import USE_RPYTHON_POPEN
+    out = ""
+    c_str = command_str + option_str + " "+path+file_name_str
+    if USE_RPYTHON_POPEN:
+        from rpython.rlib.rfile import create_popen_file
+        file = create_popen_file(c_str, "r")
+        out = file.read()
+        file.close()
+    else:        
+        p =  Popen(c_str , shell=True, stderr=PIPE, stdin=PIPE, stdout=PIPE)
+        w, r, e = (p.stdin, p.stdout, p.stderr)
+        out = r.read()
+        err_out = e.read()
+        if err_out:
+            print err_out
+        r.close()
+        w.close()
+        e.close()
     return del_spaces(out)
 
 

@@ -251,9 +251,9 @@ class TestPyPyTranslationObjects():
     # Two states, one transition (setups_const --> init)
     #
     # MACHINE EMPTY
-	# INVARIANT  1<2
-	# END
-	#
+    # INVARIANT  1<2
+    # END
+    #
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine1(self):
@@ -309,14 +309,14 @@ class TestPyPyTranslationObjects():
     #
     #
     # MACHINE Lift
-	# CONCRETE_VARIABLES  floor
-	# INVARIANT  floor : 0..99 /* NAT */
-	# INITIALISATION floor := 4
-	# OPERATIONS
-	#	inc = PRE floor<99 THEN floor := floor + 1 END ;	
-	#	dec = BEGIN floor := floor - 1 END 
-	# END
-	#
+    # CONCRETE_VARIABLES  floor
+    # INVARIANT  floor : 0..99 /* NAT */
+    # INITIALISATION floor := 4
+    # OPERATIONS
+    #   inc = PRE floor<99 THEN floor := floor + 1 END ;    
+    #   dec = BEGIN floor := floor - 1 END 
+    # END
+    #
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
@@ -440,3 +440,35 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result  
+   
+    
+    #from helpers import file_to_AST_str
+    #ast_string = file_to_AST_str("exampels\Lift.mch")    
+    import pytest, config
+    @pytest.mark.xfail(True, reason="unssuported code on helpers import" )    
+    def test_pypy_parsing1(self):
+        code =  """def main(argv):
+            import os
+            from rpython.rlib.rfile import create_popen_file
+            from config import JAR_DIR, EXAMPLE_DIR
+            command_str = "java -Xms64m -Xmx1024m -cp "
+            option_str = "-python "
+            file_name_str = "Lift.mch"
+            if os.name=='nt':
+                path="examples\"
+                command_str += ";"+JAR_DIR
+                command_str += ";"+EXAMPLE_DIR
+                command_str += ";. de.prob.cliparser.CliBParser " + option_str+path+file_name_str
+            else:
+                path="examples/"
+                command_str += ":"+JAR_DIR
+                command_str += ":"+EXAMPLE_DIR
+                command_str += ":. de.prob.cliparser.CliBParser " + option_str+path+file_name_str
+            file = create_popen_file(command_str, \"r\") 
+            ast_string = \"\"
+            ast_string = file.read()
+            file.close()
+            print ast_string
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == c_result   

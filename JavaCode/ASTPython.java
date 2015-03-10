@@ -1687,6 +1687,7 @@ public class ASTPython extends DepthFirstAdapter{
         String nodeid = "" + idCounter;
         out.append("id" + nodeid + "=");
         out.append(getClassName(node) +"()\n");
+        out.append("id"+nodeid+".childNum = "+children.size()+"\n");
         idCounter++;
 
         for(i=0; i<ids.length; i++)

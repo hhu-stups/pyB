@@ -5,45 +5,57 @@ from bmachine import BMachine
 from definition_handler import DefinitionHandler
 
 # TODO: many nodes missing
+# TODO: AFileDefinition, ADefinitionFileParseUnit, AIdentifierExpression, AStringExpression
+# AAbstractMachineParseUnit, ARefinementMachineParseUnit, AMachineHeader, ASubstitutionDefinition
+# APredicateDefinition, ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution .... AOpWithReturnSubstitution
 two_children = ["AAddExpression", "AMinusOrSetSubtractExpression", "AMultOrCartExpression", "ADivExpression", "AModuloExpression", "APowerOfExpression"]
 two_children += ["AConjunctPredicate", "ADisjunctPredicate", "AImplicationPredicate", "AEquivalencePredicate"]
 two_children += ["AEqualPredicate", "AGreaterPredicate", "ALessPredicate", "AGreaterEqualPredicate", "ALessEqualPredicate"]
 
-one_child = ["APredicateParseUnit", "AInvariantMachineClause", "AConstraintsMachineClause"]
+one_child = ["APredicateParseUnit", "caseAExpressionParseUnit", "AInvariantMachineClause", "AConstraintsMachineClause"]
 one_child += ["ANegationPredicate"]
+
+no_child =  ["AStringSetExpression", "AEmptySetExpression", "AEmptySequenceExpression", "AIntegerSetExpression"]
+no_child += ["ANatSetExpression", "ANaturalSetExpression", "AIntSetExpression", "ANatural1SetExpression"]
+no_child += ["ANat1SetExpression", "ATrueExpression", "ABoolSetExpression", "AFalseExpression"]
+no_child += ["ASkipSubstitution", "AMinIntExpression", "AMaxIntExpression", "ASuccessorExpression", "APredecessorExpression"]
 
 # create function at import time (this is allowed by RPython) 
 # using metaprogramming:
-#f =  "def my_exec(string):\n"
+f =  "def my_exec(string):\n"
 ##f += "\tprint string\n"
-#f += "\tstack = []\n"
-#f += "\tfor line in string.split(\"\\n\"):\n"
-## special case: AIntegerExpression
-#f += "\t\tif \"AIntegerExpression\" in line:\n"
-#f += "\t\t\ts=line.find('(')\n"
-#f += "\t\t\te=line.find(')')\n"
-#f += "\t\t\tnumber=int(line[s+1:e])\n"
-#f += "\t\t\tnode =AIntegerExpression(number)\n"
-#f += "\t\t\tstack.append(node)\n"
-#for node_string in one_child:
-#    f += "\t\telif \""+ node_string +"\" in line:\n"
-#    f += "\t\t\tnode = "+ node_string+"()\n"
-#    f += "\t\t\tchild = stack.pop()\n"
-#    f += "\t\t\tnode.children.append(child)\n"
-#    f += "\t\t\tstack.append(node)\n"
-#for node_string in two_children:
-#    f += "\t\telif \""+ node_string +"\" in line:\n"
-#    f += "\t\t\tnode = "+ node_string+"()\n"
-#    f += "\t\t\tright = stack.pop()\n"
-#    f += "\t\t\tleft = stack.pop()\n"
-#    f += "\t\t\tnode.children.append(left)\n"
-#    f += "\t\t\tnode.children.append(right)\n"
-#    f += "\t\t\tstack.append(node)\n"
-#f += "\tassert len(stack)==1\n"
-#f += "\troot = stack.pop()\n"
-#f += "\treturn root\n"
-##print f
-#exec(f) 
+f += "\tstack = []\n"
+f += "\tfor line in string.split(\"\\n\"):\n"
+# special case: AIntegerExpression
+f += "\t\tif \"AIntegerExpression\" in line:\n"
+f += "\t\t\ts=line.find('(')\n"
+f += "\t\t\te=line.find(')')\n"
+f += "\t\t\tnumber=int(line[s+1:e])\n"
+f += "\t\t\tnode =AIntegerExpression(number)\n"
+f += "\t\t\tstack.append(node)\n"
+for node_string in no_child:
+    f += "\t\telif \""+ node_string +"\" in line:\n"
+    f += "\t\t\tnode = "+ node_string+"()\n"
+    f += "\t\t\tstack.append(node)\n"    
+for node_string in one_child:
+    f += "\t\telif \""+ node_string +"\" in line:\n"
+    f += "\t\t\tnode = "+ node_string+"()\n"
+    f += "\t\t\tchild = stack.pop()\n"
+    f += "\t\t\tnode.children.append(child)\n"
+    f += "\t\t\tstack.append(node)\n"
+for node_string in two_children:
+    f += "\t\telif \""+ node_string +"\" in line:\n"
+    f += "\t\t\tnode = "+ node_string+"()\n"
+    f += "\t\t\tright = stack.pop()\n"
+    f += "\t\t\tleft = stack.pop()\n"
+    f += "\t\t\tnode.children.append(left)\n"
+    f += "\t\t\tnode.children.append(right)\n"
+    f += "\t\t\tstack.append(node)\n"
+f += "\tassert len(stack)==1\n"
+f += "\troot = stack.pop()\n"
+f += "\treturn root\n"
+#print f
+exec(f) 
 
 
 class PredicateParseUnit:
