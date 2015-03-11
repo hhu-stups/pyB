@@ -5,39 +5,58 @@ file_name = "input.txt"
 PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to your checkout
 
 
-def translate(code):
+# Run main_code with CPython (except RPython Flags) and Translated C Version
+def translate(main_code):
     # 1. Generate Python code as String
+    code =  "def main(argv):"
+    code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
     code += "\n"
     code += "if __name__ == '__main__':\n"
     code += "   import sys\n"
     code += "   main(sys.argv)\n"
-    # 2. write to temp file
-    f = open("temp.py",'w')
+    # 2 write code to temp file (Will be translated to C)
+    f = open("tempA.py",'w')
+    f.write(code)
+    f.close()
+    # 3 Non-RPython Version, disable RPYTHON FLAGS
+    code =  "def main(argv):\n"
+    code += "            from config import set_USE_RPYTHON_POPEN\n"
+    code += "            set_USE_RPYTHON_POPEN(False)\n"
+    code += main_code
+    code += "def target(*args):\n"
+    code += "   return main, None # returns the entry point\n"
+    code += "\n"
+    code += "if __name__ == '__main__':\n"
+    code += "   import sys\n"
+    code += "   main(sys.argv)\n"
+    # 4. write code to temp file (Will NOT be translated to C)
+    f = open("tempB.py",'w')
     f.write(code)
     f.close()
     from subprocess import Popen, PIPE
-    # 3. call python version
-    python_result = Popen("python temp.py", shell=True, stdout=PIPE).stdout.read()
-    # 4. generate and call c Version
+    # 5. call python version
+    python_result = Popen("python tempB.py", shell=True, stdout=PIPE).stdout.read()
+    # 6. generate and call c Version
     pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
     assert pwd[-4:]=='pyB\n'
-    Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py temp.py", shell=True, stdout=PIPE).stdout.read()
-    c_result = Popen("./temp-c", shell=True, stdout=PIPE).stdout.read()
-    # 5. delete temp. file
-    #import os
-    #os.remove("temp.py")
-    #os.remove("temp-c")
-    # 6. compare c and python result
+    Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
+    c_result = Popen("./tempA-c", shell=True, stdout=PIPE).stdout.read()
+    # 7. delete temp. file
+    import os
+    os.remove("tempA.py")
+    os.remove("tempB.py")
+    os.remove("tempA-c")
+    # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
 
-#import pytest
-#@pytest.mark.skipif(True, reason="takes to much time") 
+import pytest
+@pytest.mark.skipif(True, reason="takes to much time") 
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression
             node = AIntegerExpression(41)
             print node.intValue
@@ -47,7 +66,7 @@ class TestPyPyTranslationObjects():
      
      
     def test_pypy_genAST_expr_number2(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression
             from interp import interpret
             node0 = AIntegerExpression(1)
@@ -59,7 +78,7 @@ class TestPyPyTranslationObjects():
 
 
     def test_pypy_genAST_expr_number3(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression
             from interp import interpret
             node0 = AIntegerExpression(1)
@@ -73,7 +92,7 @@ class TestPyPyTranslationObjects():
     import pytest
     @pytest.mark.xfail 
     def test_pypy_genAST_expr_number4(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression, AAddExpression
             from interp import interpret
             node0 = AIntegerExpression(1)
@@ -89,7 +108,7 @@ class TestPyPyTranslationObjects():
 
     # TODO: negative numbers
     def test_pypy_genAST_expr_number5(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression, AAddExpression
             from ast_nodes import AMinusOrSetSubtractExpression, AMultOrCartExpression
             from ast_nodes import ADivExpression, AModuloExpression, APowerOfExpression
@@ -132,7 +151,7 @@ class TestPyPyTranslationObjects():
  
  
     def test_pypy_genAST_expr_number6(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression, AAddExpression
             from ast_nodes import AMinusOrSetSubtractExpression, AMultOrCartExpression
             from rpython_interp import eval_int_expression
@@ -159,7 +178,7 @@ class TestPyPyTranslationObjects():
 
  
     def test_pypy_genAST_predicate1(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression, ALessPredicate, AGreaterPredicate
             from ast_nodes import AGreaterEqualPredicate, ALessEqualPredicate, AConjunctPredicate
             from ast_nodes import ADisjunctPredicate, AImplicationPredicate
@@ -228,7 +247,7 @@ class TestPyPyTranslationObjects():
  
     #PREDICATE 1<2 
     def test_pypy_genAST_predicate2(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AIntegerExpression, ALessPredicate, APredicateParseUnit
             from rpython_interp import interpret
             node0 = AIntegerExpression(4)
@@ -257,7 +276,7 @@ class TestPyPyTranslationObjects():
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine1(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
             from bmachine import BMachine
@@ -320,7 +339,7 @@ class TestPyPyTranslationObjects():
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
-        code =  """def main(argv):
+        code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
             from ast_nodes import AIdentifierExpression, AIntervalExpression, ABelongPredicate
@@ -419,7 +438,7 @@ class TestPyPyTranslationObjects():
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")    
     def test_pypy_create_env(self):
-        code = """def main(argv):
+        code = """
             from environment import Environment
             env = Environment()
             return 0\n"""
@@ -428,7 +447,7 @@ class TestPyPyTranslationObjects():
   
     
     def test_pypy_check_frozenset_impl(self):
-        code = """def main(argv):
+        code = """
             from rpython_frozenset import frozenset
             S = frozenset([1,2,3])
             for e in S:
@@ -441,13 +460,11 @@ class TestPyPyTranslationObjects():
         python_result, c_result = translate(code) 
         assert python_result == c_result  
    
-    
-    #from helpers import file_to_AST_str
-    #ast_string = file_to_AST_str("exampels\Lift.mch")    
+      
     import pytest, config
     @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
     def test_pypy_parsing1(self):
-        code =  """def main(argv):
+        code =  """
             from helpers import file_to_AST_str
             ast_string = file_to_AST_str(\"examples/Lift.mch\")
             print ast_string

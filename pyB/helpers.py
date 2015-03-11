@@ -124,6 +124,7 @@ def select_ast_to_list(select_ast):
 
 
 # del all space except that into b-strings
+#FIXME \x00 compare problem in pypy-trans tests. Branches are not equivalent 
 def del_spaces(string):
     from config import USE_RPYTHON_POPEN
     out = ""
@@ -135,7 +136,7 @@ def del_spaces(string):
             if "AStringExpression" in line:
                 out += line + "\n"
             else:
-                out += line.replace(space,empty) + "\n"
+                out += line.replace(space,'') + "\n"
     else: 
         for line in string.split("\n"):
             if "AStringExpression" in line:

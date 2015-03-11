@@ -32,3 +32,8 @@ if os.name=='nt': # Windows System
 else: # Other OS (e.g mac)
     EXAMPLE_DIR = "examples/"
     JAR_DIR     = "../jars/*"
+
+# method should used by pypy translation test only    
+def set_USE_RPYTHON_POPEN(boolean):
+     global USE_RPYTHON_POPEN
+     USE_RPYTHON_POPEN=boolean
