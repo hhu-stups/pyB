@@ -125,12 +125,23 @@ def select_ast_to_list(select_ast):
 
 # del all space except that into b-strings
 def del_spaces(string):
+    from config import USE_RPYTHON_POPEN
     out = ""
-    for line in string.split("\n"):
-        if "AStringExpression" in line:
-            out += line + "\n"
-        else:
-            out += line.replace(" ","") + "\n"
+    # Rpython does not work with line.replace(' ','')
+    if USE_RPYTHON_POPEN:
+        space = chr(32)
+        empty = chr(0)
+        for line in string.split("\n"):
+            if "AStringExpression" in line:
+                out += line + "\n"
+            else:
+                out += line.replace(space,empty) + "\n"
+    else: 
+        for line in string.split("\n"):
+            if "AStringExpression" in line:
+                out += line + "\n"
+            else:
+                out += line.replace(' ', '') + "\n"
     return out
 
 

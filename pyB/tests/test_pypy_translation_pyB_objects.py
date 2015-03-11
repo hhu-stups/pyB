@@ -33,8 +33,8 @@ def translate(code):
     return python_result.split('\n'), c_result.split('\n')
 
 
-import pytest
-@pytest.mark.skipif(True, reason="tekes to much time") 
+#import pytest
+#@pytest.mark.skipif(True, reason="takes to much time") 
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
         code =  """def main(argv):
@@ -445,29 +445,11 @@ class TestPyPyTranslationObjects():
     #from helpers import file_to_AST_str
     #ast_string = file_to_AST_str("exampels\Lift.mch")    
     import pytest, config
-    @pytest.mark.xfail(True, reason="unssuported code on helpers import" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
     def test_pypy_parsing1(self):
         code =  """def main(argv):
-            import os
-            from rpython.rlib.rfile import create_popen_file
-            from config import JAR_DIR, EXAMPLE_DIR
-            command_str = "java -Xms64m -Xmx1024m -cp "
-            option_str = "-python "
-            file_name_str = "Lift.mch"
-            if os.name=='nt':
-                path="examples\"
-                command_str += ";"+JAR_DIR
-                command_str += ";"+EXAMPLE_DIR
-                command_str += ";. de.prob.cliparser.CliBParser " + option_str+path+file_name_str
-            else:
-                path="examples/"
-                command_str += ":"+JAR_DIR
-                command_str += ":"+EXAMPLE_DIR
-                command_str += ":. de.prob.cliparser.CliBParser " + option_str+path+file_name_str
-            file = create_popen_file(command_str, \"r\") 
-            ast_string = \"\"
-            ast_string = file.read()
-            file.close()
+            from helpers import file_to_AST_str
+            ast_string = file_to_AST_str(\"examples/Lift.mch\")
             print ast_string
             return 0\n"""
         python_result, c_result = translate(code) 
