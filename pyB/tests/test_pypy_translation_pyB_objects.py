@@ -8,7 +8,10 @@ PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to y
 # Run main_code with CPython (except RPython Flags) and Translated C Version
 def translate(main_code):
     # 1. Generate Python code as String
-    code =  "def main(argv):"
+    code =  "def main(argv):\n"
+    # modifying global variables is NOT RPYTHON
+    #code += "            from config import set_USE_COSTUM_FROZENSET\n"
+    #code += "            set_USE_COSTUM_FROZENSET(True)\n"
     code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
@@ -285,6 +288,7 @@ class TestPyPyTranslationObjects():
             from parsing import parse_ast, remove_definitions
             from rpython_interp import interpret, eval_clause
             
+             # Build AST
             id0=AMachineHeader()
             id0.idName = "Empty "
             id1=AIntegerExpression(1 )
@@ -300,13 +304,18 @@ class TestPyPyTranslationObjects():
             id5.type = "MACHINE "
             root = id5
             
+            # Test
             env = Environment()
-            #mch = parse_ast(root, env) # has an (unused but seen) exec branch 
+            # inlinded parse_ast
             assert isinstance(root, AAbstractMachineParseUnit)
             #mch = BMachine(root, remove_definitions) 
+            #mch.recursive_self_parsing(env)
             #env.root_mch = mch
             #env.current_mch = mch #current mch
             #mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            
+            #type_check_bmch(root, env, mch)
+            # inlinded arbitrary_init_machine
             #bstates = set_up_constants(root, env, mch, solution_file_read=False)
             #print len(bstates)
             #if len(bstates)>0:
@@ -314,6 +323,7 @@ class TestPyPyTranslationObjects():
             #bstates = exec_initialisation(root, env, mch, solution_file_read=False)
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0]) 
+            
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
             res = eval_clause(root.children[1], env)
@@ -345,6 +355,8 @@ class TestPyPyTranslationObjects():
             from ast_nodes import AIdentifierExpression, AIntervalExpression, ABelongPredicate
             from ast_nodes import AVariablesMachineClause, AAssignSubstitution, AInitialisationMachineClause
             from ast_nodes import AMinusOrSetSubtractExpression, AAbstractMachineParseUnit
+            from ast_nodes import AAddExpression, APreconditionSubstitution, AOperation
+            from ast_nodes import ABlockSubstitution, AOperationsMachineClause
             from environment import Environment
             from rpython_interp import interpret
             id0=AMachineHeader()

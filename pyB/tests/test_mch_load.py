@@ -14,6 +14,27 @@ if USE_COSTUM_FROZENSET:
 file_name = "input.txt"
 
 class TestMCHLaod():
+
+    def test_examples_simple_invariant(self):
+        string = '''
+        MACHINE EMPTY
+        INVARIANT  1<2
+        END'''
+
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[1], AInvariantMachineClause)
+        assert interpret(root.children[1], env)
+        
+        
     def test_examples_simple_acounter(self):
         string = '''
         MACHINE ACounter

@@ -130,13 +130,11 @@ def del_spaces(string):
     out = ""
     # Rpython does not work with line.replace(' ','')
     if USE_RPYTHON_POPEN:
-        space = chr(32)
-        empty = chr(0)
         for line in string.split("\n"):
             if "AStringExpression" in line:
                 out += line + "\n"
             else:
-                out += line.replace(space,'') + "\n"
+                out += my_replace(line) + "\n"
     else: 
         for line in string.split("\n"):
             if "AStringExpression" in line:
@@ -145,6 +143,15 @@ def del_spaces(string):
                 out += line.replace(' ', '') + "\n"
     return out
 
+
+# Bad performance. Removes spaces
+def my_replace(string):
+    from rpython.rlib.rstring import StringBuilder
+    result = StringBuilder()
+    for char in string:
+        if not char==' ':
+            result.append(char)
+    return result.build()
 
 def string_to_file(string, file_name, path=""):
     f = open(path+file_name,"w")

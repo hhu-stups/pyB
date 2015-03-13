@@ -37,3 +37,8 @@ else: # Other OS (e.g mac)
 def set_USE_RPYTHON_POPEN(boolean):
      global USE_RPYTHON_POPEN
      USE_RPYTHON_POPEN=boolean
+     
+
+def set_USE_COSTUM_FROZENSET(boolean):
+     global USE_COSTUM_FROZENSET
+     USE_COSTUM_FROZENSET=boolean
