@@ -1,4 +1,1 @@
-
-        MACHINE EMPTY
-        INVARIANT  1<2
-        END
+#PREDICATE A=bool(1<2)

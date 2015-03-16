@@ -1,4 +1,4 @@
-from rpython_frozenset import frozenset
+from rpython_b_objmodel import frozenset
 
 class TestRPythonFrozenset():
     def test_rpython_frozenset_creation(self):

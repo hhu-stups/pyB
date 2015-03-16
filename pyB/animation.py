@@ -81,7 +81,8 @@ def calc_next_states(env, bmachine):
                 # TODO:(#ISSUE 13) maybe more guesses elif... 
                 else: # no guess possible, try all values (third-arg None cause an enum of all values)
                     domain_generator = calc_possible_solutions(None, env, parameter_idNodes, interpret)
-                assert not domain_generator==None
+                import types
+                assert (domain_generator, types.GeneratorType)
                 
                 # Try solutions
                 for solution in domain_generator:

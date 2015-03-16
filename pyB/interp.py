@@ -23,7 +23,7 @@ def parallel_caller(q, n, env):
     q.put(interpret(n, env))
 
 def eval_Invariant(root, env, mch):
-    if mch.aInvariantMachineClause:
+    if mch.has_invariant_mc:
         return interpret(mch.aInvariantMachineClause, env)
     else:
         return None
@@ -53,9 +53,9 @@ def set_up_constants(root, env, mch, solution_file_read=False):
         # TODO: Parameter set up
         if VERBOSE:
             print "checking properties (with proB solutions) now.."
-        if not mch.aPropertiesMachineClause==None and not interpret(mch.aPropertiesMachineClause, env):
+        if mch.has_properties_mc and not interpret(mch.aPropertiesMachineClause, env):
             raise SETUPNotPossibleException("\nError: Values from solution-file caused an PROPERTIES-violation (wrong predicates above).\nMIN_INT: %s MAX_INT: %s" % (env._min_int, env._max_int))            
-        elif not mch.aPropertiesMachineClause==None:
+        elif mch.has_properties_mc:
             print "Properties: True"
         env.state_space.undo()
         if VERBOSE:
@@ -132,7 +132,7 @@ def __set_up_constants_generator(root, env, mch):
                 # so para_solution is the result of this set up   
                 # Manual Page 110: If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.  
                 #                  Visible Table: PROPERTIES-clause may read sets in SETS-clause
-                if mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None:
+                if not mch.has_constants_mc and not mch.has_abstr_constants_mc:
                     # TODO:Properties can always be present. e.g PROPERTIES 1<2
                     # if mch_list is empty, child_bstate_change is False:
                     if mch.scalar_params==[] and mch.set_params==[]:
@@ -160,7 +160,7 @@ def __set_up_constants_generator(root, env, mch):
                         yield solution 
                         env.state_space.revert(ref_bstate2) # revert parameter set up
                 env.state_space.revert(ref_bstate) # revert child set up
-        if  mch.aConstantsMachineClause==None and mch.aAbstractConstantsMachineClause==None and mch.scalar_params==[] and mch.set_params==[]:
+        if not mch.has_constants_mc and not mch.has_abstr_constants_mc and mch.scalar_params==[] and mch.set_params==[]:
             # 4. propagate set init or possible B-state-change of children
             # if mch_list is empty, child_bstate_change is False: 
             yield child_bstate_change 
@@ -174,7 +174,7 @@ def init_mch_param(root, env, mch):
     scalar_parameter_present = not mch.scalar_params==[]
     # case (1). scalar param. and maybe set param
     if scalar_parameter_present:
-        if mch.aConstraintsMachineClause==None:
+        if not mch.has_constraints_mc:
             names = [n.idName for n in mch.scalar_params]
             raise SETUPNotPossibleException("\nError: Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
         pred = mch.aConstraintsMachineClause
@@ -216,7 +216,7 @@ def init_sets(node, env, mch):
         init_sets(node, env, m)
     env.current_mch = mch
     # (3) init sets if present
-    if mch.aSetsMachineClause: # St
+    if mch.has_sets_mc: # St
         node = mch.aSetsMachineClause
         for child in node.children:
             if isinstance(child, AEnumeratedSet):
@@ -235,16 +235,16 @@ def init_sets(node, env, mch):
 
 # yield True if successful B-state change
 def check_properties(node, env, mch):
-    if mch.aPropertiesMachineClause: # B
+    if mch.has_properties_mc: # B
         # set up constants
         # if there are constants
-        if mch.aConstantsMachineClause or mch.aAbstractConstantsMachineClause:
+        if mch.has_constants_mc or mch.has_abstr_constants_mc:
             const_nodes = []
             idNodes     = []
             # find all constants/sets which are still not set
-            if mch.aConstantsMachineClause:
+            if mch.has_constants_mc:
                 idNodes = mch.aConstantsMachineClause.children
-            if mch.aAbstractConstantsMachineClause:
+            if mch.has_abstr_constants_mc:
                 idNodes += mch.aAbstractConstantsMachineClause.children
             for idNode in idNodes:
                 assert isinstance(idNode, AIdentifierExpression)
@@ -291,7 +291,7 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
             print "\033[1m\033[91mWARNING\033[00m: Init from solution file was not complete! unset:%s" % unset_lst
         
         env.state_space.add_state(pre_init_state)
-        if not mch.aInvariantMachineClause==None and not interpret(mch.aInvariantMachineClause, env):
+        if mch.has_invariant_mc and not interpret(mch.aInvariantMachineClause, env):
             raise INITNotPossibleException("\nError: INITIALISATION unsuccessfully. Values from solution-file caused an INVARIANT-violation")
         env.state_space.undo()
         return [pre_init_state] 
@@ -354,8 +354,8 @@ def __exec_initialisation_generator(root, env, mch):
         ref_bstate = env.state_space.get_state().clone() # save init of children (this is a Bugfix and not the solution)
         
         # 3.1 nothing to be init.        
-        if not mch.aInitialisationMachineClause:
-            if not mch.aVariablesMachineClause==None and not mch.aConcreteVariablesMachineClause==None:
+        if not mch.has_initialisation_mc:
+            if mch.has_variables_mc and  mch.has_conc_variables_mc:
                 raise INITNotPossibleException("\nError: Missing InitialisationMachineClause in %s!" % mch.name)
             yield child_bstate_change
         # 3.2. search for solutions  

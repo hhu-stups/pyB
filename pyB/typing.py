@@ -473,7 +473,7 @@ def get_and_check_mch_parameter(root, env, mch, type_env):
             string = "TypeError in typing.py: no set type for set machine parameter %s" % n.idName
             raise BTypeException(string)
     # (2) everything ok, add types
-    if mch.aMachineHeader:
+    if mch.has_mch_header:
         for child in mch.aMachineHeader.children:
             atype = typeit(child, env, type_env)
             mch.parameter_type_lst.append(atype)
@@ -517,17 +517,17 @@ def typeit(node, env, type_env):
         # type clauses. Sees, uses, promotes clauses need no typing. The have no parameters 
         # FIXME: (#ISSUE 32) use type informations of child machines to check extends
         # and includes parameters
-        if mch.aExtendsMachineClause:
+        if mch.has_extends_mc:
             for child in mch.aExtendsMachineClause.children:
                 assert isinstance(child, AMachineReference)
             typeit(mch.aExtendsMachineClause, env, type_env)
-        if mch.aIncludesMachineClause:
+        if mch.has_includes_mc:
             for child in mch.aIncludesMachineClause.children:
                 assert isinstance(child, AMachineReference)
             typeit(mch.aIncludesMachineClause, env, type_env)
-        if mch.aConstraintsMachineClause: # C
+        if mch.has_constraints_mc: # C
             typeit(mch.aConstraintsMachineClause, env, type_env)
-        if mch.aSetsMachineClause: # St
+        if mch.has_sets_mc: # St
             for child in mch.aSetsMachineClause.children:
                 set_name = child.idName
                 utype = type_env.get_current_type(set_name) # hack: use def init with unknown type
@@ -538,23 +538,23 @@ def typeit(node, env, type_env):
                     for elm in child.children:
                         elm_type = typeit(elm, env, type_env)
                         unify_equal(atype, elm_type, type_env)
-        if mch.aConstantsMachineClause: # k
+        if mch.has_constants_mc: # k
             typeit(mch.aConstantsMachineClause, env, type_env)
-        if mch.aAbstractConstantsMachineClause:
+        if mch.has_abstr_constants_mc:
             typeit(mch.aAbstractConstantsMachineClause, env, type_env)
-        if mch.aPropertiesMachineClause: # B
+        if mch.has_properties_mc: # B
             typeit(mch.aPropertiesMachineClause, env, type_env)
-        if mch.aVariablesMachineClause:
+        if mch.has_variables_mc:
             typeit(mch.aVariablesMachineClause, env, type_env)
-        if mch.aConcreteVariablesMachineClause:
+        if mch.has_conc_variables_mc:
             typeit(mch.aConcreteVariablesMachineClause, env, type_env)
-        if mch.aInvariantMachineClause:
+        if mch.has_invariant_mc:
             typeit(mch.aInvariantMachineClause, env, type_env)
-        if mch.aInitialisationMachineClause:
+        if mch.has_initialisation_mc:
             typeit(mch.aInitialisationMachineClause, env, type_env)
-        if mch.aAssertionsMachineClause:
+        if mch.has_assertions_mc:
             typeit(mch.aAssertionsMachineClause, env, type_env)
-        if mch.aOperationsMachineClause:
+        if mch.has_operations_mc:
             typeit(mch.aOperationsMachineClause, env, type_env)
 
 

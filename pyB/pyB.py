@@ -189,15 +189,15 @@ def run_checking_mode():
             result = None
             for bstate in bstates:
                 env.state_space.add_state(bstate)
-                if mch.aPropertiesMachineClause:
+                if mch.has_properties_mc:
                     assert interpret(mch.aPropertiesMachineClause, env)
                 init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
                 for init_bstate in init_bstates:
                     env.state_space.add_state(init_bstate)
-                    if mch.aInvariantMachineClause:
+                    if mch.has_invariant_mc:
                         result = interpret(mch.aInvariantMachineClause, env)
                     env.state_space.undo()                  
-                if mch.aAssertionsMachineClause:
+                if mch.has_assertions_mc:
                     interpret(mch.aAssertionsMachineClause, env)
                 env.state_space.undo()  
             return result
@@ -205,9 +205,9 @@ def run_checking_mode():
             init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
             for bstate in init_bstates:
                 env.state_space.add_state(bstate)
-                if mch.aInvariantMachineClause:
+                if mch.has_invariant_mc:
                     assert interpret(mch.aInvariantMachineClause, env)        
-                if mch.aAssertionsMachineClause:
+                if mch.has_assertions_mc:
                     interpret(mch.aAssertionsMachineClause, env)
                 env.state_space.undo() 
             if not init_bstates==[]:  

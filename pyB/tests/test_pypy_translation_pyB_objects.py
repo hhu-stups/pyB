@@ -55,8 +55,8 @@ def translate(main_code):
     return python_result.split('\n'), c_result.split('\n')
 
 
-import pytest
-@pytest.mark.skipif(True, reason="takes to much time") 
+#import pytest
+#@pytest.mark.skipif(True, reason="takes to much time") 
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
         code =  """
@@ -482,4 +482,23 @@ class TestPyPyTranslationObjects():
             print ast_string
             return 0\n"""
         python_result, c_result = translate(code) 
-        assert python_result == c_result   
+        assert python_result == c_result
+    
+
+    def test_pypy_generators(self):
+        code =  """
+            def g():
+                yield -1
+                yield 0
+                yield +1
+            generator = g()
+            # not RPython:
+            # import types
+            # print type(generator) is types.GeneratorType
+            for x in generator:
+                print x
+
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == c_result    
+      

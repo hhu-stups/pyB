@@ -56,10 +56,10 @@ def run_with_pyb(bfile_name, dir=""):
     print "team-test:calc set init.."
     bstates = exec_initialisation(root, env, mch, solution_file_read=True)
     env.state_space.add_state(bstates[0]) 
-    if mch.aPropertiesMachineClause:
+    if mch.has_properties_mc:
         print "team-test:eval properties..."
         assert interpret(mch.aPropertiesMachineClause, env)
-    if mch.aInvariantMachineClause:
+    if mch.has_invariant_mc:
         print "team-test:eval invariant..."
         assert interpret(mch.aInvariantMachineClause, env)
     #if mch.aAssertionsMachineClause:

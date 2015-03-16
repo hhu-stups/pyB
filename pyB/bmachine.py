@@ -17,7 +17,7 @@ class BMachine:
         self.eset_names  = []
         self.eset_elem_names = []
         self.root = node
-        self.aMachineHeader = None
+
         self.parameter_type_lst = [] # ordered list of type instances 
         self.scalar_params = []   # scalar machine parameter (idNodes)
         self.set_params    = []   # set machine parameter (idNodes)
@@ -26,89 +26,129 @@ class BMachine:
         self.seen_mch      = []   # list of b-mchs
         self.used_mch      = []   # list of b-mchs
         self.operations    = frozenset([])    # set of operations (to easy avoid double entries) only used to init env.operations and env.visible_opertaions
-        self.aConstantsMachineClause = None
-        self.aAbstractConstantsMachineClause = None
-        self.aConstraintsMachineClause = None
-        self.aSetsMachineClause = None
-        self.aVariablesMachineClause = None
-        self.aConcreteVariablesMachineClause = None
-        self.aPropertiesMachineClause = None
-        self.aAssertionsMachineClause = None
-        self.aInvariantMachineClause = None
-        self.aInitialisationMachineClause = None
-        self.aDefinitionsMachineClause = None
-        self.aOperationsMachineClause = None
-        self.aIncludesMachineClause = None
-        self.aPromotesMachineClause = None
-        self.aSeesMachineClause = None
-        self.aUsesMachineClause = None
-        self.aExtendsMachineClause = None
+        
+        #self.aMachineHeader = None
+        #self.aConstantsMachineClause = None
+        #self.aAbstractConstantsMachineClause = None
+        #self.aConstraintsMachineClause = None
+        #self.aSetsMachineClause = None
+        #self.aVariablesMachineClause = None
+        #self.aConcreteVariablesMachineClause = None
+        #self.aPropertiesMachineClause = None
+        #self.aAssertionsMachineClause = None
+        #self.aInvariantMachineClause = None
+        #self.aInitialisationMachineClause = None
+        #self.aDefinitionsMachineClause = None
+        #self.aOperationsMachineClause = None
+        #self.aIncludesMachineClause = None
+        #self.aPromotesMachineClause = None
+        #self.aSeesMachineClause = None
+        #self.aUsesMachineClause = None
+        #self.aExtendsMachineClause = None
+        
+        # using None assignments as flag (None==not present) ist not Rpython.
+        # explicit flags are introduced. 
+        self.has_mch_header 		 = False
+        self.has_constants_mc 		 = False
+        self.has_abstr_constants_mc  = False
+        self.has_constraints_mc 	 = False
+        self.has_sets_mc			 = False
+        self.has_variables_mc		 = False
+        self.has_conc_variables_mc   = False
+        self.has_properties_mc	     = False
+        self.has_assertions_mc		 = False
+        self.has_invariant_mc 		 = False
+        self.has_initialisation_mc	 = False
+        self.has_definitions_mc		 = False
+        self.has_operations_mc		 = False
+        self.has_includes_mc		 = False
+        self.has_promotes_mc		 = False
+        self.has_sees_mc			 = False
+        self.has_uses_mc			 = False
+        self.has_extends_mc			 = False
+        
         # avoid cyclic import: the parser creates BMachine instances, while this class
         # needs to parse its seen machines
         self.remove_definitions = remove_definitions
 
-        # TODO: not Rpython, wrapp None Type 
-        # x==None 
-        # x=Y # (Y!=None)
         for child in node.children:
+        	# Order of clauses is not defined 
             # A clause may only appear at most once in an abstract machine
             # B Language Reference Manual - Version 1.8.6 - Page 110
             # It must be None before assignment
             assert isinstance(child, Clause) or isinstance(child, AMachineHeader)
             if isinstance(child, AConstantsMachineClause):
-                assert self.aConstantsMachineClause==None
+                assert not self.has_constants_mc
                 self.aConstantsMachineClause = child
+                self.has_constants_mc = True
             elif isinstance(child, AAbstractConstantsMachineClause):
-                assert self.aAbstractConstantsMachineClause==None
+                assert not self.has_abstr_constants_mc
                 self.aAbstractConstantsMachineClause = child
+                self.has_abstr_constants_mc = True
             elif isinstance(child, AConstraintsMachineClause):
-                assert self.aConstraintsMachineClause==None
+                assert not self.has_constraints_mc
                 self.aConstraintsMachineClause = child
+                self.has_constraints_mc = True
             elif isinstance(child, ASetsMachineClause):
-                assert self.aSetsMachineClause==None
+                assert not self.has_sets_mc
                 self.aSetsMachineClause = child
+                self.has_sets_mc = True
             elif isinstance(child, AConcreteVariablesMachineClause):
-                assert self.aConcreteVariablesMachineClause==None
+                assert not self.has_conc_variables_mc
                 self.aConcreteVariablesMachineClause = child
+                self.has_conc_variables_mc = True
             elif isinstance(child, AVariablesMachineClause):
-                assert self.aVariablesMachineClause==None
+                assert not self.has_variables_mc
                 self.aVariablesMachineClause = child
+                self.has_variables_mc = True
             elif isinstance(child, APropertiesMachineClause):
-                assert self.aPropertiesMachineClause==None
+                assert not self.has_properties_mc
                 self.aPropertiesMachineClause = child
+                self.has_properties_mc = True
             elif isinstance(child, AAssertionsMachineClause):
-                assert self.aAssertionsMachineClause==None
+                assert not self.has_assertions_mc 
                 self.aAssertionsMachineClause = child
+                self.has_assertions_mc = True
             elif isinstance(child, AInitialisationMachineClause):
-                assert self.aInitialisationMachineClause==None
+                assert not self.has_initialisation_mc
                 self.aInitialisationMachineClause = child
+                self.has_initialisation_mc = True
             elif isinstance(child, AInvariantMachineClause):
-                assert self.aInvariantMachineClause==None
+                assert not self.has_invariant_mc
                 self.aInvariantMachineClause = child
+                self.has_invariant_mc = True
             elif isinstance(child, ADefinitionsMachineClause):
-                assert self.aDefinitionsMachineClause==None
+                assert not self.has_definitions_mc
                 self.aDefinitionsMachineClause = child
+                self.has_definitions_mc = True
             elif isinstance(child, AOperationsMachineClause):
-                assert self.aOperationsMachineClause==None
+                assert not self.has_operations_mc
                 self.aOperationsMachineClause = child
+                self.has_operations_mc = True
             elif isinstance(child, AIncludesMachineClause):
-                assert self.aIncludesMachineClause==None
+                assert not self.has_includes_mc
                 self.aIncludesMachineClause = child
+                self.has_includes_mc = True
             elif isinstance(child, AMachineHeader):
-                assert self.aMachineHeader == None
+                assert not self.has_mch_header
                 self.aMachineHeader = child
+                self.has_mch_header = True
             elif isinstance(child, APromotesMachineClause):
-                assert self.aPromotesMachineClause == None
+                assert not self.has_promotes_mc
                 self.aPromotesMachineClause = child
+                self.has_promotes_mc = True
             elif isinstance(child, ASeesMachineClause):
-                assert self.aSeesMachineClause == None
+                assert not self.has_sees_mc
                 self.aSeesMachineClause = child
+                self.has_sees_mc = True
             elif isinstance(child, AUsesMachineClause):
-                assert self.aUsesMachineClause == None
+                assert not self.has_uses_mc
                 self.aUsesMachineClause = child
+                self.has_uses_mc = True
             elif isinstance(child, AExtendsMachineClause):
-                assert self.aExtendsMachineClause == None
+                assert not self.has_extends_mc
                 self.aExtendsMachineClause = child
+                self.has_extends_mc = True
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
@@ -120,14 +160,17 @@ class BMachine:
         self.parse_parameters()
         # remember this to avoid double-parsing and enable later lookup by name
         env.parsed_bmachines[self.name] = self
-        
-        self.parse_child_machines(self.aIncludesMachineClause, self.included_mch, env)
-        self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch, env)
-        self.parse_child_machines(self.aSeesMachineClause, self.seen_mch, env)
-        self.parse_child_machines(self.aUsesMachineClause, self.used_mch, env)
+        if self.has_includes_mc:
+            self.parse_child_machines(self.aIncludesMachineClause, self.included_mch, env)
+        if self.has_extends_mc:
+            self.parse_child_machines(self.aExtendsMachineClause, self.extended_mch, env)
+        if self.has_sees_mc:
+            self.parse_child_machines(self.aSeesMachineClause, self.seen_mch, env)
+        if self.has_uses_mc:
+            self.parse_child_machines(self.aUsesMachineClause, self.used_mch, env)
         self.const_names, self.var_names, self.dset_names, self.eset_names, self.eset_elem_names = self._learn_names()
         all_names = self.const_names + self.var_names #+ self.dset_names + self.eset_names + self.eset_elem_names
-        if self.aOperationsMachineClause:
+        if self.has_operations_mc:
             for op in self.aOperationsMachineClause.children:
                 self.parse_operation(op, env)
         bstate = env.state_space.get_state()
@@ -177,7 +220,7 @@ class BMachine:
 
     # get the parameters of the machine (if present)
     def parse_parameters(self):
-        assert not self.aMachineHeader == None
+        assert self.has_mch_header
         self.name = self.aMachineHeader.idName
         for idNode in self.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
@@ -186,38 +229,35 @@ class BMachine:
             else:
                 self.set_params.append(idNode)
         if not self.scalar_params==[]:
-            assert not self.aConstraintsMachineClause==None
+            assert self.has_constraints_mc
                                    
 
     # This methods walks ASTs to determine the name of constants, variables and sets.
     # This information (the names) is used by the type checker, the environment 
     # and the interpreter
     def _learn_names(self):
-        cmc  = self.aConstantsMachineClause
-        acmc = self.aAbstractConstantsMachineClause
-        vmc  = self.aVariablesMachineClause
-        cvmc = self.aConcreteVariablesMachineClause
-        smc  = self.aSetsMachineClause 
         var_names = []
         const_names = []
         dset_names = []
         eset_names = []
         eset_elem_names =[]
-        if cmc:
-            const_names = [n.idName for n in cmc.children if isinstance(n, AIdentifierExpression)]
-        if acmc:
-            const_names += [n.idName for n in acmc.children if isinstance(n, AIdentifierExpression)]
-        if vmc:
-            var_names   = [n.idName for n in vmc.children if isinstance(n, AIdentifierExpression)]
-        if cvmc:
-            var_names   += [n.idName for n in cvmc.children if isinstance(n, AIdentifierExpression)]
-        if smc:
-            dset_names  = [dSet.idName for dSet in smc.children if isinstance(dSet, ADeferredSet)]
-            for set in smc.children:
+        
+        if self.has_constants_mc:
+            const_names = [n.idName for n in self.aConstantsMachineClause.children if isinstance(n, AIdentifierExpression)]
+        if self.has_abstr_constants_mc:
+            const_names += [n.idName for n in self.aAbstractConstantsMachineClause.children if isinstance(n, AIdentifierExpression)]
+        if self.has_variables_mc:
+            var_names   = [n.idName for n in self.aVariablesMachineClause.children if isinstance(n, AIdentifierExpression)]
+        if self.has_conc_variables_mc:
+            var_names   += [n.idName for n in self.aConcreteVariablesMachineClause.children if isinstance(n, AIdentifierExpression)]
+        if self.has_sets_mc:
+            dset_names  = [dSet.idName for dSet in self.aSetsMachineClause .children if isinstance(dSet, ADeferredSet)]
+            for set in self.aSetsMachineClause.children:
                 if isinstance(set, AEnumeratedSet):
                     eset_names.append(set.idName)
                     elem_names = [e.idName for e in set.children]
                     eset_elem_names += elem_names # also learn element names 
+                    
         return const_names, var_names, dset_names, eset_names, eset_elem_names
 
 
@@ -238,10 +278,10 @@ class BMachine:
         # B Language Reference Manual - Version 1.8.6 - Page 110
         # 2. If one of the CONCRETE_CONSTANTS or ABSTRACT_CONSTANTS clauses is present, then the PROPERTIES clause must be present.
         # 3. If one of the CONCRETE_VARIABLES or ABSTRACT_VARIABLES clauses is present, then the INVARIANT and INITIALISATION clauses must be present.
-        if self.aConstantsMachineClause or self.aAbstractConstantsMachineClause:
-            assert self.aPropertiesMachineClause
-        if self.aVariablesMachineClause or self.aConcreteVariablesMachineClause:
-            assert self.aInvariantMachineClause and self.aInitialisationMachineClause
+        if self.has_constants_mc or self.has_abstr_constants_mc:
+            assert self.has_properties_mc
+        if self.has_variables_mc or self.has_conc_variables_mc:
+            assert self.has_invariant_mc and self.has_initialisation_mc
         # TODO: much more self checking to do e.g visibility 
 
     # This helper adds alle visible operations to the environment:
@@ -257,7 +297,7 @@ class BMachine:
         # Otherwise the following code is wrong:
         assert env.visible_operations == frozenset([]) # this method should only called once   
         self._add_seen_and_used_operations(env)
-        if self.aPromotesMachineClause or self.aExtendsMachineClause:
+        if self.has_promotes_mc or self.has_extends_mc:
             self._add_extended_and_promoted_ops(self)
         env.visible_operations = env.visible_operations.union(self.operations)
     
@@ -283,13 +323,13 @@ class BMachine:
     def _add_extended_and_promoted_ops(self, mch):
         for m in mch.extended_mch + mch.included_mch:
             self._add_extended_and_promoted_ops(m)
-        if mch.aPromotesMachineClause:
+        if mch.has_promotes_mc:
             promoted_op_names = [x.idName for x in mch.aPromotesMachineClause.children]
             for m in mch.included_mch:
                 for op in m.operations:
                     if op.op_name in promoted_op_names:
                         mch.operations = mch.operations.union(frozenset([op])) 
-        if mch.aExtendsMachineClause:
+        if mch.has_extends_mc:
             for m in mch.extended_mch:
                 mch.operations = mch.operations.union(m.operations)
 
