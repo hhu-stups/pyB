@@ -17,7 +17,7 @@ class SymbolicLambda(SymbolicSet):
         self.expression = expr
         self.node = node
         self.domain_generator = calc_possible_solutions
-        self.explicit_set_repr = None  
+        self.explicit_set_computed = False
     
     # TODO: all __getitem__ methods have problems with implicit enum
     # e.g. [x for x in R] with R  SymbolicLambda   
@@ -55,8 +55,9 @@ class SymbolicLambda(SymbolicSet):
         if isinstance(aset, SymbolicSet):
             return aset==self # impl. use of symbolicSet.__eq__
         if isinstance(aset, frozenset):
-            if self.explicit_set_repr==None:
+            if not self.explicit_set_computed:
                 self.explicit_set_repr = self.enumerate_all()
+                self.explicit_set_computed = True
             return aset == self.explicit_set_repr
         # FAIL!
         pp_self = pretty_print(self.node)
@@ -86,7 +87,7 @@ class SymbolicLambda(SymbolicSet):
     # convert to explicit frozenset
     # dont use generator to avoid rapid frame push/pop
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             varList = self.variable_list
             pred    = self.predicate
             expr    = self.expression 
@@ -119,6 +120,7 @@ class SymbolicLambda(SymbolicSet):
                     continue
             env.pop_frame() # exit scope
             self.explicit_set_repr = frozenset(func_list)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     # Warning! push/pop frame
@@ -164,7 +166,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.predicate = pred
         self.node = node
         self.domain_generator = calc_possible_solutions
-        self.explicit_set_repr = None # not computed at init  
+        self.explicit_set_computed = False 
     
     def __getitem__(self, args):
         assert len(self.variable_list)>1
@@ -195,8 +197,9 @@ class SymbolicComprehensionSet(SymbolicSet):
                 return False
             return True
         if isinstance(aset, frozenset):
-            if self.explicit_set_repr==None:
+            if not self.explicit_set_computed:
                 self.explicit_set_repr = self.enumerate_all()
+                self.explicit_set_computed = True
             return aset == self.explicit_set_repr
         raise DontKnowIfEqualException("set comp compare not implemented") 
 
@@ -218,7 +221,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         
     # convert to explicit frozenset
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             varList   = self.variable_list
             pred      = self.predicate
             env       = self.env
@@ -246,6 +249,7 @@ class SymbolicComprehensionSet(SymbolicSet):
                     continue
             env.pop_frame()
             self.explicit_set_repr = frozenset(result) 
+            self.explicit_set_computed = True
         return self.explicit_set_repr 
     
     
@@ -287,12 +291,12 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
         self.expression = expr
         self.node = node
         self.domain_generator = calc_possible_solutions
-        self.explicit_set_repr = None                
+        self.explicit_set_computed = False               
         
     # convert to explicit frozenset
     # dont use generator to avoid rapid frame push/pop
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             result = frozenset([])
             varList = self.variable_list
             pred    = self.predicate
@@ -324,6 +328,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
                     continue
             env.pop_frame()
             self.explicit_set_repr = result
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -340,12 +345,12 @@ class SymbolicQuantifiedUnion(SymbolicSet):
         self.expression = expr
         self.node = node
         self.domain_generator = calc_possible_solutions
-        self.explicit_set_repr = None 
+        self.explicit_set_computed = False
 
     # convert to explicit frozenset
     # dont use generator to avoid rapid frame push/pop
     def enumerate_all(self):
-        if self.explicit_set_repr==None:        
+        if not self.explicit_set_computed:        
             result = frozenset([])
             varList = self.variable_list
             pred    = self.predicate
@@ -370,6 +375,7 @@ class SymbolicQuantifiedUnion(SymbolicSet):
                     continue
             env.pop_frame()
             self.explicit_set_repr = result
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):

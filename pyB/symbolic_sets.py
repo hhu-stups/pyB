@@ -25,7 +25,7 @@ class SymbolicSet():
     def __init__(self, env, interpret):
         self.env = env 
         self.interpret = interpret
-        self.explicit_set_repr = None
+        self.explicit_set_computed = False
 
     def __mul__(self, aset):
         return SymbolicCartSet(self, aset, self.env, self.interpret)
@@ -164,12 +164,13 @@ class SymbolicSet():
         return self.generator.next()
 
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             self.generator = self.make_generator()
             result = []  
             for e in self.generator:
                 result.append(e)
             self.explicit_set_repr = frozenset(result)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
         
 
@@ -423,8 +424,9 @@ class NatSet(LargeSet):
         return True
 
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             self.explicit_set_repr = frozenset(range(0,self.env._max_int+1))
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -492,8 +494,9 @@ class Nat1Set(LargeSet):
         return True
     
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             self.explicit_set_repr = frozenset(range(1,self.env._max_int+1))
+            self.explicit_set_computed = True
         return self.explicit_set_repr
         
     def make_generator(self):
@@ -564,8 +567,9 @@ class IntSet(LargeSet):
         return True
 
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             self.explicit_set_repr = frozenset(range(self.env._min_int, self.env._max_int+1))
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def __len__(self):
@@ -613,8 +617,9 @@ class StringSet(SymbolicSet):
         return True
     
     def enumerate_all(self): # FIXME: hack
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             self.explicit_set_repr = frozenset(self.env.all_strings)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
     
     def make_generator(self):
@@ -649,7 +654,7 @@ class SymbolicUnionSet(SymbolicSet):
         raise Exception("Not implemented: relation symbolic membership")  
     
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             if isinstance(self.left_set, SymbolicSet):
                 L = self.left_set.enumerate_all()
             else:
@@ -661,6 +666,7 @@ class SymbolicUnionSet(SymbolicSet):
             assert isinstance(L, frozenset)
             assert isinstance(R, frozenset)
             self.explicit_set_repr = L.union(R)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     # TODO: think of caching possibilities 
@@ -739,7 +745,7 @@ class SymbolicCartSet(SymbolicSet):
         return not self.__eq__(aset)
         
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             if isinstance(self.left_set, SymbolicSet):
                 aset0 = self.left_set.enumerate_all()
             else:
@@ -749,6 +755,7 @@ class SymbolicCartSet(SymbolicSet):
             else:
                 aset1 = self.right_set
             self.explicit_set_repr = frozenset(((x,y) for x in aset0 for y in aset1))
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -838,10 +845,11 @@ class SymbolicIntervalSet(LargeSet):
             return False
     
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             left = self.l
             right = self.r   
-            self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large     
+            self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large  
+            self.explicit_set_computed = True   
         return self.explicit_set_repr
 
     def make_generator(self):

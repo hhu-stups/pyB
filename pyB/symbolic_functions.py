@@ -214,7 +214,7 @@ class SymbolicSecondProj(SymbolicSet):
     
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             assert self.left_set==self.right_set
             if isinstance(self.left_set, SymbolicSet):
                 aSet = self.left_set.enumerate_all()
@@ -222,6 +222,7 @@ class SymbolicIdentitySet(SymbolicRelationSet):
                 aSet = self.left_set 
             id_r = [(x,x) for x in aSet]
             self.explicit_set_repr = frozenset(id_r)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -262,7 +263,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 
     # convert to explicit set
     def enumerate_all(self):
-        if self.explicit_set_repr==None:      
+        if not self.explicit_set_computed:      
             if isinstance(self.left_relation, frozenset) and isinstance(self.right_relation, SymbolicLambda):
                 result = []
                 lambda_function = self.right_relation        
@@ -288,6 +289,7 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 self.explicit_set_repr = frozenset(result)
             else:
                 self.explicit_set_repr = SymbolicRelationSet.enumerate_all(self)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
 
     def make_generator(self):
@@ -320,13 +322,14 @@ class SymbolicTransRelation(SymbolicSet):
         self.node = node
         
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             relation = []
             for tup in self.function:
                 preimage = tup[0]
                 for image in tup[1]:
                     relation.append(tuple([preimage, image]))
             self.explicit_set_repr = frozenset(relation)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
     
     def make_generator(self):
@@ -345,7 +348,7 @@ class SymbolicTransFunction(SymbolicSet):
         self.node = node
 
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             function = []
             for tup in self.relation:
                 image = []
@@ -355,6 +358,7 @@ class SymbolicTransFunction(SymbolicSet):
                         image.append(tup2[1])
                 function.append(tuple([preimage,frozenset(image)]))
             self.explicit_set_repr = frozenset(function)
+            self.explicit_set_computed = True
         return self.explicit_set_repr        
         
     def make_generator(self):
@@ -374,13 +378,14 @@ class SymbolicInverseRelation(SymbolicRelationSet):
         self.node = node
         
     def enumerate_all(self):
-        if self.explicit_set_repr==None:
+        if not self.explicit_set_computed:
             if isinstance(self.relation, SymbolicSet):  
                 rel = self.relation.enumerate_all()
             else:
                 rel = self.relation
             inv_rel = [(x[1],x[0]) for x in rel]
             self.explicit_set_repr = frozenset(inv_rel)
+            self.explicit_set_computed = True
         return self.explicit_set_repr
     
     def make_generator(self):

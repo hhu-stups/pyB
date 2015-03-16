@@ -27,27 +27,7 @@ class BMachine:
         self.used_mch      = []   # list of b-mchs
         self.operations    = frozenset([])    # set of operations (to easy avoid double entries) only used to init env.operations and env.visible_opertaions
         
-        #self.aMachineHeader = None
-        #self.aConstantsMachineClause = None
-        #self.aAbstractConstantsMachineClause = None
-        #self.aConstraintsMachineClause = None
-        #self.aSetsMachineClause = None
-        #self.aVariablesMachineClause = None
-        #self.aConcreteVariablesMachineClause = None
-        #self.aPropertiesMachineClause = None
-        #self.aAssertionsMachineClause = None
-        #self.aInvariantMachineClause = None
-        #self.aInitialisationMachineClause = None
-        #self.aDefinitionsMachineClause = None
-        #self.aOperationsMachineClause = None
-        #self.aIncludesMachineClause = None
-        #self.aPromotesMachineClause = None
-        #self.aSeesMachineClause = None
-        #self.aUsesMachineClause = None
-        #self.aExtendsMachineClause = None
-        
-        # using None assignments as flag (None==not present) ist not Rpython.
-        # explicit flags are introduced. 
+        # explicit flags indicate if a field is present. 
         self.has_mch_header 		 = False
         self.has_constants_mc 		 = False
         self.has_abstr_constants_mc  = False
