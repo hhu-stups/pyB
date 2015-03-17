@@ -24,7 +24,7 @@ class Environment():
         self._min_int = MIN_INT
         self._max_int = MAX_INT
         self._bmachine_search_dir = BMACHINE_SEARCH_DIR
-        self.solution_root = None         # predicateparseunit of solution-ast(prob file)
+        self.solution_root = None         # predicateparse unit of solution-ast(prob file)
         self.root_mch = None
         self.current_mch = None           # current Working B-Machine
         self.all_strings = [""]           # remember all strings seen (in this or other bmachines). used to enumerate 'STRING'
