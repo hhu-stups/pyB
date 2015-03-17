@@ -160,10 +160,7 @@ class BMachine:
 
     def parse_operation(self, operation, env):
         assert isinstance(operation, AOperation)
-        boperation = BOperation()
-        boperation.op_name         = operation.opName
-        boperation.ast             = operation
-        boperation.owner_machine   = self
+        boperation = BOperation(name=operation.opName, operation_ast=operation, bmachine=self)
         self.operations = self.operations.union(frozenset([boperation]))
         env.set_operation_by_name(self.mch_name, operation.opName, boperation)
 

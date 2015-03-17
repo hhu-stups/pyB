@@ -1,10 +1,10 @@
 class BOperation:
-    def __init__self(self):
-        self.return_types = None
-        self.parameter_types = None
-        self.op_name = ""
-        self.ast = None        
-        self.owner_machine = None
+    def __init__(self, name, operation_ast, bmachine):
+        self.return_types = []
+        self.parameter_types = []
+        self.op_name = name
+        self.ast = operation_ast        
+        self.owner_machine = bmachine
         self.is_query_op = False
 
     # called by typeit once inside a operation node (self.ast)  
@@ -15,11 +15,8 @@ class BOperation:
 
     # only used to change the name (prefix)
     def copy_op(self):
-        op = BOperation()
+        op = BOperation(self.op_name, self.ast, self.owner_machine)
         #op.return_types = self.return_types
         #op.parameter_types = self.parameter_types
-        op.op_name = self.op_name
-        op.ast = self.ast     
-        op.owner_machine = self.owner_machine
         #op.is_query_op = self.is_query_op
         return op
