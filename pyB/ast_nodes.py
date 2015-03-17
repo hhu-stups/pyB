@@ -570,7 +570,7 @@ class AStringExpression(StringExpression):
 class AIdentifierExpression(Expression):
     def __init__(self, idName):
         self.idName = idName
-        self.enum_hint = None
+        #self.enum_hint = None
 
 class AIntegerExpression(IntegerExpression):
     def __init__(self, intValue):

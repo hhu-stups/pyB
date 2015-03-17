@@ -109,10 +109,10 @@ def __set_up_constants_list_generator(root, env, mch_list):
 # M2-Properties but not M1-Properties are NOT a solution
 def __set_up_constants_generator(root, env, mch):
     # 0. set up already done?
-    if mch.name in env.set_up_bmachines_names:
+    if mch.mch_name in env.set_up_bmachines_names:
         yield False
     else:
-        env.set_up_bmachines_names.append(mch.name)
+        env.set_up_bmachines_names.append(mch.mch_name)
         
     # 1. set up constants of children    
     mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
@@ -176,7 +176,7 @@ def init_mch_param(root, env, mch):
     if scalar_parameter_present:
         if not mch.has_constraints_mc:
             names = [n.idName for n in mch.scalar_params]
-            raise SETUPNotPossibleException("\nError: Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.name, names))
+            raise SETUPNotPossibleException("\nError: Missing ConstraintsMachineClause in %s! Can not set up: %s" % (mch.mch_name, names))
         pred = mch.aConstraintsMachineClause
         gen = try_all_values(pred, env, mch.scalar_params)
         for possible in gen:
@@ -207,9 +207,9 @@ def __init_set_mch_parameter(root, env, mch):
 #       code will need a refactoring (Uses this solutions)
 def init_sets(node, env, mch):
     # (1) avoid double set-init
-    if mch.name in env.init_sets_bmachnes_names:
+    if mch.mch_name in env.init_sets_bmachnes_names:
         return 
-    env.init_sets_bmachnes_names.append(mch.name)
+    env.init_sets_bmachnes_names.append(mch.mch_name)
     mch_list = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
     # (2) init-sets of child-bmch
     for m in mch_list:
@@ -274,7 +274,7 @@ def check_properties(node, env, mch):
                 if not at_least_one_solution: 
                     print "\nFALSE Predicates:"
                     print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
-                    raise SETUPNotPossibleException("\nError: Properties FALSE in machine: %s!" % (mch.name))
+                    raise SETUPNotPossibleException("\nError: Properties FALSE in machine: %s!" % (mch.mch_name))
         #TODO: Sets-Clause
     yield False # avoid stop iteration bug
             
@@ -337,10 +337,10 @@ def __exec_initialisation_list_generator(root, env, mch_list):
 
 def __exec_initialisation_generator(root, env, mch):
     # 1. check if init already done to avoid double init
-    if mch.name in env.init_bmachines_names:
+    if mch.mch_name in env.init_bmachines_names:
         yield False
     else:
-        env.init_bmachines_names.append(mch.name)
+        env.init_bmachines_names.append(mch.mch_name)
             
     # 2. init children
     children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
@@ -356,7 +356,7 @@ def __exec_initialisation_generator(root, env, mch):
         # 3.1 nothing to be init.        
         if not mch.has_initialisation_mc:
             if mch.has_variables_mc and  mch.has_conc_variables_mc:
-                raise INITNotPossibleException("\nError: Missing InitialisationMachineClause in %s!" % mch.name)
+                raise INITNotPossibleException("\nError: Missing InitialisationMachineClause in %s!" % mch.mch_name)
             yield child_bstate_change
         # 3.2. search for solutions  
         else:                 
@@ -368,7 +368,7 @@ def __exec_initialisation_generator(root, env, mch):
                     yield True
                     env.state_space.revert(ref_bstate) # revert to current child-init-solution
             if not at_least_one_possible:
-                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m: Problem while exec init. No init found/possible! in %s" % mch.name)
+                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m: Problem while exec init. No init found/possible! in %s" % mch.mch_name)
 
 
 # TODO: use solutions of child mch (seen, used mch)

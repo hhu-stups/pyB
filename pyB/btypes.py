@@ -55,9 +55,9 @@ class StructType(BType):
 
 
 class UnknownType(): # no BType: used later to throw exceptions, a type-variable 
-    def __init__(self, name):
+    def __init__(self, type_name):
         # this member is used to learn the name of sets and for debugging
-        self.name = name
+        self.type_name = type_name
         # if this is still None after typechecking 
         # than a Typeerror has been found
         self.real_type = None

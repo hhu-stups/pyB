@@ -106,7 +106,7 @@ def _show_env(env):
 def _print_state(bstate):
     for bmachine in bstate.bmch_dict:
         if not bmachine==None:
-            bmachine.name
+            print bmachine.mch_name
         value_stack = bstate.bmch_dict[bmachine]
         for value_map in value_stack:
             string = ""
@@ -117,30 +117,30 @@ def _print_state(bstate):
             
 # - private method -
 # helper function, returns list of set and constant names of all machines
-def _get_child_set_up_names(mch, done):
+def _get_child_set_up_names(bmachine, done):
     lst = []
-    if mch.name in done:
+    if bmachine.mch_name in done:
         return []
-    done.append(mch.name)
-    for m in mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch:
+    done.append(bmachine.mch_name)
+    for m in bmachine.included_mch + bmachine.extended_mch + bmachine.seen_mch + bmachine.used_mch:
         lst += _get_child_set_up_names(m, done)
-    const_names = mch.const_names
-    set_names   = mch.dset_names + mch.eset_names
-    para_names  = [n.idName for n in mch.scalar_params + mch.set_params]
+    const_names = bmachine.const_names
+    set_names   = bmachine.dset_names + bmachine.eset_names
+    para_names  = [n.idName for n in bmachine.scalar_params + bmachine.set_params]
     all_names   = const_names + set_names + para_names
-    return lst + [(all_names, mch)] 
+    return lst + [(all_names, bmachine)] 
 
 
 # - private method -
 # helper function, returns list of variables of all machines    
-def _get_child_var_names(mch, done):
+def _get_child_var_names(bmachine, done):
     lst = []
-    if mch.name in done:
+    if bmachine.mch_name in done:
         return []
-    done.append(mch.name)
-    for m in mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch:
+    done.append(bmachine.mch_name)
+    for m in bmachine.included_mch + bmachine.extended_mch + bmachine.seen_mch + bmachine.used_mch:
         lst += _get_child_var_names(m, done)
-    return lst + [(mch.var_names, mch)] 
+    return lst + [(bmachine.var_names, bmachine)] 
     
     
 # - private method -

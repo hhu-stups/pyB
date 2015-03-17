@@ -10,7 +10,7 @@ if USE_COSTUM_FROZENSET:
 # abstract machine object
 class BMachine:
     def __init__(self, node, remove_definitions):
-        self.name = None
+        self.mch_name = ""
         self.const_names = []
         self.var_names   = []
         self.dset_names  = []
@@ -132,14 +132,14 @@ class BMachine:
             else:
                 raise Exception("Unknown clause:",child )
         self.self_check()
-        #print self, "Bmachine created",self.name
+        #print self, "Bmachine created",self.mch_name
         
 
     # parse all child machines (constructs BMachine objects)
     def recursive_self_parsing(self, env):        
         self.parse_parameters()
         # remember this to avoid double-parsing and enable later lookup by name
-        env.parsed_bmachines[self.name] = self
+        env.parsed_bmachines[self.mch_name] = self
         if self.has_includes_mc:
             self.parse_child_machines(self.aIncludesMachineClause, self.included_mch, env)
         if self.has_extends_mc:
@@ -165,7 +165,7 @@ class BMachine:
         boperation.ast             = operation
         boperation.owner_machine   = self
         self.operations = self.operations.union(frozenset([boperation]))
-        env.set_operation_by_name(self.name, operation.opName, boperation)
+        env.set_operation_by_name(self.mch_name, operation.opName, boperation)
 
 
     # parsing of the machines
@@ -201,7 +201,7 @@ class BMachine:
     # get the parameters of the machine (if present)
     def parse_parameters(self):
         assert self.has_mch_header
-        self.name = self.aMachineHeader.idName
+        self.mch_name = self.aMachineHeader.idName
         for idNode in self.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
             if str.islower(idNode.idName):
@@ -291,7 +291,7 @@ class BMachine:
             #if m.aSeesMachineClause or m.aUsesMachineClause:
             #    _add_seen_and_used_operations(m, env)
             for op in m.operations:        
-                prefix_name = m.name + "." + op.op_name
+                prefix_name = m.mch_name + "." + op.op_name
                 op_copy = op.copy_op()
                 op_copy.op_name = prefix_name 
                 env.visible_operations = env.visible_operations.union(frozenset([op_copy]))      

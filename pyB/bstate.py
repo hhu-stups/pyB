@@ -24,7 +24,7 @@ class BState():
             if bmch==None:
                 print "Predicate or Expression:", self.bmch_dict[bmch]
             else:
-                print bmch.name, ":", self.bmch_dict[bmch]
+                print bmch.mch_name, ":", self.bmch_dict[bmch]
      
                 
     # TODO: implement me, when model checking is implemented
@@ -55,7 +55,7 @@ class BState():
     
 
     def get_value(self, id_Name, bmachine):
-        #print "lookup of %s in %s" % (id_Name, bmachine.name)
+        #print "lookup of %s in %s" % (id_Name, bmachine.mch_name)
         #if isinstance(id_Name, AIdentifierExpression): # debug
         #    print id_Name.idName
         assert isinstance(id_Name, str)
@@ -75,7 +75,7 @@ class BState():
         # case(1): called by env.get_value method: This may be ok during lookup
         # case(2): Bug inside pyB or the B machine
         if bmachine:
-            name = bmachine.name
+            name = bmachine.mch_name
         else:
             name = "Predicate or Expression"
         string = "bstate.get() LookupError: %s in %s" % (id_Name, name)
@@ -101,7 +101,7 @@ class BState():
         # case(1): called by env.get_value method: This may be ok during lookup
         # case(2): Bug inside pyB or the B machine
         if bmachine:
-            name = bmachine.name
+            name = bmachine.mch_name
         else:
             name = "Predicate or Expression"
         string = "bstate.set() LookupError: %s in %s" % (id_Name, name)
@@ -145,7 +145,7 @@ class BState():
     # to "manually" write to the correct entry 
     def get_bmachine_by_name(self, name):
         for bmachine in self.bmch_dict:
-            if bmachine.name==name:
+            if bmachine.mch_name==name:
                 return bmachine
         raise Exception("BUG! unknown B-machine: %s" % name) 
     

@@ -177,7 +177,7 @@ class TypeCheck_Environment():
     def set_concrete_type(self, utype, ctype):
         assert isinstance(utype, UnknownType)
         assert isinstance(ctype, BType)
-        #print utype.name, ctype
+        #print utype.type_name, ctype
         if isinstance(utype, PowCartORIntegerType):
             u0 = unknown_closure(utype.data[0])
             u1 = unknown_closure(utype.data[1])
@@ -368,7 +368,7 @@ def throw_away_unknown(tree, idName=""):
         tree = unknown_closure(tree)
         if isinstance(tree, UnknownType):
             #print tree
-            string = "TypeError in typing.py: can not resolve a Type of: %s" % str(tree.name)
+            string = "TypeError in typing.py: can not resolve a Type of: %s" % str(tree.type_name)
             #print string
             raise ResolveFailedException(string)
         # skip chain-of UnknownTypes
@@ -694,7 +694,7 @@ def typeit(node, env, type_env):
     elif isinstance(node, (AGeneralUnionExpression, AGeneralIntersectionExpression)):
         # inter(U) or union(U)
         set_type = typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(PowerSetType(UnknownType(None)))
+        expected_type = PowerSetType(PowerSetType(UnknownType(type_name="no Name")))
         atype = unify_equal(set_type, expected_type,type_env)
         return atype.data
     elif isinstance(node, (AQuantifiedIntersectionExpression, AQuantifiedUnionExpression)):
@@ -798,19 +798,19 @@ def typeit(node, env, type_env):
         return PowerSetType(PowerSetType(CartType(atype0, atype1)))
     elif isinstance(node, ADomainExpression):
         rel_type =  typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("ADomainExpression")), PowerSetType(UnknownType(None))))
+        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("ADomainExpression")), PowerSetType(UnknownType(type_name="no Name"))))
         atype = unify_equal(rel_type, expected_type, type_env)
         return atype.data.data[0] # preimage settype
     elif isinstance(node, ARangeExpression):
         rel_type =  typeit(node.children[0], env, type_env)
-        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("ARangeExpression")), PowerSetType(UnknownType(None))))
+        expected_type = PowerSetType(CartType(PowerSetType(UnknownType("ARangeExpression")), PowerSetType(UnknownType(type_name="no Name"))))
         atype = unify_equal(rel_type, expected_type, type_env)
         return atype.data.data[1] # image settype            
     elif isinstance(node, ACompositionExpression):
         rel_type0 = typeit(node.children[0], env, type_env)
         rel_type1 = typeit(node.children[1], env, type_env)
-        expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("ACompositionExpression")), PowerSetType(UnknownType(None))))
-        expected_type1 = PowerSetType(CartType(PowerSetType(UnknownType("ACompositionExpression")), PowerSetType(UnknownType(None))))
+        expected_type0 = PowerSetType(CartType(PowerSetType(UnknownType("ACompositionExpression")), PowerSetType(UnknownType(type_name="no Name"))))
+        expected_type1 = PowerSetType(CartType(PowerSetType(UnknownType("ACompositionExpression")), PowerSetType(UnknownType(type_name="no Name"))))
         atype0 = unify_equal(rel_type0, expected_type0, type_env)
         atype1 = unify_equal(rel_type1, expected_type1, type_env)  
         preimagetype = atype0.data.data[0]
@@ -1276,7 +1276,7 @@ def typeit(node, env, type_env):
         # TODO: strictly speaking this is no task of a type checker
         is_query_op = check_if_query_op(node.children[-1], env.current_mch.var_names) 
         # add all computed informations    
-        boperation = env.get_operation_by_name(env.current_mch.name, node.opName)
+        boperation = env.get_operation_by_name(env.current_mch.mch_name, node.opName)
         boperation.is_query_op     = is_query_op   
         boperation.set_types(ret_types, para_types)         
         type_env.pop_frame(env)

@@ -152,7 +152,7 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
             # no bstates and no exception: no init to do (e.g no variables)
             env.init_done = True
 
-    print mch.name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
+    print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
     bstate_lst = calc_next_states(env, mch)
     show_ui(env, mch, bstate_lst)
     next_states = []
