@@ -22,13 +22,16 @@ command_str = "java -Xms64m -Xmx1024m -cp "
 if os.name=='nt':
     command_str += ";"+JAR_DIR
     command_str += ";"+EXAMPLE_DIR
-    command_str += ";. de.prob.cliparser.CliBParser "
+    command_str += ";. -jar "+JAR_DIR+"javaparser.jar "
+    #command_str += ";. de.prob.cliparser.CliBParser "
 else:
     command_str += ":"+JAR_DIR
     command_str += ":"+EXAMPLE_DIR
-    command_str += ":. de.prob.cliparser.CliBParser "
+    command_str += ":. -jar "+JAR_DIR+"javaparser.jar "
+    #command_str += ":. de.prob.cliparser.CliBParser "
 #option_str = " -json"
 option_str = " -python "
+
 
 
 def solution_file_to_AST_str(file_name_str):
@@ -58,6 +61,7 @@ def file_to_AST_str_no_print(file_name_str):
     from config import USE_RPYTHON_POPEN
     out = ""
     c_str = command_str + option_str + " "+file_name_str
+    print c_str
     if USE_RPYTHON_POPEN:
         # TODO: remove % s
         from rpython.rlib.rfile import create_popen_file   
@@ -187,7 +191,7 @@ def find_var_nodes(node):
 # Quantified predicates are not visited because their variabels are enumerated separate. 
 def _find_var_nodes(node, lst):
     # (case 1) new scope needed, stop search. This variables will be typed later
-    if isinstance(node, (AQuantifiedUnionExpression, AQuantifiedIntersectionExpression, AUniversalQuantificationPredicate, AExistentialQuantificationPredicate, AComprehensionSetExpression, ALambdaExpression)):
+    if isinstance(node, (AQuantifiedUnionExpression, AQuantifiedIntersectionExpression, AForallPredicate, AExistsPredicate, AComprehensionSetExpression, ALambdaExpression)):
         return
     elif isinstance(node,(AGeneralSumExpression, AGeneralProductExpression, AGeneralUnionExpression, AGeneralIntersectionExpression)):
         return
@@ -198,7 +202,7 @@ def _find_var_nodes(node, lst):
     elif isinstance(node, AIdentifierExpression):
         if (not node.idName in [l.idName for l in lst]):
             lst.append(node)
-    elif isinstance(node, AEnumeratedSet) or isinstance(node, ADeferredSet):
+    elif isinstance(node, AEnumeratedSetSet) or isinstance(node, ADeferredSetSet):
         if not node.idName in [l.idName for l in lst]:
             lst.append(node)
     # (case 4) deep first search. 
@@ -228,7 +232,7 @@ def _find_assignd_vars(node, lst):
                 assert isinstance(idNode, AFunctionExpression)
                 assert isinstance(idNode.children[0], AIdentifierExpression)
                 lst.append(idNode.children[0].idName)
-    elif isinstance(node, AOpWithReturnSubstitution):
+    elif isinstance(node, AOperationCallSubstitution):
         for i in range(node.return_Num):
             idNode = node.children[i]
             assert isinstance(idNode, AIdentifierExpression)
@@ -296,9 +300,9 @@ def all_ids_known(node, env):
         if value==None:
             return False
         return True
-    elif isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression) or isinstance(node, ATrueExpression) or isinstance(node, AFalseExpression):
+    elif isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression) or isinstance(node, ABooleanTrueExpression) or isinstance(node, ABooleanFalseExpression):
         return True
-    elif isinstance(node, AExistentialQuantificationPredicate) or isinstance(node, AUniversalQuantificationPredicate):
+    elif isinstance(node, AExistsPredicate) or isinstance(node, AForallPredicate):
         return False # TODO: implement me
     elif isinstance(node, AStructExpression):
         return False # TODO: implement me

@@ -533,7 +533,7 @@ def typeit(node, env, type_env):
                 utype = type_env.get_current_type(set_name) # hack: use def init with unknown type
                 atype = SetType(set_name)
                 unify_equal(utype, PowerSetType(atype), type_env)
-                if isinstance(child, AEnumeratedSet):
+                if isinstance(child, AEnumeratedSetSet):
                     # all elements have the type set_name
                     for elm in child.children:
                         elm_type = typeit(elm, env, type_env)
@@ -569,7 +569,7 @@ def typeit(node, env, type_env):
             expected_type = BoolType()
             unify_equal(atype, expected_type, type_env)
         return BoolType()
-    elif isinstance(node, (AUniversalQuantificationPredicate, AExistentialQuantificationPredicate)):
+    elif isinstance(node, (AForallPredicate, AExistsPredicate)):
         ids = []
         for n in node.children[:-1]:
             assert isinstance(n.idName, str)
@@ -579,7 +579,7 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         type_env.pop_frame(env)
         return BoolType()
-    elif isinstance(node, (AEqualPredicate, AUnequalPredicate)):
+    elif isinstance(node, (AEqualPredicate, ANotEqualPredicate)):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         unify_equal(expr1_type, expr2_type, type_env, node)
@@ -715,12 +715,12 @@ def typeit(node, env, type_env):
 #       2.1 Set predicates
 #
 # *************************
-    elif isinstance(node, (ABelongPredicate, ANotBelongPredicate)):
+    elif isinstance(node, (AMemberPredicate, ANotMemberPredicate)):
         elm_type = typeit(node.children[0], env, type_env)
         set_type = typeit(node.children[1], env, type_env)
         unify_element_of(elm_type, set_type, type_env, node) # special unification
         return BoolType()
-    elif isinstance(node, (AIncludePredicate, ANotIncludePredicate, AIncludeStrictlyPredicate, ANotIncludeStrictlyPredicate)):
+    elif isinstance(node, (ASubsetPredicate, ANotSubsetPredicate, ASubsetStrictPredicate, ANotSubsetStrictPredicate)):
         expr1_type = typeit(node.children[0], env,type_env)
         expr2_type = typeit(node.children[1], env,type_env)
         unify_equal(expr1_type, expr2_type, type_env)
@@ -1183,7 +1183,7 @@ def typeit(node, env, type_env):
         return PowerSetType(StringType())
     elif isinstance(node, ABoolSetExpression):
         return PowerSetType(BoolType())
-    elif isinstance(node, (ATrueExpression,AFalseExpression)):
+    elif isinstance(node, (ABooleanTrueExpression, ABooleanFalseExpression)):
         return BoolType()
     elif isinstance(node, APrimedIdentifierExpression):
         assert len(node.children)==1 # TODO: x.y.z + unify
@@ -1245,7 +1245,7 @@ def typeit(node, env, type_env):
         range_type = atype.data.data[0]
         image_type = atype.data.data[1]
         return PowerSetType(CartType(range_type, PowerSetType(image_type)))
-    elif isinstance(node, AUnaryExpression):
+    elif isinstance(node, AUnaryMinusExpression):
         aint_type = typeit(node.children[0], env, type_env)
         unify_equal(IntegerType(), aint_type, type_env)
         return IntegerType()
@@ -1292,7 +1292,7 @@ def typeit(node, env, type_env):
         ret_type =  boperation.return_types
         assert ret_type==[]
         return
-    elif isinstance(node, AOpWithReturnSubstitution):
+    elif isinstance(node, AOperationCallSubstitution):
         boperation = env.lookup_operation(node.idName)
         ret_types =  boperation.return_types
         para_types = boperation.parameter_types
@@ -1423,7 +1423,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
 # called by Belong-Node
 # calls the unify_equal method with correct args
 def unify_element_of(elm_type, set_type, type_env, pred_node):
-    assert isinstance(pred_node, (ABecomesElementOfSubstitution, ANotBelongPredicate, ABelongPredicate))
+    assert isinstance(pred_node, (ABecomesElementOfSubstitution, ANotMemberPredicate, AMemberPredicate))
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)

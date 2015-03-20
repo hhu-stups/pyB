@@ -352,7 +352,7 @@ class TestPyPyTranslationObjects():
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
-            from ast_nodes import AIdentifierExpression, AIntervalExpression, ABelongPredicate
+            from ast_nodes import AIdentifierExpression, AIntervalExpression, AMemberPredicate
             from ast_nodes import AVariablesMachineClause, AAssignSubstitution, AInitialisationMachineClause
             from ast_nodes import AMinusOrSetSubtractExpression, AAbstractMachineParseUnit
             from ast_nodes import AAddExpression, APreconditionSubstitution, AOperation
@@ -370,7 +370,7 @@ class TestPyPyTranslationObjects():
             id6=AIntervalExpression()
             id6.children.append(id4)
             id6.children.append(id5)
-            id7=ABelongPredicate()
+            id7=AMemberPredicate()
             id7.children.append(id3)
             id7.children.append(id6)
             id8=AInvariantMachineClause()

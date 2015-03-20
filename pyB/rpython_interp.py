@@ -91,7 +91,7 @@ def eval_int_expression(node, env):
                 continue
         env.pop_frame() # exit scope
         return prod_
-    elif isinstance(node,AUnaryExpression):
+    elif isinstance(node, AUnaryMinusExpression):
         result = eval_int_expression(node.children[0], env)
         return result.__neg__()
     elif isinstance(node, AMinIntExpression):
@@ -161,7 +161,7 @@ def eval_bool_expression(node, env):
         bexpr = eval_bool_expression(node.get(0), env)
         return not bexpr
         """
-    elif isinstance(node, AUniversalQuantificationPredicate):
+    elif isinstance(node, AForallPredicate):
         # notice: the all and any keywords are not used, because they need the generation of the whole set
         # new scope
         varList = node.children[:-1]
@@ -180,7 +180,7 @@ def eval_bool_expression(node, env):
                 continue
         env.pop_frame() # leave scope
         return True        
-    elif isinstance(node, AExistentialQuantificationPredicate):
+    elif isinstance(node, AExistsPredicate):
         # new scope
         varList = node.children[:-1]
         env.push_new_frame(varList)
@@ -207,12 +207,12 @@ def eval_bool_expression(node, env):
         else:
             # else normal check, also symbolic (implemented by symbol classes)
             return expr1 == expr2
-    elif isinstance(node, AUnequalPredicate):
+    elif isinstance(node, ANotEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         # TODO: handle symbolic sets
         return expr1 != expr2
-    elif isinstance(node, ABelongPredicate):
+    elif isinstance(node, AMemberPredicate):
         #print pretty_print(node)
         if contains_infinit_enum(node, env):
             result = infinity_belong_check(node, env)
@@ -226,28 +226,28 @@ def eval_bool_expression(node, env):
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         return elm in aSet
-    elif isinstance(node, ANotBelongPredicate):
+    elif isinstance(node, ANotMemberPredicate):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             return not quick_member_eval(node.children[1], env, elm)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         return not elm in aSet
-    elif isinstance(node, AIncludePredicate):
+    elif isinstance(node, ASubsetPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         if isinstance(aSet2, SymbolicSet):
             return aSet2.issuperset(aSet1)
         return aSet1.issubset(aSet2)
-    elif isinstance(node, ANotIncludePredicate):
+    elif isinstance(node, ANotSubsetPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return not aSet1.issubset(aSet2)
-    elif isinstance(node, AIncludeStrictlyPredicate):
+    elif isinstance(node, ASubsetStrictPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return aSet1.issubset(aSet2) and aSet1 != aSet2
-    elif isinstance(node, ANotIncludeStrictlyPredicate):
+    elif isinstance(node, ANotSubsetStrictPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return not (aSet1.issubset(aSet2) and aSet1 != aSet2)

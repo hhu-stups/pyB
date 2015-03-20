@@ -25,7 +25,7 @@ def estimate_computation_time(predicate, env, interpreter_callable):
 # nodes which can not occur inside predicates, are omitted.
 # the implementation covers some special cases and one default case.
 # the result is used by a test_set_generator (see constraint solving)
-# TODO: AComprehensionSetExpression AExistentialQuantificationPredicate, 
+# TODO: AComprehensionSetExpression AExistsPredicate, 
 #       AUniversalQuantificationPredicate, ALambdaExpression
 # TODO: ARecEntry, AStructExpression, ARecordFieldExpression, ARecExpression
 # TODO: AFirstProjectionExpression, ASecondProjectionExpression, 
@@ -68,7 +68,7 @@ def _abs_int(node, env, ic):
         else:
             return 2**(exp0)
     ### Leafs
-    elif isinstance(node, (AIdentifierExpression, APrimedIdentifierExpression, AIntegerExpression, AStringExpression, AEmptySetExpression, AEmptySequenceExpression, ATrueExpression, AFalseExpression, AMinIntExpression, AMaxIntExpression)):
+    elif isinstance(node, (AIdentifierExpression, APrimedIdentifierExpression, AIntegerExpression, AStringExpression, AEmptySetExpression, AEmptySequenceExpression, ABooleanTrueExpression, ABooleanFalseExpression, AMinIntExpression, AMaxIntExpression)):
         return 1
     elif isinstance(node, AIntervalExpression):
         left_node  = node.children[0]

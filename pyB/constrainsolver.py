@@ -158,10 +158,10 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
             return string0
         elif string1:
             return string1    
-    elif isinstance(node, ABelongPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
+    elif isinstance(node, AMemberPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
         qme_nodes.append(node.children[1])
         return " quick_member_eval( qme_nodes["+str(len(qme_nodes)-1)+"], env,"+node.children[0].idName+")"
-    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, AUnequalPredicate):
+    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, ANotEqualPredicate):
         left = ""
         right = ""
         name = ""
@@ -184,14 +184,14 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
                 bin_op = "<="
             elif isinstance(node, AEqualPredicate):
                 bin_op = "=="
-            elif isinstance(node, AUnequalPredicate):
+            elif isinstance(node, ANotEqualPredicate):
                 bin_op = "!="
             string = left+bin_op+right
             return string
     elif isinstance(node, AIntegerExpression):
         number = node.intValue
         return str(number) 
-    elif isinstance(node, AUnaryExpression):
+    elif isinstance(node, AUnaryMinusExpression):
         number = node.children[0].intValue * -1
         return str(number)
     elif isinstance(node, AFunctionExpression) and isinstance(node.children[1],AIdentifierExpression):
@@ -430,7 +430,7 @@ def find_constraint_vars(predicate, env, varList):
     # (2) implemented predicates (by _compute_test_set)
     # WARNING: never add a case if the method "_compute_test_set" can not handle it.
     # This may introduce a Bug!
-    if isinstance(predicate, ABelongPredicate):
+    if isinstance(predicate, AMemberPredicate):
         lst, _ = find_constraint_vars(predicate.children[0], env, varList)
         constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
         return lst, [x.idName for x in constraint_by_vars]
@@ -495,7 +495,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side
                 return [remove_tuples(set)[index]]
-    elif isinstance(node, ABelongPredicate):
+    elif isinstance(node, AMemberPredicate):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             set = interpreter_callable(node.children[1], env)

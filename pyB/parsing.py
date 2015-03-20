@@ -7,7 +7,7 @@ from definition_handler import DefinitionHandler
 # TODO: many nodes missing
 # TODO: AFileDefinition, ADefinitionFileParseUnit, AIdentifierExpression, AStringExpression
 # AAbstractMachineParseUnit, ARefinementMachineParseUnit, AMachineHeader, ASubstitutionDefinition
-# APredicateDefinition, ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution .... AOpWithReturnSubstitution
+# APredicateDefinition, ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution .... AOperationCallSubstitution
 two_children = ["AAddExpression", "AMinusOrSetSubtractExpression", "AMultOrCartExpression", "ADivExpression", "AModuloExpression", "APowerOfExpression"]
 two_children += ["AConjunctPredicate", "ADisjunctPredicate", "AImplicationPredicate", "AEquivalencePredicate"]
 two_children += ["AEqualPredicate", "AGreaterPredicate", "ALessPredicate", "AGreaterEqualPredicate", "ALessEqualPredicate"]
@@ -17,7 +17,7 @@ one_child += ["ANegationPredicate"]
 
 no_child =  ["AStringSetExpression", "AEmptySetExpression", "AEmptySequenceExpression", "AIntegerSetExpression"]
 no_child += ["ANatSetExpression", "ANaturalSetExpression", "AIntSetExpression", "ANatural1SetExpression"]
-no_child += ["ANat1SetExpression", "ATrueExpression", "ABoolSetExpression", "AFalseExpression"]
+no_child += ["ANat1SetExpression", "ABooleanTrueExpression", "ABoolSetExpression", "ABooleanFalseExpression"]
 no_child += ["ASkipSubstitution", "AMinIntExpression", "AMaxIntExpression", "ASuccessorExpression", "APredecessorExpression"]
 
 # create function at import time (this is allowed by RPython) 

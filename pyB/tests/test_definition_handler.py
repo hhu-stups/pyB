@@ -26,7 +26,7 @@ class TestDefinitionHandler():
         env = Environment()
         dh = DefinitionHandler(env, str_ast_to_python_ast)
         dh.save_definitions(root.children[4])
-        assert isinstance(dh.def_map["Assign"], ASubstitutionDefinition)
+        assert isinstance(dh.def_map["Assign"], ASubstitutionDefinitionDefinition)
 
 
     def test_replace_defs(self):

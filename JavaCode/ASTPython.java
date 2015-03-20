@@ -1,5 +1,5 @@
 // AST Walker
-package de.be4.classicalb.core.parser.analysis.python;
+package pyB;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
@@ -20,7 +20,7 @@ public class ASTPython extends DepthFirstAdapter{
 
     public void defaultOut(@SuppressWarnings("unused") Node node)
     {
-        if(getClassName(node).equals("AFileDefinition"))
+        if(getClassName(node).equals("AFileDefinitionDefinition"))
         {
             // Methods: 
             /* Name: toString
@@ -156,7 +156,7 @@ public class ASTPython extends DepthFirstAdapter{
 		}
         else
         {
-            System.out.println("Parsing Error!\n Unhandeld Node:"+getClassName(node));
+            System.out.println("Parsing Error!\n Unhandeld Node: "+getClassName(node));
         }
     }
 
@@ -259,10 +259,17 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseATrueExpression(ATrueExpression node)
+    public void caseABooleanTrueExpression(ABooleanTrueExpression node)
     {
         out.append("id"+ (idCounter++) +"=");
-        out.append("ATrueExpression()\n");
+        out.append("ABooleanTrueExpression()\n");
+    }
+
+
+    public void caseABooleanFalseExpression(ABooleanFalseExpression node)
+    {
+        out.append("id"+ (idCounter++) +"=");
+        out.append("ABooleanFalseExpression()\n");
     }
 
 
@@ -270,13 +277,6 @@ public class ASTPython extends DepthFirstAdapter{
     {
         out.append("id"+ (idCounter++) +"=");
         out.append("ABoolSetExpression()\n");
-    }
-
-
-    public void caseAFalseExpression(AFalseExpression node)
-    {
-        out.append("id"+ (idCounter++) +"=");
-        out.append("AFalseExpression()\n");
     }
 
 
@@ -344,13 +344,15 @@ public class ASTPython extends DepthFirstAdapter{
         if(node.getMachineClauses()!=null)
             children.addAll(node.getMachineClauses());
         printStdOut_manyChildren(node, children);
-
+        /*
         String mtype="";
+        
         if(node.getType() != null)
         {
             mtype = node.getType().toString();
         }
         out.append("id"+(idCounter-1)+".type = \""+mtype+"\"\n");
+        */
 
         out.append("root = id"+(idCounter-1)+ "\n");
     }
@@ -395,7 +397,7 @@ public class ASTPython extends DepthFirstAdapter{
 
 
 
-    public void caseASubstitutionDefinition(ASubstitutionDefinition node)
+    public void caseASubstitutionDefinitionDefinition(ASubstitutionDefinitionDefinition node)
     {
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
@@ -417,7 +419,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAPredicateDefinition(APredicateDefinition node)
+    public void caseAPredicateDefinitionDefinition(APredicateDefinitionDefinition node)
     {
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
@@ -439,7 +441,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAExpressionDefinition(AExpressionDefinition node)
+    public void caseAExpressionDefinitionDefinition(AExpressionDefinitionDefinition node)
     {
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
@@ -523,7 +525,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAEnumeratedSet(AEnumeratedSet node)
+    public void caseAEnumeratedSetSet(AEnumeratedSetSet node)
     {
         List<Node> children = new ArrayList<Node>();
         if(node.getElements()!=null)
@@ -541,7 +543,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseADeferredSet(ADeferredSet node)
+    public void caseADeferredSetSet(ADeferredSetSet node)
     {
         String idName = "";
         for(TIdentifierLiteral e : node.getIdentifier())
@@ -725,7 +727,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAOpWithReturnSubstitution(AOpWithReturnSubstitution node)
+    public void caseAOperationCallSubstitution(AOperationCallSubstitution node)
     {
         List<Node> children = new ArrayList<Node>();
         if(node.getResultIdentifiers()!=null)
@@ -875,7 +877,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
+    public void caseAExistsPredicate(AExistsPredicate node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicate()!=null)
@@ -905,7 +907,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAUniversalQuantificationPredicate(AUniversalQuantificationPredicate node)
+    public void caseAForallPredicate(AForallPredicate node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if (node.getImplication()!=null)
@@ -1238,37 +1240,37 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseABelongPredicate(ABelongPredicate node)
+    public void caseAMemberPredicate(AMemberPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseANotBelongPredicate(ANotBelongPredicate node)
+    public void caseANotMemberPredicate(ANotMemberPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseAIncludePredicate(AIncludePredicate node)
+    public void caseASubsetPredicate(ASubsetPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseANotIncludePredicate(ANotIncludePredicate node)
+    public void caseANotSubsetPredicate(ANotSubsetPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseAIncludeStrictlyPredicate(AIncludeStrictlyPredicate node)
+    public void caseASubsetStrictPredicate(ASubsetStrictPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseANotIncludeStrictlyPredicate(ANotIncludeStrictlyPredicate node)
+    public void caseANotSubsetStrictPredicate(ANotSubsetStrictPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
@@ -1339,7 +1341,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAUnequalPredicate(AUnequalPredicate node)
+    public void caseANotEqualPredicate(ANotEqualPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
@@ -1423,7 +1425,7 @@ public class ASTPython extends DepthFirstAdapter{
     }
 
 
-    public void caseAUnaryExpression(AUnaryExpression node)
+    public void caseAUnaryMinusExpression(AUnaryMinusExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
     }

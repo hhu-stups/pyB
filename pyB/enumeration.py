@@ -86,7 +86,7 @@ def try_all_values(root, env, idNodes):
 # FIXME:(#ISSUE 22) dummy-init of deffered sets
 def init_deffered_set(def_set, env):
     # TODO:(#ISSUE 22) retry if no animation possible
-    assert isinstance(def_set, ADeferredSet)
+    assert isinstance(def_set, ADeferredSetSet)
     name = def_set.idName
     env.add_ids_to_frame([name])
     lst = []
@@ -171,7 +171,7 @@ def create_sequence(images, number, length):
 # False = Maybe
 def contains_infinit_enum(node, env):
     #print "inf?:",node.children[1]
-    if isinstance(node, ABelongPredicate):
+    if isinstance(node, AMemberPredicate):
         if isinstance(node.children[1], APartialSurjectionExpression):
             T = node.children[1].children[1]
             isInf = contains_infinit_enum(T, env)

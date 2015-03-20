@@ -643,8 +643,7 @@ java -cp ../jars/bparser-2.0.67.jar:../jars/prologlib-2.0.67.jar:../jars/parserb
 or
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
 PATH for testing:
-export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.John-Witulskis-MacBook-Pro:pyB    
-
+export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.
 
 run with pypy:
 /Users/johnwitulski/pypy-2.2.1-osx64/bin/pypy pyB.py examples/scheduler.mc

@@ -182,6 +182,7 @@ class BMachine:
                     assert isinstance(child, AMachineReference) 
                 # TODO: impl search strategy
                 file_path_and_name = env._bmachine_search_dir + child.idName + BFILE_EXTENSION
+                print file_path_and_name
                 ast_string, error = file_to_AST_str_no_print(file_path_and_name)
                 if error:
                     print error
@@ -228,9 +229,9 @@ class BMachine:
         if self.has_conc_variables_mc:
             var_names   += [n.idName for n in self.aConcreteVariablesMachineClause.children if isinstance(n, AIdentifierExpression)]
         if self.has_sets_mc:
-            dset_names  = [dSet.idName for dSet in self.aSetsMachineClause .children if isinstance(dSet, ADeferredSet)]
+            dset_names  = [dSet.idName for dSet in self.aSetsMachineClause .children if isinstance(dSet, ADeferredSetSet)]
             for set in self.aSetsMachineClause.children:
-                if isinstance(set, AEnumeratedSet):
+                if isinstance(set, AEnumeratedSetSet):
                     eset_names.append(set.idName)
                     elem_names = [e.idName for e in set.children]
                     eset_elem_names += elem_names # also learn element names 

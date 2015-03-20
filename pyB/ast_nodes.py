@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # This classes are used to map Java-AST Nodes to Python-AST Nodes (Objects)
 
+# TODO: AMachineMachineVariant
 
 class Node():
     def __init__(self):
@@ -62,10 +63,12 @@ class ADefinitionFileParseUnit(ParseUnit):
 class AOperation(Node):
     pass
 
-class AEnumeratedSet(Node):
+# old parser: AEnumeratedSet
+class AEnumeratedSetSet(Node):
     pass
 
-class ADeferredSet(Node):
+# old parser: ADeferredSet
+class ADeferredSetSet(Node):
     pass
 
 class AMachineHeader(Node):
@@ -132,13 +135,15 @@ class AOperationsMachineClause(Clause):
 class APowerOfExpression(IntegerExpression):
     pass
 
-class AUnaryExpression(IntegerExpression):
+# old parser: AUnaryExpression
+class AUnaryMinusExpression(IntegerExpression):
     pass
 
 class AConvertBoolExpression(Expression):
     pass
 
-class AExpressionDefinition(Expression):
+# old parser: AExpressionDefinition
+class AExpressionDefinitionDefinition(Expression):
     pass
 
 class ADefinitionExpression(Expression):
@@ -147,10 +152,12 @@ class ADefinitionExpression(Expression):
 class ABoolSetExpression(SetExpression):
     pass
 
-class ATrueExpression(Expression):
+# old parser: ATrueExpression
+class ABooleanTrueExpression(Expression):
     pass
 
-class AFalseExpression(Expression):
+# old parser: AFalseExpression
+class ABooleanFalseExpression(Expression):
     pass
 
 class AMinExpression(IntegerExpression):
@@ -398,34 +405,43 @@ class AQuantifiedUnionExpression(SetExpression):
 class ADefinitionPredicate(Predicate):
     pass
 
-class APredicateDefinition(Predicate):
+# old parser: APredicateDefinition
+class APredicateDefinitionDefinition(Predicate):
     pass
 
 class AComprehensionSetExpression(SetExpression):
     pass
 
-class AExistentialQuantificationPredicate(Predicate):
+# old parser: AExistentialQuantificationPredicate 
+class AExistsPredicate(Predicate):
     pass
 
-class AUniversalQuantificationPredicate(Predicate):
+# old parser: AUniversalQuantificationPredicate 
+class AForallPredicate(Predicate):
     pass
 
-class ABelongPredicate(Predicate):
+# old parser: ABelongPredicate 
+class AMemberPredicate(Predicate):
     pass
 
-class ANotBelongPredicate(Predicate):
+# old parser: ANotBelongPredicate 
+class ANotMemberPredicate(Predicate):
     pass
 
-class AIncludePredicate(Predicate):
+# old parser: AIncludePredicate
+class ASubsetPredicate(Predicate):
     pass
 
-class ANotIncludePredicate(Predicate):
+# old parser: ANotIncludePredicate
+class ANotSubsetPredicate(Predicate):
     pass
 
-class AIncludeStrictlyPredicate(Predicate):
+# old parser: AIncludeStrictlyPredicate
+class ASubsetStrictPredicate(Predicate):
     pass
 
-class ANotIncludeStrictlyPredicate(Predicate):
+# old parser: ANotIncludeStrictlyPredicate
+class ANotSubsetStrictPredicate(Predicate):
     pass
 
 class ANegationPredicate(Predicate):
@@ -443,7 +459,8 @@ class AEquivalencePredicate(Predicate):
 class AEqualPredicate(Predicate):
     pass
 
-class AUnequalPredicate(Predicate):
+# old parser: AUnequalPredicate 
+class ANotEqualPredicate(Predicate):
     pass
 
 class ALessPredicate(Predicate):
@@ -464,7 +481,8 @@ class AImplicationPredicate(Predicate):
 class AOpSubstitution(Substitution):
     pass
 
-class AOpWithReturnSubstitution(Substitution):
+# old parser: AOpWithReturnSubstitution 
+class AOperationCallSubstitution(Substitution):
     pass
 
 class AAssignSubstitution(Substitution):
@@ -482,7 +500,8 @@ class ABecomesSuchSubstitution(Substitution):
 class ADefinitionSubstitution(Substitution):
     pass
 
-class ASubstitutionDefinition(Substitution):
+#old parser: ASubstitutionDefinition
+class ASubstitutionDefinitionDefinition(Substitution):
     pass
 
 class ABecomesElementOfSubstitution(Substitution):

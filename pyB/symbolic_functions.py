@@ -131,7 +131,7 @@ class SymbolicFirstProj(SymbolicSet):
             if isinstance(other.predicate, AConjunctPredicate):    
                 belong_pred0 = other.predicate.children[0]
                 belong_pred1 = other.predicate.children[1]
-                if isinstance(belong_pred0, ABelongPredicate) and isinstance(belong_pred1, ABelongPredicate):                
+                if isinstance(belong_pred0, AMemberPredicate) and isinstance(belong_pred1, AMemberPredicate):                
                     x = other.variable_list[0].idName
                     y = other.variable_list[1].idName
                     xx = belong_pred0.children[0]
@@ -190,7 +190,7 @@ class SymbolicSecondProj(SymbolicSet):
             if isinstance(other.predicate, AConjunctPredicate):    
                 belong_pred0 = other.predicate.children[0]
                 belong_pred1 = other.predicate.children[1]
-                if isinstance(belong_pred0, ABelongPredicate) and isinstance(belong_pred1, ABelongPredicate):                
+                if isinstance(belong_pred0, AMemberPredicate) and isinstance(belong_pred1, AMemberPredicate):                
                     x = other.variable_list[0].idName
                     y = other.variable_list[1].idName
                     xx = belong_pred0.children[0]

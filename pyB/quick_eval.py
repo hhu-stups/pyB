@@ -315,7 +315,7 @@ def quick_member_eval(ast, env, element):
 # checks if the element (maybe a predicate) can generated of the infinite set on the right side
 # returntype: boolean
 def infinity_belong_check(node, env):
-    assert isinstance(node, ABelongPredicate)
+    assert isinstance(node, AMemberPredicate)
     if isinstance(node.children[1], APartialSurjectionExpression):
         if isinstance(node.children[0], AEmptySetExpression):
             return False

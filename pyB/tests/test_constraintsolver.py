@@ -30,7 +30,7 @@ class TestConstraintSolver():
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "z"), IntegerType)
         unqantPred = root.children[0]
-        assert isinstance(unqantPred, AUniversalQuantificationPredicate)
+        assert isinstance(unqantPred, AForallPredicate)
         varList = unqantPred.children[0:-1]
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
@@ -64,7 +64,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         unqantPred = root.children[0].children[1]
-        assert isinstance(unqantPred, AUniversalQuantificationPredicate)
+        assert isinstance(unqantPred, AForallPredicate)
         varList = unqantPred.children[0:-1]
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
@@ -87,7 +87,7 @@ class TestConstraintSolver():
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "z"), IntegerType)
         exqantPred = root.children[0]
-        assert isinstance(exqantPred, AExistentialQuantificationPredicate)
+        assert isinstance(exqantPred, AExistsPredicate)
         varList = exqantPred.children[0:-1]
         P = exqantPred.children[-1].children[0]
         Q = exqantPred.children[-1].children[1]
@@ -632,7 +632,7 @@ class TestConstraintSolver():
         set_predicate = union_predicate.children[2]
         var0 = union_predicate.children[0]
         var1 = union_predicate.children[1]
-        assert isinstance(set_predicate, ABelongPredicate)
+        assert isinstance(set_predicate, AMemberPredicate)
         map = _categorize_predicates(set_predicate, env, [var0, var1], interpret)  
         (time0, vars0, compute_first0) = map[set_predicate]
         assert set(vars0)==set(["x", "y"])
@@ -662,7 +662,7 @@ class TestConstraintSolver():
         var0 = union_predicate.children[0]
         var1 = union_predicate.children[1]
         var2 = union_predicate.children[2]
-        assert isinstance(set_predicate, ABelongPredicate)
+        assert isinstance(set_predicate, AMemberPredicate)
         map = _categorize_predicates(set_predicate, env, [var0, var1, var2],interpret)  
         (time, vars, compute_first) = map[set_predicate]
         assert set(vars)==set(["x", "y", "z"])

@@ -36,7 +36,7 @@ class DefinitionHandler():
         for definition in clause.children:
             if isinstance(definition, AFileDefinition):
                 continue
-            assert isinstance(definition, AExpressionDefinition) or isinstance(definition, APredicateDefinition) or isinstance(definition, ASubstitutionDefinition)
+            assert isinstance(definition, AExpressionDefinitionDefinition) or isinstance(definition, APredicateDefinitionDefinition) or isinstance(definition, ASubstitutionDefinitionDefinition)
             self.def_map[definition.idName] = definition
             # make sure only ext. funs. are replaced if definition entry is presend
             if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():

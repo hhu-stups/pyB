@@ -27,7 +27,7 @@ def pretty_print(node):
     elif isinstance(node, ANegationPredicate):
         string0 = pretty_print(node.children[0])
         return "not ("+string0+")"
-    elif isinstance(node, AUniversalQuantificationPredicate):
+    elif isinstance(node, AForallPredicate):
         varList = node.children[:-1]
         pred = node.children[-1]
         string = pretty_print(node.children[-1])
@@ -38,7 +38,7 @@ def pretty_print(node):
                 out += ","
         out +=").("+string+")"
         return out
-    elif isinstance(node, AExistentialQuantificationPredicate):
+    elif isinstance(node, AExistsPredicate):
         varList = node.children[:-1]
         pred = node.children[-1]
         string = pretty_print(node.children[-1])
@@ -53,7 +53,7 @@ def pretty_print(node):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"="+string2
-    elif isinstance(node, AUnequalPredicate):
+    elif isinstance(node, ANotEqualPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"/="+string2
@@ -150,27 +150,27 @@ def pretty_print(node):
 #       2.1 Set predicates
 #
 # *************************
-    elif isinstance(node, ABelongPredicate):
+    elif isinstance(node, AMemberPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+":"+string2
-    elif isinstance(node, ANotBelongPredicate):
+    elif isinstance(node, ANotMemberPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"/:"+string2
-    elif isinstance(node, AIncludePredicate):
+    elif isinstance(node, ASubsetPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"<:"+string2
-    elif isinstance(node, ANotIncludePredicate):
+    elif isinstance(node, ANotSubsetPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"/<:"+string2
-    elif isinstance(node, AIncludeStrictlyPredicate):
+    elif isinstance(node, ASubsetStrictPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"<<:"+string2
-    elif isinstance(node, ANotIncludeStrictlyPredicate):
+    elif isinstance(node, ANotSubsetStrictPredicate):
         string1 = pretty_print(node.children[0])
         string2 = pretty_print(node.children[1])
         return string1+"/<<:"+string2
@@ -511,7 +511,7 @@ def pretty_print(node):
 # 6. Miscellaneous
 #
 # ****************
-    elif isinstance(node,AUnaryExpression):
+    elif isinstance(node, AUnaryMinusExpression):
         string = pretty_print(node.children[0])
         return "-"+string
     elif isinstance(node, AIntegerExpression):
@@ -526,9 +526,9 @@ def pretty_print(node):
         return node.idName # TODO test (e.g xx$0 (only allowed in become-such-substitutions))
     elif isinstance(node, ABoolSetExpression):
         return "BOOL"
-    elif isinstance(node, ATrueExpression):
+    elif isinstance(node, ABooleanTrueExpression):
         return "TRUE"
-    elif isinstance(node, AFalseExpression):
+    elif isinstance(node, ABooleanFalseExpression):
         return "FALSE"
     elif isinstance(node, AStructExpression):
         out = ""

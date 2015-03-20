@@ -1,5 +1,5 @@
 // AST Walker
-package de.be4.classicalb.core.parser.analysis.json;
+package pyB;
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
@@ -153,7 +153,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseATrueExpression(ATrueExpression node)
+    public void caseABooleanTrueExpression(ABooleanTrueExpression node)
     {
         out.append("[\"");
         out.append(getClassName(node));
@@ -169,7 +169,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAFalseExpression(AFalseExpression node)
+    public void caseABooleanFalseExpression(ABooleanFalseExpression node)
     {
         out.append("[\"");
         out.append(getClassName(node));
@@ -245,13 +245,13 @@ public class ASTJSON extends DepthFirstAdapter{
             children.addAll(node.getMachineClauses());
         printStdOut_manyChildren_nb(node, children);
         out.append(",");
-
+        /*
         String mtype="";
         if(node.getType() != null)
         {
             mtype = node.getType().toString();
         }
-        out.append("{\"type\":\""+mtype+"\",");
+        out.append("{\"type\":\""+mtype+"\",");*/
         out.append("]");
     }
 
@@ -299,7 +299,7 @@ public class ASTJSON extends DepthFirstAdapter{
 
 
 
-    public void caseASubstitutionDefinition(ASubstitutionDefinition node)
+    public void caseASubstitutionDefinitionDefinition(ASubstitutionDefinitionDefinition node)
     {
         out.append("[");
         List<Node> children = new ArrayList<Node>();
@@ -324,7 +324,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAPredicateDefinition(APredicateDefinition node)
+    public void caseAPredicateDefinitionDefinition(APredicateDefinitionDefinition node)
     {
         out.append("[");
         List<Node> children = new ArrayList<Node>();
@@ -349,7 +349,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAExpressionDefinition(AExpressionDefinition node)
+    public void caseAExpressionDefinitionDefinition(AExpressionDefinitionDefinition node)
     {
         out.append("[");
         List<Node> children = new ArrayList<Node>();
@@ -449,7 +449,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAEnumeratedSet(AEnumeratedSet node)
+    public void caseAEnumeratedSetSet(AEnumeratedSetSet node)
     {
         out.append("[");
         List<Node> children = new ArrayList<Node>();
@@ -470,7 +470,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseADeferredSet(ADeferredSet node)
+    public void caseADeferredSetSet(ADeferredSetSet node)
     {
         out.append("[\"");
         out.append(getClassName(node));
@@ -688,7 +688,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAOpWithReturnSubstitution(AOpWithReturnSubstitution node)
+    public void caseAOperationCallSubstitution(AOperationCallSubstitution node)
     {
     	out.append("[");
         List<Node> children = new ArrayList<Node>();
@@ -845,7 +845,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAExistentialQuantificationPredicate(AExistentialQuantificationPredicate node)
+    public void caseAExistsPredicate(AExistsPredicate node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicate()!=null)
@@ -875,7 +875,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAUniversalQuantificationPredicate(AUniversalQuantificationPredicate node)
+    public void caseAForallPredicate(AForallPredicate node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if (node.getImplication()!=null)
@@ -1208,37 +1208,37 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseABelongPredicate(ABelongPredicate node)
+    public void caseAMemberPredicate(AMemberPredicate node)
+    {
+        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
+    }
+    
+    
+    public void caseANotMemberPredicate(ANotMemberPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
 
 
-    public void caseANotBelongPredicate(ANotBelongPredicate node)
+    public void caseASubsetPredicate(ASubsetPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
-
-
-    public void caseAIncludePredicate(AIncludePredicate node)
+    
+    
+    public void caseANotSubsetPredicate(ANotSubsetPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
-
-
-    public void caseANotIncludePredicate(ANotIncludePredicate node)
+    
+    
+    public void caseASubsetStrictPredicate(ASubsetStrictPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
-
-
-    public void caseAIncludeStrictlyPredicate(AIncludeStrictlyPredicate node)
-    {
-        printStdOut_twoChildren(node, node.getLeft(), node.getRight());
-    }
-
-
-    public void caseANotIncludeStrictlyPredicate(ANotIncludeStrictlyPredicate node)
+    
+    
+    public void caseANotSubsetStrictPredicate(ANotSubsetStrictPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
@@ -1309,7 +1309,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAUnequalPredicate(AUnequalPredicate node)
+    public void caseANotEqualPredicate(ANotEqualPredicate node)
     {
         printStdOut_twoChildren(node, node.getLeft(), node.getRight());
     }
@@ -1393,7 +1393,7 @@ public class ASTJSON extends DepthFirstAdapter{
     }
 
 
-    public void caseAUnaryExpression(AUnaryExpression node)
+    public void caseAUnaryMinusExpression(AUnaryMinusExpression node)
     {
         printStdOut_oneChild(node, node.getExpression());
     }

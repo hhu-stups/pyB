@@ -115,7 +115,7 @@ class TestInterp_fixedAST():
         # Build AST: 0 /= 1
         intExp = AIntegerExpression(0)
         intExp2 = AIntegerExpression(1)
-        ueqPred = AUnequalPredicate()
+        ueqPred = ANotEqualPredicate()
         ueqPred.children.append(intExp)
         ueqPred.children.append(intExp2)
 
@@ -411,7 +411,7 @@ class TestInterp_fixedAST():
         # Build AST: yy:ID
         idExp = AIdentifierExpression("yy")
         idExp2 = AIdentifierExpression("ID")
-        belPred = ABelongPredicate()
+        belPred = AMemberPredicate()
         belPred.children.append(idExp)
         belPred.children.append(idExp2)
 
@@ -430,7 +430,7 @@ class TestInterp_fixedAST():
         # Build AST: yy/:ID
         idExp = AIdentifierExpression("yy")
         idExp2 = AIdentifierExpression("ID")
-        notbelPred = ANotBelongPredicate()
+        notbelPred = ANotMemberPredicate()
         notbelPred.children.append(idExp)
         notbelPred.children.append(idExp2)
 
@@ -452,7 +452,7 @@ class TestInterp_fixedAST():
         sexExp.children.append(idExp2)
         sexExp.children.append(idExp3)
         sexExp.children.append(idExp4)
-        belPred = ABelongPredicate()
+        belPred = AMemberPredicate()
         belPred.children.append(idExp)
         belPred.children.append(sexExp)
 
@@ -473,7 +473,7 @@ class TestInterp_fixedAST():
         # Build AST: A<:B
         idExp = AIdentifierExpression("A")
         idExp2 = AIdentifierExpression("B")
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(idExp)
         inclPred.children.append(idExp2)
 
@@ -501,7 +501,7 @@ class TestInterp_fixedAST():
         # Build AST: A/<:B
         idExp = AIdentifierExpression("A")
         idExp2 = AIdentifierExpression("B")
-        notinclPred = ANotIncludePredicate()
+        notinclPred = ANotSubsetPredicate()
         notinclPred.children.append(idExp)
         notinclPred.children.append(idExp2)
 
@@ -524,7 +524,7 @@ class TestInterp_fixedAST():
         # Build AST: A<<:B
         idExp = AIdentifierExpression("A")
         idExp2 = AIdentifierExpression("B")
-        inclstrPred = AIncludeStrictlyPredicate()
+        inclstrPred = ASubsetStrictPredicate()
         inclstrPred.children.append(idExp)
         inclstrPred.children.append(idExp2)
 
@@ -551,7 +551,7 @@ class TestInterp_fixedAST():
         # Build AST: A/<<:B
         idExp = AIdentifierExpression("A")
         idExp2 = AIdentifierExpression("B")
-        notinclstrPred = ANotIncludeStrictlyPredicate()
+        notinclstrPred = ANotSubsetStrictPredicate()
         notinclstrPred.children.append(idExp)
         notinclstrPred.children.append(idExp2)
 
@@ -578,7 +578,7 @@ class TestInterp_fixedAST():
         # Build AST: {}<:A
         eSetExp = AEmptySetExpression()
         idExp = AIdentifierExpression("A")
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(eSetExp)
         inclPred.children.append(idExp)
 
@@ -614,7 +614,7 @@ class TestInterp_fixedAST():
         uniExp = AUnionExpression()
         uniExp.children.append(idExp2)
         uniExp.children.append(idExp3)
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(idExp)
         inclPred.children.append(uniExp)
 
@@ -634,7 +634,7 @@ class TestInterp_fixedAST():
         insExp = AIntersectionExpression()
         insExp.children.append(idExp2)
         insExp.children.append(idExp3)
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(idExp)
         inclPred.children.append(insExp)
 
@@ -662,7 +662,7 @@ class TestInterp_fixedAST():
         subExp = AMinusOrSetSubtractExpression()
         subExp.children.append(idExp2)
         subExp.children.append(idExp3)
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(idExp)
         inclPred.children.append(subExp)
 
@@ -686,7 +686,7 @@ class TestInterp_fixedAST():
         mulExp = AMultOrCartExpression()
         mulExp.children.append(idExp2)
         mulExp.children.append(idExp3)
-        inclPred = AIncludePredicate()
+        inclPred = ASubsetPredicate()
         inclPred.children.append(idExp)
         inclPred.children.append(mulExp)
 
