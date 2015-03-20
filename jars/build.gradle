@@ -1,0 +1,21 @@
+apply plugin: 'java'
+
+repositories {
+	maven {
+		name "cobra"
+		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
+	}
+}
+
+dependencies {
+  compile group: "de.prob", name: "bparser", version: '2.4.36'
+}
+
+task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    manifest {
+        attributes 'Main-Class': 'pyB.Main'
+    }
+}
