@@ -28,10 +28,10 @@ USE_RPYTHON_POPEN    = False # Enable java call from python
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)
 if os.name=='nt': # Windows System
     EXAMPLE_DIR = "examples\\"
-    JAR_DIR     = "..\jars\*"
+    JAR_DIR     = "..\jars\\"
 else: # Other OS (e.g mac)
     EXAMPLE_DIR = "examples/"
-    JAR_DIR     = "../jars/*"
+    JAR_DIR     = "../jars/"
 
 # method should used by pypy translation test only    
 def set_USE_RPYTHON_POPEN(boolean):

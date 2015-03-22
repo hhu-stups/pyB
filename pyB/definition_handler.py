@@ -34,7 +34,7 @@ class DefinitionHandler():
         assert isinstance(clause, ADefinitionsMachineClause)
         self.process_definition_files(clause)
         for definition in clause.children:
-            if isinstance(definition, AFileDefinition):
+            if isinstance(definition, AFileDefinitionDefinition):
                 continue
             assert isinstance(definition, AExpressionDefinitionDefinition) or isinstance(definition, APredicateDefinitionDefinition) or isinstance(definition, ASubstitutionDefinitionDefinition)
             self.def_map[definition.idName] = definition
@@ -49,7 +49,7 @@ class DefinitionHandler():
     # All of them musst be processed before any def in this file                    
     def process_definition_files(self, clause):
         for definition in clause.children :
-            if isinstance(definition, AFileDefinition): #TODO: implement me
+            if isinstance(definition, AFileDefinitionDefinition): #TODO: implement me
                 if definition.idName in self.used_def_files: # avoid def-file loops
                     continue
                 self.used_def_files.append(definition.idName)

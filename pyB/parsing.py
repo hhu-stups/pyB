@@ -5,7 +5,7 @@ from bmachine import BMachine
 from definition_handler import DefinitionHandler
 
 # TODO: many nodes missing
-# TODO: AFileDefinition, ADefinitionFileParseUnit, AIdentifierExpression, AStringExpression
+# TODO: AFileDefinitionDefinition, ADefinitionFileParseUnit, AIdentifierExpression, AStringExpression
 # AAbstractMachineParseUnit, ARefinementMachineParseUnit, AMachineHeader, ASubstitutionDefinition
 # APredicateDefinition, ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution .... AOperationCallSubstitution
 two_children = ["AAddExpression", "AMinusOrSetSubtractExpression", "AMultOrCartExpression", "ADivExpression", "AModuloExpression", "APowerOfExpression"]

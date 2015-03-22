@@ -196,7 +196,7 @@ def _find_var_nodes(node, lst):
     elif isinstance(node,(AGeneralSumExpression, AGeneralProductExpression, AGeneralUnionExpression, AGeneralIntersectionExpression)):
         return
     # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 4)
-    elif isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AFileDefinition): 
+    elif isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AFileDefinitionDefinition): 
         return 
     # (case 3) Id node found. Add to list   
     elif isinstance(node, AIdentifierExpression):
@@ -243,7 +243,7 @@ def _find_assignd_vars(node, lst):
             assert isinstance(idNode, AIdentifierExpression)
             lst.append(idNode.idName)
     # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 3)
-    elif isinstance(node, (AIntegerExpression, AStringExpression, AFileDefinition, AIdentifierExpression)): 
+    elif isinstance(node, (AIntegerExpression, AStringExpression, AFileDefinitionDefinition, AIdentifierExpression)): 
         return 
     # (case 3) deep first search.             
     else:
