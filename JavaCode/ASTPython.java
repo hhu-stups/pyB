@@ -84,7 +84,7 @@ public class ASTPython extends DepthFirstAdapter{
 			// Fields:
 			// private TStringBody _filename_
             out.append("id"+ (idCounter++) +"=");
-            out.append("AFileDefinition(\""+node.toString());
+            out.append("AFileDefinitionDefinition(\""+node.toString());
 			out.append("\")\n");
         }
         else if (getClassName(node).equals("ADefinitionFileParseUnit"))

@@ -595,7 +595,7 @@ class AIntegerExpression(IntegerExpression):
     def __init__(self, intValue):
         self.intValue = intValue
 
-class AFileDefinition(Node):
+class AFileDefinitionDefinition(Node):
     def __init__(self, idName):
         self.idName = idName  
 

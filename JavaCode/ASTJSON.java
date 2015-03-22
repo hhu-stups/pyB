@@ -24,10 +24,10 @@ public class ASTJSON extends DepthFirstAdapter{
     
     public void defaultOut(@SuppressWarnings("unused") Node node)
     {
-        if(getClassName(node).equals("AFileDefinition"))
+        if(getClassName(node).equals("AFileDefinitionDefinition"))
         {   
 			out.append("[\"");
-            out.append("AFileDefinition\",");
+            out.append("AFileDefinitionDefinition\",");
             out.append("{\"idName\":\""+node.toString()+"\"}");
             out.append("]");
 		}
