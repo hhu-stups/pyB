@@ -5,6 +5,7 @@ file_name = "input.txt"
 PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to your checkout
 
 
+
 # Run main_code with CPython (except RPython Flags) and Translated C Version
 def translate(main_code):
     # 1. Generate Python code as String
@@ -42,12 +43,16 @@ def translate(main_code):
     # 5. call python version
     python_result = Popen("python tempB.py", shell=True, stdout=PIPE).stdout.read()
     # 6. generate and call c Version
-    pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
-    assert pwd[-4:]=='pyB\n'
-    Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
+    import os
+    if os.name=='nt':
+        # Add pypy to your path if this line crashs
+        Popen("python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
+    else:
+        pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
+        assert pwd[-4:]=='pyB\n'
+        Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c", shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    import os
     os.remove("tempA.py")
     os.remove("tempB.py")
     os.remove("tempA-c")
