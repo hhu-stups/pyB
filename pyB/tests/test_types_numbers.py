@@ -553,7 +553,7 @@ class TestTypesNumbers():
         type_with_known_types(root, env, [], [])
   
         
-    def test_types_set_or_integer(self):
+    def test_types_set_or_integer1(self):
         string = '''
         MACHINE Test
         CONSTANTS X,yy,sum

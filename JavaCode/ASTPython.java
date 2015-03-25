@@ -5,6 +5,7 @@ import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 import java.lang.reflect.Method;
 // walks the tree and prints a pythonlike AST
 
@@ -343,7 +344,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getHeader());
         if(node.getMachineClauses()!=null)
             children.addAll(node.getMachineClauses());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
         /*
         String mtype="";
         
@@ -365,14 +366,17 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getHeader());
         if(node.getMachineClauses()!=null)
             children.addAll(node.getMachineClauses());
-        printStdOut_manyChildren(node, children);
-
         String refines="";
         if(node.getRefMachine() != null)
         {
             refines = node.getRefMachine().toString();
         }
-        out.append("id"+(idCounter-1)+".refines = \""+refines+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("refines=\""+refines+"\"");
+        printStdOut_manyChildren(node, children, args);
+
+
+        //out.append("id"+(idCounter-1)+".refines = \""+refines+"\"\n");
 
         out.append("root = id"+(idCounter-1)+ "\n");
     }
@@ -383,8 +387,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
-
+        
         String idName = "";
         for(TIdentifierLiteral e : node.getName())
         {
@@ -392,7 +395,11 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
+
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
     }
 
 
@@ -404,18 +411,25 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getParameters());
         if(node.getRhs()!=null)
             children.add(node.getRhs());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getName() != null)
         {
             idName = node.getName().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        String paraNum = "0";
         if (node.getParameters()!=null)
-            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
-        else
-            out.append("id"+(idCounter-1)+".paraNum = 0");
+            paraNum = node.getParameters().size()+"";
+            //out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
+        //else
+        //    out.append("id"+(idCounter-1)+".paraNum = 0");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        args.add(", paraNum=\""+paraNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -426,18 +440,25 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getParameters());
         if(node.getRhs()!=null)
             children.add(node.getRhs());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getName() != null)
         {
             idName = node.getName().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        String paraNum = "0";
         if (node.getParameters()!=null)
-            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
-        else
-            out.append("id"+(idCounter-1)+".paraNum = 0");
+            paraNum = node.getParameters().size()+"";
+            //out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
+        //else
+        //    out.append("id"+(idCounter-1)+".paraNum = 0");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        args.add(", paraNum=\""+paraNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -448,18 +469,25 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getParameters());
         if(node.getRhs()!=null)
             children.add(node.getRhs());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getName() != null)
         {
             idName = node.getName().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        String paraNum = "0";
         if (node.getParameters()!=null)
-            out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
-        else
-            out.append("id"+(idCounter-1)+".paraNum = 0");
+            paraNum = node.getParameters().size()+"";
+            //out.append("id"+(idCounter-1)+".paraNum = "+node.getParameters().size()+"\n");
+        //else
+        //    out.append("id"+(idCounter-1)+".paraNum = 0");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        args.add(", paraNum=\""+paraNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -468,14 +496,17 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getDefLiteral() != null)
         {
             idName = node.getDefLiteral().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -484,14 +515,17 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getDefLiteral() != null)
         {
             idName = node.getDefLiteral().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -500,14 +534,17 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         if(node.getDefLiteral() != null)
         {
             idName = node.getDefLiteral().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -518,10 +555,15 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getLhsExpression());
         if(node.getRhsExpressions()!=null)
             children.addAll(node.getRhsExpressions());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
-        out.append("id"+(idCounter-1)+".lhs_size = \""+node.getLhsExpression().size()+"\"\n");
-        out.append("id"+(idCounter-1)+".rhs_size = \""+node.getRhsExpressions().size()+"\"\n");
+        //out.append("id"+(idCounter-1)+".lhs_size = \""+node.getLhsExpression().size()+"\"\n");
+        //out.append("id"+(idCounter-1)+".rhs_size = \""+node.getRhsExpressions().size()+"\"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("lhs_size=\""+node.getLhsExpression().size()+"\"");
+        args.add(", rhs_size=\""+node.getRhsExpressions().size()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -530,7 +572,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getElements()!=null)
             children.addAll(node.getElements());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         for(TIdentifierLiteral e : node.getIdentifier())
@@ -539,7 +581,10 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -555,9 +600,10 @@ public class ASTPython extends DepthFirstAdapter{
 
         String nodeid = ""+ idCounter;
         out.append("id" + nodeid + "=");
-        out.append(getClassName(node) +"()\n");
+        //out.append(getClassName(node) +"()\n");
+        out.append(getClassName(node) +"(idName=\""+idName+"\")\n");
         idCounter++;
-        out.append("id"+nodeid+".idName = \""+idName+"\"\n");
+        //out.append("id"+nodeid+".idName = \""+idName+"\"\n");
     }
 
 
@@ -570,7 +616,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.addAll(node.getParameters());
         if(node.getOperationBody()!=null)
             children.add(node.getOperationBody());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         for(TIdentifierLiteral e : node.getOpName())
@@ -578,19 +624,30 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out.append("id"+(idCounter-1)+".opName = \""+idName+"\"\n");
-        out.append("id"+(idCounter-1)+".return_Num = "+node.getReturnValues().size()+"\n");
-        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        //out.append("id"+(idCounter-1)+".opName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".return_Num = "+node.getReturnValues().size()+"\n");
+        //out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("opName=\""+idName+"\"");
+        args.add(", return_Num=\""+node.getReturnValues().size()+"\"");
+        args.add(", parameter_Num=\""+node.getParameters().size()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
     public void caseAPrimedIdentifierExpression(APrimedIdentifierExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifier());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
+        //if(node.getGrade() != null)
+        //    out.append("id"+(idCounter-1)+".grade = "+node.getGrade()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
         if(node.getGrade() != null)
-            out.append("id"+(idCounter-1)+".grade = "+node.getGrade()+"\n");
+            args.add("grade=\""+node.getGrade()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -611,9 +668,14 @@ public class ASTPython extends DepthFirstAdapter{
             hasElse = "True";
             children.add(node.getElse());
         }
-        printStdOut_manyChildren(node, children);
-        out.append("id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n");
-        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        //printStdOut_manyChildren(node, children);
+        //out.append("id"+(idCounter-1)+".expNum = "+node.getEitherExpr().size()+"\n");
+        //out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("expNum=\""+node.getEitherExpr().size()+"\"");
+        args.add(", hasElse=\""+hasElse+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -622,9 +684,12 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getExpressions());
         if(node.getSubstitution()!=null)
             children.add(node.getSubstitution());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
-        out.append("id"+(idCounter-1)+".expNum = "+node.getExpressions().size()+"\n");
+        //out.append("id"+(idCounter-1)+".expNum = "+node.getExpressions().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("expNum=\""+node.getExpressions().size()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -633,9 +698,14 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getSubstitution()!=null)
             children.add(node.getSubstitution());
-        printStdOut_manyChildren(node, children);
-
-        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        //printStdOut_manyChildren(node, children);
+        String idNum = "0";
+        if (node.getIdentifiers()!=null)
+            idNum = node.getIdentifiers().size()+"";
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -646,9 +716,14 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getWhere());
         if(node.getThen()!=null)
             children.add(node.getThen());
-        printStdOut_manyChildren(node, children);
-
-        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        //printStdOut_manyChildren(node, children);
+        String idNum = "0";
+        if (node.getIdentifiers()!=null)
+            idNum = node.getIdentifiers().size()+"";
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -660,9 +735,14 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicate());
         if(node.getSubstitution()!=null)
             children.add(node.getSubstitution());
-        printStdOut_manyChildren(node, children);
-
-        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        //printStdOut_manyChildren(node, children);
+        String idNum = "0";
+        if (node.getIdentifiers()!=null)
+            idNum = node.getIdentifiers().size()+"";
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -673,9 +753,14 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicates());
         if(node.getExpression()!=null)
             children.add(node.getExpression());
-        printStdOut_manyChildren(node, children);
-
-        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        //printStdOut_manyChildren(node, children);
+        String idNum = "0";
+        if (node.getIdentifiers()!=null)
+            idNum = node.getIdentifiers().size()+"";
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -686,9 +771,15 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicates());
         if(node.getExpression()!=null)
             children.add(node.getExpression());
-        printStdOut_manyChildren(node, children);
-
-        out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        //printStdOut_manyChildren(node, children);
+        String idNum = "0";
+        if (node.getIdentifiers()!=null)
+            idNum = node.getIdentifiers().size()+"";
+        
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -697,7 +788,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName = "";
         for(TIdentifierLiteral e : node.getMachineName())
@@ -706,7 +797,11 @@ public class ASTPython extends DepthFirstAdapter{
             e.apply(this);
             idName = idName + e.toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -715,15 +810,20 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
         String idName="";
         if(node.getName() != null)
         {
             idName = node.getName().toString();
         }
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
-        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        args.add(", parameter_Num=\""+node.getParameters().size()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -743,11 +843,17 @@ public class ASTPython extends DepthFirstAdapter{
         
         if(node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
 
-        out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
-        out.append("id"+(idCounter-1)+".return_Num = "+node.getResultIdentifiers().size()+"\n");
-        out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        //out.append("id"+(idCounter-1)+".idName = \""+idName+"\"\n");
+        //out.append("id"+(idCounter-1)+".return_Num = "+node.getResultIdentifiers().size()+"\n");
+        //out.append("id"+(idCounter-1)+".parameter_Num = "+node.getParameters().size()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idName=\""+idName+"\"");
+        args.add(", return_Num=\""+node.getResultIdentifiers().size()+"\"");
+        args.add(", parameter_Num=\""+node.getParameters().size()+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -756,7 +862,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineNames()!=null)
             children.addAll(node.getMachineNames());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
     public void caseAIncludesMachineClause(AIncludesMachineClause node)
@@ -764,7 +870,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineReferences()!=null)
             children.addAll(node.getMachineReferences());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -773,7 +879,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineReferences()!=null)
             children.addAll(node.getMachineReferences());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
     
@@ -782,7 +888,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineNames()!=null)
             children.addAll(node.getMachineNames());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
     
     
@@ -791,35 +897,35 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>();
         if(node.getMachineNames()!=null)
             children.addAll(node.getMachineNames());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
     
 
     public void caseADefinitionsMachineClause(ADefinitionsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getDefinitions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAParallelSubstitution(AParallelSubstitution node)
     {
         List<Node> children = new ArrayList<Node>(node.getSubstitutions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseASequenceSubstitution(ASequenceSubstitution node)
     {
         List<Node> children = new ArrayList<Node>(node.getSubstitutions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAChoiceSubstitution(AChoiceSubstitution node)
     {
         List<Node> children = new ArrayList<Node>(node.getSubstitutions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -838,8 +944,12 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getElse());
             hasElse = "True";
         }
-        printStdOut_manyChildren(node, children);
-        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        //printStdOut_manyChildren(node, children);
+        //out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("hasElse=\""+hasElse+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -858,22 +968,25 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getElse());
             hasElse = "True";
         }
-        printStdOut_manyChildren(node, children);
-        out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        //printStdOut_manyChildren(node, children);
+        //out.append("id"+(idCounter-1)+".hasElse = \""+hasElse+"\"\n");
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("hasElse=\""+hasElse+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
     public void caseAStructExpression(AStructExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getEntries());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseARecExpression(ARecExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getEntries());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -882,7 +995,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicate()!=null)
             children.add(node.getPredicate());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -891,7 +1004,7 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if(node.getPredicates()!=null)
             children.add(node.getPredicates());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -900,10 +1013,16 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if (node.getPredicate()!=null)
             children.add(node.getPredicate());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
         
+        String idNum = "0";
         if (node.getIdentifiers()!=null)
-            out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+            idNum = node.getIdentifiers().size()+"";
+            //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -912,76 +1031,76 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if (node.getImplication()!=null)
             children.add(node.getImplication());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseASetExtensionExpression(ASetExtensionExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getExpressions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseACoupleExpression(ACoupleExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getList());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseASequenceExtensionExpression(ASequenceExtensionExpression node)
     {
         List<Node> children = new ArrayList<Node>(node.getExpression());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAConstantsMachineClause(AConstantsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAAbstractConstantsMachineClause(AAbstractConstantsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAAssertionsMachineClause(AAssertionsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getPredicates());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAVariablesMachineClause(AVariablesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseAConcreteVariablesMachineClause(AConcreteVariablesMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
     public void caseASetsMachineClause(ASetsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getSetDefinitions());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
     public void caseAOperationsMachineClause(AOperationsMachineClause node)
     {
         List<Node> children = new ArrayList<Node>(node.getOperations());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -992,7 +1111,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicates());
         if(node.getExpression() != null)
             children.add(node.getExpression());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -1003,7 +1122,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicate());
         if(node.getExpression() != null)
             children.add(node.getExpression());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -1014,7 +1133,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getPredicates());
         if(node.getExpression() != null)
             children.add(node.getExpression());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -1023,10 +1142,17 @@ public class ASTPython extends DepthFirstAdapter{
         List<Node> children = new ArrayList<Node>(node.getIdentifiers());
         if (node.getSet()!=null)
             children.add(node.getSet());
-        printStdOut_manyChildren(node, children);
+        //printStdOut_manyChildren(node, children);
         
+        
+        String idNum = "0";
         if (node.getIdentifiers()!=null)
-            out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+            idNum = node.getIdentifiers().size()+"";
+        //out.append("id"+(idCounter-1)+".idNum = "+node.getIdentifiers().size()+"\n");
+        
+        LinkedList<String> args = new LinkedList<String>();
+        args.add("idNum=\""+idNum+"\"");
+        printStdOut_manyChildren(node, children, args);
     }
 
 
@@ -1036,7 +1162,7 @@ public class ASTPython extends DepthFirstAdapter{
         children.add(node.getIdentifier()); // this may not be an ID! e.g {(x,y)}(x)
         if (node.getParameters()!=null)
             children.addAll(node.getParameters());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
  
     
@@ -1051,7 +1177,7 @@ public class ASTPython extends DepthFirstAdapter{
             children.add(node.getInvariant());
         if(node.getVariant() != null)
             children.add(node.getVariant());
-        printStdOut_manyChildren(node, children);
+        printStdOut_manyChildren(node, children, null);
     }
 
 
@@ -1676,7 +1802,7 @@ public class ASTPython extends DepthFirstAdapter{
 
 
     // visits and prints the node-List first
-    private void printStdOut_manyChildren(Node node, List<Node> children)
+    private void printStdOut_manyChildren(Node node, List<Node> children, List<String> args)
     {
         String[] ids = new String[children.size()];
         int i=0;
@@ -1688,7 +1814,12 @@ public class ASTPython extends DepthFirstAdapter{
 
         String nodeid = "" + idCounter;
         out.append("id" + nodeid + "=");
-        out.append(getClassName(node) +"()\n");
+        out.append(getClassName(node) +"(");
+        if(args!=null) // no arguments
+            for(String s:args)
+                out.append(s); // adding commas is task of the caller
+        out.append(")\n");
+        // TODO:
         out.append("id"+nodeid+".childNum = "+children.size()+"\n");
         idCounter++;
 
