@@ -1819,8 +1819,8 @@ public class ASTPython extends DepthFirstAdapter{
             for(String s:args)
                 out.append(s); // adding commas is task of the caller
         out.append(")\n");
-        // TODO:
-        out.append("id"+nodeid+".childNum = "+children.size()+"\n");
+
+        //out.append("id"+nodeid+".childNum = "+children.size()+"\n");
         idCounter++;
 
         for(i=0; i<ids.length; i++)
