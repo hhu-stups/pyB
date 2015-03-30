@@ -39,17 +39,25 @@ class StringExpression(Expression):
 class Predicate(Node):
     pass
 
+# constructor overwritten in special cases
 class Clause(Node):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
+# constructor overwritten in special cases        
 class Substitution(Node):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ParseUnit(Node):
     pass
 
 class AAbstractMachineParseUnit(ParseUnit):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class APredicateParseUnit(ParseUnit):
     pass
@@ -61,7 +69,8 @@ class ADefinitionFileParseUnit(ParseUnit):
     pass
     
 class AOperation(Node):
-    def __init__(self, opName, return_Num, parameter_Num):
+    def __init__(self, childNum, opName, return_Num, parameter_Num):
+        self.childNum = int(childNum)
         self.opName = opName
         self.return_Num = int(return_Num)
         self.parameter_Num = int(parameter_Num)
@@ -69,7 +78,8 @@ class AOperation(Node):
 
 # old parser: AEnumeratedSet
 class AEnumeratedSetSet(Node):
-    def __init__(self, idName):
+    def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
@@ -80,12 +90,14 @@ class ADeferredSetSet(Node):
         self.children = []
 
 class AMachineHeader(Node):
-    def __init__(self, idName):
+    def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
 class AMachineReference(Node):
-     def __init__(self, idName):
+     def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
@@ -105,7 +117,8 @@ class AIncludesMachineClause(Clause):
     pass
 
 class AConstraintsMachineClause(Clause):
-    pass
+    def __init__(self):
+        self.children = []
 
 # CONCRETE_CONSTANTS and CONSTANTS-clause
 class AConstantsMachineClause(Clause):
@@ -124,13 +137,16 @@ class AAbstractConstantsMachineClause(Clause):
     pass
 
 class AInvariantMachineClause(Clause):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AInitialisationMachineClause(Clause):
-    pass
+    def __init__(self):
+        self.children = []
 
 class APropertiesMachineClause(Clause):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AAssertionsMachineClause(Clause):
     pass
@@ -156,13 +172,15 @@ class AConvertBoolExpression(Expression):
 
 # old parser: AExpressionDefinition
 class AExpressionDefinitionDefinition(Expression):
-    def __init__(self, idName, paraNum):
+    def __init__(self, childNum, idName, paraNum):
+        self.childNum = int(childNum)
         self.idName = idName
         self.paraNum = int(paraNum)
         self.children = []
 
 class ADefinitionExpression(Expression):
-    def __init__(self, idName):
+    def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
@@ -217,10 +235,14 @@ class AEmptySetExpression(SetExpression):
     pass
 
 class ASetExtensionExpression(SetExpression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ACoupleExpression(Expression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class APowSubsetExpression(SetExpression):
     pass
@@ -312,7 +334,9 @@ class APartialBijectionExpression(SetExpression):
 
 # e.g. f(x) f~(x) proj1(S,T)(x) (x,y)(x) {(x,y)}(x) {(x|->y)}(x)
 class AFunctionExpression(Expression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class AEmptySequenceExpression(SetExpression):
     pass
@@ -342,7 +366,9 @@ class AInsertTailExpression(SetExpression):
     pass
 
 class ASequenceExtensionExpression(SetExpression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ASizeExpression(IntegerExpression):
     pass
@@ -375,10 +401,14 @@ class AIntervalExpression(SetExpression):
     pass
 
 class AGeneralSumExpression(IntegerExpression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class AGeneralProductExpression(IntegerExpression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ANatSetExpression(SetExpression):
     pass
@@ -399,8 +429,10 @@ class AIntSetExpression(SetExpression):
     pass
 
 class ALambdaExpression(SetExpression):
-    pass
-
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
+        
 class AMinIntExpression(IntegerExpression):
     pass
 
@@ -414,37 +446,48 @@ class ASuccessorExpression(IntegerExpression):
     pass
 
 class AQuantifiedIntersectionExpression(SetExpression):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class AQuantifiedUnionExpression(SetExpression):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class ADefinitionPredicate(Predicate):
-    def __init__(self, idName):
+    def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
 # old parser: APredicateDefinition
 class APredicateDefinitionDefinition(Predicate):
-    def __init__(self, idName, paraNum):
+    def __init__(self, childNum, idName, paraNum):
+        self.childNum = int(childNum)
         self.idName = idName
         self.paraNum = int(paraNum)
         self.children = []
 
 class AComprehensionSetExpression(SetExpression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
+
 
 # old parser: AExistentialQuantificationPredicate 
 class AExistsPredicate(Predicate):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 # old parser: AUniversalQuantificationPredicate 
 class AForallPredicate(Predicate):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 # old parser: ABelongPredicate 
 class AMemberPredicate(Predicate):
@@ -505,21 +548,24 @@ class AImplicationPredicate(Predicate):
     pass
 
 class AOpSubstitution(Substitution):
-    def __init__(self, idName, parameter_Num):
+    def __init__(self, childNum, idName, parameter_Num):
+        self.childNum = int(childNum)
         self.idName = idName
         self.parameter_Num = int(parameter_Num)
         self.children = []
 
 # old parser: AOpWithReturnSubstitution 
 class AOperationCallSubstitution(Substitution):
-    def __init__(self, idName, return_Num, parameter_Num):
+    def __init__(self, childNum, idName, return_Num, parameter_Num):
+        self.childNum = int(childNum)
         self.idName = idName
         self.return_Num = int(return_Num)
         self.parameter_Num = int(parameter_Num)
         self.children = []
 
 class AAssignSubstitution(Substitution):
-    def __init__(self, lhs_size, rhs_size):
+    def __init__(self, childNum, lhs_size, rhs_size):
+        self.childNum = int(childNum)
         self.lhs_size = int(lhs_size)
         self.rhs_size = int(rhs_size)
         self.children = []
@@ -531,86 +577,104 @@ class AParallelSubstitution(Substitution):
     pass
 
 class ABecomesSuchSubstitution(Substitution):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class ADefinitionSubstitution(Substitution):
-    def __init__(self, idName):
+    def __init__(self, childNum, idName):
+        self.childNum = int(childNum)
         self.idName = idName
         self.children = []
 
 #old parser: ASubstitutionDefinition
 class ASubstitutionDefinitionDefinition(Substitution):
-    def __init__(self, idName, paraNum):
+    def __init__(self, childNum, idName, paraNum):
+        self.childNum = int(childNum)
         self.idName = idName
         self.paraNum = int(paraNum)
         self.children = []
 
 class ABecomesElementOfSubstitution(Substitution):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class ABlockSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AIfSubstitution(Substitution):
-    def __init__(self, hasElse):
+    def __init__(self, childNum, hasElse):
+        self.childNum = int(childNum)
         self.hasElse = hasElse # String
         self.children = []
 
 class AIfElsifSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class APreconditionSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AAssertionSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AChoiceOrSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class AChoiceSubstitution(Substitution):
     pass
 
 class ASelectWhenSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = []
 
 class ASelectSubstitution(Substitution):
-    def __init__(self, hasElse):
+    def __init__(self, childNum, hasElse):
+        self.childNum = int(childNum)
         self.hasElse = hasElse # TODO: String
         self.children = []
 
 class ACaseSubstitution(Substitution):
-    def __init__(self, expNum, hasElse):
+    def __init__(self, childNum, expNum, hasElse):
+        self.childNum = int(childNum)
         self.expNum = int(expNum)
         self.hasElse = hasElse # TODO: String
         self.children = []
 
 class ACaseOrSubstitution(Substitution):
-    def __init__(self, expNum):
+    def __init__(self, childNum, expNum):
+        self.childNum = int(childNum)
         self.expNum = int(expNum)
         self.children = []
 
 class AVarSubstitution(Substitution):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class AAnySubstitution(Substitution):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class ALetSubstitution(Substitution):
-    def __init__(self, idNum):
+    def __init__(self, childNum, idNum):
+        self.childNum = int(childNum)
         self.idNum = int(idNum)
         self.children = []
 
 class ASkipSubstitution(Substitution):
-    pass
+    def __init__(self):
+        self.children = [] # no childNum
 
 class AWhileSubstitution(Substitution):
     pass
@@ -619,16 +683,21 @@ class ARecEntry(Node):
     pass
 
 class AStructExpression(Expression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ARecExpression(Expression):
-    pass
+    def __init__(self, childNum):
+        self.childNum = int(childNum)
+        self.children = []
 
 class ARecordFieldExpression(Expression):
     pass
 
 class APrimedIdentifierExpression(Expression):
-    def __init__(self, grade):
+    def __init__(self, childNum, grade):
+        self.childNum = int(childNum)
         self.grade = int(grade)
         self.children = []
 

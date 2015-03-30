@@ -319,6 +319,7 @@ class TestTypesRelations():
         # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
+        print ast_string
         root = str_ast_to_python_ast(ast_string)       
      
         # Test

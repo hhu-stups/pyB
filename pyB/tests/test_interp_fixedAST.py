@@ -448,7 +448,7 @@ class TestInterp_fixedAST():
         idExp2 = AIdentifierExpression("aa")
         idExp3 = AIdentifierExpression("bb")
         idExp4 = AIdentifierExpression("cc")
-        sexExp = ASetExtensionExpression()
+        sexExp = ASetExtensionExpression("3")
         sexExp.children.append(idExp2)
         sexExp.children.append(idExp3)
         sexExp.children.append(idExp4)

@@ -235,6 +235,7 @@ class TestPrettyPrinter():
         # Build AST
         string_to_file("#PREDICATE RES:struct(Mark:NAT,Good_enough:BOOL)", file_name)
         ast_string = file_to_AST_str(file_name)
+        print ast_string
         root = str_ast_to_python_ast(ast_string)   
 
         # PPrint
