@@ -60,8 +60,8 @@ def translate(main_code):
     return python_result.split('\n'), c_result.split('\n')
 
 
-import pytest
-@pytest.mark.skipif(True, reason="takes to much time") 
+#import pytest
+#@pytest.mark.skipif(True, reason="takes to much time") 
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
         code =  """

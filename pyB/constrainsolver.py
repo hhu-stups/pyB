@@ -1,13 +1,13 @@
 # This is NOT a constraint solver. It is a wrapper to enable usage of a constraint solver
 # pyB imports:
-from ast_nodes import *
-from enumeration import all_values_by_type
-from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
-from quick_eval import quick_member_eval
-from config import TO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET
 from abstract_interpretation import estimate_computation_time
-from pretty_printer import pretty_print
+from ast_nodes import *
+from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
+from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET
+from enumeration import all_values_by_type
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
+from pretty_printer import pretty_print
+from quick_eval import quick_member_eval
 from symbolic_sets import LargeSet
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
@@ -229,7 +229,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
             #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
             # Avoid interference between bound variables: check find_constraint_vars
             # This is less powerful, but correct
-            if time!=float("inf") and time<TO_MANY_ITEMS and var_node.idName in vars:
+            if time!=float("inf") and time<TOO_MANY_ITEMS and var_node.idName in vars:
                 # at least on predicate of this conjunction can easiely be used
                 # to compute a testset. The exact solution musst contain all 
                 # or less elements than test_set

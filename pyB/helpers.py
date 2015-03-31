@@ -61,7 +61,7 @@ def file_to_AST_str_no_print(file_name_str):
     from config import USE_RPYTHON_POPEN
     out = ""
     c_str = command_str + option_str + " "+file_name_str
-    print c_str
+    #print c_str
     if USE_RPYTHON_POPEN:
         # TODO: remove % s
         from rpython.rlib.rfile import create_popen_file   

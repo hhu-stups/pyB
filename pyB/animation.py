@@ -25,7 +25,7 @@ from interp import exec_substitution, interpret
 # in some cases only if there are "more solutions"
 def calc_next_states(env, bmachine):
     result = []
-    if bmachine.aOperationsMachineClause:
+    if bmachine.has_operations_mc:
         # WARNING: assumes no vars/sets with the same name in two b machines
         # TODO:(#ISSUE 9) write a method to check this assumption 
         #operations = env.all_operation_asts 

@@ -1,3 +1,4 @@
+from symbolic_sets import SymbolicSet
 # -*- coding: utf-8 -*-
 #
 # module-description: 
@@ -81,6 +82,9 @@ def show_ops(next_states, env):
 
 # prints frozensets (e.g. frozenset(["a","b","c"]) ) like this: {a,b,c}
 def print_values_b_style(value):
+    # TODO: check if finite
+    if isinstance(value, SymbolicSet):
+        value = value.enumerate_all()
     if isinstance(value, frozenset):
         string = "{"
         value = list(value)
@@ -91,7 +95,7 @@ def print_values_b_style(value):
                 string += ", "
         string += "}"
         return string
-    return str(value)
+    return repr(value)
     
 
 # - private method -

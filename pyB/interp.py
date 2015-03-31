@@ -561,6 +561,8 @@ def interpret(node, env):
         return interpret(node.children[-1], env)
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
         lst = conj_tree_to_conj_list(node.children[0])
+        if PRINT_SUB_PROPERTIES:
+            print "checking properties clause"
         result = True
         ok = 0
         fail = 0
@@ -591,21 +593,21 @@ def interpret(node, env):
                 continue
             if PRINT_SUB_PROPERTIES: # config.py
                 string = str(value)
+                color = "94" # yellow (should never been seen)
                 if string=="False":
-                   print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
+                   color = "91" # red
                    fail = fail +1
                 elif string=="True":
-                   print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
-                   ok = ok +1
-                else: #XXX
-                   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
+                   color = "92" # green
+                   ok = ok +1                   
+                print '\033[1m\033['+color+'m'+'False'+'\033[00m'+": "+pretty_print(n)
             result = result and value
+        color = "92"      # green
         if fail>0:
-            print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+            color = "91"  # red
         elif timeout>0:
-            print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
-        else:
-            print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
+            color = "94"  # yellow
+        print "\033[1m\033["+color+"mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)           
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
@@ -617,7 +619,7 @@ def interpret(node, env):
         if ENABLE_ASSERTIONS: #config.py
             ok = 0
             fail = 0
-            print "checking assertions"
+            print "checking assertions clause"
             for child in node.children:
                 #print_ast(child)
                 result = interpret(child, env)

@@ -1,5 +1,5 @@
 from ast_nodes import *
-from config import TO_MANY_ITEMS
+from config import TOO_MANY_ITEMS
 from pretty_printer import pretty_print
 import math
 
@@ -25,6 +25,7 @@ def estimate_computation_time(predicate, env, interpreter_callable):
 # nodes which can not occur inside predicates, are omitted.
 # the implementation covers some special cases and one default case.
 # the result is used by a test_set_generator (see constraint solving)
+#
 # TODO: AComprehensionSetExpression AExistsPredicate, 
 #       AUniversalQuantificationPredicate, ALambdaExpression
 # TODO: ARecEntry, AStructExpression, ARecordFieldExpression, ARecExpression
@@ -39,7 +40,7 @@ def _abs_int(node, env, ic):
         return 2
     elif isinstance(node, (APowSubsetExpression, APow1SubsetExpression)):
         time = _abs_int(node.children[0], env, ic)
-        if time>=math.log(TO_MANY_ITEMS,2):
+        if time>=math.log(TOO_MANY_ITEMS,2):
             return float("inf")
         else:
             return 2**(time)
@@ -53,7 +54,7 @@ def _abs_int(node, env, ic):
         time0 = _abs_int(node.children[0], env, ic)
         time1 = _abs_int(node.children[1], env, ic)    
         prod = time0*time1
-        if prod>TO_MANY_ITEMS:
+        if prod>TOO_MANY_ITEMS:
             return float("inf")
         else:
             return prod
@@ -63,7 +64,7 @@ def _abs_int(node, env, ic):
         time0 = _abs_int(node.children[0], env, ic)
         time1 = _abs_int(node.children[1], env, ic)
         exp0  = time0*time1 
-        if exp0>=math.log(TO_MANY_ITEMS,2):
+        if exp0>=math.log(TOO_MANY_ITEMS,2):
             return float("inf")
         else:
             return 2**(exp0)
@@ -76,7 +77,7 @@ def _abs_int(node, env, ic):
         time0 = _abs_int(left_node, env, ic)
         time1 = _abs_int(right_node, env, ic)
         #print time0, time1
-        if time0<TO_MANY_ITEMS and time1<TO_MANY_ITEMS:
+        if time0<TOO_MANY_ITEMS and time1<TOO_MANY_ITEMS:
             # BUG: if this interpreter call cause the lookup of an unset variable,
             # this will crash.
             val0 = ic(left_node, env)

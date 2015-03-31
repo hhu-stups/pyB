@@ -183,10 +183,10 @@ def contains_infinit_enum(node, env):
     elif isinstance(node, AIntegerSetExpression) or isinstance(node , ANaturalSetExpression) or isinstance(node, ANatural1SetExpression):
         return True
     elif isinstance(node, AIntSetExpression):
-        if (-1*env._min_int+ env._max_int)>TO_MANY_ITEMS:
+        if (-1*env._min_int+ env._max_int)>TOO_MANY_ITEMS:
             return True
     elif isinstance(node, ANat1SetExpression) or isinstance(node, ANatSetExpression):
-        if  env._max_int>TO_MANY_ITEMS:
+        if  env._max_int>TOO_MANY_ITEMS:
             return True
     return False
 
