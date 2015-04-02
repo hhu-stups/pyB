@@ -3,4 +3,4 @@ pyB
 
 pyB
 
-pyB/ReadMe.txt for more Informations
+see manual.pdf for more Informations
