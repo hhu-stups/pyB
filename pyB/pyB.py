@@ -182,15 +182,15 @@ def run_checking_mode():
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
-        mch = parse_object
+        mch = parse_object							 
         
-        bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")
+        bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")  # also evals properties
         if not bstates==[]: 
             result = None
             for bstate in bstates:
                 env.state_space.add_state(bstate)
-                if mch.has_properties_mc:
-                    assert interpret(mch.aPropertiesMachineClause, env)
+                #if mch.has_properties_mc:
+                #    assert interpret(mch.aPropertiesMachineClause, env)
                 init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
                 for init_bstate in init_bstates:
                     env.state_space.add_state(init_bstate)

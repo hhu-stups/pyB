@@ -600,7 +600,7 @@ def interpret(node, env):
                 elif string=="True":
                    color = "92" # green
                    ok = ok +1                   
-                print '\033[1m\033['+color+'m'+'False'+'\033[00m'+": "+pretty_print(n)
+                print '\033[1m\033['+color+'m'+string+'\033[00m'+": "+pretty_print(n)
             result = result and value
         color = "92"      # green
         if fail>0:
@@ -617,6 +617,7 @@ def interpret(node, env):
         return result
     elif isinstance(node, AAssertionsMachineClause):
         if ENABLE_ASSERTIONS: #config.py
+            # TODO: add timeout
             ok = 0
             fail = 0
             print "checking assertions clause"
@@ -629,7 +630,12 @@ def interpret(node, env):
                 else:
                     print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
                     fail = fail +1
-            print "checking done - ok:%s fail:%s" % (ok,fail)
+            color = "92"      # green
+            if fail>0:
+                color = "91"  # red
+            #elif timeout>0:
+            #    color = "94"  # yellow
+            print "\033[1m\033["+color+"massertions clause - total:%s ok:%s fail:%s \033[00m" % (len(node.children), ok,fail)
 
 
 # *********************
