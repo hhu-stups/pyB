@@ -70,6 +70,7 @@ class TestPyPyTranslationObjects():
             print node.intValue
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['41', '']
         assert python_result == c_result    
      
      
@@ -82,6 +83,7 @@ class TestPyPyTranslationObjects():
             print int(res)
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['1', '']
         assert python_result == c_result  
 
 
@@ -93,6 +95,7 @@ class TestPyPyTranslationObjects():
             print interpret(node0, None)
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['1', '']
         assert python_result == c_result    
  
  
@@ -111,6 +114,7 @@ class TestPyPyTranslationObjects():
             print interpret(node2, None)
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['3', '']
         assert python_result == c_result   
 
 
@@ -155,6 +159,7 @@ class TestPyPyTranslationObjects():
                         
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['6', '2', '8', '2', '0', '16', '']
         assert python_result == c_result
  
  
@@ -182,6 +187,7 @@ class TestPyPyTranslationObjects():
                         
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['6', '2', '12', '']
         assert python_result == c_result
 
  
@@ -249,7 +255,9 @@ class TestPyPyTranslationObjects():
             print int(res)             
                                            
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code)
+        print python_result 
+        assert python_result == ['0', '1', '1', '0', '0', '1', '1', '0','1', '']
         assert python_result == c_result
  
  
@@ -271,6 +279,7 @@ class TestPyPyTranslationObjects():
                                            
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['0', '']
         assert python_result == c_result
      
      
