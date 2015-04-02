@@ -8,7 +8,7 @@ from util import type_with_known_types, get_type_by_name
 from constrainsolver import _calc_constraint_domain, _categorize_predicates, calc_possible_solutions
 from parsing import str_ast_to_python_ast
 from interp import interpret
-from config import TO_MANY_ITEMS
+from config import TOO_MANY_ITEMS
 from interp import interpret
 
 from config import USE_COSTUM_FROZENSET
@@ -353,7 +353,7 @@ class TestConstraintSolver():
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
         assert time0==float("inf")    
-        assert time1 <TO_MANY_ITEMS
+        assert time1 <TOO_MANY_ITEMS
         assert vars0==["x"]
         assert vars1==["x"] 
         assert compute_first0 == []
@@ -383,7 +383,7 @@ class TestConstraintSolver():
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
         assert time0==float("inf")    
-        assert time1 <TO_MANY_ITEMS
+        assert time1 <TOO_MANY_ITEMS
         assert vars0==["x"]
         assert vars1==["x"]  
         assert compute_first0 == []
