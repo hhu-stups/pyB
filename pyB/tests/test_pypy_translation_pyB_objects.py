@@ -286,7 +286,7 @@ class TestPyPyTranslationObjects():
     # set config.USE_COSTUM_FROZENSET = True
     # Two states, one transition (setups_const --> init)
     #
-    # MACHINE EMPTY
+    # MACHINE SIMPLE
     # INVARIANT  1<2
     # END
     #
@@ -303,19 +303,18 @@ class TestPyPyTranslationObjects():
             from rpython_interp import interpret, eval_clause
             
              # Build AST
-            id0=AMachineHeader()
-            id0.idName = "Empty "
-            id1=AIntegerExpression(1 )
-            id2=AIntegerExpression(2 )
+            id0=AMachineHeader(childNum="0", idName="SIMPLE")
+            id1=AIntegerExpression(1)
+            id2=AIntegerExpression(2)
             id3=ALessPredicate()
             id3.children.append(id1)
             id3.children.append(id2)
             id4=AInvariantMachineClause()
             id4.children.append(id3)
-            id5=AAbstractMachineParseUnit()
+            id5=AAbstractMachineParseUnit(childNum="2")
             id5.children.append(id0)
             id5.children.append(id4)
-            id5.type = "MACHINE "
+            #id5.type = "MACHINE "
             root = id5
             
             # Test
@@ -345,6 +344,64 @@ class TestPyPyTranslationObjects():
                           
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['1', '1', '']
+        assert python_result == c_result
+
+
+	# FIXME: global name 'caseAExpressionParseUnit' is not defined
+	# set parsing line 77: root = my_exec(string)
+    # set config.USE_COSTUM_FROZENSET = True
+    # Two states, one transition (setups_const --> init)
+    #
+    # MACHINE SIMPLE
+    # INVARIANT  1<2
+    # END
+    #
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
+    def test_pypy_genAST_bmachine2(self):
+        code =  """
+            from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
+            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from bmachine import BMachine
+            from environment import Environment
+            from interp import set_up_constants, exec_initialisation
+            from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
+            from rpython_interp import interpret, eval_clause
+            from helpers import file_to_AST_str
+            
+            # Build AST
+            ast_string = file_to_AST_str(\"examples/Simple.mch\")
+            root = str_ast_to_python_ast(ast_string)
+            
+            # Test
+            env = Environment()
+            # inlinded parse_ast
+            assert isinstance(root, AAbstractMachineParseUnit)
+            #mch = BMachine(root, remove_definitions) 
+            #mch.recursive_self_parsing(env)
+            #env.root_mch = mch
+            #env.current_mch = mch #current mch
+            #mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            
+            #type_check_bmch(root, env, mch)
+            # inlinded arbitrary_init_machine
+            #bstates = set_up_constants(root, env, mch, solution_file_read=False)
+            #print len(bstates)
+            #if len(bstates)>0:
+            #    env.state_space.add_state(bstates[0])
+            #bstates = exec_initialisation(root, env, mch, solution_file_read=False)
+            #if len(bstates)>0:
+            #    env.state_space.add_state(bstates[0]) 
+            
+            res = isinstance(root.children[1], AInvariantMachineClause)
+            print int(res)
+            res = eval_clause(root.children[1], env)
+            print int(res)
+                          
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1', '1', '']
         assert python_result == c_result
 
 
@@ -362,7 +419,7 @@ class TestPyPyTranslationObjects():
     #
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
-    def test_pypy_genAST_bmachine2(self):
+    def test_pypy_genAST_bmachine3(self):
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
