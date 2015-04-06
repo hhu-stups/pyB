@@ -87,13 +87,19 @@ class TestTeam():
 
 
     def test_team_volvo(self):
-        run_with_prob("-init ", bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
-        run_with_pyb(bfile_name="Cruise_finite1", dir="examples/not_public/volvo/")
+        dir="examples/not_public/volvo/"
+        if os.name=='nt':
+            dir="examples\not_public\volvo\"
+        run_with_prob("-init ", bfile_name="Cruise_finite1", dir)
+        run_with_pyb(bfile_name="Cruise_finite1", dir)
 
 
     def test_team_whokilledagatha(self):
-        run_with_prob("-init ", bfile_name="JobsPuzzle", dir="examples/")
-        res = run_with_pyb(bfile_name="JobsPuzzle", dir="examples/")
+        dir="examples/"
+        if os.name=='nt':
+            dir="examples\"
+        run_with_prob("-init ", bfile_name="JobsPuzzle", dir)
+        res = run_with_pyb(bfile_name="JobsPuzzle", dir)
 
 
 #     def test_team_alstom_malaga(self):
@@ -121,6 +127,8 @@ class TestTeam():
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
         
         bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
+        if os.name=='nt':
+            bfile_name="examples\not_public\Systerel\C578\2013_08_14\machines_14082013\410_002_simple"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 
@@ -130,6 +138,8 @@ class TestTeam():
     def test_team_defferd_set_items(self):
         import py
         bfile_name="examples/Scope"
+        if os.name=='nt':
+            bfile_name="examples\Scope"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         py.test.raises(BTypeException, "run_with_pyb(bfile_name)")  
         #run_with_pyb(bfile_name)
