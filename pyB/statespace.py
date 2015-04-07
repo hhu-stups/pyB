@@ -5,6 +5,7 @@ from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]
+        self.seen_states = []
         self.history = [] # only strings
     
     # returntype: BState
@@ -24,11 +25,26 @@ class StateSpace:
            self.history.pop()
         else:
            self.stack.pop(0)
-           self.history.pop(0)           
+           self.history.pop(0)
+           
+    def is_seen_state(self, bstate):
+        assert isinstance(bstate, BState)
+        for s in self.seen_states:
+            if s.equal(bstate):
+                return True
+        return False              
     
     def add_state(self, bstate, op_name="unknown"):
+        assert isinstance(bstate, BState)
         self.history.append(op_name)
         self.stack.append(bstate)
+        
+    # not used by substitution generators, but by model checking
+    def set_current_state(self, bstate, op_name="unknown"):
+        assert isinstance(bstate, BState)
+        self.history.append(op_name)
+        self.stack.append(bstate)
+        self.seen_states.append(bstate)    
     
     # returntype: int
     def get_stack_size(self):

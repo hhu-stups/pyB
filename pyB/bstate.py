@@ -27,10 +27,24 @@ class BState():
                 print bmch.mch_name, ":", self.bmch_dict[bmch]
      
                 
-    # TODO: implement me, when model checking is implemented
-    # currently unused.  
     def equal(self, bstate):
-        pass
+        try:
+            for bmachine_key in self.bmch_dict.keys():
+                self_dictionary_list  = self.bmch_dict[bmachine_key]
+                other_dictionary_list = bstate.bmch_dict[bmachine_key]
+                if not len(self_dictionary_list)==len(other_dictionary_list):
+                    return False
+                while not len(self_dictionary_list)==0:
+                    self_dictionary  = self_dictionary_list.pop()
+                    other_dictionary = other_dictionary_list.pop()
+                    for key in self_dictionary.keys():
+                        self_value  = self_dictionary[key]
+                        other_value = other_dictionary[key]
+                        if not self_value==other_value:
+                            return False
+        except KeyError:
+            return False
+        return True
         
     
     # e.g used by animation to calculated the next state 

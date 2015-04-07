@@ -2,6 +2,7 @@ import os
 from animation import calc_next_states
 from ast_nodes import *
 from btypes import *
+from bstate import BState
 from definition_handler import DefinitionHandler
 from environment import Environment
 from helpers import file_to_AST_str
@@ -42,10 +43,26 @@ class TestModelChecker():
         assert len(bstates)==0 # no setup possible
         bstates = exec_initialisation(root, env, mch, solution_file_read)
         assert len(bstates)==1 # only one possibility (floor:=4)
-        env.state_space.add_state(bstates[0])
+        assert len(env.state_space.seen_states)==0
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])
+        assert len(env.state_space.seen_states)==1
         invatiant = root.children[2]
         assert isinstance(invatiant, AInvariantMachineClause)
         assert interpret(invatiant, env) 
         next_states = calc_next_states(env, mch)
         assert len(next_states)==2
+        assert len(env.state_space.stack)==2 # init and setup
+        env.state_space.undo()
+        assert len(env.state_space.stack)==1 # setup
+        assert len(env.state_space.seen_states)==1
+        for tup in next_states:
+            bstate = tup[3]
+            assert isinstance(bstate, BState)
+            if not env.state_space.is_seen_state(bstate):
+                env.state_space.set_current_state(bstate)
+        assert len(env.state_space.stack)==3 # dec, inc, setup
+        assert len(env.state_space.seen_states)==3
+        
+        
         
