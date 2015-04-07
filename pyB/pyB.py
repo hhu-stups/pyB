@@ -184,7 +184,8 @@ def run_checking_mode():
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object							 
         
-        bstates = set_up_constants(root, env, mch, not solution_file_name_str=="")  # also evals properties
+        solution_file_read = not solution_file_name_str==""
+        bstates = set_up_constants(root, env, mch, solution_file_read)  # also evals properties
         if not bstates==[]: 
             result = None
             for bstate in bstates:
@@ -214,7 +215,33 @@ def run_checking_mode():
                 env.state_space.add_state(init_bstates[0]) 
         return eval_Invariant(root, env, mch)   
 
+"""
+def run_model_checking_mode():
+    env = Environment()                                          # 1. create env.
+    file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
+    ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
+    if error:
+        print error
+    env.set_search_dir(file_name_str)
+    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
+    if solution_file_name_str:                                  # 5. parse solution-file and write to env.
+        read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
+                                                                # the bmachine object-init time to the respective mch
 
+                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)  
+    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
+    if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
+        result = interpret(parse_object.root, env)              # eval predicate or expression
+        print result
+    else:
+        assert isinstance(parse_object, BMachine)               # 8. typecheck
+        type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
+        mch = parse_object		
+
+        solution_file_read = not solution_file_name_str==""
+        bstates = set_up_constants(root, env, mch, solution_file_read)  # also evals properties
+"""        
+            
 ###### MAIN PROGRAM ######
 try:
     if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
@@ -222,9 +249,16 @@ try:
     elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
         result = run_checking_mode()
         print "Invariant:", result
+    elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
+        pass
+        #result = run_model_checking_mode()
     else:
         run_animation_mode()
 except Exception as e:
     #print "Error in pyB:", type(e), e.args, e
-    print "Usage: python pyB.py MachineFile <SolutionFile>"
+    print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
+    print "options:"
+    print "-repl: read eval print loop"
+    print "-c:    checking one state using a solution file"
+    print "-mc:   model checking"
     #print e.value

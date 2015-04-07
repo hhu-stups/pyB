@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-from ast_nodes import *
-from btypes import *
-from environment import Environment
-from interp import interpret, set_up_constants, exec_initialisation
-from util import arbitrary_init_machine, get_type_by_name
-from helpers import file_to_AST_str, string_to_file
 from animation_clui import show_ui
 from animation import calc_next_states
+from ast_nodes import *
+from btypes import *
 from definition_handler import DefinitionHandler
+from environment import Environment
+from helpers import file_to_AST_str, string_to_file
+from interp import interpret, set_up_constants, exec_initialisation
 from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_bmch
+from util import arbitrary_init_machine, get_type_by_name
+
 
 from config import USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
@@ -45,7 +46,7 @@ class TestMCHAnimation():
         assert isinstance(invatiant, AInvariantMachineClause)
         assert interpret(invatiant, env)
         for i in range(4):
-            next_states = calc_next_states(env,mch)
+            next_states = calc_next_states(env, mch)
             assert next_states[0][0]=="dec"
             bstate = next_states[0][3]
             env.state_space.add_state(bstate)

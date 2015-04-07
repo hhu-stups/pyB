@@ -1,4 +1,5 @@
 from bstate import BState
+from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING
 
 # TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
@@ -8,15 +9,22 @@ class StateSpace:
     
     # returntype: BState
     def get_state(self):
-        return self.stack[-1]
+        if DEPTH_FIRST_SEARCH_MODEL_CHECKING:
+            return self.stack[-1]
+        else:
+            return self.stack[0]
     
     # returntype: boolean
     def empty(self):
         return len(self.stack)==1
     
     def undo(self):
-        self.stack.pop()
-        self.history.pop()
+        if DEPTH_FIRST_SEARCH_MODEL_CHECKING:
+           self.stack.pop()
+           self.history.pop()
+        else:
+           self.stack.pop(0)
+           self.history.pop(0)           
     
     def add_state(self, bstate, op_name="unknown"):
         self.history.append(op_name)
