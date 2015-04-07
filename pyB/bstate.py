@@ -28,6 +28,8 @@ class BState():
      
                 
     def equal(self, bstate):
+        if not len(self.bmch_dict)==len(bstate.bmch_dict):
+            return False
         try:
             for bmachine_key in self.bmch_dict.keys():
                 self_dictionary_list  = self.bmch_dict[bmachine_key]
@@ -37,6 +39,8 @@ class BState():
                 while not len(self_dictionary_list)==0:
                     self_dictionary  = self_dictionary_list.pop()
                     other_dictionary = other_dictionary_list.pop()
+                    if not len(self_dictionary)==len(other_dictionary):
+                        return False
                     for key in self_dictionary.keys():
                         self_value  = self_dictionary[key]
                         other_value = other_dictionary[key]
