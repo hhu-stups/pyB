@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
 from ast_nodes import *
+from bexceptions import BTypeException
 from btypes import *
-from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str, find_var_nodes
+from definition_handler import DefinitionHandler
 from environment import Environment
+from helpers import file_to_AST_str, string_to_file, solution_file_to_AST_str, find_var_nodes
+from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
+import os
 from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_root_bmch, type_check_predicate
-from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
-from definition_handler import DefinitionHandler
-from bexceptions import BTypeException
+
+
+
 
 from config import USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
@@ -88,18 +92,20 @@ class TestTeam():
 
     def test_team_volvo(self):
         dir="examples/not_public/volvo/"
+        bfile_name="Cruise_finite1"
         if os.name=='nt':
-            dir="examples\not_public\volvo\"
-        run_with_prob("-init ", bfile_name="Cruise_finite1", dir)
-        run_with_pyb(bfile_name="Cruise_finite1", dir)
+            dir="examples\not_public\volvo\\"
+        run_with_prob("-init ", bfile_name, dir)
+        run_with_pyb(bfile_name, dir)
 
 
     def test_team_whokilledagatha(self):
         dir="examples/"
+        bfile_name="JobsPuzzle"
         if os.name=='nt':
-            dir="examples\"
-        run_with_prob("-init ", bfile_name="JobsPuzzle", dir)
-        res = run_with_pyb(bfile_name="JobsPuzzle", dir)
+            dir="examples\\"
+        run_with_prob("-init ", bfile_name, dir)
+        res = run_with_pyb(bfile_name, dir)
 
 
 #     def test_team_alstom_malaga(self):
@@ -128,7 +134,7 @@ class TestTeam():
         
         bfile_name="examples/not_public/Systerel/C578/2013_08_14/machines_14082013/410_002_simple"
         if os.name=='nt':
-            bfile_name="examples\not_public\Systerel\C578\2013_08_14\machines_14082013\410_002_simple"
+            bfile_name="examples\not_public\Systerel\C578\2013_08_14\machines_14082013\410_002_simple\\"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
         run_with_pyb(bfile_name)
 
