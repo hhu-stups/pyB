@@ -49,7 +49,8 @@ class TestModelChecker():
         assert len(env.state_space.seen_states)==1
         invatiant = root.children[2]
         assert isinstance(invatiant, AInvariantMachineClause)
-        assert interpret(invatiant, env) 
+        assert interpret(invatiant, env)
+        assert len(env.state_space.stack)==2 
         next_states = calc_next_states(env, mch)
         assert len(next_states)==2
         assert len(env.state_space.stack)==2 # init and setup
@@ -63,6 +64,28 @@ class TestModelChecker():
                 env.state_space.set_current_state(bstate)
         assert len(env.state_space.stack)==3 # dec, inc, setup
         assert len(env.state_space.seen_states)==3
+        
+        # TODO: Bstate needs refactoring. 
+        # - Remove init state
+        # - dont map None to values if parsing unit is no machine
+        # - check empty on stack length 0
+        # model checking loop
+        """
+        i = 3
+        j = 3
+        while not env.state_space.empty():
+            assert interpret(invatiant, env) 
+            next_states = calc_next_states(env, mch)
+            for tup in next_states:
+                bstate = tup[3]
+                i = i+1
+                #print i
+                if not env.state_space.is_seen_state(bstate):
+                    env.state_space.set_current_state(bstate) 
+                    j = j+1
+                    print len(env.state_space.seen_states)
+        """ 
+          
         
         
         
