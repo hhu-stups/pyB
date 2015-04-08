@@ -37,7 +37,7 @@ def read_solution_file(env, solution_file_name_str):
     env.solution_root = root
     env.write_solution_nodes_to_env(root)
     if env.solutions and VERBOSE:
-        print "learnd from solution-file (constants and variables): ", [x for x in env.solutions] 
+        print "learned from solution-file (constants and variables): ", [x for x in env.solutions] 
 
 
 # can use a solution file to speed up the init (or make it possible).
@@ -182,7 +182,7 @@ def run_checking_mode():
     else:
         assert isinstance(parse_object, BMachine)               # 8. typecheck
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
-        mch = parse_object							 
+        mch = parse_object                           
         
         solution_file_read = not solution_file_name_str==""
         bstates = set_up_constants(root, env, mch, solution_file_read)  # also evals properties
@@ -215,32 +215,53 @@ def run_checking_mode():
                 env.state_space.add_state(init_bstates[0]) 
         return eval_Invariant(root, env, mch)   
 
-"""
+
 def run_model_checking_mode():
+    print "WARNING: model checking still experimental"
     env = Environment()                                          # 1. create env.
     file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
     if error:
         print error
     env.set_search_dir(file_name_str)
-    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    if solution_file_name_str:                                  # 5. parse solution-file and write to env.
-        read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
-                                                                # the bmachine object-init time to the respective mch
+    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast                                                                
+    parse_object = remove_defs_and_parse_ast(root, env)         # 5. replace defs and extern-functions inside mch and solution-file (if present) 
+    if not isinstance(parse_object, BMachine):                                  
+        print "Error: only model checking of b machines" 
+        return
 
-                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)  
-    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
-    if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
-        result = interpret(parse_object.root, env)              # eval predicate or expression
-        print result
-    else:
-        assert isinstance(parse_object, BMachine)               # 8. typecheck
-        type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
-        mch = parse_object		
+    assert isinstance(parse_object, BMachine)                   # 6. typecheck
+    type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
+    mch = parse_object      
 
-        solution_file_read = not solution_file_name_str==""
-        bstates = set_up_constants(root, env, mch, solution_file_read)  # also evals properties
-"""        
+    bstates = set_up_constants(root, env, mch, solution_file_read=False)  # also evals properties
+    # TODO: implement setup and init non determinism 
+    if len(bstates)>0:
+        print "WARNING: set up constants not supported yet" 
+        return
+    bstates = exec_initialisation(root, env, mch, solution_file_read=False)
+    if not len(bstates)==1:
+        print "WARNING: only one init. expected" 
+        return
+    if not mch.has_invariant_mc:
+        print "WARNING: no invariant present" 
+        return   
+     
+    env.state_space.set_current_state(bstates[0], op_name="initialisation")
+    while not env.state_space.empty():                          # 7. model check  
+        if not interpret(mch.aInvariantMachineClause, env):
+            print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
+            #print env.state_space.history
+            return False
+        next_states = calc_next_states(env, mch)
+        env.state_space.undo()
+        for tup in next_states:
+            bstate = tup[3]
+            if not env.state_space.is_seen_state(bstate):
+                env.state_space.set_current_state(bstate)  
+    print "checked",len(env.state_space.seen_states),"states. No invariant violation found."
+    return True
+      
             
 ###### MAIN PROGRAM ######
 try:
@@ -250,15 +271,14 @@ try:
         result = run_checking_mode()
         print "Invariant:", result
     elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
-        pass
-        #result = run_model_checking_mode()
+        run_model_checking_mode()
     else:
         run_animation_mode()
 except Exception as e:
-    #print "Error in pyB:", type(e), e.args, e
+    print "Error in pyB:", type(e), e.args, e
     print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
     print "options:"
     print "-repl: read eval print loop"
     print "-c:    checking one state using a solution file"
     print "-mc:   model checking"
-    #print e.value
+
