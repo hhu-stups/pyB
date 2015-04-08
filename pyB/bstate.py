@@ -36,9 +36,9 @@ class BState():
                 other_dictionary_list = bstate.bmch_dict[bmachine_key]
                 if not len(self_dictionary_list)==len(other_dictionary_list):
                     return False
-                while not len(self_dictionary_list)==0:
-                    self_dictionary  = self_dictionary_list.pop()
-                    other_dictionary = other_dictionary_list.pop()
+                for i in range(len(self_dictionary_list)):
+                    self_dictionary  = self_dictionary_list[i]
+                    other_dictionary = other_dictionary_list[i]
                     if not len(self_dictionary)==len(other_dictionary):
                         return False
                     for key in self_dictionary.keys():

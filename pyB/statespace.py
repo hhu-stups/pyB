@@ -14,7 +14,7 @@ class StateSpace:
             return self.stack[-1]
         else:
             return self.stack[0]
-    
+        
     # returntype: boolean
     def empty(self):
         return len(self.stack)==1

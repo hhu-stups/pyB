@@ -153,6 +153,7 @@ class BMachine:
         if self.has_operations_mc:
             for op in self.aOperationsMachineClause.children:
                 self.parse_operation(op, env)
+        # FIXME: This causes a first state already present which is a inconsistency in pybs design 
         bstate = env.state_space.get_state()
         bstate.register_new_bmachine(self, all_names)        
         env.get_all_strings(self.root) # get string expressions inside mch.

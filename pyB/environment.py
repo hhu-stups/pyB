@@ -110,6 +110,7 @@ class Environment():
             assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)
+        # TODO: replace bmachine==None with Predicate or Expression
         bstate.set_value(id_Name, value, bmachine)
 
         
@@ -122,6 +123,7 @@ class Environment():
             assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)
+        # TODO: replace bmachine==None with Predicate or Expression
         return bstate.get_value(id_Name, bmachine)
     
     

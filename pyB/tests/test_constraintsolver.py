@@ -583,7 +583,7 @@ class TestConstraintSolver():
         assert time0<2**22   
         assert compute_first0 == []
         # ExpressionParseUnit does not support variables
-        result = interpret(root.children[0], env)
+        result = interpret(root, env)
         assert result==frozenset(['a', 'c', 'b'])
 
                
