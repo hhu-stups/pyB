@@ -2,7 +2,7 @@
 import os 
 
 
-DEPTH_FIRST_SEARCH_MODEL_CHECKING = True
+DEPTH_FIRST_SEARCH_MODEL_CHECKING = True # else
 MIN_INT = -1
 MAX_INT = 5
 MAX_OP_SOLUTIONS = 4    # not implemented yet

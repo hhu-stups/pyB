@@ -256,7 +256,6 @@ class TestPyPyTranslationObjects():
                                            
             return 0\n"""
         python_result, c_result = translate(code)
-        print python_result 
         assert python_result == ['0', '1', '1', '0', '0', '1', '1', '0','1', '']
         assert python_result == c_result
  
@@ -394,9 +393,9 @@ class TestPyPyTranslationObjects():
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0]) 
             
-            res = isinstance(root.children[1], AInvariantMachineClause)
+            res = isinstance(root.children[0], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[1], env)
+            res = eval_clause(root.children[0], env)
             print int(res)
                           
             return 0\n"""
