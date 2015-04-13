@@ -168,7 +168,7 @@ class TestTypesFunctions():
         # TODO:        
 
 
-    def test_types_seq(self):
+    def test_types_seq0(self):
         # Build AST
         string_to_file("#PREDICATE s:seq(S)", file_name)
         ast_string = file_to_AST_str(file_name)

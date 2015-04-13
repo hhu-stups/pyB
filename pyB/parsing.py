@@ -13,19 +13,19 @@ many_children_one_arg += ["AAssertionsMachineClause", "ASetsMachineClause", "ADe
 many_children_one_arg += ["ASetExtensionExpression", "ACoupleExpression", "AFunctionExpression", "ASequenceExtensionExpression"]
 many_children_one_arg += ["AGeneralSumExpression", "AGeneralProductExpression", "ALambdaExpression", "AComprehensionSetExpression"]
 many_children_one_arg += ["AExistsPredicate", "AForallPredicate", "ASequenceSubstitution", "AParallelSubstitution", "AChoiceSubstitution"]
-many_children_one_arg += ["AWhileSubstitution", "AStructExpression", "ARecExpression", "ADefinitionFileParseUnit"]
+many_children_one_arg += ["AWhileSubstitution", "AStructExpression", "ARecExpression"]
 
 many_children_two_args = ["AMachineHeader", "AMachineReference", "AEnumeratedSetSet", "ADefinitionExpression"]
 many_children_two_args += ["AQuantifiedIntersectionExpression", "AQuantifiedUnionExpression", "ADefinitionPredicate"]
 many_children_two_args += ["ABecomesSuchSubstitution", "ADefinitionSubstitution", "ABecomesElementOfSubstitution", "AIfSubstitution"]
 many_children_two_args += ["ASelectSubstitution", "ACaseOrSubstitution", "AVarSubstitution", "AAnySubstitution", "ALetSubstitution"]
-many_children_two_args += ["APrimedIdentifierExpression"]
+#many_children_two_args += ["APrimedIdentifierExpression"]
 
 many_children_three_args = ["AExpressionDefinitionDefinition", "APredicateDefinitionDefinition", "AOpSubstitution"]
 many_children_three_args += ["AAssignSubstitution","ASubstitutionDefinitionDefinition", "ACaseSubstitution"]
 
-
-many_children_four_args = ["AOperation", "AOperationCallSubstitution"]
+## opcall before op. otherwise pattern matching fails (always operation)
+many_children_four_args = ["AOperationCallSubstitution", "AOperation"]
 
 # nodes without constructor parameters
 two_children = ["AAddExpression", "AMinusOrSetSubtractExpression", "AMultOrCartExpression", "ADivExpression", "AModuloExpression", "APowerOfExpression"]
@@ -45,9 +45,9 @@ one_child = ["APredicateParseUnit", "AExpressionParseUnit", "AInvariantMachineCl
 one_child += ["ANegationPredicate", "AUnaryMinusExpression", "AConvertBoolExpression", "AMinExpression", "AMaxExpression"]
 one_child += ["AGeneralUnionExpression", "AGeneralIntersectionExpression", "ACardExpression", "APowSubsetExpression","APow1SubsetExpression"]
 one_child += ["ADomainExpression", "ARangeExpression", "AIdentityExpression", "AReflexiveClosureExpression", "AClosureExpression"]
-one_child += ["AReverseExpression", "ASeq1Expression", "AIseqExpression", "AIseq1Expression", "APermExpression"]
+one_child += ["AReverseExpression", "ASeqExpression","ASeq1Expression", "AIseqExpression", "AIseq1Expression", "APermExpression"]
 one_child += ["ASizeExpression", "ARevExpression", "AGeneralConcatExpression", "AFirstExpression", "ALastExpression", "ATailExpression", "AFrontExpression"]
-one_child += ["ABlockSubstitution", "AChoiceOrSubstitution", "ATransRelationExpression", "ATransFunctionExpression"]
+one_child += ["ABlockSubstitution", "AChoiceOrSubstitution", "ATransRelationExpression", "ATransFunctionExpression", "ADefinitionFileParseUnit"]
 
 
 # AST leafs
@@ -55,16 +55,15 @@ no_child =  ["AStringSetExpression", "AEmptySetExpression", "AEmptySequenceExpre
 no_child += ["ANatSetExpression", "ANaturalSetExpression", "AIntSetExpression", "ANatural1SetExpression"]
 no_child += ["ANat1SetExpression", "ABooleanTrueExpression", "ABoolSetExpression", "ABooleanFalseExpression"]
 no_child += ["ASkipSubstitution", "AMinIntExpression", "AMaxIntExpression", "ASuccessorExpression", "APredecessorExpression"]
-no_child += ["AEmptySequenceExpression"]
 
 
 
 # create parsing function at import time (this is allowed by RPython) 
 # using metaprogramming (parses from string to node objects and returns AST-root:
 f =  "def my_exec(string):\n"
-##f += "\tprint string\n"
 f += "\tstack = []\n"
 f += "\tfor line in string.split(\"\\n\"):\n"
+#f += "\t\tprint line\n"
 # special case: AIntegerExpression
 f += "\t\tif \"AIntegerExpression\" in line:\n"
 f += "\t\t\ts=line.find('(')\n"
@@ -92,10 +91,10 @@ f += "\t\t\tassert e>0\n"
 f += "\t\t\tstring=line[s+1:e]\n"
 f += "\t\t\tnode =AStringExpression(string)\n"
 f += "\t\t\tstack.append(node)\n"
-# special case: AStringExpression
+# special case: AFileDefinitionDefinition
 f += "\t\telif \"AFileDefinitionDefinition\" in line:\n"
-f += "\t\t\ts=line.find('(')\n"
-f += "\t\t\te=line.rfind(')')\n"
+f += "\t\t\ts=line.find('\"')\n"
+f += "\t\t\te=line.rfind('\"')\n"
 f += "\t\t\tassert s>0\n"
 f += "\t\t\tassert e>0\n"
 f += "\t\t\tidName=line[s+1:e]\n"
@@ -103,13 +102,31 @@ f += "\t\t\tnode =AFileDefinitionDefinition(idName)\n"
 f += "\t\t\tstack.append(node)\n"
 # special case: ADeferredSetSet
 f += "\t\telif \"ADeferredSetSet\" in line:\n"
-f += "\t\t\ts=line.find('(')\n"
-f += "\t\t\te=line.rfind(')')\n"
+f += "\t\t\ts=line.find('\"')\n"
+f += "\t\t\te=line.rfind('\"')\n"
 f += "\t\t\tassert s>0\n"
 f += "\t\t\tassert e>0\n"
 f += "\t\t\tidName=line[s+1:e]\n"
 f += "\t\t\tnode =ADeferredSetSet(idName)\n"
 f += "\t\t\tstack.append(node)\n"
+# special case: APrimedIdentifierExpression 
+f += "\t\telif \"APrimedIdentifierExpression\" in line:\n"
+f += "\t\t\tassert \",\" in line\n"
+f += "\t\t\targ_str = line.split(\",\")\n"
+f += "\t\t\targs = []\n"
+f += "\t\t\tfor string in arg_str:\n"
+f += "\t\t\t\ts1 = string.find(\"\\\"\")\n"
+f += "\t\t\t\te1 = string.rfind(\"\\\"\")\n"
+f += "\t\t\t\tassert s1>0\n"
+f += "\t\t\t\tassert e1>0\n"
+f += "\t\t\t\targs.append(string[s1+1:e1])\n"
+f += "\t\t\tassert len(args)>1\n"
+f += "\t\t\tnode = APrimedIdentifierExpression(args[0],args[1])\n"
+f += "\t\t\tchild_num=int(args[0])\n"   
+f += "\t\t\t"+"for i in range(child_num):\n"
+f += "\t\t\t\tnode.children.append(stack[-1])\n" # (dont pops id)
+f += "\t\t\tnode.children.reverse()\n" 
+f += "\t\t\tstack.append(node)\n" 
 for node_string in no_child:
     f += "\t\telif \""+ node_string +"\" in line:\n"
     f += "\t\t\tnode = "+ node_string+"()\n"
@@ -141,7 +158,7 @@ for node_string in many_children_one_arg:
     f += "\t\t\t"+"for i in range(child_num):\n"
     f += "\t\t\t\tnode.children.append(stack.pop())\n"
     f += "\t\t\tnode.children.reverse()\n"
-    f += "\t\t\tstack.append(node)\n"
+    f += "\t\t\tstack.append(node)\n"    
 for node_string in many_children_two_args + many_children_three_args + many_children_four_args:
     f += "\t\telif \""+ node_string +"\" in line:\n"
     f += "\t\t\tassert \",\" in line\n"
@@ -188,8 +205,8 @@ class ExpressionParseUnit:
 # TODO: A Parsing via "exec <String>" is not RPython: 
 # Write a JSON-parser to avoid the string-eval.
 def str_ast_to_python_ast(string):
-    exec string
-    #root = my_exec(string)
+    #exec string
+    root = my_exec(string)
     #print_ast(root)
     return root
 

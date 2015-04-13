@@ -80,6 +80,7 @@ class AOperation(Node):
 class AEnumeratedSetSet(Node):
     def __init__(self, childNum, idName):
         self.childNum = int(childNum)
+        #print "<",idName,">"
         self.idName = idName
         self.children = []
 
@@ -719,6 +720,7 @@ class AStringExpression(StringExpression):
 
 class AIdentifierExpression(Expression):
     def __init__(self, idName):
+        #print "<",idName,">"
         self.idName = idName
         #self.enum_hint = None
 

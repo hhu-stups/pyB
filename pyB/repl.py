@@ -34,6 +34,8 @@ def parse_repl_input(input):
     try:   
         string_to_file("#EXPRESSION "+input, "temp.b")
         ast_string,error = file_to_AST_str_no_print("temp.b")
+        if ast_string=="\n":
+            raise NameError() # FIXME: refactor this line
         root = str_ast_to_python_ast(ast_string) 
     except NameError: #no expression
         string_to_file("#PREDICATE "+input, "temp.b")
