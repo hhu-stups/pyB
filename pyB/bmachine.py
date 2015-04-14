@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from helpers import file_to_AST_str_no_print
-from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
 from boperation import BOperation
+from helpers import file_to_AST_str_no_print, contains_lower_character
+
+from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
      
@@ -203,9 +204,18 @@ class BMachine:
         self.mch_name = self.aMachineHeader.idName
         for idNode in self.aMachineHeader.children:
             assert isinstance(idNode, AIdentifierExpression)
-            if str.islower(idNode.idName):
+            # 2.1 id names [a-zA-Z][a-zA-Z0-9_]*
+            string = idNode.idName
+            if contains_lower_character(string):
+                # Page 116. 7.5 
+                # scalar parameters: the name of a scalar parameter is an identifier 
+                # that must contain at least one lowercase character.
                 self.scalar_params.append(idNode)
             else:
+                # Page 116. 7.5 
+                # set parameters: the name of a set parameter is an identifier 
+                # that must not contain a lowercase character.
+                # TODO: This impl was always wrong write a Testcase with Book 
                 self.set_params.append(idNode)
         if not self.scalar_params==[]:
             assert self.has_constraints_mc

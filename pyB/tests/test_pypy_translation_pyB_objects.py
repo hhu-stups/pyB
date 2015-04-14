@@ -111,7 +111,7 @@ class TestPyPyTranslationObjects():
             node2 = AAddExpression()
             node2.children.append(node0)
             node2.children.append(node1)
-            print interpret(node2, None)
+            print interpret(node2, None) # not refactored
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == ['3', '']
@@ -318,7 +318,7 @@ class TestPyPyTranslationObjects():
             
             # Test
             env = Environment()
-            # inlinded parse_ast
+            # inlinded parse_ast method
             assert isinstance(root, AAbstractMachineParseUnit)
             #mch = BMachine(root, remove_definitions) 
             #mch.recursive_self_parsing(env)
@@ -375,13 +375,15 @@ class TestPyPyTranslationObjects():
             
             # Test
             env = Environment()
+            
             # inlinded parse_ast
             assert isinstance(root, AAbstractMachineParseUnit)
-            #mch = BMachine(root, remove_definitions) 
-            #mch.recursive_self_parsing(env)
-            #env.root_mch = mch
-            #env.current_mch = mch #current mch
-            #mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            mch = BMachine(root, remove_definitions) 
+            mch.recursive_self_parsing(env) # str.islower not RPYTHON
+            env.root_mch = mch
+            env.current_mch = mch #current mch
+            mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            # end of inlinded parse_ast
             
             #type_check_bmch(root, env, mch)
             # inlinded arbitrary_init_machine
@@ -393,9 +395,9 @@ class TestPyPyTranslationObjects():
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0]) 
             
-            res = isinstance(root.children[0], AInvariantMachineClause)
+            res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[0], env)
+            res = eval_clause(root.children[1], env)
             print int(res)
                           
             return 0\n"""

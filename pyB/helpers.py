@@ -292,6 +292,13 @@ def double_element_check(lst):
     return False
 
 
+# used by machine parameters
+def contains_lower_character(string):
+    for c in string:
+        if c>='a' and c<='z':
+            return True
+    return False
+
 # True if all free variables have an value BEFORE the visit of this AST
 # E.g. "x=42" is False if x has no value BEFORE 
 def all_ids_known(node, env):
