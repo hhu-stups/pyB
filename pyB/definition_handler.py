@@ -81,7 +81,8 @@ class DefinitionHandler():
                     root.children[i] = def_free_ast
                 else:
                     self._replace_definitions(child)
-        except AttributeError: # leaf:no children
+        except AttributeError as e: # leaf:no children
+            print "AttributeError while definition handling",e
             return
 
 
@@ -104,7 +105,8 @@ class DefinitionHandler():
                         continue
                 else:
                     self._replace_ext_funcs_in_solution_file(child)
-        except AttributeError:
+        except AttributeError as e:
+            print "AttributeError while definition handling", e
             return
         
     
@@ -128,9 +130,9 @@ class DefinitionHandler():
         # def_node:     INITIALISATION Assign(z, 1+1) || Assign(b, TRUE) 
         # ast:          DEFINITIONS Assign(VarName,Expr) == VarName := Expr; 
         # replace nodes: {(VarName,z),(Expr,1+1)}
-        result = self._clone_ast(ast)
-        self._replace_nodes(result, replace_nodes)
-        return result.children[-1]
+        ast_clone = self._clone_ast(ast)
+        self._replace_nodes(ast_clone, replace_nodes)
+        return ast_clone.children[-1]
     
     
     # side-effect: change definition-nodes to def-free nodes   
@@ -144,12 +146,16 @@ class DefinitionHandler():
                     self._replace_nodes(child, map)
         except AttributeError: # leaf:no children
             return
-     
-            
+    
+
     def _clone_ast(self, ast):
-        # TODO: replace with own method. deepcopy is not Rpython
-        import copy
-        print_ast(ast)
-        result = copy.deepcopy(ast)
+        # deepcopy is not Rpython
+        #import copy
+        #print "original"
+        #print_ast(ast)
+        #result = copy.deepcopy(ast)
+        result = ast.deepcopy()
+        #print "clone"
+        #print_ast(result)
         return result
         
