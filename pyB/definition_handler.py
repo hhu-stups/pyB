@@ -36,7 +36,7 @@ class DefinitionHandler():
         for definition in clause.children:
             if isinstance(definition, AFileDefinitionDefinition):
                 continue
-            assert isinstance(definition, (AExpressionDefinitionDefinition, APredicateDefinitionDefinition, ASubstitutionDefinitionDefinition))
+            assert isinstance(definition, AExpressionDefinitionDefinition) or isinstance(definition, APredicateDefinitionDefinition) or isinstance(definition, ASubstitutionDefinitionDefinition)
             self.def_map[definition.idName] = definition
             # make sure only ext. funs. are replaced if definition entry is presend
             if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():
@@ -68,7 +68,7 @@ class DefinitionHandler():
         try:
             for i in range(len(root.children)):
                 child = root.children[i]
-                if isinstance(child, (ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution)):
+                if isinstance(child, ADefinitionExpression) or isinstance(child, ADefinitionPredicate) or isinstance(child,  ADefinitionSubstitution):
                     # replace with ext. fun node if necessary 
                     if child.idName in self.external_functions_found:
                        name = child.idName
@@ -112,7 +112,7 @@ class DefinitionHandler():
     
     def _gen_def_free_ast(self, def_node):
         ast = self.def_map[def_node.idName]
-        assert isinstance(ast, (AExpressionDefinitionDefinition, APredicateDefinitionDefinition, ASubstitutionDefinitionDefinition))       
+        assert isinstance(ast, AExpressionDefinitionDefinition) or isinstance(ast, APredicateDefinitionDefinition) or isinstance(ast, ASubstitutionDefinitionDefinition)
         replace_nodes = {}
         # (1) find nodes to be replaced 
         for i in range(ast.paraNum):

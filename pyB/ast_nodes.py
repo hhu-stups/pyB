@@ -78,18 +78,17 @@ class AAbstractMachineParseUnit(ParseUnit):
 
 class APredicateParseUnit(ParseUnit):
     def clone(self):
-        return APredicateParseUnit(self.childNum)
+        return APredicateParseUnit()
         
-
 
 class AExpressionParseUnit(ParseUnit):
     def clone(self):
-        return AExpressionParseUnit(self.childNum)
+        return AExpressionParseUnit()
         
         
 class ADefinitionFileParseUnit(ParseUnit):
     def clone(self):
-        return ADefinitionFileParseUnit(self.childNum)
+        return ADefinitionFileParseUnit()
         
             
 class AOperation(Node):
@@ -101,7 +100,7 @@ class AOperation(Node):
         self.children = []
 
     def clone(self):
-        return AAOperation(self.childNum, self.opName, self.return_Num, self.parameter_Num)
+        return AOperation(str(self.childNum), self.opName, str(self.return_Num), str(self.parameter_Num))
 
         
 # old parser: AEnumeratedSet
@@ -112,7 +111,7 @@ class AEnumeratedSetSet(Node):
         self.children = []
 
     def clone(self):
-        return AEnumeratedSetSet(self.childNum, self.idName)
+        return AEnumeratedSetSet(str(self.childNum), self.idName)
 
 
 # old parser: ADeferredSet
@@ -132,7 +131,7 @@ class AMachineHeader(Node):
         self.children = []
 
     def clone(self):
-        return AMachineHeader(self.childNum, self.idName)
+        return AMachineHeader(str(self.childNum), self.idName)
 
         
 class AMachineReference(Node):
@@ -142,7 +141,7 @@ class AMachineReference(Node):
         self.children = []
 
     def clone(self):
-        return AMachineReference(self.childNum, self.idName)
+        return AMachineReference(str(self.childNum), self.idName)
 
         
 class ASeesMachineClause(Clause):
@@ -255,7 +254,7 @@ class AExpressionDefinitionDefinition(Expression):
         self.children = []
         
     def clone(self):
-        return AExpressionDefinitionDefinition(self.childNum, self.idName, self.paraNum)
+        return AExpressionDefinitionDefinition(str(self.childNum), self.idName, str(self.paraNum))
 
 class ADefinitionExpression(Expression):
     def __init__(self, childNum, idName):
@@ -264,7 +263,7 @@ class ADefinitionExpression(Expression):
         self.children = []
 
     def clone(self):
-        return ADefinitionExpression(self.childNum, self.idName)
+        return ADefinitionExpression(str(self.childNum), self.idName)
         
 class ABoolSetExpression(SetExpression):
     def clone(self):
@@ -629,7 +628,7 @@ class AQuantifiedIntersectionExpression(SetExpression):
         self.children = []
 
     def clone(self):
-        return AQuantifiedIntersectionExpression(self.childNum, self.idNum)
+        return AQuantifiedIntersectionExpression(str(self.childNum), str(self.idNum))
         
 class AQuantifiedUnionExpression(SetExpression):
     def __init__(self, childNum, idNum):
@@ -638,7 +637,7 @@ class AQuantifiedUnionExpression(SetExpression):
         self.children = []
 
     def clone(self):
-        return AQuantifiedUnionExpression(self.childNum, self.idNum)
+        return AQuantifiedUnionExpression(str(self.childNum), str(self.idNum))
         
 class ADefinitionPredicate(Predicate):
     def __init__(self, childNum, idName):
@@ -647,7 +646,7 @@ class ADefinitionPredicate(Predicate):
         self.children = []
 
     def clone(self):
-        return ADefinitionPredicate(self.childNum, self.idNum)
+        return ADefinitionPredicate(str(self.childNum), self.idName)
         
 # old parser: APredicateDefinition
 class APredicateDefinitionDefinition(Predicate):
@@ -658,7 +657,7 @@ class APredicateDefinitionDefinition(Predicate):
         self.children = []
 
     def clone(self):
-        return APredicateDefinitionDefinition(self.childNum, self.idName, self.paraNum)
+        return APredicateDefinitionDefinition(str(self.childNum), self.idName, str(self.paraNum))
         
 class AComprehensionSetExpression(SetExpression):
     def __init__(self, childNum):
@@ -769,7 +768,7 @@ class AOpSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AOpSubstitution(self.childNum, self.idNum, self.parameter_Num)
+        return AOpSubstitution(str(self.childNum), self.idName, str(self.parameter_Num))
         
 # old parser: AOpWithReturnSubstitution 
 class AOperationCallSubstitution(Substitution):
@@ -781,7 +780,7 @@ class AOperationCallSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AOperationCallSubstitution(self.childNum, self.idNum, self.return_Num, self.parameter_Num)
+        return AOperationCallSubstitution(str(self.childNum), self.idName, str(self.return_Num), str(self.parameter_Num))
         
 class AAssignSubstitution(Substitution):
     def __init__(self, childNum, lhs_size, rhs_size):
@@ -791,7 +790,7 @@ class AAssignSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AAssignSubstitution(self.childNum, self.lhs_size, self.rhs_size)
+        return AAssignSubstitution(str(self.childNum), str(self.lhs_size), str(self.rhs_size))
         
 class ASequenceSubstitution(Substitution):
     def clone(self):
@@ -808,7 +807,7 @@ class ABecomesSuchSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ABecomesSuchSubstitution(self.childNum, self.idNum)
+        return ABecomesSuchSubstitution(str(self.childNum), str(self.idNum))
         
 class ADefinitionSubstitution(Substitution):
     def __init__(self, childNum, idName):
@@ -817,7 +816,7 @@ class ADefinitionSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ADefinitionSubstitution(self.childNum, self.idName)
+        return ADefinitionSubstitution(str(self.childNum), self.idName)
         
 #old parser: ASubstitutionDefinition
 class ASubstitutionDefinitionDefinition(Substitution):
@@ -828,7 +827,7 @@ class ASubstitutionDefinitionDefinition(Substitution):
         self.children = []
 
     def clone(self):
-        return ASubstitutionDefinitionDefinition(self.childNum, self.idName, self.paraNum)
+        return ASubstitutionDefinitionDefinition(str(self.childNum), self.idName, str(self.paraNum))
         
 class ABecomesElementOfSubstitution(Substitution):
     def __init__(self, childNum, idNum):
@@ -837,7 +836,7 @@ class ABecomesElementOfSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ABecomesElementOfSubstitution(self.childNum, self.idNum)
+        return ABecomesElementOfSubstitution(str(self.childNum), str(self.idNum))
         
 class ABlockSubstitution(Substitution):
     def __init__(self):
@@ -853,7 +852,7 @@ class AIfSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AIfSubstitution(self.childNum, self.hasElse)
+        return AIfSubstitution(str(self.childNum), self.hasElse)
         
 class AIfElsifSubstitution(Substitution):
     def __init__(self):
@@ -901,7 +900,7 @@ class ASelectSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ASelectSubstitution(self.childNum, self.hasElse)
+        return ASelectSubstitution(str(self.childNum), self.hasElse)
         
 class ACaseSubstitution(Substitution):
     def __init__(self, childNum, expNum, hasElse):
@@ -911,7 +910,7 @@ class ACaseSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ACaseSubstitution(self.childNum, self.expNum, self.hasElse)
+        return ACaseSubstitution(str(self.childNum), str(self.expNum), self.hasElse)
         
 class ACaseOrSubstitution(Substitution):
     def __init__(self, childNum, expNum):
@@ -920,7 +919,7 @@ class ACaseOrSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ACaseOrSubstitution(self.childNum, self.expNum)
+        return ACaseOrSubstitution(str(self.childNum), str(self.expNum))
         
 class AVarSubstitution(Substitution):
     def __init__(self, childNum, idNum):
@@ -929,7 +928,7 @@ class AVarSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AVarSubstitution(self.childNum, self.idNum)
+        return AVarSubstitution(str(self.childNum), str(self.idNum))
         
 class AAnySubstitution(Substitution):
     def __init__(self, childNum, idNum):
@@ -938,7 +937,7 @@ class AAnySubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return AAnySubstitution(self.childNum, self.idNum)
+        return AAnySubstitution(str(self.childNum), str(self.idNum))
         
 class ALetSubstitution(Substitution):
     def __init__(self, childNum, idNum):
@@ -947,7 +946,7 @@ class ALetSubstitution(Substitution):
         self.children = []
 
     def clone(self):
-        return ALetSubstitution(self.childNum, self.idNum)
+        return ALetSubstitution(str(self.childNum), str(self.idNum))
         
 class ASkipSubstitution(Substitution):
     def __init__(self):
@@ -991,7 +990,7 @@ class APrimedIdentifierExpression(Expression):
         self.children = []
 
     def clone(self):
-        return APrimedIdentifierExpression(self.childNum, self.grade)
+        return APrimedIdentifierExpression(str(self.childNum), str(self.grade))
         
 class AStringSetExpression(SetExpression):
     def clone(self):
@@ -1050,12 +1049,13 @@ class AFileDefinitionDefinition(Node):
 class AExternalFunctionExpression(Expression):
     def __init__(self, fName, type, pyb_impl):
         import types
-        assert isinstance(pyb_impl, types.FunctionType)
+        # Sadly not Rpython: types.FunctionType
+        #assert isinstance(pyb_impl, types.FunctionType)
         self.fName = fName
         self.type_node = type
         self.pyb_impl = pyb_impl # a python-callable 
         self.children =[]
 
     def clone(self):
-        return AExternalFunctionExpression(self.fName, self.type, self.pyb_impl)
+        return AExternalFunctionExpression(self.fName, self.type_node, self.pyb_impl)
     

@@ -284,7 +284,7 @@ class BMachine:
         # TODO: check for name collisions. 
         # TODO: check for sees/uses includes/extends cycles in the mch graph
         # Otherwise the following code is wrong:
-        assert env.visible_operations == frozenset([]) # this method should only called once   
+        assert env.visible_operations.__eq__(frozenset([])) # this method should only called once   
         self._add_seen_and_used_operations(env)
         if self.has_promotes_mc or self.has_extends_mc:
             self._add_extended_and_promoted_ops(self)

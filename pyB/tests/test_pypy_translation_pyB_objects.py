@@ -350,7 +350,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
 
 
-	# FIXME: global name 'caseAExpressionParseUnit' is not defined
+
 	# set parsing line 77: root = my_exec(string)
     # set config.USE_COSTUM_FROZENSET = True
     # Two states, one transition (setups_const --> init)
