@@ -11,9 +11,9 @@ if USE_COSTUM_FROZENSET:
 class DefinitionHandler():
     
     def __init__(self, env, parsing_method):
-        self.def_map = {}
-        self.external_functions_found = []
-        self.external_functions_types_found = {}
+        self.def_map = {} # string --> AST
+        self.external_functions_found = [] # string
+        self.external_functions_types_found = {} # 
         self.used_def_files = []
         self.env = env # needed for search path of definition-files
         # avoid cyclic import: parser needs to handele definitions inside the AST and
@@ -24,19 +24,19 @@ class DefinitionHandler():
     def repl_defs(self, root):
         for clause in root.children:
             if isinstance(clause, ADefinitionsMachineClause):
-                self.save_definitions(clause)
-        self.replace_definitions(root)
-        self.replace_ext_funcs_in_solution_file(self.env.solution_root)
+                self._save_definitions(clause)
+        self._replace_definitions(root)
+        self._replace_ext_funcs_in_solution_file(self.env.solution_root)
         
 
     # fill def_map with "definition-definitions"
-    def save_definitions(self, clause):
+    def _save_definitions(self, clause):
         assert isinstance(clause, ADefinitionsMachineClause)
-        self.process_definition_files(clause)
+        self._process_definition_files(clause)
         for definition in clause.children:
             if isinstance(definition, AFileDefinitionDefinition):
                 continue
-            assert isinstance(definition, AExpressionDefinitionDefinition) or isinstance(definition, APredicateDefinitionDefinition) or isinstance(definition, ASubstitutionDefinitionDefinition)
+            assert isinstance(definition, (AExpressionDefinitionDefinition, APredicateDefinitionDefinition, ASubstitutionDefinitionDefinition))
             self.def_map[definition.idName] = definition
             # make sure only ext. funs. are replaced if definition entry is presend
             if definition.idName in EXTERNAL_FUNCTIONS_DICT.keys():
@@ -47,7 +47,7 @@ class DefinitionHandler():
 
     # Defs can use definitions from these files. 
     # All of them musst be processed before any def in this file                    
-    def process_definition_files(self, clause):
+    def _process_definition_files(self, clause):
         for definition in clause.children :
             if isinstance(definition, AFileDefinitionDefinition): #TODO: implement me
                 if definition.idName in self.used_def_files: # avoid def-file loops
@@ -60,15 +60,15 @@ class DefinitionHandler():
                 assert isinstance(root, ADefinitionFileParseUnit)  
                 assert isinstance(root.children[0], ADefinitionsMachineClause)
                 # used definitions
-                self.save_definitions(root.children[0])                   
+                self._save_definitions(root.children[0])                   
 
  
     # side-effect: change definitions to def free Asts
-    def replace_definitions(self, root):
+    def _replace_definitions(self, root):
         try:
             for i in range(len(root.children)):
                 child = root.children[i]
-                if isinstance(child, ADefinitionExpression) or isinstance(child, ADefinitionPredicate) or isinstance(child, ADefinitionSubstitution):
+                if isinstance(child, (ADefinitionExpression, ADefinitionPredicate, ADefinitionSubstitution)):
                     # replace with ext. fun node if necessary 
                     if child.idName in self.external_functions_found:
                        name = child.idName
@@ -80,14 +80,14 @@ class DefinitionHandler():
                     def_free_ast = self._gen_def_free_ast(child)
                     root.children[i] = def_free_ast
                 else:
-                    self.replace_definitions(child)
+                    self._replace_definitions(child)
         except AttributeError: # leaf:no children
             return
 
 
     # solution files dont know they use extern functions.
     # comments like /*EXT:*/ are removed by the parser. 
-    def replace_ext_funcs_in_solution_file(self, root):
+    def _replace_ext_funcs_in_solution_file(self, root):
         if root==None: # e.g. no solution file present
             return
         try:
@@ -95,31 +95,40 @@ class DefinitionHandler():
                 child = root.children[i]
                 if isinstance(child, AFunctionExpression) and isinstance(child.children[0], AIdentifierExpression):
                     try:
-						name = child.children[0].idName
-						type_ast = self.external_functions_types_found[name]
-						func = EXTERNAL_FUNCTIONS_DICT[name]
-						root.children[i] = AExternalFunctionExpression(name, type_ast, func)
-						root.children[i].children = child.children[1:] # args of the function, first id is function name
+                        name = child.children[0].idName
+                        type_ast = self.external_functions_types_found[name]
+                        func = EXTERNAL_FUNCTIONS_DICT[name]
+                        root.children[i] = AExternalFunctionExpression(name, type_ast, func)
+                        root.children[i].children = child.children[1:] # args of the function, first id is function name
                     except KeyError:
                         continue
                 else:
-                    self.replace_ext_funcs_in_solution_file(child)
+                    self._replace_ext_funcs_in_solution_file(child)
         except AttributeError:
             return
         
     
     def _gen_def_free_ast(self, def_node):
         ast = self.def_map[def_node.idName]
+        assert isinstance(ast, (AExpressionDefinitionDefinition, APredicateDefinitionDefinition, ASubstitutionDefinitionDefinition))       
         replace_nodes = {}
         # (1) find nodes to be replaced 
         for i in range(ast.paraNum):
             if isinstance(ast.children[i], AIdentifierExpression):
                 replace_nodes[ast.children[i].idName] = def_node.children[i]
             else:
-                raise Exception("Definition-Parametes must be IdentifierExpressions!")
+                raise Exception("Definition-Parametes must be IdentifierExpressions! %s" % ast.children[i])
         # (2) replace nodes
-        import copy
-        result = copy.deepcopy(ast)
+        # the ast instance is a reusable pattern found in the definition clause and used
+        # in some other clause (def_node). Def_node can be a INITIALISATION or the body
+        # of a operation. The copy is needed because the 'pattern' ast can be used on
+        # more than one location
+        #
+        # example:
+        # def_node:     INITIALISATION Assign(z, 1+1) || Assign(b, TRUE) 
+        # ast:          DEFINITIONS Assign(VarName,Expr) == VarName := Expr; 
+        # replace nodes: {(VarName,z),(Expr,1+1)}
+        result = self._clone_ast(ast)
         self._replace_nodes(result, replace_nodes)
         return result.children[-1]
     
@@ -135,3 +144,12 @@ class DefinitionHandler():
                     self._replace_nodes(child, map)
         except AttributeError: # leaf:no children
             return
+     
+            
+    def _clone_ast(self, ast):
+        # TODO: replace with own method. deepcopy is not Rpython
+        import copy
+        print_ast(ast)
+        result = copy.deepcopy(ast)
+        return result
+        

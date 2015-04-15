@@ -7,9 +7,10 @@ PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to y
 
 
 # Run main_code with CPython (except RPython Flags) and Translated C Version
-def translate(main_code):
+def translate(main_code, other_code=""):
     # 1. Generate Python code as String
-    code =  "def main(argv):\n"
+    code = other_code
+    code +=  "def main(argv):\n"
     # modifying global variables is NOT RPYTHON
     #code += "            from config import set_USE_COSTUM_FROZENSET\n"
     #code += "            set_USE_COSTUM_FROZENSET(True)\n"
@@ -22,10 +23,12 @@ def translate(main_code):
     code += "   main(sys.argv)\n"
     # 2 write code to temp file (Will be translated to C)
     f = open("tempA.py",'w')
+    #print code
     f.write(code)
     f.close()
     # 3 Non-RPython Version, disable RPYTHON FLAGS
-    code =  "def main(argv):\n"
+    code = other_code
+    code +=  "def main(argv):\n"
     code += "            from config import set_USE_RPYTHON_POPEN\n"
     code += "            set_USE_RPYTHON_POPEN(False)\n"
     code += main_code
@@ -569,8 +572,29 @@ class TestPyPyTranslationObjects():
             # print type(generator) is types.GeneratorType
             for x in generator:
                 print x
-
+            
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result    
-      
+ 
+ 
+    # Not RPython copy.deepcopy and copy.copy
+    def test_pypy_clone(self):
+        code =  """      
+            a = SomeObject()
+            import copy
+            b = a.clone()
+            a.x = 5
+            res = b.x==a.x
+            print int(res)
+            return 0\n"""
+            
+        other_code = """class SomeObject():
+        def __init__(self):
+            self.x = 42
+            
+        def clone(self):
+            return SomeObject()\n"""
+        python_result, c_result = translate(code,other_code) 
+        assert python_result == ['0', '']
+        assert python_result == c_result       

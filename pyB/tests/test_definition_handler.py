@@ -25,7 +25,7 @@ class TestDefinitionHandler():
         
         env = Environment()
         dh = DefinitionHandler(env, str_ast_to_python_ast)
-        dh.save_definitions(root.children[4])
+        dh._save_definitions(root.children[4])
         assert isinstance(dh.def_map["Assign"], ASubstitutionDefinitionDefinition)
 
 
@@ -48,8 +48,8 @@ class TestDefinitionHandler():
         assert isinstance(subst.children[1], ADefinitionSubstitution)
         assert isinstance(subst.children[2], ADefinitionSubstitution)
         dh = DefinitionHandler(env, str_ast_to_python_ast)
-        dh.save_definitions(root.children[4])
-        def_free_ast = dh.replace_definitions(root)
+        dh._save_definitions(root.children[4])
+        def_free_ast = dh._replace_definitions(root)
         assert isinstance(subst.children[1], AAssignSubstitution)
         assert isinstance(subst.children[2], AAssignSubstitution)
 
