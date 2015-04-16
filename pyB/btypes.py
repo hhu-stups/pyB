@@ -14,9 +14,13 @@
 #        	 | Ident
 
 
+# Introduced to enable RPython translation. 
+# NEVER TO BE INSTANTIATED! 
+class AbstractType:
+    pass
 
 
-class BType: # Baseclass used to repr. concrete type
+class BType(AbstractType): # Baseclass used to repr. concrete type
     pass
 
 class StringType(BType):
@@ -54,7 +58,7 @@ class StructType(BType):
         self.data = dictionary
 
 
-class UnknownType(): # no BType: used later to throw exceptions, a type-variable 
+class UnknownType(AbstractType): # no BType: used later to throw exceptions, a type-variable 
     def __init__(self, type_name):
         # this member is used to learn the name of sets and for debugging
         self.type_name = type_name
