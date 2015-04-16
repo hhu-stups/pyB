@@ -367,10 +367,12 @@ class TestPyPyTranslationObjects():
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
             from bmachine import BMachine
             from environment import Environment
+            from helpers import file_to_AST_str
             from interp import set_up_constants, exec_initialisation
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
             from rpython_interp import interpret, eval_clause
-            from helpers import file_to_AST_str
+            from typing import type_check_bmch
+            
             
             # Build AST
             ast_string = file_to_AST_str(\"examples/Simple.mch\")
@@ -388,7 +390,7 @@ class TestPyPyTranslationObjects():
             mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
             # end of inlinded parse_ast
             
-            #type_check_bmch(root, env, mch)
+            type_check_bmch(root, env, mch)
             # inlinded arbitrary_init_machine
             #bstates = set_up_constants(root, env, mch, solution_file_read=False)
             #print len(bstates)

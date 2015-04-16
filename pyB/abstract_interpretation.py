@@ -38,15 +38,15 @@ def _abs_int(node, env, ic):
     #print node
     if isinstance(node, ABoolSetExpression):
         return 2
-    elif isinstance(node, (APowSubsetExpression, APow1SubsetExpression)):
+    elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         time = _abs_int(node.children[0], env, ic)
         if time>=math.log(TOO_MANY_ITEMS,2):
             return float("inf")
         else:
             return 2**(time)
-    elif isinstance(node, (AIntegerSetExpression, ANaturalSetExpression, ANatural1SetExpression, AStringSetExpression)):
+    elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
         return float("inf")
-    elif isinstance(node, (ANatSetExpression, ANat1SetExpression)):
+    elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):
         return env._max_int
     elif isinstance(node, AIntSetExpression):
         return env._min_int*-1 + env._max_int
@@ -60,7 +60,7 @@ def _abs_int(node, env, ic):
             return prod
 
     ### Relations, functions, sequences
-    elif isinstance(node, (APartialFunctionExpression, ARelationsExpression, APartialFunctionExpression, ATotalFunctionExpression, APartialInjectionExpression, ATotalInjectionExpression, APartialSurjectionExpression, ATotalSurjectionExpression, ATotalBijectionExpression, APartialBijectionExpression, ASeqExpression, ASeq1Expression, AIseqExpression, AIseq1Expression, APermExpression)):
+    elif isinstance(node, APartialFunctionExpression) or isinstance(node, ARelationsExpression) or isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or isinstance(node, ATotalBijectionExpression) or isinstance(node, APartialBijectionExpression) or isinstance(node, ASeqExpression) or isinstance(node, ASeq1Expression) or isinstance(node, AIseqExpression) or isinstance(node, AIseq1Expression) or isinstance(node, APermExpression):
         time0 = _abs_int(node.children[0], env, ic)
         time1 = _abs_int(node.children[1], env, ic)
         exp0  = time0*time1 
@@ -69,7 +69,7 @@ def _abs_int(node, env, ic):
         else:
             return 2**(exp0)
     ### Leafs
-    elif isinstance(node, (AIdentifierExpression, APrimedIdentifierExpression, AIntegerExpression, AStringExpression, AEmptySetExpression, AEmptySequenceExpression, ABooleanTrueExpression, ABooleanFalseExpression, AMinIntExpression, AMaxIntExpression)):
+    elif isinstance(node, AIdentifierExpression) or isinstance(node, APrimedIdentifierExpression) or isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AEmptySetExpression) or isinstance(node, AEmptySequenceExpression) or isinstance(node, ABooleanTrueExpression) or isinstance(node, ABooleanFalseExpression) or isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression):
         return 1
     elif isinstance(node, AIntervalExpression):
         left_node  = node.children[0]

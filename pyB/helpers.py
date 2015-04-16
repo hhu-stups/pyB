@@ -191,9 +191,9 @@ def find_var_nodes(node):
 # Quantified predicates are not visited because their variabels are enumerated separate. 
 def _find_var_nodes(node, lst):
     # (case 1) new scope needed, stop search. This variables will be typed later
-    if isinstance(node, (AQuantifiedUnionExpression, AQuantifiedIntersectionExpression, AForallPredicate, AExistsPredicate, AComprehensionSetExpression, ALambdaExpression)):
+    if isinstance(node, AQuantifiedUnionExpression) or isinstance(node, AQuantifiedIntersectionExpression) or isinstance(node, AForallPredicate) or isinstance(node, AExistsPredicate) or isinstance(node, AComprehensionSetExpression) or isinstance(node, ALambdaExpression):
         return
-    elif isinstance(node,(AGeneralSumExpression, AGeneralProductExpression, AGeneralUnionExpression, AGeneralIntersectionExpression)):
+    elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression) or isinstance(node, AGeneralUnionExpression) or isinstance(node, AGeneralIntersectionExpression):
         return
     # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 4)
     elif isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AFileDefinitionDefinition): 
@@ -243,7 +243,7 @@ def _find_assignd_vars(node, lst):
             assert isinstance(idNode, AIdentifierExpression)
             lst.append(idNode.idName)
     # (case 2) Ast leaf. Nothing to do. (avoid AttributeError in case 3)
-    elif isinstance(node, (AIntegerExpression, AStringExpression, AFileDefinitionDefinition, AIdentifierExpression)): 
+    elif isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AFileDefinitionDefinition) or isinstance(node, AIdentifierExpression): 
         return 
     # (case 3) deep first search.             
     else:
@@ -376,7 +376,7 @@ def __print_ast(node, num):
     if isinstance(node, AIdentifierExpression):
         print "\t"*num, " " ,node.idName
         return
-    elif isinstance(node, (AStringExpression, AIntegerExpression, AFileDefinitionDefinition)):
+    elif isinstance(node, AStringExpression) or isinstance(node, AIntegerExpression) or isinstance(node, AFileDefinitionDefinition):
         return
     for child in node.children:
         print "\t"*num,"|-",child

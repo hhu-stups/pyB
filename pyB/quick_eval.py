@@ -53,9 +53,9 @@ def quick_member_eval(ast, env, element):
         #TODO: support lambdas with more than one arg
         # XXX: this line could case a infinit computation!
         aSet = interpret(ast, env)
-        if (not isinstance(aSet, SymbolicRelationSet)) or isinstance(aSet, (SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet)):
+        if (not isinstance(aSet, SymbolicRelationSet)) or isinstance(aSet, SymbolicPartialInjectionSet) or isinstance(aSet, SymbolicTotalInjectionSet) or isinstance(aSet, SymbolicPartialSurjectionSet) or isinstance(aSet, SymbolicTotalSurjectionSet) or isinstance(aSet, SymbolicTotalBijectionSet) or isinstance(aSet, SymbolicPartialBijectionSet):
            # XXX: Dont know how to check this for every lambda 
-           pass
+           print "Error: Unhandeled case: lambda eval"
         else:
             types = []
             for var in element.variable_list:

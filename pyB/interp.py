@@ -466,7 +466,7 @@ def _learn_assigned_values(root, env, lst):
             # (2) only compute if 'Expression' is computable in O(1)
             # TODO: If the interpreter works in to symbolic mode, this is always the case
             # this code block musst be simplified when this is done
-            if isinstance(expression_node, (AIntegerExpression, ASetExtensionExpression, ASequenceExtensionExpression, ABoolSetExpression, ABooleanTrueExpression, ABooleanFalseExpression, AEmptySetExpression)):
+            if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ASequenceExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ABooleanTrueExpression) or isinstance(expression_node, ABooleanFalseExpression) or isinstance(expression_node, AEmptySetExpression):
                 try:
                     value = interpret(expression_node, env)
                     env.set_value(var_name, value)
@@ -476,7 +476,7 @@ def _learn_assigned_values(root, env, lst):
                     #TODO: this case is not covered by any test
                     continue 
             # XXX: hack. remove when all nodes are symbolic
-            elif isinstance(expression_node, (ALambdaExpression, AIntervalExpression, ATransFunctionExpression, ATransRelationExpression, AQuantifiedUnionExpression, AQuantifiedIntersectionExpression)):# and idNodes==[]:
+            elif isinstance(expression_node, ALambdaExpression) or isinstance(expression_node, AIntervalExpression) or isinstance(expression_node, ATransFunctionExpression) or isinstance(expression_node, ATransRelationExpression) or isinstance(expression_node, AQuantifiedUnionExpression) or isinstance(expression_node, AQuantifiedIntersectionExpression):# and idNodes==[]:
                 try:
                     value = interpret(expression_node, env)
                     env.set_value(var_name, value)
