@@ -57,7 +57,7 @@ class CartType(BType):
 class StructType(BType):
     def __init__(self, dictionary):
         assert isinstance(dictionary, dict)
-        self.data = dictionary
+        self.dictionary = dictionary
 
 
 class UnknownType(AbstractType): # no BType: used later to throw exceptions, a type-variable 

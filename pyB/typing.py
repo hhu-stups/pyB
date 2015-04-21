@@ -1223,7 +1223,7 @@ def typeit(node, env, type_env):
         atype = typeit(node.children[0], env, type_env)
         assert isinstance(atype, StructType)
         assert isinstance(node.children[1], AIdentifierExpression)
-        entry_type = atype.data[node.children[1].idName] # access dict 
+        entry_type = atype.dictionary[node.children[1].idName] # access dict 
         return entry_type
     elif isinstance(node, ATransRelationExpression):
         func_type = typeit(node.children[0], env, type_env)
@@ -1352,8 +1352,8 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
                 atype = unify_equal(maybe_type0.data, maybe_type1.data, type_env, pred_node)
                 maybe_type0.data = atype
             elif isinstance(maybe_type0, StructType):
-                dictionary0 = maybe_type0.data
-                dictionary1 = maybe_type1.data
+                dictionary0 = maybe_type0.dictionary
+                dictionary1 = maybe_type1.dictionary
                 assert isinstance(dictionary0, dict)
                 assert isinstance(dictionary1, dict)
                 lst0 = list(dictionary0.values())
