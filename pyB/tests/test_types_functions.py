@@ -81,7 +81,7 @@ class TestTypesFunctions():
         lst = [("x", SetType("X")),("S", PowerSetType(SetType("X"))),("T", PowerSetType(SetType("Y")))]
         type_with_known_types(root, env, lst, ["y","f"])
         assert isinstance(get_type_by_name(env, "y"), SetType)
-        assert get_type_by_name(env, "y").data=="Y"
+        assert get_type_by_name(env, "y").name=="Y"
 
 
     def test_types_function_app2(self):
@@ -309,7 +309,7 @@ class TestTypesFunctions():
         lst = [("S", PowerSetType(SetType("X")))]
         type_with_known_types(root, env, lst, ["s","n"])
         assert isinstance(get_type_by_name(env, "n"), SetType)
-        assert get_type_by_name(env, "n").data == "X"
+        assert get_type_by_name(env, "n").name == "X"
 
 
     def test_types_seq_last(self):
@@ -323,7 +323,7 @@ class TestTypesFunctions():
         lst = [("S", PowerSetType(SetType("X")))]
         type_with_known_types(root, env, lst, ["s","n"])
         assert isinstance(get_type_by_name(env, "n"), SetType)
-        assert get_type_by_name(env, "n").data == "X"
+        assert get_type_by_name(env, "n").name == "X"
 
 
     def test_types_seq_tail(self):
@@ -514,5 +514,5 @@ class TestTypesFunctions():
         assert isinstance(get_type_by_name(env, "r").data, CartType)
         assert isinstance(get_type_by_name(env, "r").data.data[0].data, SetType)
         assert isinstance(get_type_by_name(env, "r").data.data[1].data, SetType)
-        assert get_type_by_name(env, "r").data.data[0].data.data == "X"
-        assert get_type_by_name(env, "r").data.data[1].data.data == "Y"
+        assert get_type_by_name(env, "r").data.data[0].data.name == "X"
+        assert get_type_by_name(env, "r").data.data[1].data.name == "Y"

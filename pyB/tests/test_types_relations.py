@@ -57,7 +57,7 @@ class TestTypesRelations():
         lst = [("S", PowerSetType(SetType("X"))),("T", PowerSetType(SetType("Y")))]
         type_with_known_types(root, env, lst, ["r","x"])
         assert isinstance(get_type_by_name(env, "x"), SetType)
-        assert get_type_by_name(env, "x").data == "X"
+        assert get_type_by_name(env, "x").name == "X"
 
 
     def test_types_dom_unify(self):
@@ -101,7 +101,7 @@ class TestTypesRelations():
         lst = [("S", PowerSetType(SetType("X"))),("T", PowerSetType(SetType("Y")))]
         type_with_known_types(root, env, lst, ["r","x"])
         assert isinstance(get_type_by_name(env, "x"), SetType)
-        assert get_type_by_name(env, "x").data == "Y"
+        assert get_type_by_name(env, "x").name == "Y"
 
 
     def test_types_fwd_comp(self):
@@ -115,7 +115,7 @@ class TestTypesRelations():
         lst = [("S", PowerSetType(SetType("X"))),("T", PowerSetType(SetType("Y")))]
         type_with_known_types(root, env, lst, ["r0","r1","x"])
         assert isinstance(get_type_by_name(env, "x"), SetType)
-        assert get_type_by_name(env, "x").data == "Y"
+        assert get_type_by_name(env, "x").name == "Y"
 
 
     def test_types_simple_identity(self):
@@ -208,7 +208,7 @@ class TestTypesRelations():
         lst = [("A", PowerSetType(SetType("X"))),("B", PowerSetType(SetType("Y")))]
         type_with_known_types(root, env, lst, ["r","x","f"])
         assert isinstance(get_type_by_name(env, "x"), SetType)
-        assert get_type_by_name(env, "x").data =="Y"
+        assert get_type_by_name(env, "x").name =="Y"
 
 
     def test_types_simple_image(self):
@@ -223,9 +223,9 @@ class TestTypesRelations():
         type_with_known_types(root, env, lst, ["r","S","x"])
         assert isinstance(get_type_by_name(env, "S"), PowerSetType)
         assert isinstance(get_type_by_name(env, "S").data, SetType)
-        assert get_type_by_name(env, "S").data.data =="X"
+        assert get_type_by_name(env, "S").data.name =="X"
         assert isinstance(get_type_by_name(env, "x"), SetType)
-        assert get_type_by_name(env, "x").data == "Y"
+        assert get_type_by_name(env, "x").name == "Y"
 
 
     def test_types_simple_overwrite(self):
@@ -240,8 +240,8 @@ class TestTypesRelations():
         type_with_known_types(root, env, lst, ["r1","r2","r3"])
         assert isinstance(get_type_by_name(env, "r3"), PowerSetType)
         assert isinstance(get_type_by_name(env, "r3").data, CartType)
-        assert get_type_by_name(env, "r3").data.data[0].data.data == "X"
-        assert get_type_by_name(env, "r3").data.data[1].data.data == "Y"
+        assert get_type_by_name(env, "r3").data.data[0].data.name == "X"
+        assert get_type_by_name(env, "r3").data.data[1].data.name == "Y"
         assert not get_type_by_name(env, "r1")=="r1"
         assert not get_type_by_name(env, "r2")=="r2"
 
@@ -268,10 +268,10 @@ class TestTypesRelations():
         assert isinstance(m, SetType)
         assert isinstance(y, SetType)
         assert isinstance(n, SetType)
-        assert x.data == "X"
-        assert y.data == "M"
-        assert m.data == "Y"
-        assert n.data == "N"
+        assert x.name == "X"
+        assert y.name == "M"
+        assert m.name == "Y"
+        assert n.name == "N"
 
 
     def test_types_simple_dirprod(self):
@@ -290,9 +290,9 @@ class TestTypesRelations():
         x = get_type_by_name(env, "r3").data.data[0].data
         y = get_type_by_name(env, "r3").data.data[1].data.data[0].data
         z = get_type_by_name(env, "r3").data.data[1].data.data[1].data
-        assert x.data == "X"
-        assert y.data == "Y"
-        assert z.data == "Z"
+        assert x.name == "X"
+        assert y.name == "Y"
+        assert z.name == "Z"
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
@@ -345,9 +345,9 @@ class TestTypesRelations():
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
-        assert x.data == "X"
-        assert y.data == "Y"
-        assert z.data == "X"
+        assert x.name == "X"
+        assert y.name == "Y"
+        assert z.name == "X"
 
 
     def test_types_simple_proj2(self):
@@ -368,9 +368,9 @@ class TestTypesRelations():
         assert isinstance(x, SetType)
         assert isinstance(y, SetType)
         assert isinstance(z, SetType)
-        assert x.data == "X"
-        assert y.data == "Y"
-        assert z.data == "Y"
+        assert x.name == "X"
+        assert y.name == "Y"
+        assert z.name == "Y"
 
 
     def test_types_rel_repr(self):
@@ -640,13 +640,13 @@ class TestTypesRelations():
         assert isinstance(get_type_by_name(env, "gg").data.data[0], PowerSetType)
         assert isinstance(get_type_by_name(env, "gg").data.data[1], PowerSetType)
         assert isinstance(get_type_by_name(env, "gg").data.data[0].data, SetType)
-        assert get_type_by_name(env, "gg").data.data[0].data.data =="U"
+        assert get_type_by_name(env, "gg").data.data[0].data.name =="U"
         image_type = get_type_by_name(env, "gg").data.data[1].data.data
         assert isinstance(image_type, CartType)
         assert isinstance(image_type.data[0].data, SetType)
         assert isinstance(image_type.data[1].data, SetType)
-        assert image_type.data[0].data.data=="R"
-        assert image_type.data[1].data.data=="R"
+        assert image_type.data[0].data.name=="R"
+        assert image_type.data[1].data.name=="R"
         
                 
     def test_types_complex_union_empty_set2(self):          
@@ -672,20 +672,20 @@ class TestTypesRelations():
         assert isinstance(get_type_by_name(env, "gg").data.data[0], PowerSetType)
         assert isinstance(get_type_by_name(env, "gg").data.data[1], PowerSetType)
         assert isinstance(get_type_by_name(env, "gg").data.data[0].data, SetType)
-        assert get_type_by_name(env, "gg").data.data[0].data.data =="U"
+        assert get_type_by_name(env, "gg").data.data[0].data.name =="U"
         image_type = get_type_by_name(env, "gg").data.data[1].data.data
         assert isinstance(image_type, CartType)
         assert isinstance(image_type.data[0].data, SetType)
         assert isinstance(image_type.data[1].data, SetType)
-        assert image_type.data[0].data.data=="R"
-        assert image_type.data[1].data.data=="R"
+        assert image_type.data[0].data.name=="R"
+        assert image_type.data[1].data.name=="R"
         
         image_type = get_type_by_name(env, "ff").data
         assert isinstance(image_type, CartType)
         assert isinstance(image_type.data[0].data, SetType)
         assert isinstance(image_type.data[1].data, SetType)
-        assert image_type.data[0].data.data=="R"
-        assert image_type.data[1].data.data=="R"
+        assert image_type.data[0].data.name=="R"
+        assert image_type.data[1].data.name=="R"
         
 
     def test_types_complex_union_empty_set3(self):    

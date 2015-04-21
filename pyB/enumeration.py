@@ -37,7 +37,7 @@ def all_values_by_type(atype, env, node):
     elif isinstance(atype, StringType): # FIXME:(#ISSUE 21) only some strings are returned here
         return frozenset(env.all_strings)
     elif isinstance(atype, SetType):
-        type_name =  atype.data
+        type_name =  atype.name
         #print type_name
         #env.state_space.get_state().print_bstate()
         value = env.get_value(type_name)

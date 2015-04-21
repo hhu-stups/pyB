@@ -41,7 +41,8 @@ class PowerSetType(BType):
 
 class SetType(BType):
     def __init__(self, name):
-        self.data = name # None when name unknown
+        assert isinstance(name, str)
+        self.name = name # None when name unknown
 
 
 # pairtype: Type x Type
@@ -55,6 +56,7 @@ class CartType(BType):
 # “struct” “(“ (Ident “:” Type)+”,” “)”
 class StructType(BType):
     def __init__(self, dictionary):
+        assert isinstance(dictionary, dict)
         self.data = dictionary
 
 

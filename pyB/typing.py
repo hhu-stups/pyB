@@ -7,16 +7,13 @@ from helpers import print_ast, find_var_nodes
 from pretty_printer import pretty_print
 
 
-
-
-
 # helper for debugging.
 # prints a type-tree.
 def __print__btype(tree, t=0):
     # TODO: sometimes endles-loops, maybe cyclic (buggy-)trees? Check for cycles
     #tree = unknown_closure(tree)
     if isinstance(tree, SetType):
-       print " "*t, tree, ": ", tree.data 
+       print " "*t, tree, ": ", tree.name 
     else:
        print " "*t, tree
     if isinstance(tree, PowerSetType):
@@ -1070,7 +1067,7 @@ def typeit(node, env, type_env):
         atype0 = unify_equal(set_type, img_type, type_env)
         atype1 = unify_equal(seq_type, expected_type1, type_env)
         if isinstance(atype0, SetType):
-            assert atype0.data == atype1.data.data[1].data.data # Setname
+            assert atype0.name == atype1.data.data[1].data.name # Setname
         return atype1
     elif isinstance(node, AInsertTailExpression):
         seq_type = typeit(node.children[0], env, type_env)
@@ -1080,7 +1077,7 @@ def typeit(node, env, type_env):
         atype0 = unify_equal(seq_type, expected_type0, type_env)
         atype1 = unify_equal(set_type, img_type, type_env)
         if isinstance(atype1, SetType):
-            assert atype1.data == atype0.data.data[1].data.data # Setname
+            assert atype1.name == atype0.data.data[1].data.name # Setname
         return atype0
     elif isinstance(node, ASequenceExtensionExpression):
         # children = list of expressions 
@@ -1322,8 +1319,6 @@ def typeit(node, env, type_env):
 
 
 
-
-
 # This function exist to handle preds like "x=y & y=1" and find the
 # type of x and y after one run.
 # UnknownTypes in a typetree will be set in the basecase of the recursion
@@ -1333,6 +1328,8 @@ def typeit(node, env, type_env):
 # pred_node is used for error messages 
 def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
     assert isinstance(type_env, TypeCheck_Environment)
+    assert isinstance(maybe_type0, AbstractType)
+    assert isinstance(maybe_type1, AbstractType)
     #import inspect
     #print inspect.stack()[1] 
     #print "type 1/2",maybe_type0,maybe_type1
@@ -1380,12 +1377,12 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
                 maybe_type0.data[1].data = atype
             elif isinstance(maybe_type0, SetType):
                 # learn/set name
-                if maybe_type0.data==None:
-                    maybe_type0.data = maybe_type1.data
-                elif maybe_type1.data==None:
-                    maybe_type1.data = maybe_type0.data
+                if maybe_type0.name==None:
+                    maybe_type0.name = maybe_type1.name
+                elif maybe_type1.name==None:
+                    maybe_type1.name = maybe_type0.name
                 else:
-                    assert maybe_type1.data == maybe_type0.data
+                    assert maybe_type1.name == maybe_type0.name
             else:
                 assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, StringType)
             return maybe_type0
