@@ -57,7 +57,8 @@ class CartType(BType):
 # “struct” “(“ (Ident “:” Type)+”,” “)”
 class StructType(BType):
     def __init__(self, dictionary):
-        assert isinstance(dictionary, dict)
+        # NOT RPYTHON
+        #assert isinstance(dictionary, dict)
         self.dictionary = dictionary
 
 

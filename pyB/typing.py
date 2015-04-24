@@ -697,8 +697,8 @@ def typeit(node, env, type_env):
         idNames = []
         assert node.idNum>0
         assert node.idNum<=len(node.children)
-        idNodes = node.children[:node.idNum]
-        for idNode in idNodes:
+        for i in range(node.idNum):
+            idNode = node.children[i]
             assert isinstance(idNode, AIdentifierExpression)
             idNames.append(idNode.idName)
         type_env.push_frame(idNames)
@@ -759,7 +759,8 @@ def typeit(node, env, type_env):
         return IntegerType()
     elif isinstance(node, AGeneralSumExpression) or isinstance(node, AGeneralProductExpression):
         ids = []
-        for n in node.children[:-2]:
+        for i in range(len(node.children)-2):
+            n = node.children[i]
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
@@ -1010,7 +1011,8 @@ def typeit(node, env, type_env):
     elif isinstance(node, ALambdaExpression):
         # get id names
         ids = []
-        for n in node.children[:-2]:
+        for i in range(len(node.children)-2):
+            n =  node.children[i]
             assert isinstance(n.idName, str)
             ids.append(n.idName)
         type_env.push_frame(ids)
@@ -1018,8 +1020,9 @@ def typeit(node, env, type_env):
         for child in node.children[:-1]:
             typeit(child, env, type_env)
         pre_img_type = typeit(node.children[0], env, type_env)
-        if len(node.children[:-2])>1: #more than one arg
-            for n in node.children[1:-2]:
+        if len(node.children)>1+2: #more than one arg
+            for i in range(len(node.children)-3):
+                n = node.children[i+1]
                 atype = typeit(n, env, type_env)
                 pre_img_type = CartType(PowerSetType(pre_img_type), PowerSetType(atype))
         # get type of expression
@@ -1163,7 +1166,8 @@ def typeit(node, env, type_env):
         type_env.pop_frame(env)
     elif isinstance(node, AAnySubstitution) or isinstance(node, ALetSubstitution):
         idNames = []
-        for idNode in node.children[:node.idNum]:
+        for i in range(node.idNum):
+            idNode = node.children[i]
             assert isinstance(idNode, AIdentifierExpression)
             idNames.append(idNode.idName)
         type_env.push_frame(idNames)
@@ -1259,14 +1263,17 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         # save type of return arguments
         ret_types = []
-        for child in node.children[0:node.return_Num]:
+        for i in range(node.return_Num):
+            child = node.children[i]
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
             ret_types.append(tuple([child, atype]))
         # save type of parameters
         para_types = []
-        for child in node.children[node.return_Num:(node.return_Num+node.parameter_Num)]:
+        for i in range(node.parameter_Num):
+            child = node.children[i+node.return_Num]
+            #for child in node.children[node.return_Num:(node.return_Num+node.parameter_Num)]:
             assert isinstance(child, AIdentifierExpression)
             atype = type_env.get_current_type(child.idName)
             assert not isinstance(atype, UnknownType)
@@ -1355,8 +1362,8 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
             elif isinstance(maybe_type0, StructType):
                 dictionary0 = maybe_type0.dictionary
                 dictionary1 = maybe_type1.dictionary
-                assert isinstance(dictionary0, dict)
-                assert isinstance(dictionary1, dict)
+                #assert isinstance(dictionary0, dict)
+                #assert isinstance(dictionary1, dict)
                 lst0 = list(dictionary0.values())
                 lst1 = list(dictionary1.values())
                 assert len(lst0)==len(lst1)

@@ -114,7 +114,11 @@ def pretty_print(node):
         string = pretty_print(node.children[0])
         return "inter("+string+")"
     elif isinstance(node, AQuantifiedUnionExpression):
-        varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
+        #varList = node.children[:-2]
         pred = node.children[-2]
         expr = node.children[-1]
         out = "UNION ("
@@ -129,7 +133,10 @@ def pretty_print(node):
         out += ")"
         return out
     elif isinstance(node, AQuantifiedIntersectionExpression):  
-        varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
         pred = node.children[-2]
         expr = node.children[-1]
         out = "INTER ("
@@ -228,7 +235,10 @@ def pretty_print(node):
         string2 = pretty_print(node.children[1])
         return string1+" .. " + string2
     elif isinstance(node, AGeneralSumExpression):
-        varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
         pred = node.children[-2]
         expr = node.children[-1]
         out = "SIGMA("
@@ -243,7 +253,10 @@ def pretty_print(node):
         out += ")"
         return out  
     elif isinstance(node, AGeneralProductExpression):
-        varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
         pred = node.children[-2]
         expr = node.children[-1]
         out = "PI("
@@ -399,7 +412,10 @@ def pretty_print(node):
         string2 = pretty_print(node.children[1])
         return string1+">+>>"+string2 
     elif isinstance(node, ALambdaExpression):
-        varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
         pred = node.children[-2]
         expr = node.children[-1]
         out = "%("
