@@ -277,8 +277,8 @@ def remove_tuples(tup):
 # SIDE-EFFECT: modifies value_list
 def build_arg_by_type(atype, value_list):
      if isinstance(atype, CartType):
-         a = build_arg_by_type(atype.data[0], value_list)
-         b = build_arg_by_type(atype.data[1], value_list)
+         a = build_arg_by_type(atype.left, value_list)
+         b = build_arg_by_type(atype.right, value_list)
          return tuple([a,b])
      return value_list.pop(0)
      

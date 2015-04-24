@@ -592,8 +592,8 @@ class TestTypesSets():
         assert isinstance(get_type_by_name(env, "x"), CartType)
         assert isinstance(get_type_by_name(env, "y"), PowerSetType)
         assert isinstance(get_type_by_name(env, "y").data, CartType)
-        assert isinstance(get_type_by_name(env, "y").data.data[0].data, CartType)
-        assert isinstance(get_type_by_name(env, "y").data.data[1].data, IntegerType)
+        assert isinstance(get_type_by_name(env, "y").data.left.data, CartType)
+        assert isinstance(get_type_by_name(env, "y").data.right.data, IntegerType)
 
 
     def test_types_set_gen_union(self):
@@ -653,8 +653,8 @@ class TestTypesSets():
         type_with_known_types(root, env, [], ["s"])
         assert isinstance(get_type_by_name(env, "s"), PowerSetType)
         assert isinstance(get_type_by_name(env, "s").data, CartType)
-        assert isinstance(get_type_by_name(env, "s").data.data[0].data, IntegerType)
-        assert isinstance(get_type_by_name(env, "s").data.data[1].data, StringType)
+        assert isinstance(get_type_by_name(env, "s").data.left.data, IntegerType)
+        assert isinstance(get_type_by_name(env, "s").data.right.data, StringType)
 
 
     def test_types_bool(self):

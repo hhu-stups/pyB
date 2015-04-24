@@ -50,7 +50,8 @@ class CartType(BType):
     def __init__(self, setA, setB):
         assert isinstance(setA, PowerSetType)
         assert isinstance(setB, PowerSetType)
-        self.data = (setA, setB)
+        self.left = setA
+        self.right = setB
 
 
 # “struct” “(“ (Ident “:” Type)+”,” “)”
@@ -73,7 +74,8 @@ class UnknownType(AbstractType): # no BType: used later to throw exceptions, a t
 class PowCartORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, "PowCartORIntegerType")
-        self.data = (arg1, arg2)
+        self.left  = arg1
+        self.right = arg2
 
 
 # will be decided in resolve()
@@ -82,4 +84,5 @@ class PowCartORIntegerType(UnknownType):
 class PowORIntegerType(UnknownType):
     def __init__(self, arg1, arg2):
         UnknownType.__init__(self, "PowORIntegerType")
-        self.data = (arg1, arg2) 
+        self.left  = arg1
+        self.right = arg2

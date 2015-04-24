@@ -25,8 +25,8 @@ class SymbolicRelationSet(SymbolicSet):
             return element.left_set in self.left_set and element.right_set in self.right_set
         elif isinstance(element, PowerSetType):  
             assert isinstance(element.data, CartType)
-            left  = element.data.data[0].data
-            right = element.data.data[1].data
+            left  = element.data.left.data
+            right = element.data.right.data
             return left in self.left_set and right in self.right_set 
         else: 
             assert isinstance(element, tuple)

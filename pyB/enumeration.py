@@ -50,8 +50,8 @@ def all_values_by_type(atype, env, node):
         lst = [frozenset(e) for e in powerlist]
         return lst
     elif isinstance(atype, CartType):
-        val_pi = all_values_by_type(atype.data[0].data, env, node)
-        val_i = all_values_by_type(atype.data[1].data, env, node)
+        val_pi = all_values_by_type(atype.left.data, env, node)
+        val_i = all_values_by_type(atype.right.data, env, node)
         # TODO: test for realtions, seams incomplete
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst

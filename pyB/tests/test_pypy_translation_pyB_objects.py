@@ -537,7 +537,7 @@ class TestPyPyTranslationObjects():
     
     def test_pypy_check_frozenset_impl(self):
         code = """
-            from rpython_frozenset import frozenset
+            from rpython_b_objmodel import frozenset
             S = frozenset([1,2,3])
             for e in S:
                 print e
@@ -578,8 +578,23 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result    
+
+
+    def test_pypy_slicing(self):
+        code =  """
+            c = C(4)
+            for x in c.L[:c.i]:
+                print x         
+            return 0\n"""
+        
+        other_code = """class C():
+        def __init__(self, j):
+            self.i = j
+            self.L = [1,2,3,4,5]\n"""
+        python_result, c_result = translate(code, other_code) 
+        assert python_result == c_result  
  
- 
+
     # Not RPython copy.deepcopy and copy.copy
     def test_pypy_clone(self):
         code =  """      
