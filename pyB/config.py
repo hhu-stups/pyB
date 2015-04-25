@@ -2,6 +2,7 @@
 import os 
 
 
+
 DEPTH_FIRST_SEARCH_MODEL_CHECKING = True # else
 MIN_INT = -1
 MAX_INT = 5
@@ -40,7 +41,7 @@ def set_USE_RPYTHON_POPEN(boolean):
      global USE_RPYTHON_POPEN
      USE_RPYTHON_POPEN=boolean
      
-
+     
 def set_USE_COSTUM_FROZENSET(boolean):
      global USE_COSTUM_FROZENSET
      USE_COSTUM_FROZENSET=boolean
