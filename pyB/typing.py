@@ -160,14 +160,14 @@ class TypeCheck_Environment():
     def set_unknown_type(self, id0_Name, id1_Name):
         assert isinstance(id0_Name, UnknownType)
         assert isinstance(id1_Name, UnknownType)
-        assert id0_Name.real_type==None
-        assert id1_Name.real_type==None
+        assert id0_Name.real_type is None
+        assert id1_Name.real_type is None
         assert not id1_Name == id0_Name # dont produce a cycle 
 
         if isinstance(id0_Name, PowORIntegerType) or isinstance(id0_Name, PowCartORIntegerType):
             id1_Name.real_type = id0_Name
         else: #TODO: more cases?
-            assert id0_Name.real_type==None
+            assert id0_Name.real_type is None
             id0_Name.real_type = id1_Name
         return id1_Name
 
@@ -224,7 +224,7 @@ class TypeCheck_Environment():
                 else:
                     assert isinstance(u0, PowerSetType)
         else:
-            assert utype.real_type==None
+            assert utype.real_type is None
             utype.real_type = ctype
             return ctype
 
@@ -247,7 +247,7 @@ class TypeCheck_Environment():
             # Type unknown now. will be found in resolve()
             # This is when local vars use global vars
             # which are unknown a this time
-            if atype==None:
+            if atype is None:
                 atype= utype
             # get all nodes with the name "idName"
             node_lst = node_top_map[idName]
@@ -333,7 +333,7 @@ def throw_away_unknown(tree, idName=""):
         arg2 = throw_away_unknown(arg2, idName)
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
-        if not arg1.__class__ == arg2.__class__:
+        if not arg1.eq_type(arg2):
             string = "TypeError in typing.py: Unable to unify two type variables: %s %s" % (arg1, arg2)
             raise BTypeException(string)
 
@@ -349,7 +349,7 @@ def throw_away_unknown(tree, idName=""):
         arg2 = throw_away_unknown(arg2, idName)
         assert isinstance(arg1, BType)
         assert isinstance(arg2, BType)
-        if not arg1.__class__ == arg2.__class__:
+        if not arg1.eq_type(arg2):
             string = "TypeError in typing.py: Unable to unify two type variables: %s %s" % (arg1, arg2)
             raise BTypeException(string)
 
@@ -358,7 +358,7 @@ def throw_away_unknown(tree, idName=""):
         elif isinstance(arg1, IntegerType) and isinstance(arg2, IntegerType):
             tree = arg1
         return tree
-    elif tree==None: # UnknownTypes point at None, if the are not set to something while unification
+    elif tree is None: # UnknownTypes point at None, if the are not set to something while unification
         raise BTypeException("TypeError in typing.py: can not resolve a Type of: %s" % idName)
     elif isinstance(tree, UnknownType):
         tree = unknown_closure(tree)
@@ -396,7 +396,7 @@ def unknown_closure(atype):
             return atype.real_type
         elif isinstance(atype.real_type, PowORIntegerType) or isinstance(atype.real_type, PowCartORIntegerType):
             return atype.real_type
-        elif atype.real_type==None:
+        elif atype.real_type is None:
             # This chain points to no Btype. 
             assert isinstance(atype, UnknownType)
             return atype
@@ -611,7 +611,7 @@ def typeit(node, env, type_env):
             typeit(child, env, type_env)
         for child in node.children[:-1]:
             assert isinstance(child, AIdentifierExpression)
-            assert not type_env.get_current_type(child.idName)==None
+            assert not type_env.get_current_type(child.idName) is None
         # construct type of this node
         atype = type_env.get_current_type(ids[0]) 
         if len(ids)>1:
@@ -637,7 +637,7 @@ def typeit(node, env, type_env):
             return PowORIntegerType(expr1_type, expr2_type)
         else:
             string = "Typchecker Bug: unexpected type objects inside minus or cart expression."
-            string += "Unimplemented case: %s %s", expr1_type, expr2_type
+            string += "Unimplemented case: %s %s" % (expr1_type, expr2_type)
             string += "Last unification was caused by: " + pretty_print(node)
             raise PYBBugException(string)
     elif isinstance(node, ASetSubtractionExpression):
@@ -674,7 +674,7 @@ def typeit(node, env, type_env):
             return PowCartORIntegerType(expr1_type, expr2_type)
         else:
             string = "Typchecker Bug: unexpected type objects inside mult or cart expression."
-            string += "Unimplemented case: %s %s", expr1_type, expr2_type
+            string += "Unimplemented case: %s %s" % (expr1_type, expr2_type)
             string += "Last unification was caused by: " + pretty_print(node)
             raise PYBBugException(string)
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
@@ -1348,6 +1348,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
     maybe_type0 = unknown_closure(maybe_type0)
     maybe_type1 = unknown_closure(maybe_type1)
     #__print__btype(maybe_type1)
+    # instance equality check
     if maybe_type0==maybe_type1:
         return maybe_type0
 
@@ -1357,7 +1358,7 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
         #    return maybe_type0
         #elif isinstance(maybe_type1, PowerSetType) and isinstance(maybe_type0, EmptySetType):
         #    return maybe_type1
-        if maybe_type0.__class__ == maybe_type1.__class__:
+        if maybe_type0.eq_type(maybe_type1):
             # recursive unification-call
             # if not IntegerType, SetType or UnkownType.
             if isinstance(maybe_type0, PowerSetType):
@@ -1389,12 +1390,12 @@ def unify_equal(maybe_type0, maybe_type1, type_env, pred_node=None):
                 maybe_type0.right.data = atype
             elif isinstance(maybe_type0, SetType):
                 # learn/set name
-                if maybe_type0.name==None:
-                    maybe_type0.name = maybe_type1.name
-                elif maybe_type1.name==None:
-                    maybe_type1.name = maybe_type0.name
-                else:
-                    assert maybe_type1.name == maybe_type0.name
+                #if maybe_type0.name==None:
+                #    maybe_type0.name = maybe_type1.name
+                #elif maybe_type1.name==None:
+                #    maybe_type1.name = maybe_type0.name
+                #else:
+                assert maybe_type1.name == maybe_type0.name
             else:
                 assert isinstance(maybe_type0, IntegerType) or isinstance(maybe_type0, BoolType) or isinstance(maybe_type0, StringType)
             return maybe_type0
@@ -1437,7 +1438,7 @@ def unify_element_of(elm_type, set_type, type_env, pred_node):
     # (1) type already known?
     set_type = unknown_closure(set_type)
     elm_type = unknown_closure(elm_type)
-    assert not set_type == None
+    assert not set_type is None
 
     # (2) unify
     if isinstance(elm_type, UnknownType):
@@ -1445,7 +1446,7 @@ def unify_element_of(elm_type, set_type, type_env, pred_node):
             # map elm_type (UnknownType) to set_type for all elm_type
             unify_equal(elm_type, set_type.data, type_env, pred_node)
         elif isinstance(set_type, UnknownType):
-            assert set_type.real_type == None
+            assert set_type.real_type is None
             unify_equal(set_type, PowerSetType(elm_type), type_env, pred_node)
         else:
             # no UnknownType and no PowersetType:

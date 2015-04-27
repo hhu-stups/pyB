@@ -627,5 +627,36 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == ['1','2', '']
-        assert python_result == c_result      
+        assert python_result == c_result  
+
+    
+    def test_pypy_reference_compare(self):
+        code =  """      
+            c0 = SomeObject()
+            c1 = SomeObject()
+            print int(c0==c1)
+            print int(c0 is None)
+            return 0\n"""
+        
+        other_code = """class SomeObject():
+        pass\n"""
+        python_result, c_result = translate(code, other_code) 
+        assert python_result == ['0','0', '']
+        assert python_result == c_result
+
+    import pytest, config
+    @pytest.mark.xfail
+    def test_pypy_reference_compare_not_rpython(self):
+        code =  """      
+            c0 = SomeObject()
+            c1 = SomeObject()
+            print int(c0==c1)
+            print int(c0==None)
+            return 0\n"""
+        
+        other_code = """class SomeObject():
+        pass\n"""
+        python_result, c_result = translate(code, other_code) 
+        assert python_result == ['0','0', '']
+        assert python_result == c_result          
         
