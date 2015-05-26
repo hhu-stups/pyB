@@ -6,6 +6,8 @@ from btypes import *
 from helpers import print_ast, find_var_nodes
 from pretty_printer import pretty_print
 
+def print_btype(type):
+    __print__btype(type)
 
 # helper for debugging.
 # prints a type-tree.

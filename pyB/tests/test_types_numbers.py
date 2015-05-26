@@ -360,7 +360,7 @@ class TestTypesNumbers():
         assert isinstance(get_type_by_name(env, "x").data, IntegerType)
 
 
-    def test_types_expr_equ(self):
+    def test_types_expr_equ1(self):
         # Build AST
         string_to_file("#PREDICATE x=y & x=1", file_name)
         ast_string = file_to_AST_str(file_name)

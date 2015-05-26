@@ -56,9 +56,9 @@ def translate(main_code, other_code=""):
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c", shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    os.remove("tempA.py")
-    os.remove("tempB.py")
-    os.remove("tempA-c")
+    #os.remove("tempA.py")
+    #os.remove("tempB.py")
+    #os.remove("tempA-c")
     # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -359,6 +359,7 @@ class TestPyPyTranslationObjects():
     # INVARIANT  1<2
     # END
     #
+    # 368.97 seconds 
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
@@ -434,91 +435,40 @@ class TestPyPyTranslationObjects():
             from ast_nodes import AMinusOrSetSubtractExpression, AAbstractMachineParseUnit
             from ast_nodes import AAddExpression, APreconditionSubstitution, AOperation
             from ast_nodes import ABlockSubstitution, AOperationsMachineClause
+            from bmachine import BMachine
             from environment import Environment
-            from rpython_interp import interpret
-            id0=AMachineHeader()
-            id0.idName = "Lift "
-            id1=AIdentifierExpression("floor ")
-            id2=AVariablesMachineClause()
-            id2.children.append(id1)
-            id3=AIdentifierExpression("floor ")
-            id4=AIntegerExpression(0 )
-            id5=AIntegerExpression(99 )
-            id6=AIntervalExpression()
-            id6.children.append(id4)
-            id6.children.append(id5)
-            id7=AMemberPredicate()
-            id7.children.append(id3)
-            id7.children.append(id6)
-            id8=AInvariantMachineClause()
-            id8.children.append(id7)
-            id9=AIdentifierExpression("floor ")
-            id10=AIntegerExpression(4 )
-            id11=AAssignSubstitution()
-            id11.children.append(id9)
-            id11.children.append(id10)
-            id11.lhs_size = "1"
-            id11.rhs_size = "1"
-            id12=AInitialisationMachineClause()
-            id12.children.append(id11)
-            id13=AIdentifierExpression("floor ")
-            id14=AIntegerExpression(99 )
-            id15=ALessPredicate()
-            id15.children.append(id13)
-            id15.children.append(id14)
-            id16=AIdentifierExpression("floor ")
-            id17=AIdentifierExpression("floor ")
-            id18=AIntegerExpression(1 )
-            id19=AAddExpression()
-            id19.children.append(id17)
-            id19.children.append(id18)
-            id20=AAssignSubstitution()
-            id20.children.append(id16)
-            id20.children.append(id19)
-            id20.lhs_size = "1"
-            id20.rhs_size = "1"
-            id21=APreconditionSubstitution()
-            id21.children.append(id15)
-            id21.children.append(id20)
-            id22=AOperation()
-            id22.children.append(id21)
-            id22.opName = "inc "
-            id22.return_Num = 0
-            id22.parameter_Num = 0
-            id23=AIdentifierExpression("floor ")
-            id24=AIdentifierExpression("floor ")
-            id25=AIntegerExpression(1 )
-            id26=AMinusOrSetSubtractExpression()
-            id26.children.append(id24)
-            id26.children.append(id25)
-            id27=AAssignSubstitution()
-            id27.children.append(id23)
-            id27.children.append(id26)
-            id27.lhs_size = "1"
-            id27.rhs_size = "1"
-            id28=ABlockSubstitution()
-            id28.children.append(id27)
-            id29=AOperation()
-            id29.children.append(id28)
-            id29.opName = "dec "
-            id29.return_Num = 0
-            id29.parameter_Num = 0
-            id30=AOperationsMachineClause()
-            id30.children.append(id22)
-            id30.children.append(id29)
-            id31=AAbstractMachineParseUnit()
-            id31.children.append(id0)
-            id31.children.append(id2)
-            id31.children.append(id8)
-            id31.children.append(id12)
-            id31.children.append(id30)
-            id31.type = "MACHINE "
-            root = id31
+            from helpers import file_to_AST_str
+            from interp import set_up_constants, exec_initialisation
+            from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
+            from rpython_interp import interpret, eval_clause
+            from typing import type_check_bmch            
+
+            # Build AST
+            ast_string = file_to_AST_str(\"examples/Lift.mch\")
+            root = str_ast_to_python_ast(ast_string)           
             
-            # TODO:
-                          
+            # Test
+            env = Environment()
+            
+            # inlinded parse_ast
+            assert isinstance(root, AAbstractMachineParseUnit)
+            mch = BMachine(root, remove_definitions) 
+            mch.recursive_self_parsing(env) # str.islower not RPYTHON
+            env.root_mch = mch
+            env.current_mch = mch #current mch
+            mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
+            # end of inlinded parse_ast
+            
+            res = isinstance(root.children[2], AInvariantMachineClause)
+            print int(res)
+            res = eval_clause(root.children[2], env)
+            print int(res)
+            
+            type_check_bmch(root, env, mch)
+                                                  
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code)
+        print python_result 
         assert python_result == c_result        
 
 

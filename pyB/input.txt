@@ -1,1 +1,8 @@
-#PREDICATE A=bool(1<2)
+
+        MACHINE del_me
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=0
+        OPERATIONS
+          op(zz) = xx::0..zz
+        END
