@@ -16,19 +16,19 @@ class SymbolicRelationSet(SymbolicSet):
         self.right_set = aset1
         self.node = node   
     
-    # element in Set
+    # all elements in Set
     def __contains__(self, element):
-        print "SymbolicRelationSet", self.left_set , self.right_set
-        print "SymbolicRelationSet", element
-        if isinstance(element, SymbolicSet):	# check with symb info
-            assert isinstance(element, SymbolicCartSet)
-            return element.left_set in self.left_set and element.right_set in self.right_set
-        elif isinstance(element, PowerSetType): # check with type info
+        #if isinstance(element, SymbolicSet):    # check with symb info
+        #    assert isinstance(element, SymbolicCartSet)
+        #    #print "XXX SymbolicRelationSet", self.left_set , self.right_set
+        #    #print "XXX SymbolicRelationSet", element
+        #    return element.left_set in self.left_set and element.right_set in self.right_set
+        if isinstance(element, PowerSetType): # check with type info
             assert isinstance(element.data, CartType)
             left  = element.data.left.data
             right = element.data.right.data
             return left in self.left_set and right in self.right_set 
-        else:									# check finite set
+        else:                                   # check finite set
             assert isinstance(element, frozenset)
             for e in element:
                 assert isinstance(e, tuple)
@@ -47,60 +47,118 @@ class SymbolicRelationSet(SymbolicSet):
         return SymbolicSet.__eq__(self, other)
 
         
-class SymbolicPartialFunctionSet(SymbolicRelationSet):
+class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation):
                 yield relation
+    
+    # TODO: symbolic case, typing case
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element):
+           return False
+        return True
 
     
-class SymbolicTotalFunctionSet(SymbolicRelationSet):
+class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set):
                 yield relation
-                
+
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_total_function(element, self.left_set):
+           return False
+        return True
+                        
     
-class SymbolicPartialInjectionSet(SymbolicRelationSet):
+class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T 
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_inje_function(relation):
                 yield relation
 
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_inje_function(element):
+           return False
+        return True
+        
     
-class SymbolicTotalInjectionSet(SymbolicRelationSet):
+class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_inje_function(relation):
                 yield relation
+
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_inje_function(element):
+           return False
+        return True
+            
     
-    
-class SymbolicPartialSurjectionSet(SymbolicRelationSet):
+class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
-            if is_a_function(relation) and is_a_surj_function(relation,self.right_set):
+            if is_a_function(relation) and is_a_surj_function(relation, self.right_set):
                 yield relation
+
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_surj_function(element, self.right_set):
+           return False
+        return True
+            
     
-    
-class SymbolicTotalSurjectionSet(SymbolicRelationSet):
+class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set):
                 yield relation
 
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set):
+           return False
+        return True
+        
     
-class SymbolicTotalBijectionSet(SymbolicRelationSet):
+class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
                 yield relation
 
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
+           return False
+        return True
+        
     
 class SymbolicPartialBijectionSet(SymbolicRelationSet):
     def make_generator(self):
         for relation in SymbolicRelationSet.make_generator(self):
             if is_a_function(relation) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
                 yield relation
+
+    def __contains__(self, element):
+        if not SymbolicRelationSet.__contains__(element):
+           return False
+        if not is_a_function(element) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
+           return False
+        return True
+        
 
 class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
