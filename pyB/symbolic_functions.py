@@ -18,19 +18,23 @@ class SymbolicRelationSet(SymbolicSet):
     
     # element in Set
     def __contains__(self, element):
-        #print "SymbolicRelationSet", self.left_set , self.right_set
-        #print "SymbolicRelationSet", element
-        if isinstance(element, SymbolicSet):
+        print "SymbolicRelationSet", self.left_set , self.right_set
+        print "SymbolicRelationSet", element
+        if isinstance(element, SymbolicSet):	# check with symb info
             assert isinstance(element, SymbolicCartSet)
             return element.left_set in self.left_set and element.right_set in self.right_set
-        elif isinstance(element, PowerSetType):  
+        elif isinstance(element, PowerSetType): # check with type info
             assert isinstance(element.data, CartType)
             left  = element.data.left.data
             right = element.data.right.data
             return left in self.left_set and right in self.right_set 
-        else: 
-            assert isinstance(element, tuple)
-            return element[0] in self.left_set and element[1] in self.right_set 
+        else:									# check finite set
+            assert isinstance(element, frozenset)
+            for e in element:
+                assert isinstance(e, tuple)
+                if not e[0] in self.left_set or not e[1] in self.right_set:
+                    return False
+            return  True
         raise Exception("Not implemented: relation symbolic membership")
 
     def make_generator(self):
