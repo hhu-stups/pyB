@@ -84,7 +84,7 @@ def quick_member_eval(ast, env, element):
                     return True            
         # else use other checks 
 
-    #"""
+    """
     if isinstance(ast, ARelationsExpression):
         #S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
