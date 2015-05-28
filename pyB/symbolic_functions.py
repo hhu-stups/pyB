@@ -18,12 +18,12 @@ class SymbolicRelationSet(SymbolicSet):
     
     # all elements in Set
     def __contains__(self, element):
-        #if isinstance(element, SymbolicSet):    # check with symb info
-        #    assert isinstance(element, SymbolicCartSet)
-        #    #print "XXX SymbolicRelationSet", self.left_set , self.right_set
-        #    #print "XXX SymbolicRelationSet", element
-        #    return element.left_set in self.left_set and element.right_set in self.right_set
-        if isinstance(element, PowerSetType): # check with type info
+        if isinstance(element, SymbolicSet):    # check with symb info
+            assert isinstance(element, SymbolicCartSet)
+            #print "XXX SymbolicRelationSet", self.left_set , self.right_set
+            #print "XXX SymbolicRelationSet", element
+            return element.left_set in self.left_set and element.right_set in self.right_set
+        elif isinstance(element, PowerSetType): # check with type info
             assert isinstance(element.data, CartType)
             left  = element.data.left.data
             right = element.data.right.data
@@ -55,7 +55,7 @@ class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
     
     # TODO: symbolic case, typing case
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element):
            return False
@@ -69,7 +69,7 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_total_function(element, self.left_set):
            return False
@@ -83,7 +83,7 @@ class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_inje_function(element):
            return False
@@ -97,7 +97,7 @@ class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_inje_function(element):
            return False
@@ -111,7 +111,7 @@ class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_surj_function(element, self.right_set):
            return False
@@ -125,7 +125,7 @@ class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set):
            return False
@@ -139,7 +139,7 @@ class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
            return False
@@ -153,7 +153,7 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
                 yield relation
 
     def __contains__(self, element):
-        if not SymbolicRelationSet.__contains__(element):
+        if not SymbolicRelationSet.__contains__(self, element):
            return False
         if not is_a_function(element) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
            return False

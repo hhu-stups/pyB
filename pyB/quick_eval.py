@@ -84,6 +84,7 @@ def quick_member_eval(ast, env, element):
                     return True            
         # else use other checks 
 
+    #"""
     if isinstance(ast, ARelationsExpression):
         #S = interpret(ast.children[0], env)
         #T = interpret(ast.children[1], env)
@@ -236,7 +237,8 @@ def quick_member_eval(ast, env, element):
         if not (len(frozenset(image))==len(image)): # test injection
             return False
         return True
-    elif isinstance(ast, ASeqExpression) or isinstance(ast, ASeq1Expression):
+    #"""
+    if isinstance(ast, ASeqExpression) or isinstance(ast, ASeq1Expression):
         preimage = []
         image = []
         if isinstance(ast, ASeq1Expression) and element==frozenset([]):
@@ -314,15 +316,15 @@ def quick_member_eval(ast, env, element):
 
 # checks if the element (maybe a predicate) can generated of the infinite set on the right side
 # returntype: boolean
-def infinity_belong_check(node, env):
-    assert isinstance(node, AMemberPredicate)
-    if isinstance(node.children[1], APartialSurjectionExpression):
-        if isinstance(node.children[0], AEmptySetExpression):
-            return False
-        elif isinstance(node.children[0], AIdentifierExpression):
-            value = env.get_value(node.children[0].idName) # TODO: Later this could return "somthing infinite"
-            return False #TODO: eval infinite value (not implemented now)
-    string = pretty_print(node)
-    print "WARNING: CHECK OF INFINITE SET NOT IMPLEMENTED! CAN NOT EVAL:", string
-    print "default return: FALSE"
-    return False # TODO:(#ISSUE 13) add more cases
+#def infinity_belong_check(node, env):
+#    assert isinstance(node, AMemberPredicate)
+#    if isinstance(node.children[1], APartialSurjectionExpression):
+#        if isinstance(node.children[0], AEmptySetExpression):
+#            return False
+#        elif isinstance(node.children[0], AIdentifierExpression):
+#            value = env.get_value(node.children[0].idName) # TODO: Later this could return "somthing infinite"
+#            return False #TODO: eval infinite value (not implemented now)
+#    string = pretty_print(node)
+#    print "WARNING: CHECK OF INFINITE SET NOT IMPLEMENTED! CAN NOT EVAL:", string
+#    print "default return: FALSE"
+#    return False # TODO:(#ISSUE 13) add more cases

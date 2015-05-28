@@ -169,24 +169,24 @@ def create_sequence(images, number, length):
 # the right side (or both) contain a infinit set
 # True  = no normal enumeration possible
 # False = Maybe
-def contains_infinit_enum(node, env):
-    #print "inf?:",node.children[1]
-    if isinstance(node, AMemberPredicate):
-        if isinstance(node.children[1], APartialSurjectionExpression):
-            T = node.children[1].children[1]
-            isInf = contains_infinit_enum(T, env)
-            return isInf
-        #elif isinstance(node.children[1], AMultOrCartExpression):
-        #    infR = contains_infinit_enum(node.children[1].children[0], env)
-        #    infL = contains_infinit_enum(node.children[1].children[1], env)
-        #    return infR or infL
-    elif isinstance(node, AIntegerSetExpression) or isinstance(node , ANaturalSetExpression) or isinstance(node, ANatural1SetExpression):
-        return True
-    elif isinstance(node, AIntSetExpression):
-        if (-1*env._min_int+ env._max_int)>TOO_MANY_ITEMS:
-            return True
-    elif isinstance(node, ANat1SetExpression) or isinstance(node, ANatSetExpression):
-        if  env._max_int>TOO_MANY_ITEMS:
-            return True
-    return False
+#def contains_infinit_enum(node, env):
+#    #print "inf?:",node.children[1]
+#    if isinstance(node, AMemberPredicate):
+#        if isinstance(node.children[1], APartialSurjectionExpression):
+#            T = node.children[1].children[1]
+#            isInf = contains_infinit_enum(T, env)
+#            return isInf
+#        #elif isinstance(node.children[1], AMultOrCartExpression):
+#        #    infR = contains_infinit_enum(node.children[1].children[0], env)
+#        #    infL = contains_infinit_enum(node.children[1].children[1], env)
+#        #    return infR or infL
+#    elif isinstance(node, AIntegerSetExpression) or isinstance(node , ANaturalSetExpression) or isinstance(node, ANatural1SetExpression):
+#        return True
+#    elif isinstance(node, AIntSetExpression):
+#        if (-1*env._min_int+ env._max_int)>TOO_MANY_ITEMS:
+#            return True
+#    elif isinstance(node, ANat1SetExpression) or isinstance(node, ANatSetExpression):
+#        if  env._max_int>TOO_MANY_ITEMS:
+#            return True
+#    return False
 

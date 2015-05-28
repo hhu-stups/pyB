@@ -214,10 +214,6 @@ def eval_bool_expression(node, env):
         return expr1 != expr2
     elif isinstance(node, AMemberPredicate):
         #print pretty_print(node)
-        if contains_infinit_enum(node, env):
-            result = infinity_belong_check(node, env)
-            #print result
-            return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)

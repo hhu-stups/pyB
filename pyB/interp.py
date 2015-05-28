@@ -7,7 +7,7 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from bmachine import BMachine
 from environment import Environment
 from enumeration import *
-from quick_eval import quick_member_eval, infinity_belong_check
+from quick_eval import quick_member_eval #, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from symbolic_sets import *
@@ -861,10 +861,10 @@ def interpret(node, env):
 # *************************
     elif isinstance(node, AMemberPredicate):
         #print pretty_print(node)
-        if contains_infinit_enum(node, env):
-            result = infinity_belong_check(node, env)
-            #print result
-            return result
+        #if contains_infinit_enum(node, env):
+        #    result = infinity_belong_check(node, env)
+        #    #print result
+        #    return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)
@@ -872,6 +872,7 @@ def interpret(node, env):
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
+        #print elm, aSet
         return elm in aSet
     elif isinstance(node, ANotMemberPredicate):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?

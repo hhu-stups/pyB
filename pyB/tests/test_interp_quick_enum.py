@@ -11,6 +11,8 @@ if USE_COSTUM_FROZENSET:
 
 file_name = "input.txt"
 
+#import pytest
+#@pytest.mark.skipif(True, reason="takes to much time") 
 class TestQuickEnum():
     def test_quick_relation_member1(self):
         # Build AST
