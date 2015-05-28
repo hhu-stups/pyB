@@ -861,14 +861,9 @@ def interpret(node, env):
 # *************************
     elif isinstance(node, AMemberPredicate):
         #print pretty_print(node)
-        #if contains_infinit_enum(node, env):
-        #    result = infinity_belong_check(node, env)
-        #    #print result
-        #    return result
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)
-            #print elm, result, node.children[1]
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
@@ -877,7 +872,8 @@ def interpret(node, env):
     elif isinstance(node, ANotMemberPredicate):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
-            return not quick_member_eval(node.children[1], env, elm)
+            result = quick_member_eval(node.children[1], env, elm)
+            return not result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         return not elm in aSet
@@ -1375,7 +1371,7 @@ def interpret(node, env):
     elif isinstance(node, AIseq1Expression):
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        sequence_list = [frozenset([])]
+        sequence_list = []
         max_len = 1
         # find all seq from 1..max_int
         for i in range(1, env._max_int+1):
