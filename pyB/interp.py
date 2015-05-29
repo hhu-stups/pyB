@@ -11,6 +11,7 @@ from quick_eval import quick_member_eval #, infinity_belong_check
 from constrainsolver import calc_possible_solutions
 from pretty_printer import pretty_print
 from symbolic_sets import *
+from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
 from relation_helpers import *
 from rpython_b_objmodel import W_Integer, W_None
 if USE_COSTUM_FROZENSET:
@@ -1344,53 +1345,58 @@ def interpret(node, env):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
         S = interpret(node.children[0], env)
-        sequence_list = [frozenset([])]
-        max_len = 1
-        # find all seq. from 1..max_int
-        for i in range(1, env._max_int+1):
-            sequence_list += create_all_seq_w_fixlen(list(S),i)
-        return frozenset(sequence_list)
+        return SymbolicSequenceSet(S, env, interpret, node)
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## find all seq. from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #return frozenset(sequence_list)
     elif isinstance(node,ASeq1Expression):
         S = interpret(node.children[0], env)
-        sequence_list = []
-        max_len = 1
-        # find all seq. from 1..max_int
-        for i in range(1, env._max_int+1):
-            sequence_list += create_all_seq_w_fixlen(list(S),i)
-        return frozenset(sequence_list)
+        return SymbolicSequence1Set(S, env, interpret, node)
+        #sequence_list = []
+        #max_len = 1
+        ## find all seq. from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #return frozenset(sequence_list)
     elif isinstance(node,AIseqExpression):
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        sequence_list = [frozenset([])]
-        max_len = 1
-        # find all seq from 1..max_int
-        for i in range(1, env._max_int+1):
-            sequence_list += create_all_seq_w_fixlen(list(S),i)
-        inj_sequence_list = filter_not_injective(sequence_list)
-        return frozenset(inj_sequence_list)
+        return SymbolicISequence1Set(S, env, interpret, node)
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #return frozenset(inj_sequence_list)
     elif isinstance(node, AIseq1Expression):
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        sequence_list = []
-        max_len = 1
-        # find all seq from 1..max_int
-        for i in range(1, env._max_int+1):
-            sequence_list += create_all_seq_w_fixlen(list(S),i)
-        inj_sequence_list = filter_not_injective(sequence_list)
-        return frozenset(inj_sequence_list)
+        return SymbolicISequence1Set(S, env, interpret, node)     
+        #sequence_list = []
+        #max_len = 1
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #return frozenset(inj_sequence_list)
     elif isinstance(node,APermExpression): 
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        sequence_list = [frozenset([])]
-        max_len = 1
-        # TODO: maybe call all_values() here...
-        # find all seq from 1..max_int
-        for i in range(1, env._max_int+1):
-            sequence_list += create_all_seq_w_fixlen(list(S),i)
-        inj_sequence_list = filter_not_injective(sequence_list)
-        perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
-        #print perm_sequence_list
-        return frozenset(perm_sequence_list)
+        return SymbolicPermutationSet(S, env, interpret, node)  
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## TODO: maybe call all_values() here...
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
+        ##print perm_sequence_list
+        #return frozenset(perm_sequence_list)
     elif isinstance(node, AConcatExpression):
         # u:= s^t
         s = interpret(node.children[0], env)

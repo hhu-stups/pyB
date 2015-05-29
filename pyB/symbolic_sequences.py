@@ -1,5 +1,6 @@
-from symbolic_sets import SymbolicSet
 from ast_nodes import *
+from symbolic_sets import SymbolicSet
+from enumeration import create_all_seq_w_fixlen
 from relation_helpers import *
 from config import USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
@@ -13,16 +14,18 @@ class SymbolicSequenceSet(SymbolicSet):
         self.node = node  
     
     def make_generator(self):
-        yield [frozenset([])]
+        yield frozenset([])
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            yield create_all_seq_w_fixlen(list(S),i)
+            sequences = create_all_seq_w_fixlen(list(S),i)
+            for sequence in sequences:
+                yield sequence
         
     def __contains__(self, element):
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1):
+        all_indices = range(1,len(S)+1)
         S = self.aset
         for tup in element:
             number = tup[0]
@@ -43,7 +46,9 @@ class SymbolicSequence1Set(SymbolicSet):
     def make_generator(self):
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            yield create_all_seq_w_fixlen(list(S),i)
+            sequences = create_all_seq_w_fixlen(list(S),i)
+            for sequence in sequences:
+                yield sequence
         
     def __contains__(self, element):
         if element==frozenset([]):
@@ -51,7 +56,7 @@ class SymbolicSequence1Set(SymbolicSet):
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1):   
+        all_indices = range(1,len(S)+1)   
         S = self.aset
         for tup in element:
             number = tup[0]
@@ -71,12 +76,13 @@ class SymbolicISequenceSet(SymbolicSet):
         self.node = node  
     
     def make_generator(self):
-        yield [frozenset([])]
+        yield frozenset([])
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequence = create_all_seq_w_fixlen(list(S),i)
-            if is_a_inje_function(sequence):
-                yield sequence
+            sequences = create_all_seq_w_fixlen(list(S),i)
+            for sequence in sequences:
+                if is_a_inje_function(sequence):
+                    yield sequence
         
     def __contains__(self, element):
         if not is_a_inje_function(element):
@@ -84,7 +90,7 @@ class SymbolicISequenceSet(SymbolicSet):
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1):   
+        all_indices = range(1,len(S)+1) 
         S = self.aset
         for tup in element:
             number = tup[0]
@@ -103,11 +109,13 @@ class SymbolicISequence1Set(SymbolicSet):
         self.node = node  
     
     def make_generator(self):
+        yield frozenset([]) #TODO: check this
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequence = create_all_seq_w_fixlen(list(S),i)
-            if is_a_inje_function(sequence):
-                yield sequence
+            sequences = create_all_seq_w_fixlen(list(S),i)
+            for sequence in sequences:
+                if is_a_inje_function(sequence):
+                    yield sequence
         
     def __contains__(self, element):
         if element==frozenset([]):
@@ -117,7 +125,7 @@ class SymbolicISequence1Set(SymbolicSet):
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1):   
+        all_indices = range(1,len(S)+1)   
         S = self.aset
         for tup in element:
             number = tup[0]
@@ -138,9 +146,10 @@ class SymbolicPermutationSet(SymbolicSet):
     def make_generator(self):
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequence = create_all_seq_w_fixlen(list(S),i)
-            if is_a_inje_function(sequence) and is_a_surj_function(sequence, S):
-                yield sequence
+            sequences = create_all_seq_w_fixlen(list(S),i)
+            for sequence in sequences:
+                if is_a_inje_function(sequence) and is_a_surj_function(sequence, S):
+                    yield sequence
         
     def __contains__(self, element):
         S = self.aset
@@ -152,7 +161,7 @@ class SymbolicPermutationSet(SymbolicSet):
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1):   
+        all_indices = range(1,len(S)+1)   
         for tup in element:
             number = tup[0]
             e      = tup[1]
