@@ -486,12 +486,14 @@ class Nat1Set(LargeSet):
     def __eq__(self, aset):
         if self.__class__ == aset.__class__:
             return True
-        return False
+        me = self.enumerate_all()
+        return aset==me
     
     def __ne__(self, aset):
         if self.__class__ == aset.__class__:
             return False
-        return True
+        me = self.enumerate_all()
+        return not aset==me
     
     def enumerate_all(self):
         if not self.explicit_set_computed:

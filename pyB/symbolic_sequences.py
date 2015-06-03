@@ -22,15 +22,14 @@ class SymbolicSequenceSet(SymbolicSet):
                 yield sequence
         
     def __contains__(self, element):
+        S = self.aset
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1)
-        S = self.aset
         for tup in element:
             number = tup[0]
             e      = tup[1]
-            if not isinstance(number, int) or number not in all_indices:
+            if not isinstance(number, int) or number>len(element) or number<1:
                 return False 
             if e not in S:
                 return False
@@ -51,17 +50,16 @@ class SymbolicSequence1Set(SymbolicSet):
                 yield sequence
         
     def __contains__(self, element):
+        S = self.aset
         if element==frozenset([]):
             return False  
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1)   
-        S = self.aset
         for tup in element:
             number = tup[0]
             e      = tup[1]
-            if not isinstance(number, int) or number not in all_indices:
+            if not isinstance(number, int) or number>len(element) or number<1:
                 return False 
             if e not in S:
                 return False
@@ -85,17 +83,16 @@ class SymbolicISequenceSet(SymbolicSet):
                     yield sequence
         
     def __contains__(self, element):
+        S = self.aset
         if not is_a_inje_function(element):
             return False
         if not is_a_function(element):
             return False
         
-        all_indices = range(1,len(S)+1) 
-        S = self.aset
         for tup in element:
             number = tup[0]
             e      = tup[1]
-            if not isinstance(number, int) or number not in all_indices:
+            if not isinstance(number, int) or number>len(element) or number<1:
                 return False 
             if e not in S:
                 return False
@@ -118,19 +115,18 @@ class SymbolicISequence1Set(SymbolicSet):
                     yield sequence
         
     def __contains__(self, element):
+        S = self.aset
         if element==frozenset([]):
             return False  
         if not is_a_inje_function(element):
             return False
         if not is_a_function(element):
             return False
-        
-        all_indices = range(1,len(S)+1)   
-        S = self.aset
+         
         for tup in element:
             number = tup[0]
             e      = tup[1]
-            if not isinstance(number, int) or number not in all_indices:
+            if not isinstance(number, int) or number>len(element) or number<1:
                 return False 
             if e not in S:
                 return False
@@ -152,20 +148,18 @@ class SymbolicPermutationSet(SymbolicSet):
                     yield sequence
         
     def __contains__(self, element):
-        S = self.aset
-        
-        if not is_a_surj_function(sequence, S):
+        S = self.aset   
+        if not is_a_surj_function(element, S):
             return False
         if not is_a_inje_function(element):
             return False
         if not is_a_function(element):
             return False
-        
-        all_indices = range(1,len(S)+1)   
+             
         for tup in element:
             number = tup[0]
             e      = tup[1]
-            if not isinstance(number, int) or number not in all_indices:
+            if not isinstance(number, int) or number>len(element) or number<1:
                 return False 
             if e not in S:
                 return False

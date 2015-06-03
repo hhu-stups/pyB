@@ -1364,7 +1364,7 @@ def interpret(node, env):
     elif isinstance(node,AIseqExpression):
         # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        return SymbolicISequence1Set(S, env, interpret, node)
+        return SymbolicISequenceSet(S, env, interpret, node)
         #sequence_list = [frozenset([])]
         #max_len = 1
         ## find all seq from 1..max_int

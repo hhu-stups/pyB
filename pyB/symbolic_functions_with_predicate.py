@@ -114,6 +114,8 @@ class SymbolicLambda(SymbolicSet):
                     if interpret(pred, env):  # test
                         # yes it is! calculate lambda-fun image an add this tuple to func_list       
                         image = interpret(expr, env)
+                        if isinstance(image, SymbolicSet):
+                            image = image.enumerate_all()
                         tup = tuple([arg, image])
                         func_list.append(tup) 
                 except ValueNotInDomainException:

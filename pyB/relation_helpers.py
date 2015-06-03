@@ -60,7 +60,7 @@ def is_a_surj_function(function, image_set):
     if isinstance(image_set, InfiniteSet):
         raise EnumerationNotPossibleException()
     image = [x[1] for x in function]
-    image_set2= frozenset(image) # remove duplicate items
+    image_set2 = frozenset(image) # remove duplicate items
     return image_set == image_set2
 
 

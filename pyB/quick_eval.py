@@ -54,8 +54,11 @@ def quick_member_eval(ast, env, element):
         # XXX: this line could case a infinit computation!
         aSet = interpret(ast, env)
         if (not isinstance(aSet, SymbolicRelationSet)) or isinstance(aSet, SymbolicPartialInjectionSet) or isinstance(aSet, SymbolicTotalInjectionSet) or isinstance(aSet, SymbolicPartialSurjectionSet) or isinstance(aSet, SymbolicTotalSurjectionSet) or isinstance(aSet, SymbolicTotalBijectionSet) or isinstance(aSet, SymbolicPartialBijectionSet):
-           # XXX: Dont know how to check this for every lambda 
-           print "Error: Unhandeled case: lambda eval"
+            # XXX: Dont know how to check this for every lambda 
+            print "Error: Unhandeled case: lambda eval - brute force lambda set enum"
+            element = element.enumerate_all()
+            result = element in aSet  
+            return result
         else:
             types = []
             for var in element.variable_list:
@@ -237,7 +240,7 @@ def quick_member_eval(ast, env, element):
         if not (len(frozenset(image))==len(image)): # test injection
             return False
         return True
-    #"""
+    
     if isinstance(ast, ASeqExpression) or isinstance(ast, ASeq1Expression):
         preimage = []
         image = []
@@ -289,8 +292,9 @@ def quick_member_eval(ast, env, element):
             return False
         if not (frozenset(image)==S): # test bijection/perm
             return False 
-        return True            
-    elif isinstance(ast, APowSubsetExpression):
+        return True  
+    #"""          
+    if isinstance(ast, APowSubsetExpression):
         for e in element: # element is a Set ;-)
             # TODO: empty set test 
             if not quick_member_eval(ast.children[0], env, e):
