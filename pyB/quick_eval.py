@@ -292,9 +292,8 @@ def quick_member_eval(ast, env, element):
             return False
         if not (frozenset(image)==S): # test bijection/perm
             return False 
-        return True  
-    #"""          
-    if isinstance(ast, APowSubsetExpression):
+        return True     
+    elif isinstance(ast, APowSubsetExpression):
         for e in element: # element is a Set ;-)
             # TODO: empty set test 
             if not quick_member_eval(ast.children[0], env, e):
@@ -307,15 +306,17 @@ def quick_member_eval(ast, env, element):
             if not quick_member_eval(ast.children[0], env, e):
                 return False
         return True
-    elif isinstance(ast, AMultOrCartExpression):
+
+    if isinstance(ast, AMultOrCartExpression):
         if (not quick_member_eval(ast.children[0], env, element[0])) or (not quick_member_eval(ast.children[1], env, element[1])):
             return False
         return True
     else:
-        #TODO:(#ISSUE 18) no quick eval, can crash
-        aSet = interpret(ast, env)
-        #print "element, set:", element, aSet
-        return element in aSet                                             
+    #""" 
+    #TODO:(#ISSUE 18) no quick eval, can crash
+    aSet = interpret(ast, env)
+    #print "element, set:", element, aSet
+    return element in aSet                                             
 
 
 # checks if the element (maybe a predicate) can generated of the infinite set on the right side

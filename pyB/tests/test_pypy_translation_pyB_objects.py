@@ -56,9 +56,9 @@ def translate(main_code, other_code=""):
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c", shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    #os.remove("tempA.py")
-    #os.remove("tempB.py")
-    #os.remove("tempA-c")
+    os.remove("tempA.py")
+    os.remove("tempB.py")
+    os.remove("tempA-c")
     # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -263,7 +263,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
  
  
-    #PREDICATE 1<2 
+    #PREDICATE 4<2 
     def test_pypy_genAST_predicate2(self):
         code =  """
             from ast_nodes import AIntegerExpression, ALessPredicate, APredicateParseUnit
@@ -284,7 +284,33 @@ class TestPyPyTranslationObjects():
         assert python_result == ['0', '']
         assert python_result == c_result
      
-     
+
+    #PREDICATE 1<2
+    #@pytest.mark.xfail(True, reason="reason unknown. fails at reading input.txt")
+    #def test_pypy_genAST_predicate3(self):
+    #    code =  """
+    #        from ast_nodes import AIntegerExpression, ALessPredicate, APredicateParseUnit
+    #        from environment import Environment
+    #        from helpers import file_to_AST_str, string_to_file
+    #        from parsing import str_ast_to_python_ast
+    #        from rpython_interp import interpret
+    #        
+    #        file_name = \"input.txt\"
+    #        
+    #        string_to_file(\"#PREDICATE 1<2\", file_name)
+    #        ast_string = file_to_AST_str(file_name)
+    #        root = str_ast_to_python_ast(ast_string)  
+    #        
+    #        env = Environment()
+    #        res = interpret(root, env)
+    #        print int(res)             
+    #                                       
+    #        return 0\n"""
+    #    python_result, c_result = translate(code) 
+    #    assert python_result == ['1', '']
+    #    assert python_result == c_result
+
+   
     # set config.USE_COSTUM_FROZENSET = True
     # Two states, one transition (setups_const --> init)
     #
@@ -351,7 +377,7 @@ class TestPyPyTranslationObjects():
 
 
 
-	# set parsing line 77: root = my_exec(string)
+    # set parsing line 77: root = my_exec(string)
     # set config.USE_COSTUM_FROZENSET = True
     # Two states, one transition (setups_const --> init)
     #
@@ -438,10 +464,9 @@ class TestPyPyTranslationObjects():
             from bmachine import BMachine
             from environment import Environment
             from helpers import file_to_AST_str
-            from interp import set_up_constants, exec_initialisation
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause
-            from typing import type_check_bmch            
+            from rpython_interp import interpret, eval_clause, exec_initialisation
+            from typing import type_check_bmch          
 
             # Build AST
             ast_string = file_to_AST_str(\"examples/Lift.mch\")
@@ -458,6 +483,13 @@ class TestPyPyTranslationObjects():
             env.current_mch = mch #current mch
             mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
             # end of inlinded parse_ast
+            
+            #bstates = set_up_constants(root, env, mch, solution_file_read=False)
+            #if len(bstates)>0:
+            #    env.state_space.add_state(bstates[0])
+            bstates = exec_initialisation(root, env, mch, solution_file_read=False)
+            if len(bstates)>0:
+                env.state_space.add_state(bstates[0]) 
             
             res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
@@ -483,7 +515,78 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result   
-  
+
+
+    # TODO: implement me
+    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_COSTUM_FROZENSET = True
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
+    def test_pypy_use_env(self):
+        code = """
+            from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
+            from ast_nodes import AIdentifierExpression, APredicateParseUnit
+            from bmachine import BMachine
+            from environment import Environment
+            from helpers import file_to_AST_str
+            from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
+            from rpython_interp import interpret, eval_clause, exec_initialisation
+            # Build AST:
+            string_to_file("#PREDICATE 6>x", file_name)
+            ast_string = file_to_AST_str(file_name)
+            root = str_ast_to_python_ast(ast_string)
+        
+            # Test
+            env = Environment()
+            env.add_ids_to_frame(["x"])
+            integer_value = W_Integer(1)
+            env.set_value(\"x\", integer_value)
+            res =  interpret(root, env) 
+            print int(res)
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1', '']
+        assert python_result == c_result   
+
+
+    # TODO: implement me
+    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_COSTUM_FROZENSET = True
+    #
+    #
+    # MACHINE Simple2
+    # CONCRETE_VARIABLES  floor
+    # INVARIANT  floor>0
+    # INITIALISATION floor := 4
+    import pytest, config
+    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
+    def test_pypy_use_env2(self):
+        code = """
+            from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
+            from ast_nodes import AIdentifierExpression, APredicateParseUnit
+            from bmachine import BMachine
+            from environment import Environment
+            from helpers import file_to_AST_str
+            from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
+            from rpython_interp import interpret, eval_clause, exec_initialisation
+            from rpython_b_objmodel import W_Integer
+            
+            # Build AST:
+            ast_string = file_to_AST_str(\"examples/Simple2.mch\")
+            root = str_ast_to_python_ast(ast_string)
+        
+            # Test
+            env = Environment()
+            env.add_ids_to_frame(["floor"])
+            integer_value = W_Integer(4)
+            env.set_value(\"x\", integer_value)
+            res =  interpret(root, env) 
+            print int(res)
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1', '']
+        assert python_result == c_result   
+
     
     def test_pypy_check_frozenset_impl(self):
         code = """

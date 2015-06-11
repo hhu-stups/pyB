@@ -1,11 +1,17 @@
 from ast_nodes import *
-#from bexceptions import ValueNotInDomainException
+from bexceptions import ValueNotInDomainException, INITNotPossibleException
+from config import MAX_INIT, VERBOSE
 #from constrainsolver import calc_possible_solutions
 #from enumeration import get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 #from symbolic_sets import *
 from typing import type_check_predicate, type_check_expression
 
+
+# evals a expression of unkonwn type. Returns wrapped data (see rpython_b_objmodel.py)
+# example x:S (called by member node). x can be of any type.  
+def eval_wtype_expression(node, env):
+    pass #TODO: change environment. Implement wtype support
 
 # That the result of node evaluation is an integer,  must be ensured BY THE CALLER!
 # 
@@ -212,23 +218,20 @@ def eval_bool_expression(node, env):
         expr2 = interpret(node.children[1], env)
         # TODO: handle symbolic sets
         return expr1 != expr2
+        """
+        """
     elif isinstance(node, AMemberPredicate):
-        #print pretty_print(node)
-        if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
-            elm = interpret(node.children[0], env)
-            result = quick_member_eval(node.children[1], env, elm)
-            #print elm, result, node.children[1]
-            return result
+        # TODO: two lambda cases (see interp.py)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         return elm in aSet
     elif isinstance(node, ANotMemberPredicate):
-        if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
-            elm = interpret(node.children[0], env)
-            return not quick_member_eval(node.children[1], env, elm)
+        # TODO: two lambda cases (see interp.py)
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
         return not elm in aSet
+        """
+        """
     elif isinstance(node, ASubsetPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -391,4 +394,191 @@ def interpret(node, env):
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
         return False # RPython: Avoid return of python None
+
+# if ProB found a "full solution". This shouldn't do anything, except checking the solution            
+# calcs up to MAX_INIT init B-states
+def exec_initialisation(root, env, mch, solution_file_read=False):
+    # 0. Use solution file if possible
+    if solution_file_read:
+        use_prob_solutions(env, mch.var_names)
+        pre_init_state = env.state_space.get_state()
+        unset_lst = __find_unset_variables(mch, pre_init_state)
+        if unset_lst and VERBOSE:
+            print "\033[1m\033[91mWARNING\033[00m: Init from solution file was not complete! unset:%s" % unset_lst
+        
+        env.state_space.add_state(pre_init_state)
+        if mch.has_invariant_mc and not interpret(mch.aInvariantMachineClause, env):
+            raise INITNotPossibleException("\nError: INITIALISATION unsuccessfully. Values from solution-file caused an INVARIANT-violation")
+        env.state_space.undo()
+        return [pre_init_state] 
+               
+    # 1. set up frames and state
+    bstates = []
+    ref_bstate = env.state_space.get_state().clone()
+    env.state_space.add_state(ref_bstate)
+     
+    
+    # 2. search for solutions  
+    generator = __exec_initialisation_generator(root, env, mch)
+    sol_num = 0
+    for solution in generator:
+        if solution:
+            solution_bstate = env.state_space.get_state()
+            bstates.append(solution_bstate)
+            env.state_space.revert(ref_bstate) # revert to ref B-state
+            env.init_bmachines_names = []
+            
+            sol_num = sol_num +1
+            if sol_num==MAX_INIT:
+                break 
+    env.state_space.undo() # pop ref_state
+    return bstates
+
+
+# yields False if the state was not changed
+# yields True  if only one machine init was performed successfully
+# Assumption: The 'init' of one B-machine doesn't affect the 'init' of another
+def __exec_initialisation_list_generator(root, env, mch_list):
+    if mch_list==[]:
+        yield False
+    else:
+        mch = mch_list[0] 
+        init_generator = __exec_initialisation_generator(mch.root, env, mch)
+        for bstate_change in init_generator:
+            init_list_generator = __exec_initialisation_list_generator(root, env, mch_list[1:])
+            for more_bstate_change in init_list_generator:
+                yield bstate_change or more_bstate_change        
+
+                
+
+def __exec_initialisation_generator(root, env, mch):
+    # 1. check if init already done to avoid double init
+    if mch.mch_name in env.init_bmachines_names:
+        yield False
+    else:
+        env.init_bmachines_names.append(mch.mch_name)
+            
+    # 2. init children
+    children = mch.included_mch + mch.extended_mch + mch.seen_mch + mch.used_mch
+    init_list_generator = __exec_initialisation_list_generator(root, env, children)
+
+    # TODO state revert?
+    for child_bstate_change in init_list_generator:         
+        # 3. set up state and env. for init exec
+        env.current_mch = mch 
+        env.add_ids_to_frame(mch.var_names)
+        ref_bstate = env.state_space.get_state().clone() # save init of children (this is a Bugfix and not the solution)
+        
+        # 3.1 nothing to be init.        
+        if not mch.has_initialisation_mc:
+            if mch.has_variables_mc and  mch.has_conc_variables_mc:
+                raise INITNotPossibleException("\nError: Missing InitialisationMachineClause in %s!" % mch.mch_name)
+            yield child_bstate_change
+        # 3.2. search for solutions  
+        else:                 
+            at_least_one_possible = False
+            ex_sub_generator = exec_substitution(mch.aInitialisationMachineClause.children[-1], env)
+            for bstate_change in ex_sub_generator:
+                if bstate_change:
+                    at_least_one_possible = True
+                    yield True
+                    env.state_space.revert(ref_bstate) # revert to current child-init-solution
+            if not at_least_one_possible:
+                raise INITNotPossibleException("\n\033[1m\033[91mWARNING\033[00m: Problem while exec init. No init found/possible! in %s" % mch.mch_name)
+
+# TODO: use solutions of child mch (seen, used mch)
+def use_prob_solutions(env, idNames):
+    #print "use_prob_solutions"
+    for name in idNames:
+        try:
+            node = env.solutions[name]
+            #print "setting",name #, " to:", pretty_print(node) 
+            value = interpret(node, env)
+            env.set_value(name, value)
+        except KeyError:
+            print "\n\033[1m\033[91mWARNING\033[00m: Reading solution file. Missing solution for %s" % name
+    #print "ProB solutions set to env"
+
+
+def __check_unset(names, bstate, mch):
+    fail_lst = []
+    for id_Name in names:
+        try:
+            value = bstate.get_value(id_Name, mch)
+            if value==None:
+                fail_lst.append(id_Name)    
+        except ValueNotInBStateException:
+            fail_lst.append(id_Name)
+    return fail_lst
+
+
+# checks if there are any unset variables
+def __find_unset_variables(mch, bstate):
+    # TODO: Find unset in child-mchs
+    var_lst = mch.var_names
+    fail_lst = __check_unset(var_lst, bstate, mch)
+    return fail_lst 
+
+
+# side-effect: changes state while exec.
+# returns True if substitution was possible
+# Substituions return True/False if the substitution was possible
+def exec_substitution(sub, env):
+    
+    
+# ****************
+#
+# 5. Substitutions
+#
+# ****************
+    assert isinstance(sub, Substitution)
+    if isinstance(sub, ASkipSubstitution):
+        yield True # always possible
+    elif isinstance(sub, AAssignSubstitution):
+        assert int(sub.lhs_size) == int(sub.rhs_size)     
+        used_ids = []
+        values = []
+        # get values of all expressions (rhs)
+        for i in range(int(sub.rhs_size)):
+            rhs = sub.children[i+int(sub.rhs_size)]
+            value = interpret(rhs, env)
+            values.append(value)
+        for i in range(int(sub.lhs_size)):
+            lhs_node = sub.children[i]            
+            # BUG if the expression on the rhs has a side-effect
+            value = values[i]
+            # case (1) lhs: no function
+            if isinstance(lhs_node, AIdentifierExpression):
+                used_ids.append(lhs_node.idName)
+                env.set_value(lhs_node.idName, value)
+            # case (2) lhs: is function 
+            else:
+                assert isinstance(lhs_node, AFunctionExpression)
+                assert isinstance(lhs_node.children[0], AIdentifierExpression)
+                func_name = lhs_node.children[0].idName
+                # get args and convert to dict
+                args = []
+                for child in lhs_node.children[1:]:
+                    arg = interpret(child, env)
+                    args.append(arg)
+                func = dict(env.get_value(func_name))
+                used_ids.append(func_name)
+                # mapping of func values
+                if len(args)==1:
+                    func[args[0]] = value
+                else:
+                    func[tuple(args)] = value
+                # convert back
+                lst = []
+                for key in func:
+                    lst.append(tuple([key,func[key]]))
+                new_func = frozenset(lst)
+                # write to env
+                env.set_value(func_name, new_func)
+            # case (3) record: 3 # TODO
+        while not used_ids==[]:
+            name = used_ids.pop()
+            if name in used_ids:
+                raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
+        yield True # assign(s) was/were  successful 
      

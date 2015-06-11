@@ -14,6 +14,17 @@ if USE_COSTUM_FROZENSET:
 file_name = "input.txt"
 
 class TestInterpNumbers():
+
+    def test_genAST_preidacte_less(self):
+        # Build AST
+        string_to_file("#PREDICATE 1<2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root, env)
+        
     def test_genAST_expr_add(self):
         # Build AST
         string_to_file("#PREDICATE 1+1=3", file_name)

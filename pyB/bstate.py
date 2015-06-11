@@ -155,7 +155,7 @@ class BState():
         top_map = value_stack[-1]
         for id in ids:
             assert isinstance(id,str)
-            if not top_map.has_key(id):
+            if id not in top_map:
                 top_map[id] = None
     
     

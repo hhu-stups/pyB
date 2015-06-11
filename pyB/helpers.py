@@ -83,7 +83,7 @@ def file_to_AST_str_no_print(file_name_str):
 def file_to_AST_str(file_name_str, path=""):
     from config import USE_RPYTHON_POPEN
     out = ""
-    c_str = command_str + option_str + " "+path+file_name_str
+    c_str = command_str + option_str + " "+path+file_name_str # java call
     if USE_RPYTHON_POPEN:
         from rpython.rlib.rfile import create_popen_file
         file = create_popen_file(c_str, "r")
