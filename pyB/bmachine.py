@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from boperation import BOperation
-from helpers import file_to_AST_str_no_print, contains_lower_character
+from helpers import file_to_AST_str_no_print, contains_lower_character, ParseObject
 
 from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
@@ -9,7 +9,7 @@ if USE_COSTUM_FROZENSET:
      
 # -*- coding: utf-8 -*-
 # abstract machine object
-class BMachine:
+class BMachine(ParseObject):
     def __init__(self, node, remove_definitions):
         self.mch_name = ""
         self.const_names = []

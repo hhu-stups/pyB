@@ -94,7 +94,7 @@ class Environment():
                 return m
             else:
                 bmachine = self.lookup_bmachine(idName, m)
-                if not bmachine==None:
+                if bmachine is not None:
                     return bmachine
         return None
 
@@ -107,6 +107,7 @@ class Environment():
             bstate.set_value(id_Name, value, bmachine)
             return
         except ValueNotInBStateException:
+            assert bmachine is not None
             assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)
@@ -120,6 +121,7 @@ class Environment():
         try:
             return bstate.get_value(id_Name, bmachine)
         except ValueNotInBStateException:
+            assert bmachine is not None
             assert id_Name not in bmachine.const_names + bmachine.var_names + bmachine.dset_names 
         # lookup-fail in root. check child-bmachine
         bmachine = self.lookup_bmachine(id_Name, self.root_mch)

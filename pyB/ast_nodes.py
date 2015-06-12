@@ -1038,7 +1038,10 @@ class AIntegerExpression(IntegerExpression):
 class AFileDefinitionDefinition(Node):
     def __init__(self, idName):
         self.idName = idName
-        self.children =[]  
+        self.children =[]
+        
+    def get_name(self):
+        return self.idName  
     
     def clone(self):
         return AFileDefinitionDefinition(self.idName)

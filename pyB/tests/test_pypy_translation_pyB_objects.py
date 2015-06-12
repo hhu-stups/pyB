@@ -564,12 +564,15 @@ class TestPyPyTranslationObjects():
         code = """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AIdentifierExpression, APredicateParseUnit
+            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from ast_nodes import AVariablesMachineClause
             from bmachine import BMachine
             from environment import Environment
             from helpers import file_to_AST_str
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
             from rpython_interp import interpret, eval_clause, exec_initialisation
             from rpython_b_objmodel import W_Integer
+            from typing import type_check_bmch
             
             # Build AST:
             ast_string = file_to_AST_str(\"examples/Simple2.mch\")
@@ -577,14 +580,20 @@ class TestPyPyTranslationObjects():
         
             # Test
             env = Environment()
+            mch = parse_ast(root, env)
+            type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
             env.add_ids_to_frame(["floor"])
             integer_value = W_Integer(4)
-            env.set_value(\"x\", integer_value)
-            res =  interpret(root, env) 
+            env.set_value("floor", integer_value)
+            
+            res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
+            res = eval_clause(root.children[2], env) 
+            print int(res) 
+            
             return 0\n"""
         python_result, c_result = translate(code) 
-        assert python_result == ['1', '']
+        assert python_result == ['1', '1', '']
         assert python_result == c_result   
 
     

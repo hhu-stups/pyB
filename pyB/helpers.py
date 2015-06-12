@@ -32,7 +32,9 @@ else:
 #option_str = " -json"
 option_str = " -python "
 
-
+# only introduced for PyPy rtpyer. Base class of BMachine, PredicateParseUnit, ExpressionParseUnit
+class ParseObject:
+    pass
 
 def solution_file_to_AST_str(file_name_str):
     f = open(file_name_str,"r")

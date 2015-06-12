@@ -5,6 +5,7 @@ from config import MAX_INIT, VERBOSE
 #from enumeration import get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 #from symbolic_sets import *
+from rpython_b_objmodel import W_Integer
 from typing import type_check_predicate, type_check_expression
 
 
@@ -136,6 +137,13 @@ def eval_int_expression(node, env):
         #print node.idName
         return env.get_value(node.idName)
         """
+    elif isinstance(node, AIdentifierExpression):
+        #print node.idName
+        assert env is not None
+        name = node.get_name()
+        w_int = env.get_value(name)
+        assert isinstance(w_int, W_Integer)
+        return w_int.value
     else:
         raise Exception("\nError: Unknown/unimplemented node inside eval_int_expression: %s",node)
         return -1 # RPython: Avoid return of python None

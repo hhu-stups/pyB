@@ -77,7 +77,7 @@ class BState():
         #if isinstance(id_Name, AIdentifierExpression): # debug
         #    print id_Name.idName
         assert isinstance(id_Name, str)
-        assert isinstance(bmachine, BMachine) or bmachine==None #None if Predicate or Expression
+        assert isinstance(bmachine, BMachine) or bmachine is None #None if Predicate or Expression
         value_stack = self.bmch_dict[bmachine]
         value_map_copy =  [x for x in value_stack] # no ref. copy
         value_map_copy.reverse()
@@ -107,7 +107,7 @@ class BState():
     def set_value(self, id_Name, value, bmachine):
         #print
         #print value, id_Name
-        assert isinstance(bmachine, BMachine) or bmachine==None
+        assert isinstance(bmachine, BMachine) or bmachine is None
         value_stack = self.bmch_dict[bmachine]
         for i in range(len(value_stack)):
             top_map = value_stack[-(i+1)]

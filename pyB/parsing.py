@@ -3,7 +3,7 @@ import json
 from ast_nodes import *
 from bmachine import BMachine
 from definition_handler import DefinitionHandler
-from helpers import print_ast
+from helpers import print_ast, ParseObject
 
 # categorization of possible AST nodes. 
 # Two criteria: number of parameter and number of child-nodes
@@ -189,11 +189,11 @@ f += "\treturn root\n"
 exec(f) 
 
 # AMachineHeader(childNum="0", idName="SIMPLE")
-class PredicateParseUnit:
+class PredicateParseUnit(ParseObject):
     def __init__(self, root):
         self.root = root
 
-class ExpressionParseUnit:
+class ExpressionParseUnit(ParseObject):
     def __init__(self, root):
         self.root = root
         
