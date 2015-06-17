@@ -642,6 +642,9 @@ Print ASTS:
 java -cp ../jars/bparser-2.0.67.jar:../jars/prologlib-2.0.67.jar:../jars/parserbase-2.0.67.jar:../jars/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt    
 or
 java -cp ../bparser/build/libs/bparser-2.0.67.jar:../prologlib/build/libs/prologlib-2.0.67.jar:../parsebase/build/libs/parserbase-2.0.67.jar:../cliparser/build/libs/cliparser-2.0.67.jar:examples/:. de.prob.cliparser.CliBParser -ast input.txt
+
+java -Xms64m -Xmx1024m -cp :examples/:../jars/:. -jar ../jars/javaparser.jar  -python input.txt 
+
 PATH for testing:
 export PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pyB:.
 

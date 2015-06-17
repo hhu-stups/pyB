@@ -80,6 +80,7 @@ f += "\t\t\te=line.rfind('\"')\n"
 f += "\t\t\tassert s>0\n"
 f += "\t\t\tassert e>0\n"
 f += "\t\t\tidName=line[s+1:e]\n"
+f += "\t\t\tassert isinstance(idName, str)\n"
 f += "\t\t\tnode =AIdentifierExpression(idName)\n"
 f += "\t\t\tstack.append(node)\n"
 # special case: AStringExpression
@@ -268,10 +269,10 @@ def __add_sp_attr(node, dic):
 
 def __str_to_node(string):
     if string==u'AStringExpression':
-        return AStringExpression(None)
+        return AStringExpression("")
     elif string==u'AIdentifierExpression':
-        return AIdentifierExpression(None)
+        return AIdentifierExpression("")
     elif string==u'AIntegerExpression':
-        return AIntegerExpression(None)
+        return AIntegerExpression(0)
     else: # TODO: metaprogramming at import-time (generate the other ~ 100 elifs)
         return eval(string+"()") 

@@ -323,7 +323,7 @@ class TestPyPyTranslationObjects():
     def test_pypy_genAST_bmachine1(self):
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
-            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AIdentifierExpression
             from bmachine import BMachine
             from environment import Environment
             from interp import set_up_constants, exec_initialisation
@@ -365,6 +365,9 @@ class TestPyPyTranslationObjects():
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0]) 
             
+            # useless idNode helps the rpython typer (reason unknown)
+            idnode = AIdentifierExpression("foo")
+            
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
             res = eval_clause(root.children[1], env)
@@ -391,7 +394,7 @@ class TestPyPyTranslationObjects():
     def test_pypy_genAST_bmachine2(self):
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
-            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AIdentifierExpression
             from bmachine import BMachine
             from environment import Environment
             from helpers import file_to_AST_str
@@ -426,6 +429,9 @@ class TestPyPyTranslationObjects():
             #bstates = exec_initialisation(root, env, mch, solution_file_read=False)
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0]) 
+            
+            # useless idNode helps the rpython typer (reason unknown)
+            idnode = AIdentifierExpression("foo")
             
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
@@ -520,20 +526,22 @@ class TestPyPyTranslationObjects():
     # TODO: implement me
     # set config.USE_COSTUM_FROZENSET = True
     # set config.USE_COSTUM_FROZENSET = True
+    #PREDICATE x<2
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
-    def test_pypy_use_env(self):
+    def test_pypy_use_env1(self):
         code = """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AIdentifierExpression, APredicateParseUnit
             from bmachine import BMachine
             from environment import Environment
-            from helpers import file_to_AST_str
+            from helpers import file_to_AST_str, string_to_file
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
             from rpython_interp import interpret, eval_clause, exec_initialisation
+            from rpython_b_objmodel import W_Integer
+    
             # Build AST:
-            string_to_file("#PREDICATE 6>x", file_name)
-            ast_string = file_to_AST_str(file_name)
+            ast_string = file_to_AST_str(\"examples/simple_pred2.def\")
             root = str_ast_to_python_ast(ast_string)
         
             # Test
@@ -558,6 +566,7 @@ class TestPyPyTranslationObjects():
     # CONCRETE_VARIABLES  floor
     # INVARIANT  floor>0
     # INITIALISATION floor := 4
+    # END
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
     def test_pypy_use_env2(self):
@@ -622,7 +631,71 @@ class TestPyPyTranslationObjects():
             return 0\n"""
         python_result, c_result = translate(code) 
         assert python_result == c_result
-    
+
+
+    import pytest, config
+    @pytest.mark.skipif(True, reason="pyB-c string_to_file/file_to_AST_str does not work for reasons unknown") 
+    def test_pypy_parsing2(self):
+        code =  """            
+            from ast_nodes import AIntegerExpression, ALessPredicate
+            from ast_nodes import AIdentifierExpression, APredicateParseUnit
+            from environment import Environment
+            from helpers import file_to_AST_str, string_to_file
+            from parsing import parse_ast, str_ast_to_python_ast
+            
+            file_name = "input.txt"
+            
+            # Build AST:
+            string_to_file("#PREDICATE 6>2", file_name)
+            ast_string = file_to_AST_str(file_name)
+            root = str_ast_to_python_ast(ast_string)
+            
+            res = isinstance(root, APredicateParseUnit)
+            print int(res)
+            
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1', '']
+        assert python_result == c_result
+
+
+    # MACHINE SIMPLE
+    # INVARIANT  1<2
+    # END
+    #
+    import pytest, config
+    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
+    def test_pypy_parsing3(self):
+        code =  """            
+            from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
+            from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
+            from bmachine import BMachine
+            from environment import Environment
+            from helpers import file_to_AST_str
+            from interp import set_up_constants, exec_initialisation
+            from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
+            from rpython_interp import interpret, eval_clause
+            from typing import type_check_bmch
+                 
+            # Build AST
+            ast_string = file_to_AST_str(\"examples/Simple.mch\")
+            root = str_ast_to_python_ast(ast_string)  
+            
+            res = isinstance(root, AAbstractMachineParseUnit)
+            print int(res)
+            
+            res = isinstance(root.children[0], AInvariantMachineClause)
+            print int(res) #False
+            
+            res = isinstance(root.children[1], AInvariantMachineClause)
+            print int(res)
+            
+            
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['1', '0','1', '']
+        assert python_result == c_result
+          
 
     def test_pypy_generators(self):
         code =  """

@@ -140,9 +140,9 @@ def eval_int_expression(node, env):
     elif isinstance(node, AIdentifierExpression):
         #print node.idName
         assert env is not None
-        name = node.get_name()
-        w_int = env.get_value(name)
-        assert isinstance(w_int, W_Integer)
+        #name = node.get_idName()
+        #assert hasattr(node, "idName")
+        w_int = env.get_value(node.idName)
         return w_int.value
     else:
         raise Exception("\nError: Unknown/unimplemented node inside eval_int_expression: %s",node)

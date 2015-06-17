@@ -1019,10 +1019,16 @@ class AStringExpression(StringExpression):
         
 class AIdentifierExpression(Expression):
     def __init__(self, idName):
+        assert isinstance(idName, str)
         self.idName = idName
         self.children =[]
+        
+    #def get_idName(self):
+    # 	assert isinstance(self.idName, str)
+    # 	return self.idName
     
     def clone(self):
+        assert isinstance(self.idName, str)
         return AIdentifierExpression(self.idName)
 
         
