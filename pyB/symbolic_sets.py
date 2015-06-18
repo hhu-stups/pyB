@@ -9,8 +9,10 @@ from btypes import *
 from config import PRINT_WARNINGS, USE_COSTUM_FROZENSET
 from pretty_printer import pretty_print
 from symbolic_helpers import check_syntacticly_equal, generate_powerset
+from rpython_b_objmodel import W_Object, W_Integer
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
+
 
 ##############
 # Base-class and Primitive Sets
@@ -19,7 +21,7 @@ if USE_COSTUM_FROZENSET:
 # Int-,Nat-,Nat1-,Natural-,Natural1-,Integer and StringSet
 
 
-class SymbolicSet():
+class SymbolicSet(W_Object):
     # env: min and max int values may be needed for large sets 
     # interpret: for function call on tuple-sets
     def __init__(self, env, interpret):
@@ -838,9 +840,9 @@ class SymbolicIntervalSet(LargeSet):
         self.r = r
         
     # e:S (element:l..r)
-    def __contains__(self, element):
-        if not isinstance(element, int):
-            raise Exception("Interval membership with non-integer")
+    def __contains__(self, element):            
+        if not isinstance(element, int) and not isinstance(element, W_Integer):
+            raise Exception("Interval membership with non-integer: %s" % element)
         if element<=self.r and element>=self.l:
             return True
         else:

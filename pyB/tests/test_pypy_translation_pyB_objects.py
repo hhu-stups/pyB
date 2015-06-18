@@ -633,6 +633,18 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
 
 
+    """
+    Exception in thread "main" java.lang.StringIndexOutOfBoundsException: String index out of range: 0
+	at java.lang.String.charAt(String.java:646)
+	at java.lang.Character.codePointAt(Character.java:4866)
+	at de.be4.classicalb.core.parser.BParser.readFile(BParser.java:183)
+	at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:160)
+	at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:144)
+	at pyB.Main.main(Main.java:26)
+    RPython traceback:
+    File "implement.c", line 858, in main
+    File "implement.c", line 121364, in my_exec
+    """
     import pytest, config
     @pytest.mark.skipif(True, reason="pyB-c string_to_file/file_to_AST_str does not work for reasons unknown") 
     def test_pypy_parsing2(self):
@@ -664,7 +676,7 @@ class TestPyPyTranslationObjects():
     # END
     #
     import pytest, config
-    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unsupported pypy import on python run" )    
     def test_pypy_parsing3(self):
         code =  """            
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate

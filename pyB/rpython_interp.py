@@ -5,9 +5,12 @@ from config import MAX_INIT, VERBOSE
 #from enumeration import get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 #from symbolic_sets import *
-from rpython_b_objmodel import W_Integer
+from symbolic_sets import SymbolicIntervalSet
+from rpython_b_objmodel import W_Integer, W_Object
 from typing import type_check_predicate, type_check_expression
 
+
+eval_int_expression_nodes = [AIntegerExpression]
 
 # evals a expression of unkonwn type. Returns wrapped data (see rpython_b_objmodel.py)
 # example x:S (called by member node). x can be of any type.  
@@ -143,6 +146,7 @@ def eval_int_expression(node, env):
         #name = node.get_idName()
         #assert hasattr(node, "idName")
         w_int = env.get_value(node.idName)
+        assert isinstance(w_int, W_Integer)
         return w_int.value
     else:
         raise Exception("\nError: Unknown/unimplemented node inside eval_int_expression: %s",node)
@@ -279,6 +283,15 @@ def eval_bool_expression(node, env):
         raise Exception("\nError: Unknown/unimplemented node inside eval_bool_expression: %s",node)
         return False # RPython: Avoid return of python None
 
+def eval_set_expression(node, env):
+    if isinstance(node, AIntervalExpression):
+        left = eval_int_expression(node.children[0], env)
+        right = eval_int_expression(node.children[1], env)
+        return SymbolicIntervalSet(W_Integer(left), W_Integer(right), env, interpret)
+    else:
+        raise Exception("\nError: Unknown/unimplemented node inside eval_set_expression: %s",node)
+        return W_Object() # RPython: Avoid return of python None
+
 
 def eval_clause(node, env):
     if isinstance(node, AConstraintsMachineClause):
@@ -398,6 +411,24 @@ def interpret(node, env):
                 result = interpret(node.children[0], env)
                 return result
         return True
+        """
+        """
+    elif isinstance(node, AIdentifierExpression):
+        #print node.idName
+        assert env is not None
+        #name = node.get_idName()
+        #assert hasattr(node, "idName")
+        w_obj = env.get_value(node.idName)
+        assert isinstance(w_obj, W_Object)
+        return w_obj
+    # TODO: refactor
+    elif isinstance(node, AIntegerExpression):
+        value = eval_int_expression(node, env)
+        return W_Integer(value)
+    elif isinstance(node, AIntervalExpression):
+        set = eval_set_expression(node, env)
+        assert isinstance(set, W_Object)
+        return set
         """
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
@@ -550,15 +581,19 @@ def exec_substitution(sub, env):
         for i in range(int(sub.rhs_size)):
             rhs = sub.children[i+int(sub.rhs_size)]
             value = interpret(rhs, env)
+            assert isinstance(value, W_Object)
             values.append(value)
         for i in range(int(sub.lhs_size)):
             lhs_node = sub.children[i]            
             # BUG if the expression on the rhs has a side-effect
+            assert i>=0 and i<len(values)
             value = values[i]
             # case (1) lhs: no function
             if isinstance(lhs_node, AIdentifierExpression):
                 used_ids.append(lhs_node.idName)
                 env.set_value(lhs_node.idName, value)
+            # TODO: implement call method on frozensets before adding this code
+            """
             # case (2) lhs: is function 
             else:
                 assert isinstance(lhs_node, AFunctionExpression)
@@ -584,6 +619,7 @@ def exec_substitution(sub, env):
                 # write to env
                 env.set_value(func_name, new_func)
             # case (3) record: 3 # TODO
+            """
         while not used_ids==[]:
             name = used_ids.pop()
             if name in used_ids:

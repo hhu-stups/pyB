@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#EXPRESSION {x|x:INTEGER*INTEGER & x : dom({((2|->0)|->83),((2|->1)|->83),((2|->3)|->83)})}   
