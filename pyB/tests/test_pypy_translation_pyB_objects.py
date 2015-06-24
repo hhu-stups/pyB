@@ -403,9 +403,12 @@ class TestPyPyTranslationObjects():
             from rpython_interp import interpret, eval_clause
             from typing import type_check_bmch
             
-            
+            if len(argv)<2:
+                return 0
+                
             # Build AST
-            ast_string = file_to_AST_str(\"examples/Simple.mch\")
+            file_name = argv[1]
+            ast_string = file_to_AST_str(file_name)
             root = str_ast_to_python_ast(ast_string)
             
             # Test
@@ -439,7 +442,7 @@ class TestPyPyTranslationObjects():
             print int(res)
                           
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple.mch") 
         assert python_result == ['1', '1', '']
         assert python_result == c_result
 
@@ -474,8 +477,12 @@ class TestPyPyTranslationObjects():
             from rpython_interp import interpret, eval_clause, exec_initialisation
             from typing import type_check_bmch          
 
+            if len(argv)<2:
+                return 0
+                
             # Build AST
-            ast_string = file_to_AST_str(\"examples/Lift.mch\")
+            file_name = argv[1]
+            ast_string = file_to_AST_str(file_name)
             root = str_ast_to_python_ast(ast_string)           
             
             # Test
@@ -505,7 +512,7 @@ class TestPyPyTranslationObjects():
             type_check_bmch(root, env, mch)
                                                   
             return 0\n"""
-        python_result, c_result = translate(code)
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
         print python_result 
         assert python_result == c_result        
 
@@ -540,8 +547,12 @@ class TestPyPyTranslationObjects():
             from rpython_interp import interpret, eval_clause, exec_initialisation
             from rpython_b_objmodel import W_Integer
     
-            # Build AST:
-            ast_string = file_to_AST_str(\"examples/simple_pred2.def\")
+            if len(argv)<2:
+                return 0
+                
+            # Build AST
+            file_name = argv[1]
+            ast_string = file_to_AST_str(file_name)
             root = str_ast_to_python_ast(ast_string)
         
             # Test
@@ -552,7 +563,7 @@ class TestPyPyTranslationObjects():
             res =  interpret(root, env) 
             print int(res)
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/simple_pred2.def") 
         assert python_result == ['1', '']
         assert python_result == c_result   
 
@@ -583,8 +594,12 @@ class TestPyPyTranslationObjects():
             from rpython_b_objmodel import W_Integer
             from typing import type_check_bmch
             
-            # Build AST:
-            ast_string = file_to_AST_str(\"examples/Simple2.mch\")
+            if len(argv)<2:
+                return 0
+                
+            # Build AST
+            file_name = argv[1]
+            ast_string = file_to_AST_str(file_name)
             root = str_ast_to_python_ast(ast_string)
         
             # Test
@@ -601,7 +616,7 @@ class TestPyPyTranslationObjects():
             print int(res) 
             
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple2.mch") 
         assert python_result == ['1', '1', '']
         assert python_result == c_result   
 
@@ -689,8 +704,12 @@ class TestPyPyTranslationObjects():
             from rpython_interp import interpret, eval_clause
             from typing import type_check_bmch
                  
+            if len(argv)<2:
+                return 0
+                
             # Build AST
-            ast_string = file_to_AST_str(\"examples/Simple.mch\")
+            file_name = argv[1]
+            ast_string = file_to_AST_str(file_name)
             root = str_ast_to_python_ast(ast_string)  
             
             res = isinstance(root, AAbstractMachineParseUnit)
@@ -704,7 +723,7 @@ class TestPyPyTranslationObjects():
             
             
             return 0\n"""
-        python_result, c_result = translate(code) 
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple.mch") 
         assert python_result == ['1', '0','1', '']
         assert python_result == c_result
           
