@@ -7,7 +7,7 @@ PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to y
 
 
 # Run main_code with CPython (except RPython Flags) and Translated C Version
-def translate(main_code, other_code=""):
+def translate(main_code, other_code="", cl_argument=""):
     # 1. Generate Python code as String
     code = other_code
     code +=  "def main(argv):\n"
@@ -44,7 +44,7 @@ def translate(main_code, other_code=""):
     f.close()
     from subprocess import Popen, PIPE
     # 5. call python version
-    python_result = Popen("python tempB.py", shell=True, stdout=PIPE).stdout.read()
+    python_result = Popen("python tempB.py "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 6. generate and call c Version
     import os
     if os.name=='nt':
@@ -54,7 +54,7 @@ def translate(main_code, other_code=""):
         pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
         assert pwd[-4:]=='pyB\n'
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
-    c_result = Popen("./tempA-c", shell=True, stdout=PIPE).stdout.read()
+    c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
     os.remove("tempA.py")
     os.remove("tempB.py")
@@ -805,5 +805,22 @@ class TestPyPyTranslationObjects():
         pass\n"""
         python_result, c_result = translate(code, other_code) 
         assert python_result == ['0','0', '']
-        assert python_result == c_result          
+        assert python_result == c_result      
+        
+        
+    def test_pypy_command_line_args(self):  
+        code =  """        
+            if len(argv)>=1:
+                value = argv[1]
+                if value is not None:
+                    int_val = int(value)
+                    result  = 2*int_val
+                    print result
+                    return 0
+            return -1\n"""
+        # TODO:
+        python_result, c_result = translate(code, other_code="", cl_argument="5") 
+        assert python_result == ['10', '']
+        assert python_result == c_result   
+              
         
