@@ -127,38 +127,44 @@ class TestPyPyTranslationObjects():
             from ast_nodes import AIntegerExpression, AAddExpression
             from ast_nodes import AMinusOrSetSubtractExpression, AMultOrCartExpression
             from ast_nodes import ADivExpression, AModuloExpression, APowerOfExpression
-            from rpython_interp import eval_int_expression
+            from rpython_interp import interpret
             node0 = AIntegerExpression(4)
             node1 = AIntegerExpression(2)
             node2 = AAddExpression()
             node2.children.append(node0)
             node2.children.append(node1)
-            print eval_int_expression(node2, None)
+            w_int = interpret(node2, None)
+            print w_int.value
             
             node3 = AMinusOrSetSubtractExpression()
             node3.children.append(node0)
             node3.children.append(node1)
-            print eval_int_expression(node3, None)
+            w_int = interpret(node3, None)
+            print w_int.value
             
             node4 = AMultOrCartExpression()
             node4.children.append(node0)
             node4.children.append(node1)
-            print eval_int_expression(node4, None)
+            w_int = interpret(node4, None)
+            print w_int.value
             
             node5 = ADivExpression()
             node5.children.append(node0)
             node5.children.append(node1)
-            print eval_int_expression(node5, None)
+            w_int = interpret(node5, None)
+            print w_int.value
             
             node6 = AModuloExpression()
             node6.children.append(node0)
             node6.children.append(node1)
-            print eval_int_expression(node6, None)
+            w_int = interpret(node6, None)
+            print w_int.value
             
             node7 = APowerOfExpression()
             node7.children.append(node0)
             node7.children.append(node1)
-            print eval_int_expression(node7, None)
+            w_int = interpret(node7, None)
+            print w_int.value
                         
             return 0\n"""
         python_result, c_result = translate(code) 
@@ -170,23 +176,26 @@ class TestPyPyTranslationObjects():
         code =  """
             from ast_nodes import AIntegerExpression, AAddExpression
             from ast_nodes import AMinusOrSetSubtractExpression, AMultOrCartExpression
-            from rpython_interp import eval_int_expression
+            from rpython_interp import interpret
             node0 = AIntegerExpression(4)
             node1 = AIntegerExpression(2)
             node2 = AAddExpression()
             node2.children.append(node0)
             node2.children.append(node1)
-            print eval_int_expression(node2, None)
+            w_int = interpret(node2, None)
+            print w_int.value
             
             node3 = AMinusOrSetSubtractExpression()
             node3.children.append(node0)
             node3.children.append(node1)
-            print eval_int_expression(node3, None)
+            w_int = interpret(node3, None)
+            print w_int.value
             
             node4 = AMultOrCartExpression()
             node4.children.append(node3)
             node4.children.append(node2)
-            print eval_int_expression(node4, None)
+            w_int = interpret(node4, None)
+            print w_int.value
                         
             return 0\n"""
         python_result, c_result = translate(code) 
@@ -200,62 +209,62 @@ class TestPyPyTranslationObjects():
             from ast_nodes import AGreaterEqualPredicate, ALessEqualPredicate, AConjunctPredicate
             from ast_nodes import ADisjunctPredicate, AImplicationPredicate
             from ast_nodes import AEquivalencePredicate, ANegationPredicate
-            from rpython_interp import eval_bool_expression
+            from rpython_interp import interpret
             node0 = AIntegerExpression(4)
             node1 = AIntegerExpression(2)
             
             node2 = ALessPredicate()
             node2.children.append(node0)
             node2.children.append(node1)
-            res = eval_bool_expression(node2, None)
-            print int(res) 
+            res0 = interpret(node2, None)
+            print int(res0.value) 
             
             node3 = AGreaterPredicate()
             node3.children.append(node0)
             node3.children.append(node1)
-            res = eval_bool_expression(node3, None)
-            print int(res)            
+            res1 = interpret(node3, None)
+            print int(res1.value)            
 
             node4 = AGreaterEqualPredicate()
             node4.children.append(node0)
             node4.children.append(node1)
-            res = eval_bool_expression(node4, None)
-            print int(res) 
+            res2 = interpret(node4, None)
+            print int(res2.value) 
             
             node5 = ALessEqualPredicate()
             node5.children.append(node0)
             node5.children.append(node1)
-            res = eval_bool_expression(node5, None)
-            print int(res)  
+            res3 = interpret(node5, None)
+            print int(res3.value)  
             
             node6 = AConjunctPredicate()
             node6.children.append(node2)
             node6.children.append(node3)
-            res = eval_bool_expression(node6, None)
-            print int(res)
+            res4 = interpret(node6, None)
+            print int(res4.value)
                         
             node7 = ADisjunctPredicate()
             node7.children.append(node2)
             node7.children.append(node3)
-            res = eval_bool_expression(node7, None)
-            print int(res)   
+            res5 = interpret(node7, None)
+            print int(res5.value)   
             
             node8 = AImplicationPredicate()
             node8.children.append(node2)
             node8.children.append(node3)
-            res = eval_bool_expression(node8, None)
-            print int(res)
+            res6 = interpret(node8, None)
+            print int(res6.value)
                         
             node9 = AEquivalencePredicate()
             node9.children.append(node2)
             node9.children.append(node3)
-            res = eval_bool_expression(node9, None)
-            print int(res)           
+            res7 = interpret(node9, None)
+            print int(res7.value)           
 
             node10 = ANegationPredicate()
             node10.children.append(node9)
-            res = eval_bool_expression(node10, None)
-            print int(res)             
+            res8 = interpret(node10, None)
+            print int(res8.value)             
                                            
             return 0\n"""
         python_result, c_result = translate(code)
@@ -277,7 +286,7 @@ class TestPyPyTranslationObjects():
             node3 = APredicateParseUnit()
             node3.children.append(node2)
             res = interpret(node3, None)
-            print int(res)             
+            print int(res.value)             
                                            
             return 0\n"""
         python_result, c_result = translate(code) 
@@ -328,9 +337,9 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             from interp import set_up_constants, exec_initialisation
             from parsing import parse_ast, remove_definitions
-            from rpython_interp import interpret, eval_clause
+            from rpython_interp import interpret
             
-             # Build AST
+            # Build AST
             id0=AMachineHeader(childNum="0", idName="SIMPLE")
             id1=AIntegerExpression(1)
             id2=AIntegerExpression(2)
@@ -370,8 +379,8 @@ class TestPyPyTranslationObjects():
             
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[1], env)
-            print int(res)
+            res = interpret(root.children[1], env)
+            print int(res.value)
                           
             return 0\n"""
         python_result, c_result = translate(code) 
@@ -400,7 +409,7 @@ class TestPyPyTranslationObjects():
             from helpers import file_to_AST_str
             from interp import set_up_constants, exec_initialisation
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause
+            from rpython_interp import interpret
             from typing import type_check_bmch
             
             if len(argv)<2:
@@ -438,8 +447,8 @@ class TestPyPyTranslationObjects():
             
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[1], env)
-            print int(res)
+            res = interpret(root.children[1], env)
+            print int(res.value)
                           
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple.mch") 
@@ -474,7 +483,7 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             from helpers import file_to_AST_str
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause, exec_initialisation
+            from rpython_interp import interpret, exec_initialisation
             from typing import type_check_bmch          
 
             if len(argv)<2:
@@ -497,6 +506,7 @@ class TestPyPyTranslationObjects():
             mch.add_all_visible_ops_to_env(env) # creating operation-objects and add them to bmchs and env
             # end of inlinded parse_ast
             
+            type_check_bmch(root, env, mch)
             #bstates = set_up_constants(root, env, mch, solution_file_read=False)
             #if len(bstates)>0:
             #    env.state_space.add_state(bstates[0])
@@ -506,10 +516,10 @@ class TestPyPyTranslationObjects():
             
             res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[2], env)
-            print int(res)
+            res = interpret(root.children[2], env)
+            print int(res.value)
             
-            type_check_bmch(root, env, mch)
+            
                                                   
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
@@ -521,7 +531,7 @@ class TestPyPyTranslationObjects():
     # set config.USE_COSTUM_FROZENSET = True
     import pytest, config
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")    
-    def test_pypy_create_env(self):
+    def test_pypy_create_env0(self):
         code = """
             from environment import Environment
             env = Environment()
@@ -544,7 +554,7 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             from helpers import file_to_AST_str, string_to_file
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause, exec_initialisation
+            from rpython_interp import interpret, exec_initialisation
             from rpython_b_objmodel import W_Integer
     
             if len(argv)<2:
@@ -561,7 +571,7 @@ class TestPyPyTranslationObjects():
             integer_value = W_Integer(1)
             env.set_value(\"x\", integer_value)
             res =  interpret(root, env) 
-            print int(res)
+            print int(res.value)
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/simple_pred2.def") 
         assert python_result == ['1', '']
@@ -590,7 +600,7 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             from helpers import file_to_AST_str
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause, exec_initialisation
+            from rpython_interp import interpret, exec_initialisation
             from rpython_b_objmodel import W_Integer
             from typing import type_check_bmch
             
@@ -612,8 +622,8 @@ class TestPyPyTranslationObjects():
             
             res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
-            res = eval_clause(root.children[2], env) 
-            print int(res) 
+            res = interpret(root.children[2], env) 
+            print int(res.value) 
             
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple2.mch") 
@@ -701,7 +711,7 @@ class TestPyPyTranslationObjects():
             from helpers import file_to_AST_str
             from interp import set_up_constants, exec_initialisation
             from parsing import parse_ast, remove_definitions, str_ast_to_python_ast
-            from rpython_interp import interpret, eval_clause
+            from rpython_interp import interpret
             from typing import type_check_bmch
                  
             if len(argv)<2:

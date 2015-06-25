@@ -14,6 +14,12 @@ class W_Integer(W_Object):
     def __init__(self, value):
         assert isinstance(value, int)
         self.value = value
+        
+    def __repr__(self):
+        return str(self.value)
+        
+    def __str__(self):
+        return str(self.value)
     
     def __add__(self, other):
         assert isinstance(other, W_Integer)
@@ -27,10 +33,15 @@ class W_Integer(W_Object):
         assert isinstance(other, W_Integer)
         return W_Integer(self.value * other.value)
         
+    # Maybe unused
     def __div__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value / other.value)      
+        return W_Integer(self.value / other.value) 
         
+    def __floordiv__(self, other):     
+        assert isinstance(other, W_Integer)
+        return W_Integer(self.value // other.value) 
+                
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
         return W_Boolean(self.value < other.value)   
@@ -57,23 +68,43 @@ class W_Integer(W_Object):
     
     def __neg__(self):
         return W_Integer(-1*self.value)
+        
+    def __mod__(self, other):
+        return W_Integer(self.value % other.value)
 
 
 class W_Boolean(W_Object):
     def __init__(self, value):
-        assert isinstance(value, bool)
+        #assert isinstance(value, bool)
         self.value = value 
       
     def __and__(self, other):
-        assert isinstance(other, W_Boolean)
-        return W_Boolean(self.value and other.value)
+        #assert isinstance(other, W_Boolean)
+        boolean = self.value and other.value
+        #assert isinstance(boolean, bool)
+        return W_Boolean(boolean)
                 
     def __or__(self, other):
-        assert isinstance(other, W_Boolean)
-        return W_Boolean(self.value or other.value)
+        #assert isinstance(other, W_Boolean)
+        boolean = self.value or other.value
+        #assert isinstance(boolean, bool)
+        return W_Boolean(boolean)
         
     def __not__(self):
-        return W_Boolean(not self.value)
+        boolean = not self.value
+        assert isinstance(boolean, bool)
+        return W_Boolean(boolean)
+    
+    def __eq__(self, other):
+        assert isinstance(other, W_Boolean)
+        boolean = self.value == other.value
+        return W_Boolean(boolean)
+
+    def __repr__(self):
+        return str(self.value)
+    
+    def __str__(self):
+        return str(self.value)
 
 class W_None(W_Object):
     pass
@@ -91,6 +122,10 @@ class frozenset(W_Object):
         for e in lst:
             if e not in self.lst:
                 self.lst.append(e)
+    
+    
+    def __repr__(self):
+        return self.lst
         
     def __len__(self):
         return len(self.lst)
