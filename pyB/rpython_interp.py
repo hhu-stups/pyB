@@ -30,6 +30,11 @@ def eval_set_expression(node, env):
       
         
 def interpret(node, env):
+# ********************************************
+#
+#        0. Interpretation-mode 
+#
+# ********************************************
     if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
         #type_check_predicate(node, env)
         #idNodes = find_var_nodes(node) 
@@ -66,8 +71,24 @@ def interpret(node, env):
                 result = interpret(node.children[0], env)
                 return result
         return True
+    elif isinstance(node, AExpressionParseUnit): #TODO more
+        #TODO: move print to animation_clui
+        type_check_expression(node, env)
+        idNodes = find_var_nodes(node) 
+        idNames = [n.idName for n in idNodes]
+        if idNames ==[]: # variable free expression
+            result = interpret(node.children[0], env)
+            return result
+        else:
+            return "\033[1m\033[91mWARNING\033[00m: Expressions with variables are not implemented now"
         """
-    if isinstance(node, AConstraintsMachineClause):
+
+# ********************************************
+#
+#        0. Clauses
+#
+# ********************************************
+    elif isinstance(node, AConstraintsMachineClause):
         return interpret(node.get(-1), env)
         """
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
@@ -142,24 +163,12 @@ def interpret(node, env):
                     fail = fail +1
             print "checking done - ok:%s fail:%s" % (ok,fail)
         """
-        """
-    elif isinstance(node, AIdentifierExpression):
-        #print node.idName
-        assert env is not None
-        #name = node.get_idName()
-        #assert hasattr(node, "idName")
-        w_obj = env.get_value(node.idName)
-        assert isinstance(w_obj, W_Object)
-        return w_obj
-    # TODO: refactor
-    elif isinstance(node, AIntegerExpression):
-        value = eval_int_expression(node, env)
-        return W_Integer(value)
-    elif isinstance(node, AIntervalExpression):
-        set = eval_set_expression(node, env)
-        assert isinstance(set, W_Object)
-        return set
-        """
+        
+# *********************
+#
+#        1. Predicates
+#
+# *********************
     elif isinstance(node, AConjunctPredicate):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
@@ -194,36 +203,261 @@ def interpret(node, env):
         assert isinstance(bexpr, W_Boolean)
         w_bool = bexpr.__not__()
         return w_bool
-    elif isinstance(node, AGreaterPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return expr1.__gt__(expr2)
-    elif isinstance(node, ALessPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return expr1.__lt__(expr2)
-    elif isinstance(node, AGreaterEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return expr1.__ge__(expr2)
-    elif isinstance(node, ALessEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return expr1.__le__(expr2)
-    elif isinstance(node, AIntegerExpression):
-        # TODO: add flag in config.py to enable switch to long integer here
-        return W_Integer(node.intValue)
-    #elif isinstance(node, AMinExpression):
-    #    aSet = interpret(node.children[0], env)
-    #    return min(list(aSet))
-    #elif isinstance(node, AMaxExpression):
-    #    aSet = interpret(node.children[0], env)
-    #    return max(list(aSet))
+        """
+    elif isinstance(node, AForallPredicate):
+        # notice: the all and any keywords are not used, because they need the generation of the whole set
+        # new scope
+        varList = node.children[:-1]
+        env.push_new_frame(varList)
+        pred = node.children[-1]
+        domain_generator = calc_possible_solutions(pred.children[0], env, varList, interpret) # use left side of implication
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.set_value(name, value)
+            try:
+                if interpret(pred.children[0], env) and not interpret(pred.children[1], env):  # test
+                    env.pop_frame()           
+                    return False
+            except ValueNotInDomainException:
+                continue
+        env.pop_frame() # leave scope
+        return True        
+    elif isinstance(node, AExistsPredicate):
+        # new scope
+        varList = node.children[:-1]
+        env.push_new_frame(varList)
+        pred = node.children[-1]
+        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        for entry in domain_generator:
+            for name in [x.idName for x in varList]:
+                value = entry[name]
+                env.set_value(name, value)
+            try:
+                if interpret(pred, env):  # test
+                    env.pop_frame()           
+                    return True
+            except ValueNotInDomainException:
+                continue
+        env.pop_frame() # leave scope
+        return False        
+    elif isinstance(node, AEqualPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        # frozensets can only be compared to frozensets
+        if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
+            expr2 = expr2.enumerate_all()
+            return expr1 == expr2
+        else:
+            # else normal check, also symbolic (implemented by symbol classes)
+            return expr1 == expr2
+    elif isinstance(node, ANotEqualPredicate):
+        expr1 = interpret(node.children[0], env)
+        expr2 = interpret(node.children[1], env)
+        # TODO: handle symbolic sets
+        return expr1 != expr2
+        """
+ 
+        
+# **************
+#
+#       2. Sets
+#
+# **************        
+        """
+    elif isinstance(node, ASetExtensionExpression):
+        lst = []
+        for child in node.children:
+            elm = interpret(child, env)
+            lst.append(elm)
+        return frozenset(lst)
+    elif isinstance(node, AEmptySetExpression):
+        return frozenset()
+    elif isinstance(node, AComprehensionSetExpression):
+        varList = node.children[:-1]
+        pred = node.children[-1]
+        return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)      
+    elif isinstance(node, AUnionExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return SymbolicUnionSet(aSet1, aSet2, env, interpret)
+    elif isinstance(node, AIntersectionExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
+    elif isinstance(node, ACoupleExpression):
+        result = None
+        i = 0
+        for child in node.children:
+            elm = interpret(child, env)
+            if i==0:
+                result = elm
+            else:
+                result = tuple([result, elm]) 
+            i = i + 1
+        return result
+    elif isinstance(node, APowSubsetExpression):
+        aSet = interpret(node.children[0], env)
+        return SymbolicPowerSet(aSet, env, interpret)
+        #res = powerset(aSet)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #return frozenset(lst)
+    elif isinstance(node, APow1SubsetExpression):
+        aSet = interpret(node.children[0], env)
+        return SymbolicPower1Set(aSet, env, interpret)
+        #res = powerset(aSet)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #lst.remove(frozenset([]))
+        #return frozenset(lst)
+    elif isinstance(node, ACardExpression):
+        aSet = interpret(node.children[0], env)
+        return len(aSet)
+    elif isinstance(node, AGeneralUnionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.union(aset)
+        return acc
+    elif isinstance(node, AGeneralIntersectionExpression):
+        set_of_sets = interpret(node.children[0], env)
+        elem_lst = list(set_of_sets)
+        acc = elem_lst[0]
+        for aset in elem_lst[1:]:
+            acc = acc.intersection(aset)
+        return acc
+    elif isinstance(node, AQuantifiedUnionExpression):
+        #result = frozenset([])
+        # new scope
+        varList = node.children[:-2]
+        env.push_new_frame(varList)
+        pred = node.children[-2]
+        expr = node.children[-1]
+        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        #for entry in domain_generator:
+        #    for name in [x.idName for x in varList]:
+        #        value = entry[name]
+        #        env.set_value(name, value)
+        #    try:
+        #        if interpret(pred, env):  # test (|= ior)
+        #            aSet = interpret(expr, env)
+        #            if isinstance(aSet, SymbolicSet):
+        #                aSet = aSet.enumerate_all() 
+        #            result |= aSet
+        #    except ValueNotInDomainException:
+        #        continue
+        #env.pop_frame()
+        #return result
+        return SymbolicQuantifiedUnion(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+    elif isinstance(node, AQuantifiedIntersectionExpression):  
+        #result = frozenset([])
+        # new scope
+        varList = node.children[:-2]
+        env.push_new_frame(varList)
+        pred = node.children[-2]
+        expr = node.children[-1]
+        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        #for entry in domain_generator:
+        #    for name in [x.idName for x in varList]:
+        #        value = entry[name]
+        #        env.set_value(name, value)
+        #    try:
+        #        if interpret(pred, env):  # test
+        #            # intersection with empty set is always empty: two cases are needed
+        #            if result==frozenset([]): 
+        #                result = interpret(expr, env)
+        #                if isinstance(result, SymbolicSet):
+        #                    result = result.enumerate_all()   
+        #            else:
+        #                aSet = interpret(expr, env)
+        #                if isinstance(aSet, SymbolicSet):
+        #                    aSet = aSet.enumerate_all()       
+        #                result &= aSet
+        #    except ValueNotInDomainException:
+        #        continue
+        #env.pop_frame()
+        #return result
+        return SymbolicQuantifiedIntersection(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+        """
+    
+# *************************
+#
+#       2.1 Set predicates
+#
+# ************************* 
+        """
+    elif isinstance(node, AMemberPredicate):
+        #print pretty_print(node)
+        #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
+        #    elm = interpret(node.children[0], env)
+        #    result = quick_member_eval(node.children[1], env, elm)
+        #    return result
+        elm = interpret(node.children[0], env)
+        aSet = interpret(node.children[1], env)
+        #print elm, aSet
+        return elm in aSet
+    elif isinstance(node, ANotMemberPredicate):
+        #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
+        #    elm = interpret(node.children[0], env)
+        #    result = quick_member_eval(node.children[1], env, elm)
+        #    return not result
+        elm = interpret(node.children[0], env)
+        aSet = interpret(node.children[1], env)
+        return not elm in aSet
+        """
+        """
+    elif isinstance(node, ASubsetPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet2, SymbolicSet):
+            return aSet2.issuperset(aSet1)
+        return aSet1.issubset(aSet2)
+    elif isinstance(node, ANotSubsetPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return not aSet1.issubset(aSet2)
+    elif isinstance(node, ASubsetStrictPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return aSet1.issubset(aSet2) and aSet1 != aSet2
+    elif isinstance(node, ANotSubsetStrictPredicate):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
+        """
+
+# *****************
+#
+#       3. Numbers
+#
+# *****************
+        """
+    elif isinstance(node, ANaturalSetExpression):
+        return NaturalSet(env, interpret)
+    elif isinstance(node, ANatural1SetExpression):
+        return Natural1Set(env, interpret)
+    elif isinstance(node, ANatSetExpression):
+        return NatSet(env, interpret)
+    elif isinstance(node, ANat1SetExpression):
+        return Nat1Set(env, interpret)
+    elif isinstance(node, AIntSetExpression):
+        return IntSet(env, interpret)
+    elif isinstance(node, AIntegerSetExpression):
+        return IntegerSet(env, interpret)
+    elif isinstance(node, AMinExpression):
+        aSet = interpret(node.children[0], env)
+        return min(list(aSet))
+    elif isinstance(node, AMaxExpression):
+        aSet = interpret(node.children[0], env)
+        return max(list(aSet))
+        """
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
         return expr1.__add__(expr2)
-    elif isinstance(node, AMinusOrSetSubtractExpression):
+    elif isinstance(node, AMinusOrSetSubtractExpression): #TODO: cart
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
         return expr1.__sub__(expr2)
@@ -248,8 +482,12 @@ def interpret(node, env):
         result = W_Integer(1)
         for i in range(exp.value):
             result = result.__mul__(basis)
-        return result
+        return result 
         """
+    elif isinstance(node, AIntervalExpression):
+        left = interpret(node.children[0], env)
+        right = interpret(node.children[1], env)
+        return SymbolicIntervalSet(W_Integer(left), W_Integer(right), env, interpret)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
@@ -264,7 +502,7 @@ def interpret(node, env):
                 env.set_value(name, value)
             try:
                 if interpret(pred, env):  # test          
-                    sum_ += eval_int_expression(expr, env)
+                    sum_ += interpret(expr, env)
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
@@ -283,50 +521,45 @@ def interpret(node, env):
                 env.set_value(name, value)
             try:
                 if interpret(pred, env):  # test           
-                    prod_ *= eval_int_expression(expr, env)
+                    prod_ *= interpret(expr, env)
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
         return prod_
-    elif isinstance(node, AUnaryMinusExpression):
-        result = eval_int_expression(node.children[0], env)
-        return result.__neg__()
-    elif isinstance(node, AMinIntExpression):
-        return env._min_int
-    elif isinstance(node, AMaxIntExpression):
-        return env._max_int
-    elif isinstance(node, ACardExpression):
-        aSet = interpret(node.children[0], env)
-        return len(aSet)
-    elif isinstance(node, ASizeExpression):
-        sequence = interpret(node.children[0], env)
-        return len(sequence)
-    elif isinstance(node, AFunctionExpression):
-        #print "interpret AFunctionExpression: ", pretty_print(node)
-        if isinstance(node.children[0], APredecessorExpression):
-            value = interpret(node.children[1], env)
-            return value-1
-        if isinstance(node.children[0], ASuccessorExpression):
-            value = interpret(node.children[1], env)
-            return value+1
-        function = interpret(node.children[0], env)
-        #print "FunctionName:", node.children[0].idName
-        args = None
-        i = 0 
-        for child in node.children[1:]:
-            arg = interpret(child, env)
-            if i==0:
-                args = arg
-            else:
-                args = tuple([args, arg])
-            i = i+1
-        if isinstance(function, SymbolicSet):
-            return function[args]
-        return get_image(function, args)
-    elif isinstance(node, AIdentifierExpression):
-        #print node.idName
-        return env.get_value(node.idName)
-        """
+        """     
+
+# ***************************
+#
+#       3.1 Number predicates
+#
+# ***************************
+    elif isinstance(node, AGreaterPredicate):
+        expr1 = interpret(node.get(0), env)
+        expr2 = interpret(node.get(1), env)
+        return expr1.__gt__(expr2)
+    elif isinstance(node, ALessPredicate):
+        expr1 = interpret(node.get(0), env)
+        expr2 = interpret(node.get(1), env)
+        return expr1.__lt__(expr2)
+    elif isinstance(node, AGreaterEqualPredicate):
+        expr1 = interpret(node.get(0), env)
+        expr2 = interpret(node.get(1), env)
+        return expr1.__ge__(expr2)
+    elif isinstance(node, ALessEqualPredicate):
+        expr1 = interpret(node.get(0), env)
+        expr2 = interpret(node.get(1), env)
+        return expr1.__le__(expr2)
+    
+
+# ******************
+#
+#       4. Relations
+#
+# ******************
+#TODO
+    elif isinstance(node, AIntegerExpression):
+        # TODO: add flag in config.py to enable switch to long integer here
+        return W_Integer(node.intValue)
     elif isinstance(node, AIdentifierExpression):
         assert env is not None
         value = env.get_value(node.idName)

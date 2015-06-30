@@ -523,7 +523,7 @@ class TestPyPyTranslationObjects():
                                                   
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
-        print python_result 
+        assert python_result == ['1', '1', '']
         assert python_result == c_result        
 
 

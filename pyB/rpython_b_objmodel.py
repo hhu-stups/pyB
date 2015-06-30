@@ -12,7 +12,7 @@ class W_Object:
 # TODO: < > <=
 class W_Integer(W_Object):
     def __init__(self, value):
-        assert isinstance(value, int)
+        #assert isinstance(value, int)
         self.value = value
         
     def __repr__(self):
@@ -63,7 +63,7 @@ class W_Integer(W_Object):
         return W_Boolean(self.value > other.value) 
         
     def __ge__(self, other):
-        assert isinstance(other, W_Integer)
+        #assert isinstance(other, W_Integer)
         return W_Boolean(self.value >= other.value) 
     
     def __neg__(self):
