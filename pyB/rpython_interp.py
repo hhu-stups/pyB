@@ -387,26 +387,26 @@ def interpret(node, env):
 #       2.1 Set predicates
 #
 # ************************* 
-        """
+    
     elif isinstance(node, AMemberPredicate):
         #print pretty_print(node)
         #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
         #    elm = interpret(node.children[0], env)
         #    result = quick_member_eval(node.children[1], env, elm)
         #    return result
-        elm = interpret(node.children[0], env)
-        aSet = interpret(node.children[1], env)
+        elm = interpret(node.get(0), env)
+        aSet = interpret(node.get(1), env)
         #print elm, aSet
-        return elm in aSet
+        return aSet.__contains__(elm)
     elif isinstance(node, ANotMemberPredicate):
         #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
         #    elm = interpret(node.children[0], env)
         #    result = quick_member_eval(node.children[1], env, elm)
         #    return not result
-        elm = interpret(node.children[0], env)
-        aSet = interpret(node.children[1], env)
-        return not elm in aSet
-        """
+        elm = interpret(node.get(0), env)
+        aSet = interpret(node.get(1), env)
+        return aSet.__contains__(elm).__not__()
+        
         """
     elif isinstance(node, ASubsetPredicate):
         aSet1 = interpret(node.children[0], env)
@@ -485,9 +485,11 @@ def interpret(node, env):
         return result 
         """
     elif isinstance(node, AIntervalExpression):
-        left = interpret(node.children[0], env)
-        right = interpret(node.children[1], env)
-        return SymbolicIntervalSet(W_Integer(left), W_Integer(right), env, interpret)
+        left = interpret(node.get(0), env)
+        right = interpret(node.get(1), env)
+        return SymbolicIntervalSet(left, right, env, interpret)
+        """
+        """
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope

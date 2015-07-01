@@ -1,7 +1,8 @@
 # Wrapped basic types to allow RPYTHOn Typing (everthing is a W_Object)
 
 class W_Object:
-    pass
+    def __contains__(self, e):
+    	raise Exception("abstract W_Object instance _contains_ called")
 
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -72,6 +73,9 @@ class W_Integer(W_Object):
     def __mod__(self, other):
         return W_Integer(self.value % other.value)
 
+    def __contains__(self, e):
+    	raise Exception("Nothing is member of a W_Integer")
+
 
 class W_Boolean(W_Object):
     def __init__(self, value):
@@ -106,8 +110,12 @@ class W_Boolean(W_Object):
     def __str__(self):
         return str(self.value)
 
+    def __contains__(self, e):
+    	raise Exception("Nothing is member of a W_Boolean")
+    	
 class W_None(W_Object):
-    pass
+    def __contains__(self, e):
+    	raise Exception("Nothing is member of a W_None")
 
 
 # an import of this module will overwrite the frozenset build-in type
@@ -131,7 +139,7 @@ class frozenset(W_Object):
         return len(self.lst)
         
     def __contains__(self, element):
-        return element in self.lst
+        return W_Boolean(element in self.lst)
         
     def issubset(self, other):
         for e in self.lst:

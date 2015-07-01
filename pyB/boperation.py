@@ -1,4 +1,6 @@
-class BOperation:
+from rpython_b_objmodel import W_Object
+
+class BOperation(W_Object):
     def __init__(self, name, operation_ast, bmachine):
         self.return_types = []
         self.parameter_types = []
