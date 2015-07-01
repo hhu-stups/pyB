@@ -144,14 +144,14 @@ class frozenset(W_Object):
     def issubset(self, other):
         for e in self.lst:
             if e not in other:
-                return False
-        return True
+                return W_Boolean(False)
+        return W_Boolean(True)
         
     def issuperset(self, other):
         for e in other.lst:
             if e not in self.lst:
-                return False
-        return True
+                return W_Boolean(False)
+        return W_Boolean(True)
     
     def union(self, other):
         result = list(other.lst)
@@ -173,7 +173,7 @@ class frozenset(W_Object):
         for e in other.lst:
             if e in result:
                 result.remove(e)
-        frozenset(result)
+        return frozenset(result)
         
     def copy(self):
         return frozenset(self.lst)
@@ -183,17 +183,17 @@ class frozenset(W_Object):
         #print "equal", self, other
         #print self.lst, other.lst
         if not isinstance(other, frozenset):
-            return False
+            return W_Boolean(False)
         if not len(self)==len(other):
-            return False
+            return W_Boolean(False)
 
         for e in self.lst:
             if e not in other.lst:
-                return False
-        return True
+                return W_Boolean(False)
+        return W_Boolean(True)
         
     def __ne__(self, other):
-        return not self==other  
+        return W_Boolean(not self==other)
         
     # only a copy of the instance will prevent an enumeration bug. This 
     # Bug ocures when the set is enumerated twice(or more) at the same time

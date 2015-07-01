@@ -660,12 +660,12 @@ class TestPyPyTranslationObjects():
 
     """
     Exception in thread "main" java.lang.StringIndexOutOfBoundsException: String index out of range: 0
-	at java.lang.String.charAt(String.java:646)
-	at java.lang.Character.codePointAt(Character.java:4866)
-	at de.be4.classicalb.core.parser.BParser.readFile(BParser.java:183)
-	at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:160)
-	at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:144)
-	at pyB.Main.main(Main.java:26)
+    at java.lang.String.charAt(String.java:646)
+    at java.lang.Character.codePointAt(Character.java:4866)
+    at de.be4.classicalb.core.parser.BParser.readFile(BParser.java:183)
+    at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:160)
+    at de.be4.classicalb.core.parser.BParser.parseFile(BParser.java:144)
+    at pyB.Main.main(Main.java:26)
     RPython traceback:
     File "implement.c", line 858, in main
     File "implement.c", line 121364, in my_exec
@@ -738,7 +738,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
           
 
-    def test_pypy_generators(self):
+    def test_pypy_generators1(self):
         code =  """
             def g():
                 yield -1
@@ -753,7 +753,57 @@ class TestPyPyTranslationObjects():
             
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['-1', '0', '1', '']
         assert python_result == c_result    
+
+
+    def test_pypy_generators2(self):
+        code =  """
+            def make_generator():
+                i = 0
+                while True:
+                    yield i
+                    i = i +1  
+            generator = make_generator()
+            # not RPython:
+            # import types
+            # print type(generator) is types.GeneratorType
+            y = 0
+            for x in generator:
+                print x
+                y = y+1
+                if y ==10:
+                    break
+            
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '']
+        assert python_result == c_result   
+        
+
+    import pytest, config
+    @pytest.mark.xfail(reason="ValueError: RPython functions cannot create closures")
+    def test_pypy_generators3(self):
+        code =  """
+            def g():
+                yield -1
+                yield 0
+                yield +1
+                
+            def f():
+                L = []
+                generator = g()
+                for x in generator:
+                    L.append(x)
+                return L
+              
+            S = f()
+            for e in S:
+                 print e
+            return 0\n"""
+        python_result, c_result = translate(code) 
+        assert python_result == ['-1', '0', '1', '']
+        assert python_result == c_result  
 
 
     def test_pypy_slicing(self):

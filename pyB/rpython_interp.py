@@ -6,7 +6,7 @@ from config import MAX_INIT, VERBOSE
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 #from symbolic_sets import *
 from symbolic_sets import SymbolicIntervalSet
-from rpython_b_objmodel import W_Integer, W_Object, W_Boolean
+from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None
 from typing import type_check_predicate, type_check_expression
 
 
@@ -397,7 +397,8 @@ def interpret(node, env):
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
         #print elm, aSet
-        return aSet.__contains__(elm)
+        w_bool = aSet.__contains__(elm)
+        return w_bool
     elif isinstance(node, ANotMemberPredicate):
         #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
         #    elm = interpret(node.children[0], env)
@@ -405,7 +406,8 @@ def interpret(node, env):
         #    return not result
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
-        return aSet.__contains__(elm).__not__()
+        w_bool = aSet.__contains__(elm).__not__()
+        return w_bool
         
         """
     elif isinstance(node, ASubsetPredicate):
@@ -565,10 +567,11 @@ def interpret(node, env):
     elif isinstance(node, AIdentifierExpression):
         assert env is not None
         value = env.get_value(node.idName)
+        #assert isinstance(value, W_Object)
         return value
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
-        return False # RPython: Avoid return of python None
+        return W_None() # RPython: Avoid return of python None
 
 
 # if ProB found a "full solution". This shouldn't do anything, except checking the solution            
