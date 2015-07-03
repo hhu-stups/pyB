@@ -397,7 +397,7 @@ def interpret(node, env):
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
         #print elm, aSet
-        w_bool = aSet.__contains__(elm)
+        w_bool = W_Boolean(aSet.__contains__(elm))
         return w_bool
     elif isinstance(node, ANotMemberPredicate):
         #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
@@ -406,7 +406,7 @@ def interpret(node, env):
         #    return not result
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
-        w_bool = aSet.__contains__(elm).__not__()
+        w_bool = W_Boolean(aSet.__contains__(elm)).__not__()
         return w_bool
         
         """
@@ -540,19 +540,19 @@ def interpret(node, env):
     elif isinstance(node, AGreaterPredicate):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__gt__(expr2)
+        return W_Boolean(expr1.__gt__(expr2))
     elif isinstance(node, ALessPredicate):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__lt__(expr2)
+        return W_Boolean(expr1.__lt__(expr2))
     elif isinstance(node, AGreaterEqualPredicate):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__ge__(expr2)
+        return W_Boolean(expr1.__ge__(expr2))
     elif isinstance(node, ALessEqualPredicate):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__le__(expr2)
+        return W_Boolean(expr1.__le__(expr2))
     
 
 # ******************

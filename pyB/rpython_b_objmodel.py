@@ -45,27 +45,27 @@ class W_Integer(W_Object):
                 
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Boolean(self.value < other.value)   
+        return self.value < other.value  
         
     def __le__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Boolean(self.value <= other.value)
+        return self.value <= other.value
          
     def __eq__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Boolean(self.value < other.value) 
+        return self.value < other.value 
         
     def __ne__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Boolean(self.value != other.value) 
+        return self.value != other.value 
             
     def __gt__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Boolean(self.value > other.value) 
+        return self.value > other.value 
         
     def __ge__(self, other):
         #assert isinstance(other, W_Integer)
-        return W_Boolean(self.value >= other.value) 
+        return self.value >= other.value
     
     def __neg__(self):
         return W_Integer(-1*self.value)
@@ -139,19 +139,19 @@ class frozenset(W_Object):
         return len(self.lst)
         
     def __contains__(self, element):
-        return W_Boolean(element in self.lst)
+        return element in self.lst
         
     def issubset(self, other):
         for e in self.lst:
             if e not in other:
-                return W_Boolean(False)
-        return W_Boolean(True)
+                return False
+        return True
         
     def issuperset(self, other):
         for e in other.lst:
             if e not in self.lst:
-                return W_Boolean(False)
-        return W_Boolean(True)
+                return False
+        return True
     
     def union(self, other):
         result = list(other.lst)
@@ -183,17 +183,17 @@ class frozenset(W_Object):
         #print "equal", self, other
         #print self.lst, other.lst
         if not isinstance(other, frozenset):
-            return W_Boolean(False)
+            return False
         if not len(self)==len(other):
-            return W_Boolean(False)
+            return False
 
         for e in self.lst:
             if e not in other.lst:
-                return W_Boolean(False)
-        return W_Boolean(True)
+                return False
+        return True
         
     def __ne__(self, other):
-        return W_Boolean(not self==other)
+        return not self==other
         
     # only a copy of the instance will prevent an enumeration bug. This 
     # Bug ocures when the set is enumerated twice(or more) at the same time

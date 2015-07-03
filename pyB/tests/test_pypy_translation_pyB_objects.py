@@ -40,6 +40,7 @@ def translate(main_code, other_code="", cl_argument=""):
     code += "   main(sys.argv)\n"
     # 4. write code to temp file (Will NOT be translated to C)
     f = open("tempB.py",'w')
+    print code
     f.write(code)
     f.close()
     from subprocess import Popen, PIPE
@@ -518,9 +519,7 @@ class TestPyPyTranslationObjects():
             print int(res)
             res = interpret(root.children[2], env)
             print int(res.value)
-            
-            
-                                                  
+                                                     
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
         assert python_result == ['1', '1', '']
@@ -781,6 +780,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result   
         
 
+    # Uses inner function f
     import pytest, config
     @pytest.mark.xfail(reason="ValueError: RPython functions cannot create closures")
     def test_pypy_generators3(self):
@@ -802,6 +802,26 @@ class TestPyPyTranslationObjects():
                  print e
             return 0\n"""
         python_result, c_result = translate(code) 
+        assert python_result == ['-1', '0', '1', '']
+        assert python_result == c_result  
+
+    def test_pypy_generators4(self):
+        code =  """              
+            S = f()
+            for e in S:
+                 print e
+            return 0\n"""
+        other_code = """def g():
+            yield -1
+            yield 0
+            yield +1
+def f():
+            L = []
+            generator = g()
+            for x in generator:
+                L.append(x)
+            return L\n"""
+        python_result, c_result = translate(code, other_code) 
         assert python_result == ['-1', '0', '1', '']
         assert python_result == c_result  
 
