@@ -6,7 +6,7 @@ from config import MAX_INIT, VERBOSE
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 #from symbolic_sets import *
 from symbolic_sets import SymbolicIntervalSet
-from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None
+from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, frozenset
 from typing import type_check_predicate, type_check_expression
 
 
@@ -28,7 +28,7 @@ def eval_set_expression(node, env):
         return W_Object() # RPython: Avoid return of python None
   
       
-        
+# returns a W_Object. Wrapping is a interpreter task. Not a task of the obejcts or their methods     
 def interpret(node, env):
 # ********************************************
 #
@@ -396,7 +396,6 @@ def interpret(node, env):
         #    return result
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
-        #print elm, aSet
         w_bool = W_Boolean(aSet.__contains__(elm))
         return w_bool
     elif isinstance(node, ANotMemberPredicate):
@@ -458,39 +457,49 @@ def interpret(node, env):
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__add__(expr2)
+        integer = expr1.__add__(expr2)
+        return W_Integer(integer)
     elif isinstance(node, AMinusOrSetSubtractExpression): #TODO: cart
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__sub__(expr2)
+        integer = expr1.__sub__(expr2)
+        return W_Integer(integer)
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__mul__(expr2)
+        integer = expr1.__mul__(expr2)
+        return W_Integer(integer)
     elif isinstance(node, ADivExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        return expr1.__floordiv__(expr2)
+        integer = expr1.__floordiv__(expr2)
+        return W_Integer(integer)
     elif isinstance(node, AModuloExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
         assert expr2.value > 0
-        return expr1.__mod__(expr2)
+        integer = expr1.__mod__(expr2)
+        return W_Integer(integer)
     elif isinstance(node, APowerOfExpression):
         basis = interpret(node.get(0), env)
         exp = interpret(node.get(1), env)
         # not RPython: result = basis ** exp
         assert exp.value >=0
-        result = W_Integer(1)
+        result = 1
         for i in range(exp.value):
-            result = result.__mul__(basis)
-        return result 
-        """
+            result = result *basis.value
+        return W_Integer(result)
+        
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.get(0), env)
         right = interpret(node.get(1), env)
-        return SymbolicIntervalSet(left, right, env, interpret)
-        """
+        L = []
+        for i in range(right.value):
+            value = W_Integer(i+left.value)
+            L.append(value)
+        return frozenset(L)
+        #return SymbolicIntervalSet(left, right, env, interpret)
+        
         """
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0

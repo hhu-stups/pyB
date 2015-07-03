@@ -24,24 +24,24 @@ class W_Integer(W_Object):
     
     def __add__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value+other.value)   
+        return (self.value+other.value)   
     
     def __sub__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value - other.value)         
+        return (self.value - other.value)         
 
     def __mul__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value * other.value)
+        return (self.value * other.value)
         
     # Maybe unused
     def __div__(self, other):
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value / other.value) 
+        return (self.value / other.value) 
         
     def __floordiv__(self, other):     
         assert isinstance(other, W_Integer)
-        return W_Integer(self.value // other.value) 
+        return (self.value // other.value) 
                 
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
@@ -71,7 +71,7 @@ class W_Integer(W_Object):
         return W_Integer(-1*self.value)
         
     def __mod__(self, other):
-        return W_Integer(self.value % other.value)
+        return (self.value % other.value)
 
     def __contains__(self, e):
     	raise Exception("Nothing is member of a W_Integer")
@@ -133,13 +133,14 @@ class frozenset(W_Object):
     
     
     def __repr__(self):
-        return self.lst
+        return str(self.lst)
         
     def __len__(self):
         return len(self.lst)
         
     def __contains__(self, element):
-        return element in self.lst
+        # Todo: avoid reference compare in list of lists (set of sets)
+        return element.value in [e.value for e in self.lst]
         
     def issubset(self, other):
         for e in self.lst:
