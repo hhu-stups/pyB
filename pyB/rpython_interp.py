@@ -576,7 +576,7 @@ def interpret(node, env):
     elif isinstance(node, AIdentifierExpression):
         assert env is not None
         value = env.get_value(node.idName)
-        #assert isinstance(value, W_Object)
+        assert isinstance(value, W_Object)
         return value
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)

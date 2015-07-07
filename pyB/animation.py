@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 # module-description: 
 # animation calculations
-from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS
+from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration import try_all_values
 from ast_nodes import *
 from constrainsolver import calc_possible_solutions
 from bexceptions import ValueNotInDomainException
-from interp import exec_substitution, interpret
 
+if USE_RPYTHON_CODE:
+    from rpython_interp import exec_substitution, interpret 
+else:
+    from interp import exec_substitution, interpret
+
+from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
+if USE_COSTUM_FROZENSET:
+    from rpython_b_objmodel import frozenset
 
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO:(#ISSUE 6) implement filter MAX_NEXT_EVENTS
@@ -38,9 +45,18 @@ def calc_next_states(env, bmachine):
             ref_bstate = env.state_space.get_state().clone()
             env.state_space.add_state(ref_bstate)  
             
-            # (2) find parameter and return_val idNodes and add them to the frame of the helper state            
-            parameter_idNodes  = op.children[op.return_Num : op.return_Num+op.parameter_Num]
-            return_val_idNodes = op.children[0 : op.return_Num]
+            # (2) find parameter and return_val idNodes and add them to the frame of the helper state        
+            #parameter_idNodes  = op.children[op.return_Num : op.return_Num+op.parameter_Num]
+            #return_val_idNodes = op.children[0 : op.return_Num]
+            parameter_idNodes = []
+            for i in range(op.parameter_Num):
+                p_node = op.children[op.return_Num+i]
+                parameter_idNodes.append(p_node)
+            return_val_idNodes = []
+            for i in range(op.return_Num):
+                r_node = op.children[i]
+                return_val_idNodes.append(r_node)
+                
             # check node-lists
             # TODO:(#ISSUE 14) move this check into the parsing-phase
             for idNode in parameter_idNodes + return_val_idNodes:
@@ -48,7 +64,6 @@ def calc_next_states(env, bmachine):
             env.add_ids_to_frame([n.idName for n in parameter_idNodes + return_val_idNodes])
             env.push_new_frame(parameter_idNodes + return_val_idNodes)          
             #print "opname: \t", op.opName # DEBUG
-            
 
             substitution = op.children[-1]
             assert isinstance(substitution, Substitution)
@@ -116,9 +131,22 @@ def calc_next_states(env, bmachine):
     if result==[] and PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
     # alphabetic sort of results
-    result = sorted(result, key = lambda state: state[0])
+    result = my_sort(result)
+    #result = sorted(result, key = lambda state: state[0])
     return result
 
+# FIXME: O(n**2) 
+def my_sort(lst):
+    result = []
+    while(len(lst)>0):
+        e = lst.pop()
+        index = 0
+        for i in range(len(result)):
+            if e[0]<=result[i][0]:
+                 break
+            index = index + 1
+        result.insert(index, e)
+    return result
 
 # - private method -
 # changes state. Set parameter values of this operation to the solution   
@@ -127,7 +155,7 @@ def _set_parameter_values(env, parameter_idNodes, solution):
         value = solution[name]
         env.set_value(name, value)
 
-
+# TODO: rpython Union error in append
 # - private method -
 # helper method, returns list of (name, value) pairs
 def _get_value_list(env, idNode_list):
@@ -136,4 +164,4 @@ def _get_value_list(env, idNode_list):
         value = env.get_value(name)
         value_list.append(tuple([name, value]))
     return value_list
-    
+

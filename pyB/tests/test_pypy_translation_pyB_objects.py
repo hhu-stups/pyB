@@ -40,7 +40,7 @@ def translate(main_code, other_code="", cl_argument=""):
     code += "   main(sys.argv)\n"
     # 4. write code to temp file (Will NOT be translated to C)
     f = open("tempB.py",'w')
-    print code
+    #print code
     f.write(code)
     f.close()
     from subprocess import Popen, PIPE
@@ -473,6 +473,7 @@ class TestPyPyTranslationObjects():
     @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine3(self):
         code =  """
+            from animation import calc_next_states
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
             from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit
             from ast_nodes import AIdentifierExpression, AIntervalExpression, AMemberPredicate
@@ -519,10 +520,19 @@ class TestPyPyTranslationObjects():
             print int(res)
             res = interpret(root.children[2], env)
             print int(res.value)
+            
+                        
+            res = isinstance(root.children[4], AOperationsMachineClause)
+            print int(res)
+            
+            next_states = calc_next_states(env, mch)
+            assert next_states[0][0]=="dec"
+            bstate = next_states[0][3]
+            env.state_space.add_state(bstate)
                                                      
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
-        assert python_result == ['1', '1', '']
+        assert python_result == ['1', '1', '1','1', '']
         assert python_result == c_result        
 
 
@@ -571,6 +581,7 @@ class TestPyPyTranslationObjects():
             env.set_value(\"x\", integer_value)
             res =  interpret(root, env) 
             print int(res.value)
+            
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/simple_pred2.def") 
         assert python_result == ['1', '']

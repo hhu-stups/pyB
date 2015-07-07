@@ -2,7 +2,8 @@ from ast_nodes import *
 from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
-from config import USE_COSTUM_FROZENSET
+from config import USE_COSTUM_FROZENSET, USE_RPYTHON_CODE
+from rpython_b_objmodel import W_None
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
 
@@ -144,7 +145,10 @@ class BState():
         var_map = {}
         for node in nodes:
             assert isinstance(node, AIdentifierExpression)
-            var_map[node.idName] = node.idName + "_NO_VALUE"
+            if USE_RPYTHON_CODE:
+                var_map[node.idName] = W_None()
+            else:
+                var_map[node.idName] = node.idName + "_NO_VALUE"
         value_stack = self.bmch_dict[bmachine]
         value_stack.append(var_map) # ref
 
