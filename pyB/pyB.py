@@ -157,7 +157,7 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     show_ui(env, mch, bstate_lst)
     next_states = []
     for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
-        next_states.append(n[3])
+        next_states.append(n.bstate)
     return next_states
 
 
@@ -256,7 +256,7 @@ def run_model_checking_mode():
         next_states = calc_next_states(env, mch)
         env.state_space.undo()
         for tup in next_states:
-            bstate = tup[3]
+            bstate = tup.bstate
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate)  
     print "checked",len(env.state_space.seen_states),"states. No invariant violation found."

@@ -16,6 +16,19 @@ from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
 if USE_COSTUM_FROZENSET:
     from rpython_b_objmodel import frozenset
 
+
+# Wrapper object. Replaces list of dif. typed items.
+# only returned by calc_next_states
+class Executed_Operation():
+    def __init__(self, opName, parameter_names, parameter_values, return_names, return_values, bstate):
+        self.opName = opName
+        self.parameter_names  = parameter_names
+        self.parameter_values = parameter_values
+        self.return_names  = return_names
+        self.return_values = return_values 
+        self.bstate        = bstate
+    
+    
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO:(#ISSUE 6) implement filter MAX_NEXT_EVENTS
 #
@@ -75,10 +88,12 @@ def calc_next_states(env, bmachine):
                 env.state_space.add_state(bstate) 
                 for possible in ex_sub_generator:
                     if possible:
-                        return_value_list = _get_value_list(env, return_val_idNodes)
+                        return_names, return_values        = _get_value_list(env, return_val_idNodes)
                         env.pop_frame()
-                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?        
-                        result.append([op.opName, [], return_value_list, bstate])
+                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?  
+                        exec_op = Executed_Operation(op.opName, [], [], return_names, return_values, bstate)
+                        result.append(exec_op)     
+                        #result.append([op.opName, [], return_value_list, bstate])
                     env.state_space.undo() # pop last bstate
                     bstate = ref_bstate.clone() # new state for next exec-path (nondeterminism)
                     env.state_space.add_state(bstate)
@@ -114,12 +129,14 @@ def calc_next_states(env, bmachine):
                             if possible:
                                 # Solution found!                          
                                 # (3.2.2) get parameter and return-value solutions
-                                parameter_value_list = _get_value_list(env, parameter_idNodes)
-                                return_value_list    = _get_value_list(env, return_val_idNodes)
+                                parameter_names, parameter_values  = _get_value_list(env, parameter_idNodes)
+                                return_names, return_values        = _get_value_list(env, return_val_idNodes)
                                 #print parameter_value_list
                                 env.pop_frame() # pop on the cloned state
                                 bstate2 = env.state_space.get_state().clone() #TODO:(#ISSUE 15) remove?
-                                result.append([op.opName, parameter_value_list, return_value_list, bstate2])
+                                exec_op = Executed_Operation(op.opName, parameter_names, parameter_values, return_names, return_values, bstate2)
+                                result.append(exec_op)
+                                #result.append([op.opName, parameter_value_list, return_value_list, bstate2])
                             env.state_space.undo() # pop last bstate2
                             bstate2 = bstate.clone()
                             env.state_space.add_state(bstate2)
@@ -142,7 +159,7 @@ def my_sort(lst):
         e = lst.pop()
         index = 0
         for i in range(len(result)):
-            if e[0]<=result[i][0]:
+            if e.opName<=result[i].opName:
                  break
             index = index + 1
         result.insert(index, e)
@@ -160,8 +177,10 @@ def _set_parameter_values(env, parameter_idNodes, solution):
 # helper method, returns list of (name, value) pairs
 def _get_value_list(env, idNode_list):
     value_list = []
+    name_list  = []
     for name in [x.idName for x in idNode_list]:
         value = env.get_value(name)
-        value_list.append(tuple([name, value]))
-    return value_list
+        name_list.append(name)
+        value_list.append(value)
+    return name_list, value_list
 

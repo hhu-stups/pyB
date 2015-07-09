@@ -526,8 +526,8 @@ class TestPyPyTranslationObjects():
             print int(res)
             
             next_states = calc_next_states(env, mch)
-            assert next_states[0][0]=="dec"
-            bstate = next_states[0][3]
+            assert next_states[0].opName=="dec"
+            bstate = next_states[0].bstate
             env.state_space.add_state(bstate)
                                                      
             return 0\n"""

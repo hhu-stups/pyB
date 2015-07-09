@@ -47,15 +47,15 @@ class TestMCHAnimation():
         assert interpret(invatiant, env)
         for i in range(4):
             next_states = calc_next_states(env, mch)
-            assert next_states[0][0]=="dec"
-            bstate = next_states[0][3]
+            assert next_states[0].opName=="dec"
+            bstate = next_states[0].bstate
             env.state_space.add_state(bstate)
             assert interpret(invatiant, env)
             #op_and_state_list = calc_possible_operations(env, mch)
             #exec_op(env, op_and_state_list[1], mch)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="dec"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="dec"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert not interpret(invatiant, env) # floor=-1
 
@@ -83,8 +83,8 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
 
  
@@ -110,8 +110,8 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         # TODO: Test Assert Exception/Error-MSG with False Assert
 
@@ -140,8 +140,8 @@ class TestMCHAnimation():
         assert 0==env.get_value("xx")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==2      #FIXME
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2==env.get_value("xx") or 1==env.get_value("xx")  
 
@@ -171,13 +171,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 0 == env.get_value("xx")
 
@@ -206,8 +206,8 @@ class TestMCHAnimation():
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==1
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
   
@@ -235,13 +235,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 0 == env.get_value("xx")
 
@@ -269,18 +269,18 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 0 == env.get_value("xx")
 
@@ -308,13 +308,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
@@ -351,8 +351,8 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 4 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         
@@ -381,18 +381,18 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 4 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
@@ -423,18 +423,18 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 4 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
@@ -465,13 +465,13 @@ class TestMCHAnimation():
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
         #assert len(next_states)==2  #FIXME
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
 
@@ -500,13 +500,13 @@ class TestMCHAnimation():
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
         #assert len(next_states)==2 #FIXME
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx") or 0 == env.get_value("xx")
 
@@ -535,13 +535,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 4 == env.get_value("xx") or 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert 2 == env.get_value("xx") or 0 == env.get_value("xx")
         # TODO xx=0 or deadlock?
@@ -569,8 +569,8 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         # FIXMEL assert violation 0<0
 
@@ -597,12 +597,12 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         some_wrong = False
         for op_and_state in next_states:
-            bstate = op_and_state[3]
+            bstate = op_and_state.bstate
             env.state_space.add_state(bstate) 
             if not interpret(root.children[2], env): 
                 some_wrong = True
@@ -631,11 +631,11 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         assert len(next_states)== -1*env._min_int+env._max_int+1
         false_num = 0
         for op_and_state in next_states:
-            bstate = op_and_state[3]
+            bstate = op_and_state.bstate
             env.state_space.add_state(bstate) 
             if env.get_value("xx")<0:
                 assert not interpret(root.children[2], env)
@@ -668,8 +668,8 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
 
 
@@ -696,8 +696,8 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
 
 
@@ -724,8 +724,8 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
 
 
@@ -755,8 +755,8 @@ class TestMCHAnimation():
         assert 0 == env.get_value("yy")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==9
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert env.get_value("xx") in [1,2,3]
         assert env.get_value("yy") in [4,5,6]
@@ -788,8 +788,8 @@ class TestMCHAnimation():
         assert 0 == env.get_value("zz")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         assert env.get_value("xx")==1
         assert env.get_value("yy") in [2,3,4]
@@ -850,8 +850,8 @@ class TestMCHAnimation():
         assert 0 == env.get_value("zz")
         next_states = calc_next_states(env,mch)
         assert len(next_states)==3
-        assert next_states[1][0]=="op"
-        bstate = next_states[1][3]
+        assert next_states[1].opName=="op"
+        bstate = next_states[1].bstate
         env.state_space.add_state(bstate)
         assert env.get_value("xx")==1
         assert env.get_value("yy") in [2,3,4]
@@ -961,13 +961,13 @@ class TestMCHAnimation():
         assert isinstance(root.children[2], AInvariantMachineClause)
         assert interpret(root.children[2], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         assert len(next_states)==4
         for op_and_state in next_states:
-            bstate = op_and_state[3]
-            zz = op_and_state[1][0]
+            bstate = op_and_state.bstate
+            zz = op_and_state.parameter_values[0]
             env.state_space.add_state(bstate) 
-            assert zz[1] in [1,2,4,8]
+            assert zz in [1,2,4,8]
 
 
     def test_ani_toplevel_let_op_args(self):
@@ -995,13 +995,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 8 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         assert len(next_states)==5
         for op_and_state in next_states:
-            bstate = op_and_state[3]
-            zz = op_and_state[1][0]
+            bstate = op_and_state.bstate
+            zz = op_and_state.parameter_values[0]
             env.state_space.add_state(bstate) 
-            assert zz[1] in [0,2,4,6,8]
+            assert zz in [0,2,4,6,8]
 
 
     def test_ani_toplevel_become_el_op_args(self):
@@ -1027,15 +1027,15 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         n = env._max_int+1
         assert len(next_states)==(n*n+n)/2
         for op_and_state in next_states:
-            bstate = op_and_state[3]
-            zz = op_and_state[1][0]
+            bstate = op_and_state.bstate
+            zz = op_and_state.parameter_values[0]
             env.state_space.add_state(bstate) 
             xx = env.get_value("xx")
-            assert xx in range(0,zz[1]+1)
+            assert xx in range(0,zz+1)
 
 
     # kills ProB Performance :)
@@ -1064,9 +1064,9 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 0 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         assert len(next_states)==6 # -1: {-1,0,1,2}, 0: {0,1}, zz>=1 no solution
-        bstate = next_states[0][3]
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate) 
         xx = env.get_value("xx")
         assert xx in [-1,0,1] # -1:{-1,0,1,2}
@@ -1095,13 +1095,13 @@ class TestMCHAnimation():
         assert interpret(root.children[2], env)
         assert 4 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
+        assert next_states[0].opName=="op"
         assert len(next_states)==env._max_int+(-1*env._min_int+1)
         for op_and_state in next_states:
-            bstate = op_and_state[3]
-            zz = op_and_state[1][0]
+            bstate = op_and_state.bstate
+            zz = op_and_state.parameter_values[0]
             env.state_space.add_state(bstate) 
-            assert zz[1] in range(env._min_int, env._max_int+1)
+            assert zz in range(env._min_int, env._max_int+1)
 
 
     def test_ani_examples_simple_test(self):
@@ -1166,24 +1166,24 @@ class TestMCHAnimation():
         assert empty==frozenset([])
         #BOOKS = env.get_value("BOOK")       
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="newbook"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="newbook"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)       
         #op_and_state_list = calc_possible_operations(env, mch)
         #exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==1
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="newbook"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="newbook"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         #op_and_state_list = calc_possible_operations(env, mch)
         #exec_op(env, op_and_state_list[0], mch)
         read = env.get_value("read")
         assert len(read)==2
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="newbook"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="newbook"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         #op_and_state_list = calc_possible_operations(env, mch)
         #exec_op(env, op_and_state_list[0], mch)
@@ -1248,8 +1248,8 @@ class TestMCHAnimation():
         empty = env.get_value("keys")
         assert empty==frozenset([])       
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="insertkey"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="insertkey"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)
         #op_and_state_list = calc_possible_operations(env, mch)
         #exec_op(env, op_and_state_list[0], mch)
@@ -1299,15 +1299,15 @@ class TestMCHAnimation():
         assert interpret(root.children[5], env)
 
         next_states = calc_next_states(env,mch)
-        assert next_states[6][0]=="unlockdoor"
-        bstate = next_states[6][3]
+        assert next_states[6].opName =="unlockdoor"
+        bstate = next_states[6].bstate
         env.state_space.add_state(bstate)
         next_states = calc_next_states(env,mch)
-        assert next_states[6][0]=="opendoor"
-        bstate = next_states[6][3]
+        assert next_states[6].opName =="opendoor"
+        bstate = next_states[6].bstate
         env.state_space.add_state(bstate)                
         # Test PROMOTES:
-        names = [op[0] for op in next_states]
+        names = [op.opName for op in next_states]
         assert  "closedoor" in names
         # Vars in Locks: test if lookuperr.
         env.get_value("DOOR")
@@ -1365,10 +1365,10 @@ class TestMCHAnimation():
         assert interpret(root.children[5], env)
         #op_and_state_list = calc_possible_operations(env, mch) #opening enabled
         next_states = calc_next_states(env,mch)
-        assert next_states[6][0]=="insert"
-        bstate = next_states[6][3]       
+        assert next_states[6].opName =="insert"
+        bstate = next_states[6].bstate     
         # test PROMOTES:
-        names = [op[0] for op in next_states]
+        names = [op.opName for op in next_states]
         result = frozenset(names)
         assert result==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock'])
         empty = env.get_value("keys")
@@ -1378,7 +1378,7 @@ class TestMCHAnimation():
         one = env.get_value("keys")
         assert len(one)==1
         next_states = calc_next_states(env,mch)
-        names = [op[0] for op in next_states]
+        names = [op.opName for op in next_states]
         assert frozenset(names)==frozenset(['insert', 'lockdoor', 'extract', 'closedoor', 'quicklock', 'unlock'])
         
 
@@ -1413,7 +1413,7 @@ class TestMCHAnimation():
         arbitrary_init_machine(root, env, mch)
         assert not env.get_value("GOODS")==None
         next_states = calc_next_states(env,mch)
-        names = [op[0] for op in next_states]
+        names = [op.opName for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery'])
 
 
@@ -1447,7 +1447,7 @@ class TestMCHAnimation():
         assert not env.get_value("price")==None
         assert env.get_value("takings")==0
         next_states = calc_next_states(env,mch)
-        names = [op[0] for op in next_states]
+        names = [op.opName for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
         
@@ -1485,10 +1485,9 @@ class TestMCHAnimation():
         assert isinstance(root.children[5], AInvariantMachineClause)
         assert interpret(root.children[5], env)
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="buy"
-        ret_value = next_states[0][2]
-        name = ret_value[0][0]
-        value = ret_value[0][1]  
+        assert next_states[0].opName=="buy"
+        name = next_states[0].return_names[0]
+        value = next_states[0].return_values[0]
         assert name == "pp" 
         assert value in range(env._min_int, env._max_int)
 
@@ -1537,19 +1536,19 @@ class TestMCHAnimation():
         assert value==frozenset([])
         
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="born"
-        bstate = next_states[0][3]
+        assert next_states[0].opName=="born"
+        bstate = next_states[0].bstate
         env.state_space.add_state(bstate)  
-        names = [op[0] for op in next_states]        
+        names = [op.opName for op in next_states]        
         #op_and_state_list = calc_possible_operations(env, mch) 
         #names = [op[0].opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['born'])
         #exec_op(env, op_and_state_list[0], mch) # born
         #op_and_state_list = calc_possible_operations(env, mch) 
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="born"
-        bstate = next_states[0][3]
-        names = [op[0] for op in next_states]
+        assert next_states[0].opName=="born"
+        bstate = next_states[0].bstate
+        names = [op.opName for op in next_states]
         assert frozenset(names)==frozenset(['born', 'die'])
 
 
@@ -1573,11 +1572,11 @@ class TestMCHAnimation():
         value = env.get_value("read") 
         assert value==frozenset([])
         next_states = calc_next_states(env,mch)
-        assert next_states[3][0]=="show"
-        bstate = next_states[3][3]
-        names = [op[0] for op in next_states]         
+        assert next_states[3].opName=="show"
+        bstate = next_states[3].bstate
+        names = [op.opName for op in next_states]         
         #op_and_state_list = calc_possible_operations(env, mch) 
-        #names = [op[0].opName for op in op_and_state_list]
+        #names = [op.opName for op in op_and_state_list]
         assert frozenset(names)==frozenset(['show','newbook'])
 
     # ISSUE 31
@@ -1686,7 +1685,7 @@ class TestMCHAnimation():
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch)
         next_states = calc_next_states(env,mch)
-        names = [op[0] for op in next_states]  
+        names = [op.opName for op in next_states]  
         assert frozenset(names)==frozenset(['new','nr_ready'])
 
 
@@ -1735,10 +1734,10 @@ class TestMCHAnimation():
         assert near==frozenset(["farmer","fox","chicken","grain"]) 
         assert far==frozenset([])
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="Move_far"
-        bstate = next_states[0][3]   
+        assert next_states[0].opName=="Move_far"
+        bstate = next_states[0].bstate   
         #op_and_state_list = calc_possible_operations(env, mch) 
-        #names = [op[0].opName for op in op_and_state_list]
+        #names = [op.opName for op in op_and_state_list]
       
         
     # not B spec.    
@@ -1778,8 +1777,8 @@ class TestMCHAnimation():
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         #op_and_state_list = calc_possible_operations(env, mch) 
         next_states = calc_next_states(env,mch)
-        assert next_states[0][0]=="op"
-        bstate = next_states[0][3]      
+        assert next_states[0].opName=="op"
+        bstate = next_states[0].bstate      
         #assert op_and_state_list[0][0].opName=="op"
         varLoc = env.get_value("varLoc") 
         assert varLoc ==0
@@ -1821,8 +1820,8 @@ class TestMCHAnimation():
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
         next_states = calc_next_states(env,mch)
         assert len(next_states)==4
-        for lst in next_states:
-            bstate = lst[3]
+        for n in next_states:
+            bstate = n.bstate
             env.state_space.add_state(bstate)
             rand = env.get_value("rand")
             num  = env.get_value("num")

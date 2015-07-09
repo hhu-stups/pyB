@@ -57,19 +57,19 @@ def print_init_bstates(bstates, root_mch, undo_possible):
         print "["+ str(i) +"]: undo"
         i = i+1
     print "["+ str(i) +"]: leave pyB\n"
-    
+
 
 # prints enabled operations, undo and quit options
 def show_ops(next_states, env):
     i = 0
     string = "\n"
     for entry in next_states:
-        op_name = entry[0]
+        op_name = entry.opName
         string += "["+ str(i) +"]: "
-        string += _print_ret_values(entry[2])
+        string += _print_ret_values(entry.return_names, entry.return_values)
         string += op_name
         string += "("
-        string += _print_para_values(entry[1])
+        string += _print_para_values(entry.parameter_names, entry.parameter_values)
         string += ")"
         i = i +1
         string += "\n"
@@ -149,28 +149,28 @@ def _get_child_var_names(bmachine, done):
     
 # - private method -
 # helper function, prints parameter values of operations
-def _print_para_values(para_list):
+def _print_para_values(names, values):
     string = ""
-    if not para_list:
+    if not names:
         return ""
-    for pair in para_list:
-        string += pair[0]
+    for i in range(len(names)):
+        string += names[i]
         string += "="
-        string += print_values_b_style(pair[1])
+        string += print_values_b_style(values[i])
         string += " "
     return string
 
 
 # - private method -
 # helper function, prints return values of operations
-def _print_ret_values(ret_list):
+def _print_ret_values(names, values):
     string = ""
-    if not ret_list:
+    if not names:
         return ""
-    for pair in ret_list:
-        string += pair[0]
+    for i in range(len(names)):
+        string += names[i]
         string += "="
-        string += print_values_b_style(pair[1])
+        string += print_values_b_style(values[i])
         string += " "
     string += " <-- "
     return string

@@ -58,8 +58,8 @@ class TestModelChecker():
         env.state_space.undo()
         assert len(env.state_space.stack)==1 # setup
         assert len(env.state_space.seen_states)==1
-        for tup in next_states:
-            bstate = tup[3]
+        for n_state in next_states:
+            bstate = n_state.bstate
             assert isinstance(bstate, BState)
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate)
@@ -76,8 +76,8 @@ class TestModelChecker():
             assert interpret(invatiant, env) 
             next_states = calc_next_states(env, mch)
             env.state_space.undo()
-            for tup in next_states:
-                bstate = tup[3]
+            for n_state in next_states:
+                bstate = n_state.bstate
                 if not env.state_space.is_seen_state(bstate):
                     env.state_space.set_current_state(bstate)  
         assert len(env.state_space.seen_states)==100
