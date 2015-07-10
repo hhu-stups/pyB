@@ -26,9 +26,9 @@ QUICK_EVAL_CONJ_PREDICATES = True
 PRINT_SUB_PROPERTIES = True # P0 & P1 & ...PN
 #PRINT_SUB_INVARIANT = True
 PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
-USE_COSTUM_FROZENSET = False # Set to True if you want to translate to C. Otherwise loose of performance
-USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
-USE_RPYTHON_CODE     = False # use code which can be translated
+USE_COSTUM_FROZENSET = True # Set to True if you want to translate to C. Otherwise loose of performance
+USE_RPYTHON_POPEN    = True # Enable java call from RPython if you want to translate to C
+USE_RPYTHON_CODE     = True # use code which can be translated
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)
 if os.name=='nt': # Windows System
     EXAMPLE_DIR = "examples\\"

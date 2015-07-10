@@ -774,4 +774,19 @@ def exec_substitution(sub, env):
             if name in used_ids:
                 raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
         yield True # assign(s) was/were  successful 
+    elif isinstance(sub, ABlockSubstitution):
+        ex_generator = exec_substitution(sub.children[-1], env)
+        for possible in ex_generator:
+            yield possible
+    elif isinstance(sub, APreconditionSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        condition = interpret(sub.children[0], env)
+        #print condition, node.children[0]
+        if condition.value:
+            ex_generator = exec_substitution(sub.children[1], env)
+            for possible in ex_generator:
+                yield possible
+        else:
+            yield False
      

@@ -57,9 +57,9 @@ def translate(main_code, other_code="", cl_argument=""):
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    os.remove("tempA.py")
-    os.remove("tempB.py")
-    os.remove("tempA-c")
+    #os.remove("tempA.py")
+    #os.remove("tempB.py")
+    #os.remove("tempA-c")
     # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -526,13 +526,15 @@ class TestPyPyTranslationObjects():
             print int(res)
             
             next_states = calc_next_states(env, mch)
-            assert next_states[0].opName=="dec"
+            res = next_states[0].opName=="dec"
+            print int(res)
+            
             bstate = next_states[0].bstate
             env.state_space.add_state(bstate)
                                                      
             return 0\n"""
         python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
-        assert python_result == ['1', '1', '1','1', '']
+        assert python_result == ['1', '1', '1', '1', '']
         assert python_result == c_result        
 
 
