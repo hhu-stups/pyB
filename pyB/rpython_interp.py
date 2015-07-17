@@ -4,6 +4,7 @@ from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM
 #from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
+from pretty_printer import pretty_print
 #from symbolic_sets import *
 from symbolic_sets import SymbolicIntervalSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, frozenset
@@ -265,7 +266,8 @@ def check_properties(node, env, mch):
                         yield True
                 # This generator is only called when the Constraints are True.
                 # No Properties-solution means set_up fail
-                if not at_least_one_solution: 
+                if not at_least_one_solution:
+                    print "Properties violation" 
                     print "\nFALSE Predicates:"
                     print_predicate_fail(env, mch.aPropertiesMachineClause.children[0])
                     raise SETUPNotPossibleException("\nError: Properties FALSE in machine: %s!" % (mch.mch_name))
@@ -599,8 +601,9 @@ def interpret(node, env):
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.get(0), env)
         if not result.value:
+            print "Invariant violation"
             print "\nFALSE Predicates:"
-            #print_predicate_fail(env, node.get(0))
+            print_predicate_fail(env, node.get(0))
         return result
         """
     elif isinstance(node, AAssertionsMachineClause):

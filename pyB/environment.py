@@ -186,6 +186,7 @@ class Environment():
     def set_search_dir(self, file_name_str):
         import os
         if os.name=='posix' and '/' in file_name_str:
+            # TODO: rpartition is not Rpython
             self._bmachine_search_dir = file_name_str.rpartition("/")[0] + '/'
         else:
             print "WARNING: OS Type not testet. Search dir unknown"
