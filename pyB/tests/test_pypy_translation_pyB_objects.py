@@ -57,9 +57,9 @@ def translate(main_code, other_code="", cl_argument=""):
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
-    #os.remove("tempA.py")
-    #os.remove("tempB.py")
-    #os.remove("tempA-c")
+    os.remove("tempA.py")
+    os.remove("tempB.py")
+    os.remove("tempA-c")
     # 8. return c and python result
     return python_result.split('\n'), c_result.split('\n')
 
@@ -592,8 +592,8 @@ class TestPyPyTranslationObjects():
             print "checked",len(env.state_space.seen_states),"states. No invariant violation found."
 
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
-        assert python_result == ['WARNING: model checking still experimental', 'checked 1 states. No invariant violation found.','']
+        python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift2.mch")
+        assert python_result == ['WARNING: model checking still experimental', 'checked 100 states. No invariant violation found.','']
         assert python_result == c_result   
         
 

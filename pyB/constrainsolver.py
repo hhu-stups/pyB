@@ -3,12 +3,12 @@
 from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
-from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET
-from enumeration import all_values_by_type
+from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET, USE_RPYTHON_CODE
+from enumeration import all_values_by_type, all_values_by_type_RPYTHON
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
 from pretty_printer import pretty_print
 from quick_eval import quick_member_eval
-from symbolic_sets import LargeSet
+
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
 
@@ -35,25 +35,31 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # check which kind of predicate: 3 cases
 
     # case 1: None = no predicate constraining parameter values, generate all values
-    if predicate==None: 
+    if predicate is None: 
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
-    
+
+    #"""
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
+    # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
     if QUICK_EVAL_CONJ_PREDICATES:
         try:
             generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
             return generator
         except SpecialCaseEnumerationFailedException:
             pass
-
+    #"""
+    
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
     # TODO: Handle OverflowError, print Error message and go on
     try:
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: External constraint solver called. Caused by: %s" % pretty_print(predicate) 
+        #TODO: enable this call in RPYTHON
+        if USE_RPYTHON_CODE: # Using external constraint solver not supported yet
+            raise ImportError()
         iterator = _calc_constraint_domain(env, varList, predicate)
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
@@ -66,13 +72,17 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         # constraint solving failed, enumerate all values (may cause a pyB fail)
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
+    
 
 
 def gen_all_values(env, varList, dic):
     idNode = varList[0]
     assert isinstance(idNode, AIdentifierExpression)
     atype = env.get_type_by_node(idNode)
-    domain = all_values_by_type(atype, env, idNode)
+    if USE_RPYTHON_CODE:
+        domain = all_values_by_type_RPYTHON(atype, env, idNode)
+    else:
+        domain = all_values_by_type(atype, env, idNode)
     var_name = idNode.idName
     for value in domain:
         dic[var_name] = value
@@ -101,7 +111,10 @@ def _calc_constraint_domain(env, varList, predicate):
     for idNode in varList:
         assert isinstance(idNode, AIdentifierExpression)
         atype = env.get_type_by_node(idNode)
-        domain = all_values_by_type(atype, env, idNode)
+        if USE_RPYTHON_CODE:
+            domain = all_values_by_type_RPYTHON(atype, env, idNode)
+        else:
+            domain = all_values_by_type(atype, env, idNode)
         tup = (idNode.idName, domain)
         var_and_domain_lst.append(tup)
     problem = Problem() # import from "constraint"
@@ -174,6 +187,7 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
             right = name
             left = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
         if left and right and name:
+            bin_op = ""
             if isinstance(node, AGreaterPredicate):
                 bin_op = ">"
             elif isinstance(node, ALessPredicate):
