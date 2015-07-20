@@ -3,7 +3,7 @@ from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
 from config import USE_COSTUM_FROZENSET, USE_RPYTHON_CODE
-from rpython_b_objmodel import W_None
+from rpython_b_objmodel import W_None, W_Object
 if USE_COSTUM_FROZENSET:
      from rpython_b_objmodel import frozenset
 
@@ -22,10 +22,22 @@ class BState():
     # debug-helper
     def print_bstate(self):
         for bmch in self.bmch_dict:
-            if bmch==None:
-                print "Predicate or Expression:", self.bmch_dict[bmch]
+            if USE_RPYTHON_CODE:
+                lst = "["
+                for dic in self.bmch_dict[bmch]:
+                    d = "{"
+                    for e in dic:
+                        d += e +":"+ str(dic[e].value)
+                    d +="}"   
+                    lst += d
+                lst += "]"
             else:
-                print bmch.mch_name, ":", self.bmch_dict[bmch]
+                lst = self.bmch_dict[bmch]
+                
+            if bmch is None:
+                print "Predicate or Expression:", lst
+            else:
+                print bmch.mch_name, ":", lst
      
                 
     def equal(self, bstate):
@@ -45,8 +57,14 @@ class BState():
                     for key in self_dictionary.keys():
                         self_value  = self_dictionary[key]
                         other_value = other_dictionary[key]
-                        if not self_value==other_value:
-                            return False
+                        if USE_RPYTHON_CODE:
+                            assert isinstance(self_value, W_Object)
+                            assert isinstance(other_value, W_Object)
+                            if not self_value.value==other_value.value:
+                                return False
+                        else:
+                            if not self_value==other_value:
+                                return False
         except KeyError:
             return False
         return True

@@ -50,11 +50,11 @@ def translate(main_code, other_code="", cl_argument=""):
     import os
     if os.name=='nt':
         # Add pypy to your path if this line crashs
-        Popen("python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
+        Popen("python ../pypy/rpython/translator/goal/translate.py --batch tempA.py", shell=True, stdout=PIPE).stdout.read()
     else:
         pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
         assert pwd[-4:]=='pyB\n'
-        Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py tempA.py", shell=True, stdout=PIPE).stdout.read()
+        Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch tempA.py", shell=True, stdout=PIPE).stdout.read()
     c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
     os.remove("tempA.py")
@@ -578,17 +578,18 @@ class TestPyPyTranslationObjects():
             #   return -1  
      
             env.state_space.set_current_state(bstates[0], op_name="initialisation")
-            #while not env.state_space.empty():                          # 7. model check  
-            #    if not interpret(mch.aInvariantMachineClause, env):
-            #        print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-            #        #print env.state_space.history
-            #        return -1
-            #    next_states = calc_next_states(env, mch)
-            #    env.state_space.undo()
-            #    for tup in next_states:
-            #        bstate = tup.bstate
-            #        if not env.state_space.is_seen_state(bstate):
-            #            env.state_space.set_current_state(bstate)  
+            while not env.state_space.empty():                          # 7. model check  
+                if not interpret(mch.aInvariantMachineClause, env):
+                    print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
+                    #print env.state_space.history
+                    return -1
+                next_states = calc_next_states(env, mch)
+                env.state_space.undo()
+                for tup in next_states:
+                    bstate = tup.bstate
+                    #bstate.print_bstate()
+                    if not env.state_space.is_seen_state(bstate):
+                        env.state_space.set_current_state(bstate)  
             print "checked",len(env.state_space.seen_states),"states. No invariant violation found."
 
             return 0\n"""
@@ -808,7 +809,7 @@ class TestPyPyTranslationObjects():
         assert python_result == ['1', '0','1', '']
         assert python_result == c_result
           
-
+        
     def test_pypy_generators1(self):
         code =  """
             def g():
@@ -933,7 +934,26 @@ def f():
         python_result, c_result = translate(code,other_code) 
         assert python_result == ['0', '']
         assert python_result == c_result       
-     
+
+
+    # repr and str not supported 
+    import pytest, config
+    @pytest.mark.xfail
+    def test_pypy_print(self):
+        code =  """      
+            a = SomeObject()
+            d = {}
+            d[42] = a
+            print "Hallo", d[42]
+            return 0\n"""
+            
+        other_code = """class SomeObject():
+        def __repr__(self):
+            return "KNAMPF"\n"""
+        python_result, c_result = translate(code,other_code) 
+        assert python_result == ['Hallo KNAMPF', '']
+        assert python_result == c_result       
+
         
     import pytest, config
     @pytest.mark.xfail

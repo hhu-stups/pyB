@@ -953,7 +953,7 @@ def interpret(node, env):
         left = interpret(node.get(0), env)
         right = interpret(node.get(1), env)
         L = []
-        for i in range(right.value):
+        for i in range(right.value+1):
             value = W_Integer(i+left.value)
             L.append(value)
         return frozenset(L)

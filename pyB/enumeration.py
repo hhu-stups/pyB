@@ -82,17 +82,17 @@ def all_values_by_type_RPYTHON(atype, env, node):
         value = env.get_value(type_name)
         assert isinstance(value, frozenset)
         return [value]
-    # TODO:
+    # TODO: check with RPython translation before uncommenting
     """
     elif isinstance(atype, PowerSetType):
-        val_list = all_values_by_type(atype.data, env, node)
+        val_list = all_values_by_type_RPYTHON(atype.data, env, node)
         res = powerset(val_list)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
         return lst
     elif isinstance(atype, CartType):
-        val_pi = all_values_by_type(atype.left.data, env, node)
-        val_i = all_values_by_type(atype.right.data, env, node)
+        val_pi = all_values_by_type_RPYTHON(atype.left.data, env, node)
+        val_i = all_values_by_type_RPYTHON(atype.right.data, env, node)
         # TODO: test for realtions, seams incomplete
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
