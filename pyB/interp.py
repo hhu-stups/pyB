@@ -13,6 +13,7 @@ from relation_helpers import *
 from rpython_b_objmodel import W_Integer, W_None
 from symbolic_sets import *
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
+
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
 
 

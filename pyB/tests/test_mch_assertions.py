@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
 from environment import Environment
-from interp import interpret
-from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
+from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
+from util import arbitrary_init_machine
 
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:

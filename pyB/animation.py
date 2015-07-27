@@ -12,7 +12,9 @@ if USE_RPYTHON_CODE:
     from rpython_b_objmodel import frozenset
 else:
     from interp import exec_substitution, interpret
+
     
+
 
 # Wrapper object. Replaces list of dif. typed items.
 # only returned by calc_next_states

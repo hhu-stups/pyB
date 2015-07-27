@@ -6,7 +6,6 @@ from pretty_printer import pretty_print
 from symbolic_helpers import check_syntacticly_equal 
 from symbolic_sets import SymbolicSet
 
-
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 

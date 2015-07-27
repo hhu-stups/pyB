@@ -1,5 +1,5 @@
-from btypes import *
 from bexceptions import ValueNotInDomainException
+from btypes import *
 from config import USE_RPYTHON_CODE
 
 if USE_RPYTHON_CODE:

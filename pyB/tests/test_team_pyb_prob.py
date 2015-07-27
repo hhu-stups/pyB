@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from ast_nodes import *
 from bexceptions import BTypeException
 from btypes import *
@@ -10,6 +9,8 @@ from interp import interpret, set_up_constants, exec_initialisation, eval_Invari
 import os
 from parsing import parse_ast, str_ast_to_python_ast, remove_defs_and_parse_ast
 from typing import type_check_root_bmch, type_check_predicate
+
+
 
 
 from config import USE_RPYTHON_CODE

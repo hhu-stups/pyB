@@ -39,7 +39,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
 
-    #"""
+    """
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)

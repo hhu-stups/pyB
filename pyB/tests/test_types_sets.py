@@ -2,8 +2,8 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
+from util import type_with_known_types, get_type_by_name
 from parsing import str_ast_to_python_ast
 
 from config import USE_RPYTHON_CODE

@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 import sys
-from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
-from bmachine import BMachine
-from bexceptions import *
-from environment import Environment
-from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
-from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast, remove_defs_and_parse_ast
+
 from animation_clui import show_ui, print_set_up_bstates, print_init_bstates, print_values_b_style
 from animation import calc_next_states
 from ast_nodes import *
+from bmachine import BMachine
+from bexceptions import *
 from config import DEFAULT_INPUT_FILENAME, VERBOSE
-from typing import type_check_root_bmch, type_check_predicate
+from environment import Environment
+from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
+from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
+from parsing import PredicateParseUnit, ExpressionParseUnit, str_ast_to_python_ast, remove_defs_and_parse_ast
 from repl import run_repl
+from typing import type_check_root_bmch, type_check_predicate
+
 
 
 # console input like python 'pyB.py somefile.mch some_solutionfile.txt'

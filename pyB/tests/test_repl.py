@@ -1,10 +1,11 @@
+from animation_clui import print_values_b_style
 from ast_nodes import *
-from helpers import  string_to_file, file_to_AST_str_no_print
 from environment import Environment
+from helpers import  string_to_file, file_to_AST_str_no_print
 from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
 from repl import parse_repl_input
-from animation_clui import print_values_b_style
+
 
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:

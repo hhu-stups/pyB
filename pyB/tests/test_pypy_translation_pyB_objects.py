@@ -10,10 +10,7 @@ PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to y
 def translate(main_code, other_code="", cl_argument=""):
     # 1. Generate Python code as String
     code = other_code
-    code +=  "def main(argv):\n"
-    # modifying global variables is NOT RPYTHON
-    #code += "            from config import set_USE_RPYTHON_CODE\n"
-    #code += "            set_USE_RPYTHON_CODE(True)\n"
+    code += "def main(argv):\n"
     code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
@@ -21,16 +18,18 @@ def translate(main_code, other_code="", cl_argument=""):
     code += "if __name__ == '__main__':\n"
     code += "   import sys\n"
     code += "   main(sys.argv)\n"
+    
     # 2 write code to temp file (Will be translated to C)
     f = open("tempA.py",'w')
-    #print code
+    print code
     f.write(code)
     f.close()
-    # 3 Non-RPython Version, disable RPYTHON FLAG
+    
+    # 3 Non-RPython Version, disable RPYTHON FLAGS
     code = other_code
     code +=  "def main(argv):\n"
-    code += "            from config import set_USE_RPYTHON_CODE\n"
-    code += "            set_USE_RPYTHON_CODE(False)\n"
+    code += "            from config import set_USE_RPYTHON_POPEN\n"
+    code += "            set_USE_RPYTHON_POPEN(False)\n"
     code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
@@ -45,10 +44,10 @@ def translate(main_code, other_code="", cl_argument=""):
     f.close()
     from subprocess import Popen, PIPE
     # 5. call python version
-    print "running python version"
+    print "running python version: "
     python_result = Popen("python tempB.py "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 6. generate and call c Version
-    print "running c version"
+    print "running pypy to generate c verison..."
     import os
     if os.name=='nt':
         # Add pypy to your path if this line crashs
@@ -57,6 +56,7 @@ def translate(main_code, other_code="", cl_argument=""):
         pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
         assert pwd[-4:]=='pyB\n'
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch tempA.py", shell=True, stdout=PIPE).stdout.read()
+    print "running c version: "
     c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 7. delete temp. file
     os.remove("tempA.py")
@@ -721,7 +721,7 @@ class TestPyPyTranslationObjects():
    
       
     import pytest, config
-    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="unssuported pypy import on python run" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
     def test_pypy_parsing1(self):
         code =  """
             from helpers import file_to_AST_str
@@ -775,7 +775,7 @@ class TestPyPyTranslationObjects():
     # END
     #
     import pytest, config
-    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="unsupported pypy import on python run" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unsupported pypy import on python run" )    
     def test_pypy_parsing3(self):
         code =  """            
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate

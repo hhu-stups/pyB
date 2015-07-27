@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import pytest
-from interp import interpret
+from ast_nodes import *
 from environment import Environment
-from util import arbitrary_init_machine
 from helpers import file_to_AST_str, string_to_file
+from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
-from ast_nodes import *
 from symbolic_sets import *
+from util import arbitrary_init_machine
 
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:

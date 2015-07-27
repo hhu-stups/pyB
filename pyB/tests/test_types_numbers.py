@@ -2,10 +2,12 @@
 from ast_nodes import *
 from btypes import *
 from environment import Environment
-from typing import type_check_bmch
-from util import type_with_known_types, get_type_by_name
 from helpers import file_to_AST_str, string_to_file
 from parsing import parse_ast, str_ast_to_python_ast
+from typing import type_check_bmch
+from util import type_with_known_types, get_type_by_name
+
+
 
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:
