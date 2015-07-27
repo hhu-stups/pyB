@@ -3,13 +3,13 @@
 from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
-from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_COSTUM_FROZENSET, USE_RPYTHON_CODE
+from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration import all_values_by_type, all_values_by_type_RPYTHON
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
 from pretty_printer import pretty_print
 from quick_eval import quick_member_eval
 
-if USE_COSTUM_FROZENSET:
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 

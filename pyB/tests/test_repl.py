@@ -6,8 +6,8 @@ from parsing import parse_ast, str_ast_to_python_ast
 from repl import parse_repl_input
 from animation_clui import print_values_b_style
 
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from config import USE_RPYTHON_CODE
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 class TestRepl():

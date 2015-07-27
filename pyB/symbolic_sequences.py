@@ -1,9 +1,11 @@
 from ast_nodes import *
-from symbolic_sets import SymbolicSet
+from config import USE_RPYTHON_CODE
 from enumeration import create_all_seq_w_fixlen
 from relation_helpers import *
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from symbolic_sets import SymbolicSet
+
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # represents NOT a sequence, but a set of sequences

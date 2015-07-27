@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os 
 
-
-
 DEPTH_FIRST_SEARCH_MODEL_CHECKING = True # else
 MIN_INT = -1
 MAX_INT = 5
@@ -26,9 +24,16 @@ QUICK_EVAL_CONJ_PREDICATES = True
 PRINT_SUB_PROPERTIES = True # P0 & P1 & ...PN
 #PRINT_SUB_INVARIANT = True
 PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
-USE_COSTUM_FROZENSET = False # Set to True if you want to translate to C. Otherwise loose of performance
-USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
-USE_RPYTHON_CODE     = False # use code which can be translated
+
+USE_RPYTHON_CODE = False 	# Set to True if you want to translate to C. Otherwise loose of performance
+							# Enable (popen) java call from RPython if you want to translate to C
+ 							# use code which can be translated
+
+# method should used by pypy translation test only    
+def set_USE_RPYTHON_CODE(boolean):
+     global USE_RPYTHON_CODE
+     USE_RPYTHON_CODE=boolean
+      							 
 # MIN_INT, MAX_INT are copied to env (environment.py) (for possible modification after module import time)
 if os.name=='nt': # Windows System
     EXAMPLE_DIR = "examples\\"
@@ -37,12 +42,5 @@ else: # Other OS (e.g mac)
     EXAMPLE_DIR = "examples/"
     JAR_DIR     = "../jars/"
 
-# method should used by pypy translation test only    
-def set_USE_RPYTHON_POPEN(boolean):
-     global USE_RPYTHON_POPEN
-     USE_RPYTHON_POPEN=boolean
+
      
-     
-def set_USE_COSTUM_FROZENSET(boolean):
-     global USE_COSTUM_FROZENSET
-     USE_COSTUM_FROZENSET=boolean

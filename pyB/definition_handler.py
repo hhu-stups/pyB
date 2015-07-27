@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from config import USE_RPYTHON_CODE
 from external_functions import EXTERNAL_FUNCTIONS_DICT
-from pretty_printer import pretty_print
 from helpers import file_to_AST_str_no_print, print_ast
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from pretty_printer import pretty_print
+
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # This class modifies an AST. It generates a "definition free" AST ahead of time. (after parsing, before interpretation)

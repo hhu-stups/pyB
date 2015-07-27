@@ -3,8 +3,8 @@ from symbolic_sets import SymbolicSet
 #
 # module-description: 
 # console user-interface
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from config import USE_RPYTHON_CODE
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # prints user-interface: state and options

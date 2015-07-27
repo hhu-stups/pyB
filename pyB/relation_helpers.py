@@ -1,8 +1,9 @@
+from bexceptions import EnumerationNotPossibleException
+from config import USE_RPYTHON_CODE
 from helpers import *
 from symbolic_sets import InfiniteSet
-from bexceptions import EnumerationNotPossibleException
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # filters out every function which is not injective

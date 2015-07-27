@@ -1,11 +1,13 @@
 # symbolic functions defined by a predicate
+from bexceptions import ValueNotInDomainException
+from config import USE_RPYTHON_CODE
 from helpers import remove_tuples, build_arg_by_type
+from pretty_printer import pretty_print
 from symbolic_helpers import check_syntacticly_equal 
 from symbolic_sets import SymbolicSet
-from pretty_printer import pretty_print
-from bexceptions import ValueNotInDomainException
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # __getitem__ implemented inside interp to avoid env and interp_callable link

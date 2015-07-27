@@ -9,8 +9,8 @@ from typing import type_check_bmch
 from ast_nodes import *
 from symbolic_sets import *
 
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from config import USE_RPYTHON_CODE
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 file_name = "input.txt"

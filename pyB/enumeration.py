@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-from config import *
+
 from ast_nodes import *
+from bexceptions import EnumerationNotPossibleException
+from bexceptions import *
 from btypes import *
+from config import *
+from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples, build_arg_by_type
+from pretty_printer import pretty_print
 from symbolic_sets import *
 from symbolic_functions import *
 from symbolic_functions_with_predicate import *
-from helpers import flatten, double_element_check, all_ids_known, print_ast, remove_tuples, build_arg_by_type
-from bexceptions import *
-from pretty_printer import pretty_print
-from bexceptions import EnumerationNotPossibleException
-if USE_COSTUM_FROZENSET:
+
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_String, frozenset
 
 # WARNING: most of the functions in this module should only be used

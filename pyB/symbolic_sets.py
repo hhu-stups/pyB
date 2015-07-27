@@ -4,13 +4,15 @@
 # symbolic sets behave like frozensets (as much as possible) 
 # x (not)in S implemented in quick_eval.py (called by Belong-predicates x:S)
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException, InfiniteSetLengthException
-from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from btypes import *
-from config import PRINT_WARNINGS, USE_COSTUM_FROZENSET
+from config import PRINT_WARNINGS, USE_RPYTHON_CODE
+from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from pretty_printer import pretty_print
-from symbolic_helpers import check_syntacticly_equal, generate_powerset
 from rpython_b_objmodel import W_Object, W_Integer
-if USE_COSTUM_FROZENSET:
+from symbolic_helpers import check_syntacticly_equal, generate_powerset
+
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 

@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
-from btypes import *
-from statespace import StateSpace
-from config import *
 from bexceptions import ValueNotInBStateException
+from btypes import *
+from config import *
 from pretty_printer import pretty_print
+from statespace import StateSpace
+
 # use overwritten frozenset. Otherwise Rpython translation to c will fail with
 # a AttributeError: 'FrozenDesc' object has no attribute 'pycall'
-if USE_COSTUM_FROZENSET:
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # TODO: This must be a singelton object

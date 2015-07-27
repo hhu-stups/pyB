@@ -1,12 +1,13 @@
+from ast_nodes import *
+from bexceptions import ValueNotInDomainException
+from config import USE_RPYTHON_CODE
+from helpers import enumerate_cross_product
+from relation_helpers import *
 from symbolic_helpers import check_syntacticly_equal, make_explicit_set_of_realtion_lists 
 from symbolic_sets import SymbolicSet, PowerSetType, SymbolicCartSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
-from ast_nodes import *
-from relation_helpers import *
-from helpers import enumerate_cross_product
-from bexceptions import ValueNotInDomainException
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 class SymbolicRelationSet(SymbolicSet):

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_RPYTHON_CODE
 from boperation import BOperation
 from helpers import file_to_AST_str_no_print, contains_lower_character, ParseObject
 
-from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
      
 # -*- coding: utf-8 -*-

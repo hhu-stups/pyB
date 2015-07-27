@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # moved for testing-reasons
 import os
-from subprocess import Popen, PIPE
 from ast_nodes import *
-from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_COSTUM_FROZENSET
 from btypes import CartType
-if USE_COSTUM_FROZENSET:
+from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
+from subprocess import Popen, PIPE
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
      
 #from pretty_printer import pretty_print
@@ -60,11 +61,11 @@ def create_file(b_str, bfile_name):
 
 # no print of error-messages
 def file_to_AST_str_no_print(file_name_str):
-    from config import USE_RPYTHON_POPEN
+    from config import USE_RPYTHON_CODE
     out = ""
     c_str = command_str + option_str + " "+file_name_str
     #print c_str
-    if USE_RPYTHON_POPEN:
+    if USE_RPYTHON_CODE:
         # TODO: remove % s
         from rpython.rlib.rfile import create_popen_file   
         file = create_popen_file(c_str, "r")
@@ -83,10 +84,10 @@ def file_to_AST_str_no_print(file_name_str):
 
 
 def file_to_AST_str(file_name_str, path=""):
-    from config import USE_RPYTHON_POPEN
+    from config import USE_RPYTHON_CODE
     out = ""
     c_str = command_str + option_str + " "+path+file_name_str # java call
-    if USE_RPYTHON_POPEN:
+    if USE_RPYTHON_CODE:
         from rpython.rlib.rfile import create_popen_file
         file = create_popen_file(c_str, "r")
         out = file.read()
@@ -132,10 +133,10 @@ def select_ast_to_list(select_ast):
 # del all space except that into b-strings
 #FIXME \x00 compare problem in pypy-trans tests. Branches are not equivalent 
 def del_spaces(string):
-    from config import USE_RPYTHON_POPEN
+    from config import USE_RPYTHON_CODE
     out = ""
     # Rpython does not work with line.replace(' ','')
-    if USE_RPYTHON_POPEN:
+    if USE_RPYTHON_CODE:
         for line in string.split("\n"):
             if "AStringExpression" in line:
                 out += line + "\n"

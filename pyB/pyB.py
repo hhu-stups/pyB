@@ -257,7 +257,7 @@ def run_model_checking_mode():
         env.state_space.undo()
         for tup in next_states:
             bstate = tup.bstate
-            bstate.print_bstate() # TODO: check double values with Lift2.mch example
+            #bstate.print_bstate() # TODO: check double values with Lift2.mch example
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate)  
     print "checked",len(env.state_space.seen_states),"states. No invariant violation found."

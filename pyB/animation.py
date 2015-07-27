@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # module-description: 
 # animation calculations
-from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE
+from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE, BMACHINE_SEARCH_DIR, BFILE_EXTENSION
 from enumeration import try_all_values
 from ast_nodes import *
 from constrainsolver import calc_possible_solutions
@@ -9,13 +9,10 @@ from bexceptions import ValueNotInDomainException
 
 if USE_RPYTHON_CODE:
     from rpython_interp import exec_substitution, interpret 
+    from rpython_b_objmodel import frozenset
 else:
     from interp import exec_substitution, interpret
-
-from config import BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
-    from rpython_b_objmodel import frozenset
-
+    
 
 # Wrapper object. Replaces list of dif. typed items.
 # only returned by calc_next_states

@@ -1,5 +1,5 @@
 # assumes pypy checkout at PYPYDIR
-from config import USE_COSTUM_FROZENSET
+from config import USE_RPYTHON_CODE
 
 file_name = "input.txt"
 PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to your checkout
@@ -12,8 +12,8 @@ def translate(main_code, other_code="", cl_argument=""):
     code = other_code
     code +=  "def main(argv):\n"
     # modifying global variables is NOT RPYTHON
-    #code += "            from config import set_USE_COSTUM_FROZENSET\n"
-    #code += "            set_USE_COSTUM_FROZENSET(True)\n"
+    #code += "            from config import set_USE_RPYTHON_CODE\n"
+    #code += "            set_USE_RPYTHON_CODE(True)\n"
     code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
@@ -26,11 +26,11 @@ def translate(main_code, other_code="", cl_argument=""):
     #print code
     f.write(code)
     f.close()
-    # 3 Non-RPython Version, disable RPYTHON FLAGS
+    # 3 Non-RPython Version, disable RPYTHON FLAG
     code = other_code
     code +=  "def main(argv):\n"
-    code += "            from config import set_USE_RPYTHON_POPEN\n"
-    code += "            set_USE_RPYTHON_POPEN(False)\n"
+    code += "            from config import set_USE_RPYTHON_CODE\n"
+    code += "            set_USE_RPYTHON_CODE(False)\n"
     code += main_code
     code += "def target(*args):\n"
     code += "   return main, None # returns the entry point\n"
@@ -45,8 +45,10 @@ def translate(main_code, other_code="", cl_argument=""):
     f.close()
     from subprocess import Popen, PIPE
     # 5. call python version
+    print "running python version"
     python_result = Popen("python tempB.py "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     # 6. generate and call c Version
+    print "running c version"
     import os
     if os.name=='nt':
         # Add pypy to your path if this line crashs
@@ -321,7 +323,7 @@ class TestPyPyTranslationObjects():
     #    assert python_result == c_result
 
    
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
     # Two states, one transition (setups_const --> init)
     #
     # MACHINE SIMPLE
@@ -329,7 +331,7 @@ class TestPyPyTranslationObjects():
     # END
     #
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine1(self):
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -391,7 +393,7 @@ class TestPyPyTranslationObjects():
 
 
     # set parsing line 77: root = my_exec(string)
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
     # Two states, one transition (setups_const --> init)
     #
     # MACHINE SIMPLE
@@ -400,7 +402,7 @@ class TestPyPyTranslationObjects():
     #
     # 368.97 seconds 
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine2(self):
         code =  """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -457,7 +459,7 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result
 
 
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
     #
     #
     # MACHINE Lift
@@ -470,7 +472,7 @@ class TestPyPyTranslationObjects():
     # END
     #
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_bmachine3(self):
         code =  """
             from animation import calc_next_states
@@ -534,7 +536,7 @@ class TestPyPyTranslationObjects():
 
     # TODO: one branch of the animation can not be translated yet
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")  
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")  
     def test_pypy_genAST_model_checking(self):
         code =  """
             from animation import calc_next_states
@@ -598,10 +600,10 @@ class TestPyPyTranslationObjects():
         assert python_result == c_result   
         
 
-    # set config.USE_COSTUM_FROZENSET = True
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
+    # set config.USE_RPYTHON_CODE = True
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")    
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")    
     def test_pypy_create_env0(self):
         code = """
             from environment import Environment
@@ -612,11 +614,11 @@ class TestPyPyTranslationObjects():
  
 
     # TODO: implement me
-    # set config.USE_COSTUM_FROZENSET = True
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
+    # set config.USE_RPYTHON_CODE = True
     #PREDICATE x<2
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")     
     def test_pypy_use_env1(self):
         code = """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -651,8 +653,8 @@ class TestPyPyTranslationObjects():
 
 
     # TODO: implement me
-    # set config.USE_COSTUM_FROZENSET = True
-    # set config.USE_COSTUM_FROZENSET = True
+    # set config.USE_RPYTHON_CODE = True
+    # set config.USE_RPYTHON_CODE = True
     #
     #
     # MACHINE Simple2
@@ -661,7 +663,7 @@ class TestPyPyTranslationObjects():
     # INITIALISATION floor := 4
     # END
     import pytest, config
-    @pytest.mark.xfail(config.USE_COSTUM_FROZENSET==False, reason="translation to c not possible using built-in frozenset type")     
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")     
     def test_pypy_use_env2(self):
         code = """
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate
@@ -719,7 +721,7 @@ class TestPyPyTranslationObjects():
    
       
     import pytest, config
-    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unssuported pypy import on python run" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="unssuported pypy import on python run" )    
     def test_pypy_parsing1(self):
         code =  """
             from helpers import file_to_AST_str
@@ -773,7 +775,7 @@ class TestPyPyTranslationObjects():
     # END
     #
     import pytest, config
-    @pytest.mark.xfail(config.USE_RPYTHON_POPEN==False, reason="unsupported pypy import on python run" )    
+    @pytest.mark.xfail(config.USE_RPYTHON_CODE==False, reason="unsupported pypy import on python run" )    
     def test_pypy_parsing3(self):
         code =  """            
             from ast_nodes import AMachineHeader,AIntegerExpression, ALessPredicate

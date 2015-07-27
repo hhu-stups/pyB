@@ -2,9 +2,10 @@ from ast_nodes import *
 from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
-from config import USE_COSTUM_FROZENSET, USE_RPYTHON_CODE
+from config import USE_RPYTHON_CODE
 from rpython_b_objmodel import W_None, W_Object
-if USE_COSTUM_FROZENSET:
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # BState: Set of all values (constants and variabels) of all B-machines

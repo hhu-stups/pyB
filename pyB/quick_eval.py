@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from ast_nodes import *
+from abstract_interpretation import var_constraint_by_predicate
 from btypes import *
+from config import USE_RPYTHON_CODE
 from pretty_printer import pretty_print
 from symbolic_sets import LargeSet, SymbolicSet
 from symbolic_functions import *
 from symbolic_functions_with_predicate import *
-from abstract_interpretation import var_constraint_by_predicate
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 # This function is used in an Belong(member)-Node. x : S

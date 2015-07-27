@@ -1,7 +1,8 @@
-from helpers import enumerate_cross_product
 from bexceptions import InfiniteSetLengthException
-from config import USE_COSTUM_FROZENSET
-if USE_COSTUM_FROZENSET:
+from config import USE_RPYTHON_CODE
+from helpers import enumerate_cross_product
+
+if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
      
 # helper functions for symbolic set operations
