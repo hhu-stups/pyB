@@ -40,9 +40,9 @@ def main(argv):
 	if not len(bstates)==1:
 	   print "WARNING: only one init. expected" 
 	   return -1
-	#if not mch.has_invariant_mc:
-	#   print "WARNING: no invariant present" 
-	#   return -1  
+	if not mch.has_invariant_mc:
+	   print "WARNING: no invariant present" 
+	   return -1  
 
 	env.state_space.set_current_state(bstates[0], op_name="initialisation")
 	while not env.state_space.empty():                          # 7. model check  

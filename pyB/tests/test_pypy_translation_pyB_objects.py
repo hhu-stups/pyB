@@ -21,7 +21,7 @@ def translate(main_code, other_code="", cl_argument=""):
     
     # 2 write code to temp file (Will be translated to C)
     f = open("tempA.py",'w')
-    print code
+    #print code # Debug
     f.write(code)
     f.close()
     
@@ -575,9 +575,9 @@ class TestPyPyTranslationObjects():
             if not len(bstates)==1:
                print "WARNING: only one init. expected" 
                return -1
-            #if not mch.has_invariant_mc:
-            #   print "WARNING: no invariant present" 
-            #   return -1  
+            if not mch.has_invariant_mc:
+               print "WARNING: no invariant present" 
+               return -1  
      
             env.state_space.set_current_state(bstates[0], op_name="initialisation")
             while not env.state_space.empty():                          # 7. model check  
