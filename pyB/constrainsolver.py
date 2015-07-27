@@ -39,17 +39,17 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
         generator = gen_all_values(env, varList, {})
         return generator.__iter__()
 
-    """
+
     # case 2: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
-    if QUICK_EVAL_CONJ_PREDICATES:
+    if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
         try:
             generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
             return generator
         except SpecialCaseEnumerationFailedException:
             pass
-    #"""
+
     
     # case 3: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
