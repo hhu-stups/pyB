@@ -609,6 +609,7 @@ def interpret(node, env):
             print "Invariant violation"
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.get(0))
+            env.state_space.print_history()
         return result
         """
     elif isinstance(node, AAssertionsMachineClause):
