@@ -249,16 +249,16 @@ def run_model_checking_mode():
         print "WARNING: no invariant present" 
         return   
      
-    env.state_space.set_current_state(bstates[0], op_name="initialisation")
+    env.state_space.set_current_state(bstates[0])
     while not env.state_space.empty():                          # 7. model check  
         if not interpret(mch.aInvariantMachineClause, env):
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-            #print env.state_space.history
             return False
         next_states = calc_next_states(env, mch)
         env.state_space.undo()
-        for tup in next_states:
-            bstate = tup.bstate
+        for s in next_states:
+            bstate = s.bstate
+            opName = s.opName
             #bstate.print_bstate() # TODO: check double values with Lift2.mch example
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate)  

@@ -79,6 +79,8 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     for solution in generator:
         if solution:
             solution_bstate = env.state_space.get_state()
+            if USE_ANIMATION_HISTORY:
+                solution_bstate.add_prev_bstate(ref_bstate, "set up", parameter_values=None) 
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate)
             env.init_sets_bmachnes_names = []  
@@ -302,8 +304,9 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
                
     # 1. set up frames and state
     bstates = []
-    ref_bstate = env.state_space.get_state().clone()
-    env.state_space.add_state(ref_bstate)
+    ref_bstate = env.state_space.get_state()
+    bstate = ref_bstate.clone()
+    env.state_space.add_state(bstate)
      
     
     # 2. search for solutions  
@@ -312,6 +315,8 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
     for solution in generator:
         if solution:
             solution_bstate = env.state_space.get_state()
+            if USE_ANIMATION_HISTORY:
+                solution_bstate.add_prev_bstate(ref_bstate, "init", parameter_values=None) 
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate) # revert to ref B-state
             env.init_bmachines_names = []
@@ -618,6 +623,7 @@ def interpret(node, env):
         if not result:
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.children[0])
+            env.state_space.print_history()
         return result
     elif isinstance(node, AAssertionsMachineClause):
         if ENABLE_ASSERTIONS: #config.py

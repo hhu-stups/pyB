@@ -44,7 +44,7 @@ def main(argv):
 	   print "WARNING: no invariant present" 
 	   return -1  
 
-	env.state_space.set_current_state(bstates[0], op_name="initialisation")
+	env.state_space.set_current_state(bstates[0])
 	while not env.state_space.empty():                          # 7. model check  
 		if not interpret(mch.aInvariantMachineClause, env):
 			print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"

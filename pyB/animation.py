@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # module-description: 
 # animation calculations
-from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE, BMACHINE_SEARCH_DIR, BFILE_EXTENSION
+from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE, BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_ANIMATION_HISTORY
 from enumeration import try_all_values
 from ast_nodes import *
 from constrainsolver import calc_possible_solutions
@@ -89,7 +89,9 @@ def calc_next_states(env, bmachine):
                     if possible:
                         return_names, return_values        = _get_value_list(env, return_val_idNodes)
                         env.pop_frame()
-                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?  
+                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?
+                        if USE_ANIMATION_HISTORY:
+                            bstate.add_prev_bstate(ref_bstate, op.opName, parameter_values=None)   
                         exec_op = Executed_Operation(op.opName, [], [], return_names, return_values, bstate)
                         result.append(exec_op)     
                         #result.append([op.opName, [], return_value_list, bstate])
@@ -98,7 +100,6 @@ def calc_next_states(env, bmachine):
                     env.state_space.add_state(bstate)
                 env.state_space.undo()  # pop bstate (all paths found)
             # (3.2) case two: find parameter values
-            #"""
             else:
                 # This code uses the constraint solver and the top_level predicate of this op to guess 
                 # parameter values. Of course this guess can produce false values but it will 
@@ -112,8 +113,8 @@ def calc_next_states(env, bmachine):
                 # TODO:(#ISSUE 13) maybe more guesses elif...
                 else: # no guess possible, try all values (third-arg None cause an enum of all values)
                     domain_generator = calc_possible_solutions(None, env, parameter_idNodes, interpret)
-                import types
-                assert (domain_generator, types.GeneratorType)
+                #import types
+                #assert isinstance(domain_generator, types.GeneratorType)
                 
                 # Try solutions
                 for solution in domain_generator:
@@ -135,6 +136,8 @@ def calc_next_states(env, bmachine):
                                 #print parameter_value_list
                                 env.pop_frame() # pop on the cloned state
                                 bstate2 = env.state_space.get_state().clone() #TODO:(#ISSUE 15) remove?
+                                if USE_ANIMATION_HISTORY:
+                                    bstate2.add_prev_bstate(bstate, op.opName, parameter_values) 
                                 exec_op = Executed_Operation(op.opName, parameter_names, parameter_values, return_names, return_values, bstate2)
                                 result.append(exec_op)
                                 #result.append([op.opName, parameter_value_list, return_value_list, bstate2])
@@ -146,7 +149,6 @@ def calc_next_states(env, bmachine):
                     except ValueNotInDomainException: #TODO: modify enumerator not to generate that "solutions" at all
                         env.state_space.undo() #pop bstate (all paths for this solution/parameters found) 
             env.state_space.undo() # pop ref_bstate (all states for this operation found)
-            #"""
     if result==[] and PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
     # alphabetic sort of results

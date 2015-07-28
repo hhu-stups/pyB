@@ -21,14 +21,15 @@ VERBOSE = True
 PRINT_WARNINGS = False   # prints deadlock warning and wrong substitution-warnings (e.g. while in abstract machine)
 BMACHINE_SEARCH_DIR = "examples/"
 BFILE_EXTENSION = ".mch"
-QUICK_EVAL_CONJ_PREDICATES = True
-PRINT_SUB_PROPERTIES = True # P0 & P1 & ...PN
-#PRINT_SUB_INVARIANT = True
+QUICK_EVAL_CONJ_PREDICATES = True # Performance optimization (common special cases)
+PRINT_SUB_PROPERTIES  = True # P0 & P1 & ...PN
+#PRINT_SUB_INVARIANT  = True
+USE_ANIMATION_HISTORY = True
 PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
 
 							# Set to True if you want to translate to C. Otherwise loose of performance
-USE_RPYTHON_CODE     = True # use code which can be translated
-USE_RPYTHON_POPEN    = True # Enable java call from RPython if you want to translate to C
+USE_RPYTHON_CODE     = False # use code which can be translated
+USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
 
 # method should used by pypy translation test only    
 def set_USE_RPYTHON_POPEN(boolean):

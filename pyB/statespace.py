@@ -1,12 +1,11 @@
 from bstate import BState
-from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING
+from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING, USE_ANIMATION_HISTORY
 
 # TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]
         self.seen_states = []
-        self.history = [] # only strings
     
     # returntype: BState
     def get_state(self):
@@ -22,10 +21,8 @@ class StateSpace:
     def undo(self):
         if DEPTH_FIRST_SEARCH_MODEL_CHECKING:
            self.stack.pop()
-           self.history.pop()
         else:
            self.stack.pop(0)
-           self.history.pop(0)
            
     def is_seen_state(self, bstate):
         assert isinstance(bstate, BState)
@@ -36,15 +33,14 @@ class StateSpace:
     
     def add_state(self, bstate, op_name="unknown"):
         assert isinstance(bstate, BState)
-        self.history.append(op_name)
         self.stack.append(bstate)
         
     # not used by substitution generators, but by model checking
-    def set_current_state(self, bstate, op_name="unknown"):
+    def set_current_state(self, bstate):
         assert isinstance(bstate, BState)
-        self.history.append(op_name)
         self.stack.append(bstate)
-        self.seen_states.append(bstate)    
+        self.seen_states.append(bstate) 
+  
     
     # returntype: int
     def get_stack_size(self):
@@ -56,3 +52,17 @@ class StateSpace:
         self.undo()
         bstate = revert_bstate.clone()
         self.add_state(bstate)
+        
+    def print_history(self):
+        if USE_ANIMATION_HISTORY:
+            bstate = self.get_state()
+            while bstate is not None:
+                string = bstate.opName 
+                if bstate.parameter_values is not None:
+                    string += ": " 
+                    for value in bstate.parameter_values:
+                        string += str(value)
+                print string
+                bstate = bstate.prev_bstate
+                
+    

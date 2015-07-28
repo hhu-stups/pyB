@@ -18,6 +18,10 @@ class BState():
         # special case: Predicates and Expressions have no bmachine
         # in this case the mapping is: None -> list(dict1, dict2, ...)
         self.bmch_dict = {None:[{}]} # empty entry for states without Bmachine (Predicated and Expressions)
+        # used to print history 
+        self.prev_bstate = None
+        self.opName = ""
+        self.parameter_values = None
     
     
     # debug-helper
@@ -81,6 +85,9 @@ class BState():
             for d in value_stack:
                 vs.append(d.copy())
             c.bmch_dict[key] = vs
+        c.prev_bstate = self.prev_bstate
+        c.opName = self.opName
+        c.parameter_values = self.parameter_values
         return c
  
     
@@ -197,3 +204,8 @@ class BState():
             valuestack_length = len(self.bmch_dict[bm])
             result.append(tuple([bm,valuestack_length]))
         return result.copy()
+        
+    def add_prev_bstate(self, prev, opName, parameter_values):
+        self.prev_bstate = prev
+        self.opName = opName
+        self.parameter_values = parameter_values

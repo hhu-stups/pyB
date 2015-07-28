@@ -1,6 +1,6 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException, INITNotPossibleException, SETUPNotPossibleException
-from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM
+from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY
 #from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
@@ -64,6 +64,8 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     for solution in generator:
         if solution:
             solution_bstate = env.state_space.get_state()
+            if USE_ANIMATION_HISTORY:
+                solution_bstate.add_prev_bstate(ref_bstate, "set up", parameter_values=None) 
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate)
             env.init_sets_bmachnes_names = []  
@@ -294,8 +296,9 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
                
     # 1. set up frames and state
     bstates = []
-    ref_bstate = env.state_space.get_state().clone()
-    env.state_space.add_state(ref_bstate)
+    ref_bstate = env.state_space.get_state()
+    bstate = ref_bstate.clone()
+    env.state_space.add_state(bstate)
      
     
     # 2. search for solutions  
@@ -304,6 +307,8 @@ def exec_initialisation(root, env, mch, solution_file_read=False):
     for solution in generator:
         if solution:
             solution_bstate = env.state_space.get_state()
+            if USE_ANIMATION_HISTORY:
+                solution_bstate.add_prev_bstate(ref_bstate, "init", parameter_values=None) 
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate) # revert to ref B-state
             env.init_bmachines_names = []
