@@ -53,7 +53,7 @@ class W_Integer(W_Object):
          
     def __eq__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value < other.value 
+        return self.value == other.value 
         
     def __ne__(self, other):
         assert isinstance(other, W_Integer)

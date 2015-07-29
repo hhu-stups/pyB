@@ -11,6 +11,9 @@ from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Ele
 from typing import type_check_predicate, type_check_expression
 
 
+#def parallel_caller(q, n, env):
+#    q.put(interpret(n, env))
+
 def eval_Invariant(root, env, mch):
     if mch.has_invariant_mc:
         return interpret(mch.aInvariantMachineClause, env)
@@ -609,14 +612,16 @@ def interpret(node, env):
             print "Invariant violation"
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.get(0))
-            env.state_space.print_history()
+            if env is not None: #Rpython typer help
+                env.state_space.print_history()
         return result
         """
     elif isinstance(node, AAssertionsMachineClause):
-        if ENABLE_ASSERTIONS: #config.py
+       if ENABLE_ASSERTIONS: #config.py
+            # TODO: add timeout
             ok = 0
             fail = 0
-            print "checking assertions"
+            print "checking assertions clause"
             for child in node.children:
                 #print_ast(child)
                 result = interpret(child, env)
@@ -626,7 +631,12 @@ def interpret(node, env):
                 else:
                     print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
                     fail = fail +1
-            print "checking done - ok:%s fail:%s" % (ok,fail)
+            color = "92"      # green
+            if fail>0:
+                color = "91"  # red
+            #elif timeout>0:
+            #    color = "94"  # yellow
+            print "\033[1m\033["+color+"massertions clause - total:%s ok:%s fail:%s \033[00m" % (len(node.children), ok,fail)
         """
         
 # *********************

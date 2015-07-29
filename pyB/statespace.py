@@ -10,7 +10,7 @@ class StateSpace:
     # returntype: BState
     def get_state(self):
         if DEPTH_FIRST_SEARCH_MODEL_CHECKING:
-            return self.stack[-1]
+            return self.stack[-1] # top of stack
         else:
             return self.stack[0]
         
