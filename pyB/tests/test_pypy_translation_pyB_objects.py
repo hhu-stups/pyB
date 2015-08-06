@@ -3,11 +3,12 @@ from config import USE_RPYTHON_CODE
 
 file_name = "input.txt"
 PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" # change this line to your checkout
+python_file = "tempB.py"
+rpython_file = "tempA.py"
+c_file = "tempA-c"
 
-
-
-# Run main_code with CPython (except RPython Flags) and Translated C Version
-def translate(main_code, other_code="", cl_argument=""):
+# generates c and python executables 
+def translate(main_code, other_code=""):
     # 1. Generate Python code as String
     code = other_code
     code += "def main(argv):\n"
@@ -20,7 +21,7 @@ def translate(main_code, other_code="", cl_argument=""):
     code += "   main(sys.argv)\n"
     
     # 2 write code to temp file (Will be translated to C)
-    f = open("tempA.py",'w')
+    f = open(rpython_file,'w')
     #print code # Debug
     f.write(code)
     f.close()
@@ -38,17 +39,14 @@ def translate(main_code, other_code="", cl_argument=""):
     code += "   import sys\n"
     code += "   main(sys.argv)\n"
     # 4. write code to temp file (Will NOT be translated to C)
-    f = open("tempB.py",'w')
+    f = open(python_file,'w')
     #print code
     f.write(code)
     f.close()
-    from subprocess import Popen, PIPE
-    # 5. call python version
-    print "running python version: "
-    python_result = Popen("python tempB.py "+cl_argument, shell=True, stdout=PIPE).stdout.read()
-    # 6. generate and call c Version
+    # 5. generate and call c Version
     print "running pypy to generate c verison..."
     import os
+    from subprocess import Popen, PIPE
     if os.name=='nt':
         # Add pypy to your path if this line crashs
         Popen("python ../pypy/rpython/translator/goal/translate.py --batch tempA.py", shell=True, stdout=PIPE).stdout.read()
@@ -56,14 +54,25 @@ def translate(main_code, other_code="", cl_argument=""):
         pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
         assert pwd[-4:]=='pyB\n'
         Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch tempA.py", shell=True, stdout=PIPE).stdout.read()
+
+
+# Run main_code with CPython (except RPython Flags) and Translated C Version
+def execute_files(cl_argument=""):
+    from subprocess import Popen, PIPE
+    # 5. call python version
+    print "running python version: "
+    python_result = Popen("python tempB.py "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     print "running c version: "
-    c_result = Popen("./tempA-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
+    c_result = Popen("./"+c_file+" "+cl_argument, shell=True, stdout=PIPE).stdout.read()
+    return python_result.split('\n'), c_result.split('\n')
+  
+    
+def clean_up():
     # 7. delete temp. file
+    import os
     os.remove("tempA.py")
     os.remove("tempB.py")
     os.remove("tempA-c")
-    # 8. return c and python result
-    return python_result.split('\n'), c_result.split('\n')
 
 
 #import pytest
@@ -75,7 +84,9 @@ class TestPyPyTranslationObjects():
             node = AIntegerExpression(41)
             print node.intValue
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['41', '']
         assert python_result == c_result    
      
@@ -88,7 +99,9 @@ class TestPyPyTranslationObjects():
             res = isinstance(node0, AIntegerExpression)
             print int(res)
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['1', '']
         assert python_result == c_result  
 
@@ -100,7 +113,9 @@ class TestPyPyTranslationObjects():
             node0 = AIntegerExpression(1)
             print interpret(node0, None)
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['1', '']
         assert python_result == c_result    
  
@@ -119,7 +134,9 @@ class TestPyPyTranslationObjects():
             node2.children.append(node1)
             print interpret(node2, None) # not refactored
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['3', '']
         assert python_result == c_result   
 
@@ -170,7 +187,9 @@ class TestPyPyTranslationObjects():
             print w_int.value
                         
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['6', '2', '8', '2', '0', '16', '']
         assert python_result == c_result
  
@@ -201,7 +220,9 @@ class TestPyPyTranslationObjects():
             print w_int.value
                         
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['6', '2', '12', '']
         assert python_result == c_result
 
@@ -270,7 +291,9 @@ class TestPyPyTranslationObjects():
             print int(res8.value)             
                                            
             return 0\n"""
-        python_result, c_result = translate(code)
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0', '1', '1', '0', '0', '1', '1', '0','1', '']
         assert python_result == c_result
  
@@ -292,7 +315,9 @@ class TestPyPyTranslationObjects():
             print int(res.value)             
                                            
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0', '']
         assert python_result == c_result
      
@@ -318,7 +343,9 @@ class TestPyPyTranslationObjects():
     #        print int(res)             
     #                                       
     #        return 0\n"""
-    #    python_result, c_result = translate(code) 
+    #    translate(code) 
+    #    python_result, c_result = execute_files()
+    #    clean_up()
     #    assert python_result == ['1', '']
     #    assert python_result == c_result
 
@@ -386,7 +413,9 @@ class TestPyPyTranslationObjects():
             print int(res.value)
                           
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['1', '1', '']
         assert python_result == c_result
 
@@ -454,7 +483,9 @@ class TestPyPyTranslationObjects():
             print int(res.value)
                           
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple.mch") 
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/Simple.mch")
+        clean_up()
         assert python_result == ['1', '1', '']
         assert python_result == c_result
 
@@ -529,7 +560,9 @@ class TestPyPyTranslationObjects():
             env.state_space.add_state(bstate)
                                                      
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift.mch")
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/Lift.mch")
+        clean_up()
         assert python_result == ['1', '1', '1', '1', '']
         assert python_result == c_result        
 
@@ -579,7 +612,7 @@ class TestPyPyTranslationObjects():
                print "WARNING: no invariant present" 
                return -1  
      
-            env.state_space.set_current_state(bstates[0], op_name="initialisation")
+            env.state_space.set_current_state(bstates[0])
             while not env.state_space.empty():                          # 7. model check  
                 if not interpret(mch.aInvariantMachineClause, env):
                     print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
@@ -595,7 +628,9 @@ class TestPyPyTranslationObjects():
             print "checked",len(env.state_space.seen_states),"states. No invariant violation found."
 
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Lift2.mch")
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/Lift2.mch")
+        clean_up()
         assert python_result == ['WARNING: model checking still experimental', 'checked 100 states. No invariant violation found.','']
         assert python_result == c_result   
         
@@ -609,7 +644,9 @@ class TestPyPyTranslationObjects():
             from environment import Environment
             env = Environment()
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == c_result   
  
 
@@ -647,7 +684,9 @@ class TestPyPyTranslationObjects():
             print int(res.value)
             
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/simple_pred2.def") 
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/simple_pred2.def")
+        clean_up()
         assert python_result == ['1', '']
         assert python_result == c_result   
 
@@ -700,7 +739,9 @@ class TestPyPyTranslationObjects():
             print int(res.value) 
             
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple2.mch") 
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/Simple2.mch")
+        clean_up()
         assert python_result == ['1', '1', '']
         assert python_result == c_result   
 
@@ -716,7 +757,9 @@ class TestPyPyTranslationObjects():
             #print 1 in S
             #print 4 in S
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == c_result  
    
       
@@ -728,7 +771,9 @@ class TestPyPyTranslationObjects():
             ast_string = file_to_AST_str(\"examples/Lift.mch\")
             print ast_string
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == c_result
 
 
@@ -765,7 +810,9 @@ class TestPyPyTranslationObjects():
             print int(res)
             
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['1', '']
         assert python_result == c_result
 
@@ -807,7 +854,9 @@ class TestPyPyTranslationObjects():
             
             
             return 0\n"""
-        python_result, c_result = translate(code, other_code="", cl_argument="examples/Simple.mch") 
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="examples/Simple.mch")
+        clean_up()
         assert python_result == ['1', '0','1', '']
         assert python_result == c_result
           
@@ -826,7 +875,9 @@ class TestPyPyTranslationObjects():
                 print x
             
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['-1', '0', '1', '']
         assert python_result == c_result    
 
@@ -850,7 +901,9 @@ class TestPyPyTranslationObjects():
                     break
             
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '']
         assert python_result == c_result   
         
@@ -876,7 +929,9 @@ class TestPyPyTranslationObjects():
             for e in S:
                  print e
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['-1', '0', '1', '']
         assert python_result == c_result  
 
@@ -896,7 +951,9 @@ def f():
             for x in generator:
                 L.append(x)
             return L\n"""
-        python_result, c_result = translate(code, other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['-1', '0', '1', '']
         assert python_result == c_result  
 
@@ -912,7 +969,9 @@ def f():
         def __init__(self, j):
             self.i = j
             self.L = [1,2,3,4,5]\n"""
-        python_result, c_result = translate(code, other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == c_result  
  
 
@@ -933,7 +992,9 @@ def f():
             
         def clone(self):
             return SomeObject()\n"""
-        python_result, c_result = translate(code,other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0', '']
         assert python_result == c_result       
 
@@ -952,7 +1013,9 @@ def f():
         other_code = """class SomeObject():
         def __repr__(self):
             return "KNAMPF"\n"""
-        python_result, c_result = translate(code,other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['Hallo KNAMPF', '']
         assert python_result == c_result       
 
@@ -965,7 +1028,9 @@ def f():
             print t[0]
             print t[1]
             return 0\n"""
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['1','2', '']
         assert python_result == c_result  
 
@@ -980,7 +1045,9 @@ def f():
         
         other_code = """class SomeObject():
         pass\n"""
-        python_result, c_result = translate(code, other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0','0', '']
         assert python_result == c_result
 
@@ -996,7 +1063,9 @@ def f():
         
         other_code = """class SomeObject():
         pass\n"""
-        python_result, c_result = translate(code, other_code) 
+        translate(code, other_code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['0','0', '']
         assert python_result == c_result      
         
@@ -1012,7 +1081,9 @@ def f():
                     return 0
             return -1\n"""
         # TODO:
-        python_result, c_result = translate(code, other_code="", cl_argument="5") 
+        translate(code) 
+        python_result, c_result = execute_files(cl_argument="5")
+        clean_up()
         assert python_result == ['10', '']
         assert python_result == c_result   
               
@@ -1026,7 +1097,9 @@ def f():
             print 4*number
             return 0\n"""
         # TODO:
-        python_result, c_result = translate(code) 
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
         assert python_result == ['', '']
         assert python_result == c_result               
               
