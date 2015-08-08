@@ -1,7 +1,10 @@
 from ast_nodes import *
-from config import TOO_MANY_ITEMS
+from config import TOO_MANY_ITEMS, USE_RPYTHON_CODE
 from pretty_printer import pretty_print
 import math
+
+if USE_RPYTHON_CODE:
+    from rpython_b_objmodel import frozenset
 
 
 # TODO: support more than one variable (which is constraint by the predicate to be analysed
@@ -40,10 +43,16 @@ def _abs_int(node, env, ic):
         return 2
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
         time = _abs_int(node.children[0], env, ic)
-        if time>=math.log(TOO_MANY_ITEMS,2):
+        #if time>=math.log(TOO_MANY_ITEMS,2):
+        if time>=22: # math.log is not rpython
             return float("inf")
         else:
-            return 2**(time)
+            #return 2**(time)
+            assert time >=0
+            result = 1
+            for i in range(time):
+                result = result *2
+            return result
     elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
         return float("inf")
     elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):
@@ -64,10 +73,16 @@ def _abs_int(node, env, ic):
         time0 = _abs_int(node.children[0], env, ic)
         time1 = _abs_int(node.children[1], env, ic)
         exp0  = time0*time1 
-        if exp0>=math.log(TOO_MANY_ITEMS,2):
+        #if exp0>=math.log(TOO_MANY_ITEMS,2):
+        if exp0>=22: # math.log is not rpython
             return float("inf")
         else:
-            return 2**(exp0)
+            #return 2**(exp0)
+            assert exp0 >=0
+            result = 1
+            for i in range(exp0):
+                result = result *2
+            return result
     ### Leafs
     elif isinstance(node, AIdentifierExpression) or isinstance(node, APrimedIdentifierExpression) or isinstance(node, AIntegerExpression) or isinstance(node, AStringExpression) or isinstance(node, AEmptySetExpression) or isinstance(node, AEmptySequenceExpression) or isinstance(node, ABooleanTrueExpression) or isinstance(node, ABooleanFalseExpression) or isinstance(node, AMinIntExpression) or isinstance(node, AMaxIntExpression):
         return 1

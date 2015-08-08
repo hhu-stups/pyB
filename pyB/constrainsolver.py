@@ -13,10 +13,10 @@ if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 
-class PredicateDoesNotMatchException:
+class PredicateDoesNotMatchException(Exception):
     pass # TODO: refactor me
 
-class SpecialCaseEnumerationFailedException:
+class SpecialCaseEnumerationFailedException(Exception):
     pass
 
 # assumption: the variables of varList are typed may constraint by the
@@ -319,6 +319,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
         raise SpecialCaseEnumerationFailedException()
 
 
+
 # this generator yield every combination of values for some variables with finite domains
 # partial_cross_product is a accumulator which is reseted to the empty dict {} at every call
 def _cross_product_iterator(varList, domain_dict, partial_cross_product):
@@ -389,7 +390,7 @@ def _compute_variable_enum_order(pred_map, varList):
             edges = [x for x in constraint_by if x not in removed]
             if edges==[]:
                 result.append(varNode)
-                removed.append(name)
+                removed.append(name) #TODO:string and w_string, not rpython, maybe from pred_map
                 del graph[name]
                 change = True
         if not change:
@@ -438,7 +439,11 @@ def find_constraint_vars(predicate, env, varList):
     elif isinstance(predicate, ACoupleExpression):
         lst0, _ = find_constraint_vars(predicate.children[0], env, varList)
         lst1, _ = find_constraint_vars(predicate.children[1], env, varList)
-        lst  = list(set(lst0 + lst1)) # remove double entries
+        lst = lst0 # remove double entries
+        for e in lst1:
+             if e not in lst:
+                 lst.append(e)
+        #lst  =  list(set(lst0 + lst1)) 
         return lst, [] #predicate constrain idName and no computation constraint by other variables
         
     # (2) implemented predicates (by _compute_test_set)
@@ -466,11 +471,20 @@ def find_constraint_vars(predicate, env, varList):
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
-    elif isinstance(predicate, (ADisjunctPredicate, AConjunctPredicate)):
+    elif isinstance(predicate, ADisjunctPredicate) or isinstance(predicate, AConjunctPredicate):
         lst0, cvarlst0 = find_constraint_vars(predicate.children[0], env, varList)
         lst1, cvarlst1 = find_constraint_vars(predicate.children[1], env, varList) 
-        test_set_var = list(set(lst0 + lst1)) # remove double entries 
-        c_set_var = list(set(cvarlst0 + cvarlst1)) # remove double entries 
+        test_set_var = lst0
+        for e in lst1:
+            if e not in test_set_var:
+                test_set_var.append(e)
+        c_set_var =  cvarlst0
+        for e in cvarlst1:
+            if e not in c_set_var:
+                c_set_var.append(e)  
+        # remove double entries 
+        #test_set_var = list(set(lst0 + lst1)) # remove double entries 
+        #c_set_var =  list(set(cvarlst0 + cvarlst1)) # remove double entries 
         return test_set_var, c_set_var
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
