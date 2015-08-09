@@ -429,7 +429,15 @@ class NatSet(LargeSet):
 
     def enumerate_all(self):
         if not self.explicit_set_computed:
-            self.explicit_set_repr = frozenset(range(0,self.env._max_int+1))
+            if USE_RPYTHON_CODE:
+                from rpython_b_objmodel import W_Integer
+                lst = []
+                for i in range(0,self.env._max_int+1):
+                     lst.append(W_Integer(i))
+                nat_set = frozenset(lst)
+            else:
+                nat_set = frozenset(range(0,self.env._max_int+1))
+            self.explicit_set_repr = nat_set
             self.explicit_set_computed = True
         return self.explicit_set_repr
 

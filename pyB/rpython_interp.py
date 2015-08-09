@@ -6,7 +6,7 @@ from enumeration import init_deffered_set, try_all_values #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
 #from symbolic_sets import *
-from symbolic_sets import SymbolicIntervalSet
+from symbolic_sets import SymbolicIntervalSet, NaturalSet, Natural1Set, NatSet, Nat1Set, IntSet, IntegerSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, frozenset
 from typing import type_check_predicate, type_check_expression
 
@@ -649,8 +649,7 @@ def interpret(node, env):
         bexpr2 = interpret(node.get(1), env)
         assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
         w_bool = W_Boolean(bexpr1.__and__(bexpr2))
-        return bexpr1
-        #return w_bool
+        return w_bool
     elif isinstance(node, ADisjunctPredicate):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
@@ -678,11 +677,11 @@ def interpret(node, env):
         assert isinstance(bexpr, W_Boolean)
         w_bool = W_Boolean(bexpr.__not__())
         return w_bool
-        """
     elif isinstance(node, AForallPredicate):
         # notice: the all and any keywords are not used, because they need the generation of the whole set
         # new scope
         varList = node.children[:-1]
+        assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
         domain_generator = calc_possible_solutions(pred.children[0], env, varList, interpret) # use left side of implication
@@ -701,6 +700,7 @@ def interpret(node, env):
     elif isinstance(node, AExistsPredicate):
         # new scope
         varList = node.children[:-1]
+        assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
@@ -720,18 +720,25 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         # frozensets can only be compared to frozensets
+        """
         if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
             expr2 = expr2.enumerate_all()
             return expr1 == expr2
         else:
             # else normal check, also symbolic (implemented by symbol classes)
             return expr1 == expr2
+        """
+        w_bool = W_Boolean(expr1.__eq__(expr2))
+        return w_bool
     elif isinstance(node, ANotEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
+        w_bool = W_Boolean(not expr1.__eq__(expr2))
+        return w_bool
         # TODO: handle symbolic sets
-        return expr1 != expr2
-        """
+        
+        #return expr1 != expr2
+        
  
         
 # **************
@@ -739,7 +746,6 @@ def interpret(node, env):
 #       2. Sets
 #
 # **************        
-        """
     elif isinstance(node, ASetExtensionExpression):
         lst = []
         for child in node.children:
@@ -748,6 +754,7 @@ def interpret(node, env):
         return frozenset(lst)
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
+        """
     elif isinstance(node, AComprehensionSetExpression):
         varList = node.children[:-1]
         pred = node.children[-1]
@@ -882,27 +889,30 @@ def interpret(node, env):
         aSet = interpret(node.get(1), env)
         boolean = W_Boolean(aSet.__contains__(elm)).__not__()
         return W_Boolean(boolean)
-        
-        """
     elif isinstance(node, ASubsetPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        """
         if isinstance(aSet2, SymbolicSet):
             return aSet2.issuperset(aSet1)
-        return aSet1.issubset(aSet2)
+        """
+        boolean = aSet1.issubset(aSet2)
+        return W_Boolean(boolean)
     elif isinstance(node, ANotSubsetPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return not aSet1.issubset(aSet2)
+        boolean = not aSet1.issubset(aSet2)
+        return W_Boolean(boolean)
     elif isinstance(node, ASubsetStrictPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return aSet1.issubset(aSet2) and aSet1 != aSet2
+        boolean = aSet1.issubset(aSet2) and aSet1.__ne__(aSet2)
+        return W_Boolean(boolean)
     elif isinstance(node, ANotSubsetStrictPredicate):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return not (aSet1.issubset(aSet2) and aSet1 != aSet2)
-        """
+        boolean = not (aSet1.issubset(aSet2) and aSet1.__ne__(aSet2))
+        return W_Boolean(boolean)
 
 # *****************
 #
@@ -924,10 +934,24 @@ def interpret(node, env):
         return IntegerSet(env, interpret)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
-        return min(list(aSet))
+        lst = []
+        for e in aSet:
+            lst.append(e)
+        min = lst[0].value
+        for w_int in lst[1:]:
+            if w_int.value< min:
+                min = w_int.value
+        return W_Integer(min)
     elif isinstance(node, AMaxExpression):
         aSet = interpret(node.children[0], env)
-        return max(list(aSet))
+        lst = []
+        for e in aSet:
+            lst.append(e)
+        max = lst[0].value
+        for w_int in lst[1:]:
+            if w_int.value> max:
+                max = w_int.value
+        return W_Integer(max)
         """
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
@@ -974,12 +998,15 @@ def interpret(node, env):
             L.append(value)
         return frozenset(L)
         #return SymbolicIntervalSet(left, right, env, interpret)
-        
-        """
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
-        varList = node.children[:-2]
+        #varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
+        assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
@@ -989,16 +1016,23 @@ def interpret(node, env):
                 value = entry[name]
                 env.set_value(name, value)
             try:
-                if interpret(pred, env):  # test          
-                    sum_ += interpret(expr, env)
+                w_bool = interpret(pred, env)
+                if w_bool.value:  # test 
+                    w_int = interpret(expr, env)         
+                    sum_ += w_int.value
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
-        return sum_
+        return W_Integer(sum_)
     elif isinstance(node, AGeneralProductExpression):
         prod_ = 1
         # new scope
-        varList = node.children[:-2]
+        #varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
+        assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
@@ -1008,13 +1042,15 @@ def interpret(node, env):
                 value = entry[name]
                 env.set_value(name, value)
             try:
-                if interpret(pred, env):  # test           
-                    prod_ *= interpret(expr, env)
+                w_bool = interpret(pred, env)
+                if w_bool.value:  # test 
+                    w_int = interpret(expr, env)         
+                    prod_ *= w_int.value
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
-        return prod_
-        """     
+        return W_Integer(prod_)
+
 
 # ***************************
 #

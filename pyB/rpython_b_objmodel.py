@@ -153,7 +153,7 @@ class frozenset(W_Object):
         
     def issubset(self, other):
         for e in self.lst:
-            if e not in other:
+            if e not in other.lst:
                 return False
         return True
         
