@@ -1,7 +1,7 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY
-#from constrainsolver import calc_possible_solutions
+from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
@@ -648,14 +648,14 @@ def interpret(node, env):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
         assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = bexpr1.__and__(bexpr2)
+        w_bool = W_Boolean(bexpr1.__and__(bexpr2))
         return bexpr1
         #return w_bool
     elif isinstance(node, ADisjunctPredicate):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
         assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = bexpr1.__or__(bexpr2)
+        w_bool = W_Boolean(bexpr1.__or__(bexpr2))
         return w_bool
     elif isinstance(node, AImplicationPredicate):
         bexpr1 = interpret(node.get(0), env)
@@ -671,12 +671,12 @@ def interpret(node, env):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
         assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = bexpr1.__eq__(bexpr2)
+        w_bool = W_Boolean(bexpr1.__eq__(bexpr2))
         return w_bool
     elif isinstance(node, ANegationPredicate):
         bexpr = interpret(node.get(0), env)
         assert isinstance(bexpr, W_Boolean)
-        w_bool = bexpr.__not__()
+        w_bool = W_Boolean(bexpr.__not__())
         return w_bool
         """
     elif isinstance(node, AForallPredicate):
@@ -693,11 +693,11 @@ def interpret(node, env):
             try:
                 if interpret(pred.children[0], env) and not interpret(pred.children[1], env):  # test
                     env.pop_frame()           
-                    return False
+                    return W_Boolean(False)
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # leave scope
-        return True        
+        return W_Boolean(True)       
     elif isinstance(node, AExistsPredicate):
         # new scope
         varList = node.children[:-1]
@@ -711,11 +711,11 @@ def interpret(node, env):
             try:
                 if interpret(pred, env):  # test
                     env.pop_frame()           
-                    return True
+                    return W_Boolean(True)
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # leave scope
-        return False        
+        return W_Boolean(False)     
     elif isinstance(node, AEqualPredicate):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
@@ -880,8 +880,8 @@ def interpret(node, env):
         #    return not result
         elm = interpret(node.get(0), env)
         aSet = interpret(node.get(1), env)
-        w_bool = W_Boolean(aSet.__contains__(elm)).__not__()
-        return w_bool
+        boolean = W_Boolean(aSet.__contains__(elm)).__not__()
+        return W_Boolean(boolean)
         
         """
     elif isinstance(node, ASubsetPredicate):

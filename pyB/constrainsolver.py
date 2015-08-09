@@ -32,6 +32,8 @@ class SpecialCaseEnumerationFailedException(Exception):
 def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     #print "calc_possible_solutions: ", pretty_print(predicate)
     assert isinstance(varList, list)
+    for n in varList:
+        assert isinstance(n, AIdentifierExpression)
     # check which kind of predicate: 3 cases
 
     # case 1: None = no predicate constraining parameter values, generate all values
@@ -354,6 +356,11 @@ def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_c
 
 # computed the order of variables
 # TODO:only correct if abstract interpretation computed predicate eval-time correct
+#
+# e.g.
+# pred_map = {<ast_nodes.AEqualPredicate instance at 0x10e245128>: (19, ['z'], ['x', 'y']), <ast_nodes.AMemberPredicate instance at 0x10e2b84d0>: (11, ['x', 'y'], [])}
+# varList = [<ast_nodes.AIdentifierExpression instance at 0x10e2b8758>, <ast_nodes.AIdentifierExpression instance at 0x10e2b8d40>, <ast_nodes.AIdentifierExpression instance at 0x10e2b87a0>]
+#
 def _compute_variable_enum_order(pred_map, varList):
     # 0. init of data structures 
     result = []
@@ -372,7 +379,10 @@ def _compute_variable_enum_order(pred_map, varList):
                # e.g "x=z+1 & x=y+1 & x=5" in this case x can be enumerated without knowing y or z!
                # But it is importend if predicates are inf. computable. 
                # e.g. "x=y & x={a lot of time needed} & y:{1,2,...43}" here y has to be computed first
-               listOfidNames.union(frozenset(entry[2])) # edges
+               var_list = frozenset(entry[2])
+               for string in var_list:
+                   assert isinstance(string, str)
+               listOfidNames.union(var_list) # edges
         # all variables found: add edges to this nodes:
         graph[name] = list(listOfidNames)
 
@@ -383,14 +393,16 @@ def _compute_variable_enum_order(pred_map, varList):
         for varNode in varList:
             # check if node degree is zero
             name = varNode.idName
+            assert isinstance(name, str)
             try:
                 constraint_by = graph[name]
             except KeyError: # done/removed in prev. iteration 
                 continue # skip and handle next var in varList
             edges = [x for x in constraint_by if x not in removed]
             if edges==[]:
+                assert isinstance(varNode, Node)
                 result.append(varNode)
-                removed.append(name) #TODO:string and w_string, not rpython, maybe from pred_map
+                removed.append(name) #TODO:string and w_object, not rpython, maybe from pred_map
                 del graph[name]
                 change = True
         if not change:

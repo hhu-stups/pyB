@@ -86,23 +86,23 @@ class W_Boolean(W_Object):
         #assert isinstance(other, W_Boolean)
         boolean = self.value and other.value
         #assert isinstance(boolean, bool)
-        return W_Boolean(boolean)
+        return boolean
                 
     def __or__(self, other):
         #assert isinstance(other, W_Boolean)
         boolean = self.value or other.value
         #assert isinstance(boolean, bool)
-        return W_Boolean(boolean)
+        return boolean
         
     def __not__(self):
         boolean = not self.value
         assert isinstance(boolean, bool)
-        return W_Boolean(boolean)
+        return boolean
     
     def __eq__(self, other):
         assert isinstance(other, W_Boolean)
         boolean = self.value == other.value
-        return W_Boolean(boolean)
+        return boolean
 
     def __repr__(self):
         return str(self.value)
