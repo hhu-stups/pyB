@@ -41,9 +41,13 @@ class SymbolicSet(W_Object):
     def __sub__(self, aset):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) function sub implementation called", self, aset
+        
+        self_values = self.enumerate_all()
         if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        return self.enumerate_all()-aset
+            values = aset.enumerate_all()
+        else:
+            values = aset
+        return self_values - values
     
     def __rsub__(self, aset):
         return self.__sub__(aset, self)
@@ -79,9 +83,13 @@ class SymbolicSet(W_Object):
             return False
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) equality implementation called", self, aset
+        
+        self_values = self.enumerate_all()
         if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        return aset == self.enumerate_all()  
+            values = aset.enumerate_all()
+        else:
+            values = aset
+        return values.__eq__(self_values) 
 
 
     # default implementation
@@ -97,9 +105,12 @@ class SymbolicSet(W_Object):
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) intersection implementation called", self, aset
         result = []
         # Use enumerate all to avoid push/pop in every interation
+        
         if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        for e in aset: 
+            values = aset.enumerate_all()
+        else:
+            values = aset
+        for e in values: 
             if e in self:
                 result.append(e)
         return frozenset(result)
@@ -112,16 +123,21 @@ class SymbolicSet(W_Object):
         result = []
         # Use enumerate all to avoid push/pop in every interation
         if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        return aset.union(self.enumerate_all())
+            values = aset.enumerate_all()
+        else:
+            values = aset
+        return values.union(self.enumerate_all())
         
     # default implementation
     def issuperset(self, aset):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) superset-check implementation called", self, aset
         if not isinstance(aset, frozenset):
-            aset = aset.enumerate_all()
-        for e in aset:
+            values = aset.enumerate_all()
+        else:
+            values = aset
+            
+        for e in values:
            if e not in self: 
                return False
         return True           
@@ -161,14 +177,20 @@ class SymbolicSet(W_Object):
         raise ValueNotInDomainException(args) 
         
     def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
         self.generator = self.make_generator()
         return self 
     
     def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
         return self.generator.next()
 
     def enumerate_all(self):
         if not self.explicit_set_computed:
+            assert isinstance(self, W_Object)
+            assert isinstance(self, SymbolicSet)
             self.generator = self.make_generator()
             result = []  
             for e in self.generator:
@@ -177,6 +199,9 @@ class SymbolicSet(W_Object):
             self.explicit_set_computed = True
         return self.explicit_set_repr
         
+    #def make_generator(self):
+    #    raise Exception()
+    #    yield None
 
 class LargeSet(SymbolicSet):
     pass
@@ -239,11 +264,11 @@ class NaturalSet(InfiniteSet):
             return False
         return True
 
-    def make_generator(self):
-        i = 0
-        while True:
-            yield i
-            i = i +1  
+    #def make_generator(self):
+    #    i = 0
+    #    while True:
+    #        yield i
+    #        i = i +1  
     
 # FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
@@ -509,7 +534,15 @@ class Nat1Set(LargeSet):
     
     def enumerate_all(self):
         if not self.explicit_set_computed:
-            self.explicit_set_repr = frozenset(range(1,self.env._max_int+1))
+            if USE_RPYTHON_CODE:
+                from rpython_b_objmodel import W_Integer
+                lst = []
+                for i in range(1,self.env._max_int+1):
+                     lst.append(W_Integer(i))
+                nat_set1 = frozenset(lst)
+            else:
+                nat_set1 = frozenset(range(1,self.env._max_int+1))
+            self.explicit_set_repr = nat_set1
             self.explicit_set_computed = True
         return self.explicit_set_repr
         
@@ -537,7 +570,7 @@ class IntSet(LargeSet):
                 if not self.__contains__(x):
                     return False
             return len(aset)>=self.__len__()
-        elif isinstance (aset, (NatSet, Nat1Set, NaturalSet, Natural1Set)):
+        elif isinstance (aset, NatSet) or isinstance(aset, Nat1Set)  or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
             return False
         raise NotImplementedError("inclusion with unknown set-type")
     
@@ -582,7 +615,15 @@ class IntSet(LargeSet):
 
     def enumerate_all(self):
         if not self.explicit_set_computed:
-            self.explicit_set_repr = frozenset(range(self.env._min_int, self.env._max_int+1))
+            if USE_RPYTHON_CODE:
+                from rpython_b_objmodel import W_Integer
+                lst = []
+                for i in range(self.env._min_int, self.env._max_int+1):
+                     lst.append(W_Integer(i))
+                int_set = frozenset(lst)
+            else:
+                int_set = frozenset(range(self.env._min_int, self.env._max_int+1))
+            self.explicit_set_repr = int_set 
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
@@ -632,7 +673,14 @@ class StringSet(SymbolicSet):
     
     def enumerate_all(self): # FIXME: hack
         if not self.explicit_set_computed:
-            self.explicit_set_repr = frozenset(self.env.all_strings)
+            if USE_RPYTHON_CODE:
+                from rpython_b_objmodel import W_String
+                lst = []
+                for e in self.env.all_strings:
+                    lst.append(W_String(e))
+                self.explicit_set_repr = frozenset(lst)
+            else:    
+                self.explicit_set_repr = frozenset(self.env.all_strings)
             self.explicit_set_computed = True
         return self.explicit_set_repr
     
@@ -768,7 +816,12 @@ class SymbolicCartSet(SymbolicSet):
                 aset1 = self.right_set.enumerate_all()
             else:
                 aset1 = self.right_set
-            self.explicit_set_repr = frozenset(((x,y) for x in aset0 for y in aset1))
+            lst = []
+            for x in aset0:
+                for y in aset1:
+                    lst.append((x,y))
+                    
+            self.explicit_set_repr = frozenset(lst)
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
@@ -857,6 +910,11 @@ class SymbolicIntervalSet(LargeSet):
             return True
         else:
             return False
+            
+    def __eq__(self, other):
+        if self.__class__ == other.__class__:
+            return other.l==self.l and other.r==self.r
+        return SymbolicSet.__eq__(self,other)  
     
     def enumerate_all(self):
         if not self.explicit_set_computed:
@@ -870,8 +928,5 @@ class SymbolicIntervalSet(LargeSet):
         for i in range(self.l, self.r+1):
             yield i   
     
-    def __eq__(self, other):
-        if self.__class__ == other.__class__:
-            return other.l==self.l and other.r==self.r
-        return SymbolicSet.__eq__(self,other)      
+    
         
