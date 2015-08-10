@@ -932,27 +932,25 @@ def interpret(node, env):
         return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
         return IntegerSet(env, interpret)
+        """
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
-        lst = []
-        for e in aSet:
-            lst.append(e)
+        assert isinstance(aSet, frozenset)
+        lst = aSet.lst
         min = lst[0].value
-        for w_int in lst[1:]:
+        for w_int in lst:
             if w_int.value< min:
                 min = w_int.value
         return W_Integer(min)
     elif isinstance(node, AMaxExpression):
         aSet = interpret(node.children[0], env)
-        lst = []
-        for e in aSet:
-            lst.append(e)
+        assert isinstance(aSet, frozenset)
+        lst = aSet.lst
         max = lst[0].value
-        for w_int in lst[1:]:
+        for w_int in lst:
             if w_int.value> max:
                 max = w_int.value
         return W_Integer(max)
-        """
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
