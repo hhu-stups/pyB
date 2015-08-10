@@ -2,7 +2,7 @@ from ast_nodes import *
 from bexceptions import ValueNotInDomainException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY
 from constrainsolver import calc_possible_solutions
-from enumeration import init_deffered_set, try_all_values #,get_image
+from enumeration import init_deffered_set, try_all_values, powerset #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
 #from symbolic_sets import *
@@ -758,15 +758,19 @@ def interpret(node, env):
     elif isinstance(node, AComprehensionSetExpression):
         varList = node.children[:-1]
         pred = node.children[-1]
-        return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)      
+        return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)
+        """      
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return SymbolicUnionSet(aSet1, aSet2, env, interpret)
+        #return SymbolicUnionSet(aSet1, aSet2, env, interpret)
+        return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
+        #return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
+        return aSet1.intersection(aSet2)
+        """
     elif isinstance(node, ACoupleExpression):
         result = None
         i = 0
@@ -780,22 +784,24 @@ def interpret(node, env):
         return result
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicPowerSet(aSet, env, interpret)
-        #res = powerset(aSet)
-        #powerlist = list(res)
-        #lst = [frozenset(e) for e in powerlist]
-        #return frozenset(lst)
+        #return SymbolicPowerSet(aSet, env, interpret)
+        res = powerset(aSet.lst)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        return frozenset(lst)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicPower1Set(aSet, env, interpret)
-        #res = powerset(aSet)
-        #powerlist = list(res)
-        #lst = [frozenset(e) for e in powerlist]
-        #lst.remove(frozenset([]))
-        #return frozenset(lst)
+        #return SymbolicPower1Set(aSet, env, interpret)
+        res = powerset(aSet.lst)
+        powerlist = list(res)
+        lst = [frozenset(e) for e in powerlist]
+        lst.remove(frozenset([]))
+        return frozenset(lst)
+        """
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
-        return len(aSet)
+        return W_Integer(len(aSet.lst))
+        """
     elif isinstance(node, AGeneralUnionExpression):
         set_of_sets = interpret(node.children[0], env)
         elem_lst = list(set_of_sets)

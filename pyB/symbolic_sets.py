@@ -264,11 +264,11 @@ class NaturalSet(InfiniteSet):
             return False
         return True
 
-    #def make_generator(self):
-    #    i = 0
-    #    while True:
-    #        yield i
-    #        i = i +1  
+    def make_generator(self):
+        i = 0
+        while True:
+            yield i
+            i = i +1  
     
 # FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
