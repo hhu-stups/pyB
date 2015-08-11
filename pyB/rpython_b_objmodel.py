@@ -4,13 +4,17 @@ class W_Object:
     def __contains__(self, e):
         raise Exception("abstract W_Object instance _contains_ called")
 
+class W_Tuple(W_Object):
+    def __init__(self, value):
+        assert isinstance(value, tuple)
+        self.value = value
+           
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
 # special methods are NOT supported by RPython. But they allow easy switching of
 # build-in types and wrapped types in the python version. A measurement of 
 # speed- and space-loose  is possible.
 # Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
-# TODO: < > <=
 class W_Integer(W_Object):
     def __init__(self, value):
         #assert isinstance(value, int)

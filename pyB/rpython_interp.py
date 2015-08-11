@@ -1,11 +1,11 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException, INITNotPossibleException, SETUPNotPossibleException
-from config import MAX_INIT, MAX_SET_UP, VERBOSE, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY
+from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
 from constrainsolver import calc_possible_solutions
-from enumeration import init_deffered_set, try_all_values, powerset #,get_image
+from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions #,get_image
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
-#from symbolic_sets import *
+from symbolic_helpers import make_explicit_set_of_realtion_lists
 from symbolic_sets import SymbolicIntervalSet, NaturalSet, Natural1Set, NatSet, Nat1Set, IntSet, IntegerSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, frozenset
 from typing import type_check_predicate, type_check_expression
@@ -1084,6 +1084,16 @@ def interpret(node, env):
 #       4. Relations
 #
 # ******************
+        """
+    elif isinstance(node, ARelationsExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+        #return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
+        aSet = make_explicit_set_of_realtion_lists(aSet1, aSet2)
+        return aSet
+        """
+
 #TODO
     elif isinstance(node, AIntegerExpression):
         # TODO: add flag in config.py to enable switch to long integer here
@@ -1164,6 +1174,118 @@ def exec_substitution(sub, env):
             if name in used_ids:
                 raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
         yield True # assign(s) was/were  successful 
+    elif isinstance(sub, ABecomesElementOfSubstitution):
+        values = interpret(sub.children[-1], env)
+        #print "DEBUG becomes:",values
+        if values==frozenset([]): #empty set has no elements -> subst. imposible
+            yield False
+        else:
+            for value in values: 
+                for child in sub.children[:-1]:
+                    assert isinstance(child, AIdentifierExpression)
+                    env.set_value(child.idName, value)
+                yield True # assign was successful 
+        """
+    elif isinstance(sub, ABecomesSuchSubstitution):
+        # TODO: more than on ID on lhs
+        nodes = []
+        for i in range(len(sub.children)-1):
+            child = sub.children[i]
+            assert isinstance(child, AIdentifierExpression)
+            nodes.append(child)
+        # new frame to enable primed-ids
+        env.push_new_frame(nodes)
+        gen = try_all_values(sub.children[-1], env, nodes) 
+        for possible in gen: # sideeffect: set values 
+            if not possible:
+                env.pop_frame() 
+                yield False
+            else:
+                results = []
+                for n in nodes:
+                    i = n.idName
+                    results.append(env.get_value(i))
+                
+                # write back if solution 
+                w_bool =interpret(sub.children[-1], env)
+                if w_bool.value:
+                    env.pop_frame() # exit new frame
+                    for i in range(len(nodes)):
+                        env.set_value(nodes[i].idName, results[i])
+                    yield True
+                else:
+                    env.pop_frame() # exit new frame
+            env.push_new_frame(nodes) #enum next value in next-interation
+        env.pop_frame()
+        """
+    elif isinstance(sub, AParallelSubstitution):
+        # 0. setup: get all substitutions 
+        subst_list = []      
+        for child in sub.children:
+            assert isinstance(child, Substitution)
+            subst_list.append(child)
+        if subst_list==[]:
+            yield False
+        else:
+            ref_state = env.get_state().clone()
+            #print "AParallelSubstitution:", ref_state
+            values = [] # values changed by this path
+            names  = []
+            # for explanation see function comments  
+            ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, names, values)
+            for possible in ex_pa_generator:
+                # 1. possible combination found
+                if possible:
+                    # 2. test: no variable can be modified twice (see page 108)
+                    # check for double entrys -> Error
+                    id_names = [x for x in names]
+                    while not id_names==[]:
+                        name = id_names.pop()
+                        if name in id_names:
+                            msg = "\nError: modified twice in parallel substitution: " + name
+                            raise Exception(msg)
+                    # 3. write changes to state
+                    for i in range(len(names)):
+                        name = names[i]
+                        value = values[i]
+                        env.set_value(name, value)
+                    yield True # False if no branch was executable
+                    # 4. reset for next loop
+                    ref_state = env.get_state().clone()  
+    elif isinstance(sub, ABlockSubstitution):
+        ex_generator = exec_substitution(sub.children[-1], env)
+        for possible in ex_generator:
+            yield possible
+    elif isinstance(sub, ASequenceSubstitution):
+        subst_list = []
+        for child in sub.children:
+            assert isinstance(child, Substitution)
+            subst_list.append(child)
+        # for explanation see function comments 
+        for possible in exec_sequence_substitution(subst_list, env):
+            yield possible
+    elif isinstance(sub, AWhileSubstitution):
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!" # TODO: replace/move warning
+        condition = sub.children[0]
+        doSubst   = sub.children[1]
+        invariant = sub.children[2]
+        variant   = sub.children[3]
+        assert isinstance(condition, Predicate) 
+        assert isinstance(doSubst, Substitution)
+        assert isinstance(invariant, Predicate)  
+        assert isinstance(variant, Expression) 
+        v_value = interpret(variant, env)
+        ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+        for possible in ex_while_generator:
+            yield possible
+
+
+# **********************
+#
+# 5.1. Alternative Syntax
+#
+# ***********************
     elif isinstance(sub, ABlockSubstitution):
         ex_generator = exec_substitution(sub.children[-1], env)
         for possible in ex_generator:
@@ -1179,4 +1301,137 @@ def exec_substitution(sub, env):
                 yield possible
         else:
             yield False
-     
+        """
+    elif isinstance(sub, AAssertionSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        if not interpret(sub.children[0], env):
+            print "ASSERT-Substitution violated:" + pretty_print(sub.children[0])
+            yield False  #TODO: What is correct: False or crash\Exception?
+        ex_generator = exec_substitution(sub.children[1], env)
+        for possible in ex_generator:
+            yield possible
+    elif isinstance(sub, AIfSubstitution):
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        all_cond_false = True
+        condition = interpret(sub.children[0], env)
+        if condition.value: # take "THEN" Branch
+            all_cond_false = False
+            ex_generator = exec_substitution(sub.children[1], env)
+            for possible in ex_generator:
+                yield possible
+        for child in sub.children[2:]:
+            if isinstance(child, AIfElsifSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                sub_condition = interpret(child.children[0], env)
+                if sub_condition.value:
+                    all_cond_false = False
+                    ex_generator = exec_substitution(child.children[1], env)
+                    for possible in ex_generator:
+                        yield possible
+            elif not isinstance(child, AIfElsifSubstitution) and all_cond_false: 
+                # ELSE (B Level)
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1] # last child
+                assert sub.hasElse=="True"
+                ex_generator = exec_substitution(child, env)
+                for possible in ex_generator:
+                    yield possible
+        if sub.hasElse=="False" and all_cond_false:
+            yield True # no Else, default: IF P THEN S ELSE skip END 
+        """    
+
+# a sequence substitution is only executable if every substitution it consist of is
+# executable. If these substitutions are nondeterministic there maybe different "paths"
+# of execution. Substituions may effect each other, so the order of execution musst be preserved
+def exec_sequence_substitution(subst_list, env):
+    ex_generator = exec_substitution(subst_list[0], env)
+    if len(subst_list)==1:
+        for possible in ex_generator:
+            yield possible
+    else:
+        assert len(subst_list)>1
+        for possible in ex_generator:
+            if possible:
+                bstate = env.state_space.get_state().clone() # save changes of recursion-levels above
+                ex_seq_generator = exec_sequence_substitution(subst_list[1:], env)
+                for others_possible in ex_seq_generator:
+                    yield others_possible
+                    env.state_space.undo() #revert
+                    env.state_space.add_state(bstate) 
+
+
+# same es exec_sequence_substitution (see above)
+def exec_parallel_substitution(subst_list, env, ref_state, names, values):
+    if len(subst_list)==0:
+        yield True            
+    else:
+        assert len(subst_list)>0
+        child = subst_list[0]
+        # 1.1 setup: find changed vars (for later checks)
+        # use ref_state (parallel substitutions musst not effect each other)
+        assignd_vars = find_assignd_vars(child)
+        #assignd_ids = list(set(assignd_ids)) # remove double entries
+        assignd_ids = []
+        for var in assignd_vars:
+            if var not in assignd_ids:
+                assignd_ids.append(var)
+        bstate = ref_state.clone()
+        env.state_space.add_state(bstate)    # TODO: write clean interface          
+        ex_generator = exec_substitution(child, env)
+        for possible in ex_generator:
+            # This path is executable. Maybe it changes the same vars but this is checked later
+            if possible: 
+                # 1.2. remember (possible) changes
+                possible_new_values = {}
+                for name in assignd_ids:
+                    val = env.get_value(name)
+                    possible_new_values[name] = val
+                env.state_space.undo() #set to old state and drop other state
+                # 1.3 test for changes
+                pop_num = 0
+                for name in assignd_ids:
+                    new = possible_new_values[name]
+                    old = env.get_value(name)
+                    if not new==old: # change! - remember it
+                        pop_num = pop_num + 1
+                        names.append(name)
+                        values.append(new)
+                ex_pa_generator = exec_parallel_substitution(subst_list[1:], env, ref_state, names, values)
+                for others_possible in ex_pa_generator:
+                    yield others_possible
+                # 1.4 revert. Different paths musst not effect each other
+                bstate = ref_state.clone()
+                env.state_space.add_state(bstate)
+                for i in range(pop_num):
+                    names.pop()
+                    values.pop()
+        env.state_space.undo()
+
+# same es exec_sequence_substitution (see above)
+def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
+    # always use the bstate of the last iteration 
+    # without this copy the state of the last iteration can not restored 
+    # after the first successful while-loop termination. 
+    # This code would only be correct for non-deterministic while-loops
+    bstate = env.state_space.get_state().clone()
+    if not interpret(condition, env):
+        yield True  #loop has already been entered. Not condition means success of "exec possible"
+    else: 
+        w_bool = interpret(invariant, env)
+        assert w_bool.value
+        ex_generator = exec_substitution(doSubst, env)
+        for possible in ex_generator:
+            if possible:
+                temp = interpret(variant, env)
+                assert temp.__lt__(v_value)
+                ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, temp, env)
+                for other_possible in ex_while_generator:
+                     yield other_possible
+                env.state_space.undo() # pop last bstate
+                # restore the bstate of the last recursive call (python-level) 
+                # i.e the last loop iteration (B-level)
+                env.state_space.add_state(bstate) 
+        yield False
