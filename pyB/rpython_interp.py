@@ -1342,6 +1342,161 @@ def exec_substitution(sub, env):
         if sub.hasElse=="False" and all_cond_false:
             yield True # no Else, default: IF P THEN S ELSE skip END 
         """    
+    elif isinstance(sub, AChoiceSubstitution):
+        assert isinstance(sub.children[0], Substitution)
+        for i in range(len(sub.children)-1):
+            child = sub.children[i+1]
+            assert isinstance(child, AChoiceOrSubstitution)
+        ex_generator = exec_substitution(sub.children[0], env)
+        for possible in ex_generator:
+            yield possible
+        for i in range(len(sub.children)-1):
+            or_branch = sub.children[i+1]
+            ex_generator = exec_substitution(or_branch.children[0], env)
+            for possible in ex_generator:
+                yield possible  
+    elif isinstance(sub, ASelectSubstitution):
+        nodes = []
+        assert isinstance(sub.children[0], Predicate)
+        assert isinstance(sub.children[1], Substitution)
+        # (1) find enabled conditions and remember this branches 
+        w_bool = interpret(sub.children[0], env)
+        if w_bool.value:
+            nodes.append(sub.children[1])
+        for i in range(len(sub.children)-2):
+            child = sub.children[i+2]
+            if isinstance(child, ASelectWhenSubstitution):
+                assert isinstance(child.children[0], Predicate)
+                assert isinstance(child.children[1], Substitution)
+                w_bool = interpret(child.children[0], env)
+                if w_bool.value:
+                    nodes.append(child.children[1])
+            else:
+                # else-branch
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1]
+        # (2) test if possible branches are enabled
+        some_branches_possible = not nodes == []
+        if some_branches_possible:
+            for i in range(len(nodes)):
+                ex_generator = exec_substitution(nodes[i], env)
+                for possible in ex_generator:
+                    yield possible
+        elif sub.hasElse=="True": 
+            ex_generator = exec_substitution(sub.children[-1], env)
+            for possible in ex_generator:
+                yield possible
+        else: # no branch enabled and no else branch present 
+            yield False 
+        """
+    elif isinstance(sub, ACaseSubstitution):
+        assert isinstance(sub.children[0], Expression)
+        elem = interpret(sub.children[0], env)
+        all_cond_false = True
+        for child in sub.children[1:1+sub.expNum]:
+            assert isinstance(child, Expression)
+            value = interpret(child, env)
+            if elem == value:
+                all_cond_false = False
+                assert isinstance(sub.children[sub.expNum+1], Substitution)
+                ex_generator = exec_substitution(sub.children[sub.expNum+1], env)
+                for possible in ex_generator:
+                    yield possible
+        # EITHER E THEN S failed, check for OR-branches
+        for child in sub.children[2+sub.expNum:]:
+            if isinstance(child, ACaseOrSubstitution):
+                for expNode in child.children[:child.expNum]:
+                    assert isinstance(expNode, Expression)
+                    value = interpret(expNode, env)
+                    if elem == value:
+                        all_cond_false = False
+                        assert isinstance(child.children[-1], Substitution)
+                        ex_generator = exec_substitution(child.children[-1], env)
+                        for possible in ex_generator:
+                            yield possible
+            elif all_cond_false:
+                assert isinstance(child, Substitution)
+                assert child==sub.children[-1]
+                assert sub.hasElse=="True"
+                ex_generator = exec_substitution(child, env)
+                for possible in ex_generator:
+                    yield possible
+        if all_cond_false and sub.hasElse=="False":
+            yield True #invisible Else (page 95 manrefb)
+        """
+    elif isinstance(sub, AVarSubstitution):
+        nodes = []
+        for i in range(len(sub.children)-1):
+            idNode = sub.children[i]
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+        env.push_new_frame(nodes)
+        ex_generator = exec_substitution(sub.children[-1], env)
+        for possible in ex_generator: # TODO: read about python generators. It this push/pop necessary?
+            env.pop_frame()
+            yield possible
+            env.push_new_frame(nodes)
+        env.pop_frame()
+        """
+    elif isinstance(sub, AAnySubstitution) or isinstance(sub, ALetSubstitution):
+        nodes = []
+        for i in range(len(sub.children)-sub.idNum):
+            idNode = sub.children[i]
+            assert isinstance(idNode, AIdentifierExpression)
+            nodes.append(idNode)
+        pred = sub.children[-2]
+        assert isinstance(pred, Predicate)
+        assert isinstance(sub.children[-1], Substitution)
+        env.push_new_frame(nodes)
+        gen = try_all_values(pred, env, nodes)
+        for possible in gen:
+            if possible:
+                ex_generator = exec_substitution(sub.children[-1], env)
+                for also_possible in ex_generator:
+                    if also_possible:
+                        env.pop_frame()
+                        yield possible
+                        env.push_new_frame(nodes)
+        env.pop_frame()
+        yield False
+        """
+    elif isinstance(sub, AOpSubstitution):
+        # TODO: parameters passed by copy (page 162), write test: side effect free?
+        # set up
+        boperation = env.lookup_operation(sub.idName)
+        ret_nodes = boperation.return_nodes
+        para_nodes = boperation.parameter_nodes
+        values = []
+        # get parameter values for call
+        for i in range(len(para_nodes)):
+            value = interpret(sub.children[i], env)
+            values.append(value)
+        op_node = boperation.ast
+        # switch machine and set up parameters
+        temp = env.current_mch
+        env.current_mch = boperation.owner_machine
+        id_nodes = [x for x in para_nodes]       
+        env.push_new_frame(id_nodes)
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
+            env.set_value(name, values[i])
+        assert isinstance(op_node, AOperation)
+        ex_generator = exec_substitution(op_node.children[-1], env)
+        for possible in ex_generator:
+            # switch back machine
+            env.pop_frame()
+            env.current_mch = temp
+            yield possible
+            temp = env.current_mch
+            env.current_mch = boperation.owner_machine
+            env.push_new_frame(id_nodes)
+            for i in range(len(para_nodes)):
+                name = para_nodes[i].idName
+                env.set_value(name, values[i])
+        # switch back machine
+        env.pop_frame()
+        env.current_mch = temp
+
 
 # a sequence substitution is only executable if every substitution it consist of is
 # executable. If these substitutions are nondeterministic there maybe different "paths"
