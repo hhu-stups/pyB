@@ -106,7 +106,10 @@ def all_values_by_type_RPYTHON(atype, env, node):
 
 # generate all values that statify a predicate 'root'
 def try_all_values(root, env, idNodes):
-    from interp import interpret
+    if USE_RPYTHON_CODE:
+        from rpython_interp import interpret
+    else:
+        from interp import interpret
     node = idNodes[0]
     atype = env.get_type_by_node(node)
     if USE_RPYTHON_CODE:
@@ -117,8 +120,13 @@ def try_all_values(root, env, idNodes):
         for val in all_values:
             try:
                 env.set_value(node.idName, val)
-                if interpret(root, env):
-                    yield True
+                if USE_RPYTHON_CODE:
+                    w_bool = interpret(root, env)
+                    if w_bool.value:
+                        yield True
+                else:
+                    if interpret(root, env):
+                        yield True
             except ValueNotInDomainException:
                 continue
     else:

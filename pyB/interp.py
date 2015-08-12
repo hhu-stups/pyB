@@ -2107,17 +2107,17 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
         yield False
 
                  
-def replace_node(ast, idNode, replaceNode):
-    if isinstance(ast, AIdentifierExpression) or isinstance(ast, AStringExpression) or isinstance(ast, AIntegerExpression):
-        return ast
-    for i in range(len(ast.children)):
-        child = ast.children[i]
-        if isinstance(child, AIdentifierExpression):
-            if child.idName == idNode.idName:
-                ast.children[i] = replaceNode
-        else:
-            replace_node(child, idNode, replaceNode)
-    return ast
+#def replace_node(ast, idNode, replaceNode):
+#    if isinstance(ast, AIdentifierExpression) or isinstance(ast, AStringExpression) or isinstance(ast, AIntegerExpression):
+#        return ast
+#    for i in range(len(ast.children)):
+#        child = ast.children[i]
+#        if isinstance(child, AIdentifierExpression):
+#            if child.idName == idNode.idName:
+#                ast.children[i] = replaceNode
+#        else:
+#            replace_node(child, idNode, replaceNode)
+#    return ast
 
 
 

@@ -1,6 +1,7 @@
 # RPYTHON PY Version
 # PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py
 # e.g. PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" 
+# PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pypy/:. python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py
 
 from animation import calc_next_states
 from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AOperationsMachineClause

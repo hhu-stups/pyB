@@ -1185,10 +1185,10 @@ def exec_substitution(sub, env):
                     assert isinstance(child, AIdentifierExpression)
                     env.set_value(child.idName, value)
                 yield True # assign was successful 
-        """
     elif isinstance(sub, ABecomesSuchSubstitution):
         # TODO: more than on ID on lhs
         nodes = []
+        # sub.children[:-1]
         for i in range(len(sub.children)-1):
             child = sub.children[i]
             assert isinstance(child, AIdentifierExpression)
@@ -1217,7 +1217,6 @@ def exec_substitution(sub, env):
                     env.pop_frame() # exit new frame
             env.push_new_frame(nodes) #enum next value in next-interation
         env.pop_frame()
-        """
     elif isinstance(sub, AParallelSubstitution):
         # 0. setup: get all substitutions 
         subst_list = []      
@@ -1301,11 +1300,11 @@ def exec_substitution(sub, env):
                 yield possible
         else:
             yield False
-        """
     elif isinstance(sub, AAssertionSubstitution):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
-        if not interpret(sub.children[0], env):
+        w_bool = interpret(sub.children[0], env)
+        if not w_bool.value:
             print "ASSERT-Substitution violated:" + pretty_print(sub.children[0])
             yield False  #TODO: What is correct: False or crash\Exception?
         ex_generator = exec_substitution(sub.children[1], env)
@@ -1340,8 +1339,7 @@ def exec_substitution(sub, env):
                 for possible in ex_generator:
                     yield possible
         if sub.hasElse=="False" and all_cond_false:
-            yield True # no Else, default: IF P THEN S ELSE skip END 
-        """    
+            yield True # no Else, default: IF P THEN S ELSE skip END   
     elif isinstance(sub, AChoiceSubstitution):
         assert isinstance(sub.children[0], Substitution)
         for i in range(len(sub.children)-1):
@@ -1388,24 +1386,29 @@ def exec_substitution(sub, env):
                 yield possible
         else: # no branch enabled and no else branch present 
             yield False 
-        """
     elif isinstance(sub, ACaseSubstitution):
         assert isinstance(sub.children[0], Expression)
         elem = interpret(sub.children[0], env)
         all_cond_false = True
-        for child in sub.children[1:1+sub.expNum]:
+        # sub.children[1:1+sub.expNum]
+        for i in range((1+sub.expNum)-1):
+            child = sub.children[i+1]
             assert isinstance(child, Expression)
             value = interpret(child, env)
-            if elem == value:
+            if elem.__eq__(value):
                 all_cond_false = False
                 assert isinstance(sub.children[sub.expNum+1], Substitution)
                 ex_generator = exec_substitution(sub.children[sub.expNum+1], env)
                 for possible in ex_generator:
                     yield possible
         # EITHER E THEN S failed, check for OR-branches
-        for child in sub.children[2+sub.expNum:]:
+        # sub.children[2+sub.expNum:]:
+        for i in range(len(sub.children)-(2+sub.expNum)):
+            child = sub.children[i+2+sub.expNum]
             if isinstance(child, ACaseOrSubstitution):
-                for expNode in child.children[:child.expNum]:
+                # child.children[:child.expNum]
+                for j in range(child.expNum):
+                    expNode = child.children[j]
                     assert isinstance(expNode, Expression)
                     value = interpret(expNode, env)
                     if elem == value:
@@ -1423,7 +1426,6 @@ def exec_substitution(sub, env):
                     yield possible
         if all_cond_false and sub.hasElse=="False":
             yield True #invisible Else (page 95 manrefb)
-        """
     elif isinstance(sub, AVarSubstitution):
         nodes = []
         for i in range(len(sub.children)-1):
@@ -1437,7 +1439,6 @@ def exec_substitution(sub, env):
             yield possible
             env.push_new_frame(nodes)
         env.pop_frame()
-        """
     elif isinstance(sub, AAnySubstitution) or isinstance(sub, ALetSubstitution):
         nodes = []
         for i in range(len(sub.children)-sub.idNum):
@@ -1459,7 +1460,6 @@ def exec_substitution(sub, env):
                         env.push_new_frame(nodes)
         env.pop_frame()
         yield False
-        """
     elif isinstance(sub, AOpSubstitution):
         # TODO: parameters passed by copy (page 162), write test: side effect free?
         # set up
@@ -1494,6 +1494,54 @@ def exec_substitution(sub, env):
                 name = para_nodes[i].idName
                 env.set_value(name, values[i])
         # switch back machine
+        env.pop_frame()
+        env.current_mch = temp
+    elif isinstance(sub, AOperationCallSubstitution):
+        # TODO: parameters passed by copy (page 162), write test: side effect free?
+        # set up
+        boperation = env.lookup_operation(sub.idName)
+        ret_nodes = boperation.return_nodes
+        para_nodes = boperation.parameter_nodes
+        values = []
+        # get parameter values for call
+        for i in range(len(para_nodes)):
+            parameter_node = sub.children[i+sub.return_Num]
+            value = interpret(parameter_node, env)
+            values.append(value)
+        op_node = boperation.ast
+        # switch machine and set up parameters
+        temp = env.current_mch
+        env.current_mch = boperation.owner_machine
+        id_nodes = [x for x in para_nodes + ret_nodes]
+        env.push_new_frame(id_nodes)
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
+            env.set_value(name, values[i])
+        assert isinstance(op_node, AOperation)
+        ex_generator = exec_substitution(op_node.children[-1], env)
+        for possible in ex_generator:
+            results = []
+            for r in ret_nodes:
+                name = r.idName
+                value = env.get_value(name)
+                results.append(value)
+            # restore old frame after remembering return values
+            # switch back machine
+            env.pop_frame()
+            env.current_mch = temp
+            # write results to vars
+            for i in range(sub.return_Num):
+                ass_node = sub.children[i]
+                value = results[i]
+                name = ass_node.idName
+                env.set_value(name, value)
+            yield possible
+            temp = env.current_mch
+            env.current_mch = boperation.owner_machine
+            env.push_new_frame(id_nodes)
+            for i in range(len(para_nodes)):
+                name = para_nodes[i].idName
+                env.set_value(name, values[i])
         env.pop_frame()
         env.current_mch = temp
 
