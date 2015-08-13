@@ -736,9 +736,6 @@ def interpret(node, env):
         w_bool = W_Boolean(not expr1.__eq__(expr2))
         return w_bool
         # TODO: handle symbolic sets
-        
-        #return expr1 != expr2
-        
  
         
 # **************
@@ -991,8 +988,7 @@ def interpret(node, env):
         result = 1
         for i in range(exp.value):
             result = result *basis.value
-        return W_Integer(result)
-        
+        return W_Integer(result)     
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.get(0), env)
         right = interpret(node.get(1), env)
@@ -1092,20 +1088,561 @@ def interpret(node, env):
         #return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
         aSet = make_explicit_set_of_realtion_lists(aSet1, aSet2)
         return aSet
-        """
+    elif isinstance(node, ADomainExpression):
+        # assumption: crashs if this is not a set of 2-tuple
+        aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            aSet = aSet.enumerate_all()
+        dom = [e[0] for e in list(aSet)]
+        return frozenset(dom)
+    elif isinstance(node, ARangeExpression):
+        # assumption: crashs if this is not a set of 2-tuple
+        aSet = interpret(node.children[0], env)
+        if isinstance(aSet, SymbolicSet):
+            aSet = aSet.enumerate_all()
+        ran = [e[1] for e in list(aSet)]
+        return frozenset(ran)
+    elif isinstance(node, ACompositionExpression):
+        aSet1 = interpret(node.children[0], env)
+        aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+            return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
+        # p and q: tuples representing domain and image
+        new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
+        return frozenset(new_rel)
+    elif isinstance(node, AIdentityExpression):
+        aSet = interpret(node.children[0], env)
+        return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
+    elif isinstance(node, ADomainRestrictionExpression):
+        aSet = interpret(node.children[0], env)
+        rel = interpret(node.children[1], env)
+        # TODO: always try to enumerate the finite one.
+        if isinstance(rel, frozenset):
+            new_rel = [x for x in rel if x[0] in aSet]
+        else:
+            new_rel = []
+            for x in aSet:
+                try:
+                    img = rel[x]
+                    if isinstance(img, list):
+                        for i in img:
+                            new_rel.append((x,i))
+                    else:
+                        e = (x,img)
+                        new_rel.append(e)
+                except ValueNotInDomainException:
+                    continue              
+        return frozenset(new_rel)
+    elif isinstance(node, ADomainSubtractionExpression):
+        aSet = interpret(node.children[0], env)
+        rel = interpret(node.children[1], env)
+        # TODO: handle symbolic case
+        new_rel = [x for x in rel if not x[0] in aSet]
+        return frozenset(new_rel)
+    elif isinstance(node, ARangeRestrictionExpression):
+        aSet = interpret(node.children[1], env)
+        rel = interpret(node.children[0], env)
+        # TODO: handle symbolic case
+        new_rel = [x for x in rel if x[1] in aSet]
+        return frozenset(new_rel)
+    elif isinstance(node, ARangeSubtractionExpression):
+        aSet = interpret(node.children[1], env)
+        rel = interpret(node.children[0], env)
+        # TODO: handle symbolic case
+        new_rel = [x for x in rel if not x[1] in aSet]
+        return frozenset(new_rel)
+    elif isinstance(node, AReverseExpression):
+        rel = interpret(node.children[0], env)
+        return SymbolicInverseRelation(rel, env, interpret, node)
+    elif isinstance(node, AImageExpression):
+        #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
+        rel = interpret(node.children[0], env)
+        aSet = interpret(node.children[1], env)
+        #print rel,
+        #print aSet
+        if isinstance(rel, SymbolicSet):
+            image = []
+            #if isinstance(aSet, SymbolicSet):
+            #    aSet = aSet.enumerate_all()
+            for x in aSet:
+                try:
+                    img = rel[x]
+                    if isinstance(img, list):
+                        image = image + img
+                    else:
+                        image.append(img)
+                except ValueNotInDomainException:
+                    continue
+        else:
+            image = [x[1] for x in rel if x[0] in aSet ]
+            
+        return frozenset(image)
+    elif isinstance(node, AOverwriteExpression):
+        #print pretty_print(node)
+        # r1 <+ r2
+        r1 = interpret(node.children[0], env)
+        r2 = interpret(node.children[1], env)
+        if isinstance(r1, SymbolicSet):
+            r1 = r1.enumerate_all()
+        if isinstance(r2, SymbolicSet):
+            r2 = r2.enumerate_all()
+        dom_r2 = [x[0] for x in r2]
+        new_r  = [x for x in r1 if x[0] not in dom_r2]
+        r2_list= [x for x in r2]
+        return frozenset(r2_list + new_r)
+    elif isinstance(node, ADirectProductExpression):
+        p = interpret(node.children[0], env)
+        q = interpret(node.children[1], env)
+        if isinstance(p, SymbolicSet):
+            p = p.enumerate_all()
+        if isinstance(q, SymbolicSet):
+            q = q.enumerate_all()        
+        d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
+        return frozenset(d_prod)
+    elif isinstance(node, AParallelProductExpression):
+        p = interpret(node.children[0], env)
+        q = interpret(node.children[1], env)
+        p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+        return frozenset(p_prod)
+    elif isinstance(node, AIterationExpression):
+        arel = interpret(node.children[0], env)
+        n = interpret(node.children[1], env)
+        assert n>=0
+        rel = list(arel)
+        rel = [(x[0],x[0]) for x in rel]
+        for i in range(n):
+            rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+        return frozenset(rel)
+    elif isinstance(node, AReflexiveClosureExpression):
+        arel = interpret(node.children[0], env)
+        rel = list(arel)
+        temp = [(x[1],x[1]) for x in rel] # also image
+        rel = [(x[0],x[0]) for x in rel]
+        rel += temp
+        rel = list(frozenset(rel)) # throw away doubles
+        while True: # fixpoint-search (do-while-loop)
+            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
+                return frozenset(rel)
+            rel =list(frozenset(new_rel).union(frozenset(rel)))
+    elif isinstance(node, AClosureExpression):
+        #print pretty_print(node)
+        arel = interpret(node.children[0], env)
+        if isinstance(arel, SymbolicSet):
+            arel = arel.enumerate_all()
+        rel = list(arel)
+        while True: # fixpoint-search (do-while-loop)
+            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
+                return frozenset(rel)
+            rel =list(frozenset(new_rel).union(frozenset(rel)))
+    elif isinstance(node, AFirstProjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicFirstProj(S,T, env, interpret, node)
+        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        cart = []
+        for x in S:
+            for y in T:
+                cart.append((x,y))
+        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+        proj = []
+        for t in cart:
+            proj.append((t,t[0]))
+        return frozenset(proj)
+    elif isinstance(node, ASecondProjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+            return SymbolicSecondProj(S,T, env, interpret, node)
+        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        cart = []
+        for x in S:
+            for y in T:
+                cart.append((x,y))
+        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+        proj = []
+        for t in cart:
+            proj.append((t,t[1]))
+        return frozenset(proj)
+# *******************
+#
+#       4.1 Functions
+#
+# *******************
+    elif isinstance(node, APartialFunctionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicPartialFunctionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #return fun
+    elif isinstance(node, ATotalFunctionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicTotalFunctionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #total_fun = filter_not_total(fun, S) # S-->T
+        #return total_fun
+    elif isinstance(node, APartialInjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicPartialInjectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #inj_fun = filter_not_injective(fun) # S>+>T
+        #return inj_fun
+    elif isinstance(node, ATotalInjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicTotalInjectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #inj_fun = filter_not_injective(fun) # S>+>T
+        #total_inj_fun = filter_not_total(inj_fun, S) # S>->T
+        #return total_inj_fun
+    elif isinstance(node, APartialSurjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicPartialSurjectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #surj_fun = filter_not_surjective(fun, T) # S+->>T
+        #return surj_fun
+    elif isinstance(node, ATotalSurjectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicTotalSurjectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #surj_fun = filter_not_surjective(fun, T) # S+->>T
+        #total_surj_fun = filter_not_total(surj_fun, S) # S-->>T
+        #return total_surj_fun
+    elif isinstance(node, ATotalBijectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicTotalBijectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #inj_fun = filter_not_injective(fun) # S>+>T
+        #total_inj_fun = filter_not_total(inj_fun, S) # S>->T
+        #bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
+        #return bij_fun
+    elif isinstance(node, APartialBijectionExpression):
+        S = interpret(node.children[0], env)
+        T = interpret(node.children[1], env)
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        return SymbolicPartialBijectionSet(S, T, env, interpret, node)
+        #relation_set = make_set_of_realtions(S,T) # S<->T
+        #fun = filter_no_function(relation_set) # S+->T
+        #inj_fun = filter_not_injective(fun) # S>+>T
+        #bij_fun = filter_not_surjective(inj_fun,T)
+        #return bij_fun
+    elif isinstance(node, ALambdaExpression):
+        varList = node.children[:-2]
+        pred = node.children[-2]
+        expr = node.children[-1]
+        return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+    elif isinstance(node, AFunctionExpression):
+        #print "interpret AFunctionExpression: ", pretty_print(node)
+        if isinstance(node.children[0], APredecessorExpression):
+            value = interpret(node.children[1], env)
+            return value-1
+        if isinstance(node.children[0], ASuccessorExpression):
+            value = interpret(node.children[1], env)
+            return value+1
+        function = interpret(node.children[0], env)
+        #print "FunctionName:", node.children[0].idName
+        args = None
+        i = 0 
+        for child in node.children[1:]:
+            arg = interpret(child, env)
+            if i==0:
+                args = arg
+            else:
+                args = tuple([args, arg])
+            i = i+1
+        if isinstance(function, SymbolicSet):
+            return function[args]
+        return get_image(function, args)
 
-#TODO
+# ********************
+#
+#       4.2 Sequences
+#
+# ********************
+    elif isinstance(node,AEmptySequenceExpression):
+        return frozenset([])
+    elif isinstance(node,ASeqExpression):
+        S = interpret(node.children[0], env)
+        return SymbolicSequenceSet(S, env, interpret, node)
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## find all seq. from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #return frozenset(sequence_list)
+    elif isinstance(node,ASeq1Expression):
+        S = interpret(node.children[0], env)
+        return SymbolicSequence1Set(S, env, interpret, node)
+        #sequence_list = []
+        #max_len = 1
+        ## find all seq. from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #return frozenset(sequence_list)
+    elif isinstance(node,AIseqExpression):
+        # TODO: this can be impl. much better
+        S = interpret(node.children[0], env)
+        return SymbolicISequenceSet(S, env, interpret, node)
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #return frozenset(inj_sequence_list)
+    elif isinstance(node, AIseq1Expression):
+        # TODO: this can be impl. much better
+        S = interpret(node.children[0], env)
+        return SymbolicISequence1Set(S, env, interpret, node)     
+        #sequence_list = []
+        #max_len = 1
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #return frozenset(inj_sequence_list)
+    elif isinstance(node,APermExpression): 
+        # TODO: this can be impl. much better
+        S = interpret(node.children[0], env)
+        return SymbolicPermutationSet(S, env, interpret, node)  
+        #sequence_list = [frozenset([])]
+        #max_len = 1
+        ## TODO: maybe call all_values() here...
+        ## find all seq from 1..max_int
+        #for i in range(1, env._max_int+1):
+        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
+        #inj_sequence_list = filter_not_injective(sequence_list)
+        #perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
+        ##print perm_sequence_list
+        #return frozenset(perm_sequence_list)
+    elif isinstance(node, AConcatExpression):
+        # u:= s^t
+        s = interpret(node.children[0], env)
+        t = interpret(node.children[1], env)
+        u = list(s)
+        for tup in t:
+            index = tup[0]+len(s)
+            u.append(tuple([index, tup[1]]))
+        return frozenset(u)
+    elif isinstance(node, AInsertFrontExpression):
+        E = interpret(node.children[0], env)
+        s = interpret(node.children[1], env)
+        new_s = [(1,E)]
+        for tup in s:
+            new_s.append(tuple([tup[0]+1,tup[1]]))
+        return frozenset(new_s)
+    elif isinstance(node, AInsertTailExpression):
+        s = interpret(node.children[0], env)
+        E = interpret(node.children[1], env)
+        return frozenset(list(s)+[tuple([len(s)+1,E])])
+    elif isinstance(node, ASequenceExtensionExpression):
+        sequence = []
+        i = 0
+        for child in node.children:
+            i = i+1
+            e = interpret(child, env)
+            sequence.append(tuple([i,e]))
+        #print "sequence", sequence
+        return frozenset(sequence)
+    elif isinstance(node, ASizeExpression):
+        sequence = interpret(node.children[0], env)
+        return len(sequence)
+    elif isinstance(node, ARevExpression):
+        sequence = interpret(node.children[0], env)
+        new_sequence = []
+        i = len(sequence)
+        for tup in sequence:
+            new_sequence.append(tuple([i,tup[1]]))
+            i = i-1
+        return frozenset(new_sequence)
+    elif isinstance(node, ARestrictFrontExpression):
+        sequence = interpret(node.children[0], env)
+        take = interpret(node.children[1], env)
+        assert take>0
+        lst = list(sequence)
+        lst.sort()
+        return frozenset(lst[:-take])
+    elif isinstance(node, ARestrictTailExpression):
+        sequence = interpret(node.children[0], env)
+        drop = interpret(node.children[1], env)
+        assert drop>0
+        lst = list(sequence)
+        lst.sort()
+        new_list = []
+        i = 0
+        for tup in lst[drop:]:
+            i = i+1
+            new_list.append(tuple([i,tup[1]]))
+        return frozenset(new_list)
+    elif isinstance(node, AFirstExpression):
+        sequence = interpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[0][0]==1
+        return lst[0][1]
+    elif isinstance(node, ALastExpression):
+        sequence = interpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[len(sequence)-1][0]==len(sequence)
+        return lst[len(sequence)-1][1]
+    elif isinstance(node, ATailExpression):
+        sequence = interpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        assert lst[0][0]==1
+        return frozenset(lst[1:])
+    elif isinstance(node, AFrontExpression):
+        sequence = interpret(node.children[0], env)
+        lst = list(sequence)
+        lst.sort()
+        lst.pop()
+        return frozenset(lst)
+    elif isinstance(node, AGeneralConcatExpression):
+        s = interpret(node.children[0], env)
+        t = []
+        index = 0
+        for squ in dict(s).values():
+            for val in dict(squ).values():
+                index = index +1
+                t.append(tuple([index, val]))
+        return frozenset(t)
+    elif isinstance(node, AStringExpression):
+        return node.string
+        """
+# ****************
+#
+# 6. Miscellaneous
+#
+# ****************
+    elif isinstance(node, AConvertBoolExpression): 
+        w_bool = interpret(node.children[0], env)
+        return w_bool
+    elif isinstance(node, AUnaryMinusExpression):
+        w_int = interpret(node.children[0], env)
+        return W_Integer(w_int.__neg__())
     elif isinstance(node, AIntegerExpression):
         # TODO: add flag in config.py to enable switch to long integer here
         return W_Integer(node.intValue)
+    elif isinstance(node, AMinIntExpression):
+        assert env is not None
+        return W_Integer(env._min_int)
+    elif isinstance(node, AMaxIntExpression):
+        assert env is not None
+        return W_Integer(env._max_int)
     elif isinstance(node, AIdentifierExpression):
         assert env is not None
         value = env.get_value(node.idName)
         assert isinstance(value, W_Object)
         return value
+        """
+    elif isinstance(node, APrimedIdentifierExpression):
+        assert len(node.children)==1 # TODO x.y.z
+        assert node.grade==0 #TODO: fix for while loop
+        assert isinstance(node.children[0], AIdentifierExpression)
+        id_Name = node.children[0].idName
+        # copy paste :-)
+        assert isinstance(id_Name, str)
+        return env.get_value(id_Name)
+        # FIXME (ISSUE #28):
+        #value_map_copy =  [x for x in env.get_state().value_stack] # no ref. copy
+        # pop frame to get old value (you are inside an enumeration):
+        #value_map_copy.pop()
+        #value_map_copy.reverse() # FIXME (ISSUE #28)
+        #stack_depth = len(value_map_copy)
+        # lookup:
+        #for i in range(stack_depth):
+        #    try:
+        #        return value_map_copy[i][id_Name]
+        #    except KeyError:
+        #        continue
+        #print "LookupErr:", id_Name
+        #raise KeyError
+        """
+    elif isinstance(node, ABoolSetExpression):
+        return frozenset([W_Boolean(True),W_Boolean(False)])
+    elif isinstance(node, ABooleanTrueExpression):
+        return W_Boolean(True)
+    elif isinstance(node, ABooleanFalseExpression):
+        return W_Boolean(False)
+        """
+    elif isinstance(node, AStructExpression):
+        dictionary = {}
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            value = interpret(rec_entry.children[-1], env)
+            dictionary[name] = value
+        res = []
+        all_records(dictionary, res, {}, 0)
+        result = []
+        for dic in res:
+            for entry in dic:
+                result.append(tuple([entry,dic[entry]]))
+        return frozenset(result)
+    elif isinstance(node, ARecExpression):
+        result = []
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
+            name = ""
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            value = interpret(rec_entry.children[-1], env)
+            result.append(tuple([name,value]))
+        return frozenset(result)
+    elif isinstance(node, ARecordFieldExpression):
+        record = interpret(node.children[0], env)
+        assert isinstance(node.children[1], AIdentifierExpression)
+        name = node.children[1].idName
+        for entry in record:
+            if entry[0]==name:
+                return entry[1]
+        raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
+    elif isinstance(node, AStringSetExpression):
+        return StringSet(env, interpret)
+    elif isinstance(node, ATransRelationExpression):
+        function = interpret(node.children[0], env)
+        return SymbolicTransRelation(function, env, interpret, node)
+    elif isinstance(node, ATransFunctionExpression):
+        relation = interpret(node.children[0], env)
+        return SymbolicTransFunction(relation, env, interpret, node)
+    elif isinstance(node, AExternalFunctionExpression):
+        args = []
+        for child in node.children:
+            arg = interpret(child, env)
+            args.append(arg)
+        result = node.pyb_impl(args)
+        return result
+        """
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
         return W_None() # RPython: Avoid return of python None
+
 
 
 # side-effect: changes state while exec.

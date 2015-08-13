@@ -72,7 +72,7 @@ class W_Integer(W_Object):
         return self.value >= other.value
     
     def __neg__(self):
-        return W_Integer(-1*self.value)
+        return -1*self.value
         
     def __mod__(self, other):
         return (self.value % other.value)

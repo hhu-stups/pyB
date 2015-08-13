@@ -1604,7 +1604,6 @@ def interpret(node, env):
         return result
     else:
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
-        return W_None() # RPython: Avoid return of python None
   
 
 # side-effect: changes state while exec.
