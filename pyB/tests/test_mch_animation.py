@@ -1004,7 +1004,7 @@ class TestMCHAnimation():
             assert zz in [0,2,4,6,8]
 
 
-    def test_ani_toplevel_become_el_op_args(self):
+    def test_ani_toplevel_become_el_op_args0(self):
         string ='''
         MACHINE del_me
         VARIABLES xx
@@ -1036,6 +1036,41 @@ class TestMCHAnimation():
             env.state_space.add_state(bstate) 
             xx = env.get_value("xx")
             assert xx in range(0,zz+1)
+
+
+    def test_ani_toplevel_become_el_op_args1(self):
+        string ='''
+        MACHINE Test
+		VARIABLES x, y
+		INVARIANT x:NAT & y:NAT1
+		INITIALISATION x:=3 ; y:=3
+		OPERATIONS
+			op = BEGIN x::{0,1,2} ;  y::{x}-{0} END
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 3 == env.get_value("x")
+        assert 3 == env.get_value("y")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==2
+        assert next_states[0].opName=="op"
+        assert next_states[1].opName=="op"
+        for op_and_state in next_states:
+            bstate = op_and_state.bstate
+            env.state_space.add_state(bstate) 
+            y = env.get_value("y")
+            assert y==1 or y==2
+
 
 
     # kills ProB Performance :)

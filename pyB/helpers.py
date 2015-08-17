@@ -8,7 +8,7 @@ from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
 from subprocess import Popen, PIPE
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import frozenset, W_Tuple
      
 #from pretty_printer import pretty_print
 #from boperation import BOperation
@@ -367,7 +367,10 @@ def couple_tree_to_conj_list(ast):
 def enumerate_cross_product(S,T):
     for x in S:
         for y in T:
-            yield (x,y)  
+            #if USE_RPYTHON_CODE:
+            #    yield W_Tuple((x,y))
+            #else:
+                yield (x,y)  
         
 # Helper for debugging                     
 def print_ast(root):

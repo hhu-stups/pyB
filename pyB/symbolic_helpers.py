@@ -91,7 +91,7 @@ def generate_powerset(S, size, skip):
 
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
 # all combinations/sub-lists of length n.
-# returntype: list
+# returntype: list of tuples
 def _generate_relation(S, T, size, skip):
     # yield one element of all combinations (x,y)
     if size==1:

@@ -1086,8 +1086,10 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
         #return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
-        aSet = make_explicit_set_of_realtion_lists(aSet1, aSet2)
-        return aSet
+        lst = []
+        for relation in make_explicit_set_of_realtion_lists(aSet1, aSet2):
+            lst.append(relation)
+        return frozenset(lst)
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
