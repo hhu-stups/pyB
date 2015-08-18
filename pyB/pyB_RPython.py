@@ -48,7 +48,7 @@ def main(argv):
     env.state_space.set_current_state(bstates[0])
     while not env.state_space.empty(): 
         w_bool = interpret(mch.aInvariantMachineClause, env)  # 7. model check  
-        if not w_bool.value:
+        if not w_bool.bvalue:
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
             #print env.state_space.history
             return -1

@@ -65,7 +65,7 @@ class BState():
                         if USE_RPYTHON_CODE:
                             assert isinstance(self_value, W_Object)
                             assert isinstance(other_value, W_Object)
-                            if not self_value.value==other_value.value:
+                            if not self_value.__eq__(other_value):
                                 return False
                         else:
                             if not self_value==other_value:

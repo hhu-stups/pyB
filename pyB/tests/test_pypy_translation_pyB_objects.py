@@ -154,37 +154,37 @@ class TestPyPyTranslationObjects():
             node2.children.append(node0)
             node2.children.append(node1)
             w_int = interpret(node2, None)
-            print w_int.value
+            print w_int.ivalue
             
             node3 = AMinusOrSetSubtractExpression()
             node3.children.append(node0)
             node3.children.append(node1)
             w_int = interpret(node3, None)
-            print w_int.value
+            print w_int.ivalue
             
             node4 = AMultOrCartExpression()
             node4.children.append(node0)
             node4.children.append(node1)
             w_int = interpret(node4, None)
-            print w_int.value
+            print w_int.ivalue
             
             node5 = ADivExpression()
             node5.children.append(node0)
             node5.children.append(node1)
             w_int = interpret(node5, None)
-            print w_int.value
+            print w_int.ivalue
             
             node6 = AModuloExpression()
             node6.children.append(node0)
             node6.children.append(node1)
             w_int = interpret(node6, None)
-            print w_int.value
+            print w_int.ivalue
             
             node7 = APowerOfExpression()
             node7.children.append(node0)
             node7.children.append(node1)
             w_int = interpret(node7, None)
-            print w_int.value
+            print w_int.ivalue
                         
             return 0\n"""
         translate(code) 
@@ -205,19 +205,19 @@ class TestPyPyTranslationObjects():
             node2.children.append(node0)
             node2.children.append(node1)
             w_int = interpret(node2, None)
-            print w_int.value
+            print w_int.ivalue
             
             node3 = AMinusOrSetSubtractExpression()
             node3.children.append(node0)
             node3.children.append(node1)
             w_int = interpret(node3, None)
-            print w_int.value
+            print w_int.ivalue
             
             node4 = AMultOrCartExpression()
             node4.children.append(node3)
             node4.children.append(node2)
             w_int = interpret(node4, None)
-            print w_int.value
+            print w_int.ivalue
                         
             return 0\n"""
         translate(code) 
@@ -241,54 +241,54 @@ class TestPyPyTranslationObjects():
             node2.children.append(node0)
             node2.children.append(node1)
             res0 = interpret(node2, None)
-            print int(res0.value) 
+            print int(res0.bvalue) 
             
             node3 = AGreaterPredicate()
             node3.children.append(node0)
             node3.children.append(node1)
             res1 = interpret(node3, None)
-            print int(res1.value)            
+            print int(res1.bvalue)            
 
             node4 = AGreaterEqualPredicate()
             node4.children.append(node0)
             node4.children.append(node1)
             res2 = interpret(node4, None)
-            print int(res2.value) 
+            print int(res2.bvalue) 
             
             node5 = ALessEqualPredicate()
             node5.children.append(node0)
             node5.children.append(node1)
             res3 = interpret(node5, None)
-            print int(res3.value)  
+            print int(res3.bvalue)  
             
             node6 = AConjunctPredicate()
             node6.children.append(node2)
             node6.children.append(node3)
             res4 = interpret(node6, None)
-            print int(res4.value)
+            print int(res4.bvalue)
                         
             node7 = ADisjunctPredicate()
             node7.children.append(node2)
             node7.children.append(node3)
             res5 = interpret(node7, None)
-            print int(res5.value)   
+            print int(res5.bvalue)   
             
             node8 = AImplicationPredicate()
             node8.children.append(node2)
             node8.children.append(node3)
             res6 = interpret(node8, None)
-            print int(res6.value)
+            print int(res6.bvalue)
                         
             node9 = AEquivalencePredicate()
             node9.children.append(node2)
             node9.children.append(node3)
             res7 = interpret(node9, None)
-            print int(res7.value)           
+            print int(res7.bvalue)           
 
             node10 = ANegationPredicate()
             node10.children.append(node9)
             res8 = interpret(node10, None)
-            print int(res8.value)             
+            print int(res8.bvalue)             
                                            
             return 0\n"""
         translate(code) 
@@ -312,7 +312,7 @@ class TestPyPyTranslationObjects():
             node3 = APredicateParseUnit()
             node3.children.append(node2)
             res = interpret(node3, None)
-            print int(res.value)             
+            print int(res.bvalue)             
                                            
             return 0\n"""
         translate(code) 
@@ -410,7 +410,7 @@ class TestPyPyTranslationObjects():
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
             res = interpret(root.children[1], env)
-            print int(res.value)
+            print int(res.bvalue)
                           
             return 0\n"""
         translate(code) 
@@ -480,7 +480,7 @@ class TestPyPyTranslationObjects():
             res = isinstance(root.children[1], AInvariantMachineClause)
             print int(res)
             res = interpret(root.children[1], env)
-            print int(res.value)
+            print int(res.bvalue)
                           
             return 0\n"""
         translate(code) 
@@ -546,7 +546,7 @@ class TestPyPyTranslationObjects():
             res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
             res = interpret(root.children[2], env)
-            print int(res.value)
+            print int(res.bvalue)
             
                         
             res = isinstance(root.children[4], AOperationsMachineClause)
@@ -681,7 +681,7 @@ class TestPyPyTranslationObjects():
             integer_value = W_Integer(1)
             env.set_value(\"x\", integer_value)
             res =  interpret(root, env) 
-            print int(res.value)
+            print int(res.bvalue)
             
             return 0\n"""
         translate(code) 
@@ -736,7 +736,7 @@ class TestPyPyTranslationObjects():
             res = isinstance(root.children[2], AInvariantMachineClause)
             print int(res)
             res = interpret(root.children[2], env) 
-            print int(res.value) 
+            print int(res.bvalue) 
             
             return 0\n"""
         translate(code) 

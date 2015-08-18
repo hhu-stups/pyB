@@ -5,9 +5,12 @@ class W_Object:
         raise Exception("abstract W_Object instance _contains_ called")
 
 class W_Tuple(W_Object):
-    def __init__(self, value):
-        assert isinstance(value, tuple)
-        self.value = value
+    #_settled_ = True
+    
+    def __init__(self, tvalue):
+        # e.g. W_Tuple((W_Tuple((W_Integer(1),W_Integer(2))),W_Integer(3)))
+        assert isinstance(tvalue, tuple) or isinstance(tvalue, W_Tuple) 
+        self.tvalue = tvalue
            
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -16,125 +19,140 @@ class W_Tuple(W_Object):
 # speed- and space-loose  is possible.
 # Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
 class W_Integer(W_Object):
-    def __init__(self, value):
-        #assert isinstance(value, int)
-        self.value = value
+    #_settled_ = True
+    
+    def __init__(self, ivalue):
+        #assert isinstance(ivalue, int)
+        self.ivalue = ivalue
         
     def __repr__(self):
-        return str(self.value)
+        return str(self.ivalue)
         
     def __str__(self):
-        return str(self.value)
+        return str(self.ivalue)
     
     def __add__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.value+other.value)   
+        return (self.ivalue + other.ivalue)   
     
     def __sub__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.value - other.value)         
+        return (self.ivalue - other.ivalue)         
 
     def __mul__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.value * other.value)
+        return (self.ivalue * other.ivalue)
         
     # Maybe unused
     def __div__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.value / other.value) 
+        return (self.ivalue / other.ivalue) 
         
     def __floordiv__(self, other):     
         assert isinstance(other, W_Integer)
-        return (self.value // other.value) 
+        return (self.ivalue // other.ivalue) 
                 
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value < other.value  
+        return self.ivalue < other.ivalue  
         
     def __le__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value <= other.value
+        return self.ivalue <= other.ivalue
          
     def __eq__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value == other.value 
+        return self.ivalue == other.ivalue 
         
     def __ne__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value != other.value 
+        return self.ivalue != other.ivalue 
             
     def __gt__(self, other):
         assert isinstance(other, W_Integer)
-        return self.value > other.value 
+        return self.ivalue > other.ivalue 
         
     def __ge__(self, other):
         #assert isinstance(other, W_Integer)
-        return self.value >= other.value
+        return self.ivalue >= other.ivalue
     
     def __neg__(self):
-        return -1*self.value
+        return -1*self.ivalue
         
     def __mod__(self, other):
-        return (self.value % other.value)
+        return (self.ivalue % other.ivalue)
 
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Integer")
 
 
 class W_Boolean(W_Object):
-    def __init__(self, value):
+    #_settled_ = True
+    
+    def __init__(self, bvalue):
         #assert isinstance(value, bool)
-        self.value = value 
+        self.bvalue = bvalue 
       
     def __and__(self, other):
-        #assert isinstance(other, W_Boolean)
-        boolean = self.value and other.value
+        assert isinstance(other, W_Boolean)
+        boolean = self.bvalue and other.bvalue
         #assert isinstance(boolean, bool)
         return boolean
                 
     def __or__(self, other):
-        #assert isinstance(other, W_Boolean)
-        boolean = self.value or other.value
+        assert isinstance(other, W_Boolean)
+        boolean = self.bvalue or other.bvalue
         #assert isinstance(boolean, bool)
         return boolean
         
     def __not__(self):
-        boolean = not self.value
+        boolean = not self.bvalue
         assert isinstance(boolean, bool)
         return boolean
     
     def __eq__(self, other):
         assert isinstance(other, W_Boolean)
-        boolean = self.value == other.value
+        boolean = self.bvalue == other.bvalue
+        assert isinstance(boolean, bool)
         return boolean
 
     def __repr__(self):
-        return str(self.value)
+        return str(self.bvalue)
     
     def __str__(self):
-        return str(self.value)
+        return str(self.bvalue)
 
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Boolean")
         
 class W_None(W_Object):
+    #_settled_ = True
+
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_None")
 
 # elements of enumerated sets or machine parameter sets     
 class W_Set_Element(W_Object):
+    #_settled_ = True
+    
     def __init__(self, string):
+        assert isinstance(string, str)
         self.string
 
 
 class W_String(W_Object):
+    #_settled_ = True
+    
     def __init__(self, string):
+        assert isinstance(string, str)
         self.string
 
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.
 # Different enumeration order than build-in frozenset.
 class frozenset(W_Object):
+    #_settled_ = True
+
     def __init__(self, lst=[]):
         self.lst = []
         # frozenset([1,1,2])==frozenset([1,2])
@@ -153,7 +171,11 @@ class frozenset(W_Object):
         
     def __contains__(self, element):
         # Todo: avoid reference compare in list of lists (set of sets)
-        return element.value in [e.value for e in self.lst]
+        for e in self.lst:
+            if element.__eq__(e):
+                return True
+        return False
+      
         
     def issubset(self, other):
         for e in self.lst:

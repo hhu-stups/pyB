@@ -770,9 +770,11 @@ def interpret(node, env):
     elif isinstance(node, ACoupleExpression):
         result = None
         i = 0
+        assert len(node.children)>1
         for child in node.children:
             elm = interpret(child, env)
             if i==0:
+                #assert isinstance(elm, tuple)
                 result = elm
             else:
                 result = tuple([result, elm]) 

@@ -122,7 +122,7 @@ def try_all_values(root, env, idNodes):
                 env.set_value(node.idName, val)
                 if USE_RPYTHON_CODE:
                     w_bool = interpret(root, env)
-                    if w_bool.value:
+                    if w_bool.bvalue:
                         yield True
                 else:
                     if interpret(root, env):

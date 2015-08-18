@@ -7,7 +7,7 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from pretty_printer import pretty_print
 from symbolic_helpers import make_explicit_set_of_realtion_lists
 from symbolic_sets import SymbolicIntervalSet, NaturalSet, Natural1Set, NatSet, Nat1Set, IntSet, IntegerSet
-from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, frozenset
+from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, frozenset
 from typing import type_check_predicate, type_check_expression
 
 
@@ -257,8 +257,8 @@ def check_properties(node, env, mch):
                         const_nodes.append(idNode)
             if const_nodes==[]:
                 prop_result = interpret(mch.aPropertiesMachineClause, env)
-                assert prop_result.value # if this is False: there musst be a Bug inside the interpreter
-                yield prop_result.value 
+                assert prop_result.bvalue # if this is False: there musst be a Bug inside the interpreter
+                yield prop_result.bvalue 
             else:
                 # if there are unset constants/sets enumerate them
                 at_least_one_solution = False
@@ -266,7 +266,7 @@ def check_properties(node, env, mch):
                     print "enum. constants:", [n.idName for n in const_nodes]
                 gen = try_all_values(mch.aPropertiesMachineClause.children[0], env, const_nodes)
                 for prop_result in gen:
-                    if prop_result.value:
+                    if prop_result.bvalue:
                         at_least_one_solution = True
                         yield True
                 # This generator is only called when the Constraints are True.
@@ -608,7 +608,7 @@ def interpret(node, env):
         """
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.get(0), env)
-        if not result.value:
+        if not result.bvalue:
             print "Invariant violation"
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.get(0))
@@ -660,7 +660,7 @@ def interpret(node, env):
         bexpr1 = interpret(node.get(0), env)
         bexpr2 = interpret(node.get(1), env)
         assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        if bexpr1.value and not bexpr2.value:
+        if bexpr1.bvalue and not bexpr2.bvalue:
             w_bool = W_Boolean(False) # True=>False is False
             return w_bool
         else:
@@ -767,18 +767,21 @@ def interpret(node, env):
         aSet2 = interpret(node.children[1], env)
         #return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
         return aSet1.intersection(aSet2)
-        """
     elif isinstance(node, ACoupleExpression):
-        result = None
-        i = 0
-        for child in node.children:
+        assert len(node.children)>1
+        a = interpret(node.children[0], env)
+        b = interpret(node.children[1], env)
+        t = (a, b)
+        assert isinstance(t, tuple)
+        result = W_Tuple(t)
+        for i in range(len(node.children)-2):
+            child = node.children[i+2]
             elm = interpret(child, env)
-            if i==0:
-                result = elm
-            else:
-                result = tuple([result, elm]) 
-            i = i + 1
+            t = (result, elm)
+            assert isinstance(t, tuple)
+            result = W_Tuple(t) 
         return result
+        """
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
         #return SymbolicPowerSet(aSet, env, interpret)
@@ -940,19 +943,19 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         assert isinstance(aSet, frozenset)
         lst = aSet.lst
-        min = lst[0].value
+        min = lst[0].ivalue
         for w_int in lst:
-            if w_int.value< min:
-                min = w_int.value
+            if w_int.ivalue< min:
+                min = w_int.ivalue
         return W_Integer(min)
     elif isinstance(node, AMaxExpression):
         aSet = interpret(node.children[0], env)
         assert isinstance(aSet, frozenset)
         lst = aSet.lst
-        max = lst[0].value
+        max = lst[0].ivalue
         for w_int in lst:
-            if w_int.value> max:
-                max = w_int.value
+            if w_int.ivalue> max:
+                max = w_int.ivalue
         return W_Integer(max)
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
@@ -977,24 +980,24 @@ def interpret(node, env):
     elif isinstance(node, AModuloExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        assert expr2.value > 0
+        assert expr2.ivalue > 0
         integer = expr1.__mod__(expr2)
         return W_Integer(integer)
     elif isinstance(node, APowerOfExpression):
         basis = interpret(node.get(0), env)
         exp = interpret(node.get(1), env)
         # not RPython: result = basis ** exp
-        assert exp.value >=0
+        assert exp.ivalue >=0
         result = 1
-        for i in range(exp.value):
-            result = result *basis.value
+        for i in range(exp.ivalue):
+            result = result * basis.ivalue
         return W_Integer(result)     
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.get(0), env)
         right = interpret(node.get(1), env)
         L = []
-        for i in range(right.value+1):
-            value = W_Integer(i+left.value)
+        for i in range(right.ivalue+1):
+            value = W_Integer(i+left.ivalue)
             L.append(value)
         return frozenset(L)
         #return SymbolicIntervalSet(left, right, env, interpret)
@@ -1017,9 +1020,9 @@ def interpret(node, env):
                 env.set_value(name, value)
             try:
                 w_bool = interpret(pred, env)
-                if w_bool.value:  # test 
+                if w_bool.bvalue:  # test 
                     w_int = interpret(expr, env)         
-                    sum_ += w_int.value
+                    sum_ += w_int.ivalue
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
@@ -1043,9 +1046,9 @@ def interpret(node, env):
                 env.set_value(name, value)
             try:
                 w_bool = interpret(pred, env)
-                if w_bool.value:  # test 
+                if w_bool.bvalue:  # test 
                     w_int = interpret(expr, env)         
-                    prod_ *= w_int.value
+                    prod_ *= w_int.ivalue
             except ValueNotInDomainException:
                 continue
         env.pop_frame() # exit scope
@@ -1080,7 +1083,6 @@ def interpret(node, env):
 #       4. Relations
 #
 # ******************
-        """
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -1088,8 +1090,10 @@ def interpret(node, env):
         #return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
         lst = []
         for relation in make_explicit_set_of_realtion_lists(aSet1, aSet2):
+            assert isinstance(relation, frozenset)
             lst.append(relation)
         return frozenset(lst)
+        """
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
@@ -1747,7 +1751,7 @@ def exec_substitution(sub, env):
                 
                 # write back if solution 
                 w_bool =interpret(sub.children[-1], env)
-                if w_bool.value:
+                if w_bool.bvalue:
                     env.pop_frame() # exit new frame
                     for i in range(len(nodes)):
                         env.set_value(nodes[i].idName, results[i])
@@ -1833,7 +1837,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[1], Substitution)
         condition = interpret(sub.children[0], env)
         #print condition, node.children[0]
-        if condition.value:
+        if condition.bvalue:
             ex_generator = exec_substitution(sub.children[1], env)
             for possible in ex_generator:
                 yield possible
@@ -1843,7 +1847,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
         w_bool = interpret(sub.children[0], env)
-        if not w_bool.value:
+        if not w_bool.bvalue:
             print "ASSERT-Substitution violated:" + pretty_print(sub.children[0])
             yield False  #TODO: What is correct: False or crash\Exception?
         ex_generator = exec_substitution(sub.children[1], env)
@@ -1854,7 +1858,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[1], Substitution)
         all_cond_false = True
         condition = interpret(sub.children[0], env)
-        if condition.value: # take "THEN" Branch
+        if condition.bvalue: # take "THEN" Branch
             all_cond_false = False
             ex_generator = exec_substitution(sub.children[1], env)
             for possible in ex_generator:
@@ -1864,7 +1868,7 @@ def exec_substitution(sub, env):
                 assert isinstance(child.children[0], Predicate)
                 assert isinstance(child.children[1], Substitution)
                 sub_condition = interpret(child.children[0], env)
-                if sub_condition.value:
+                if sub_condition.bvalue:
                     all_cond_false = False
                     ex_generator = exec_substitution(child.children[1], env)
                     for possible in ex_generator:
@@ -1898,7 +1902,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[1], Substitution)
         # (1) find enabled conditions and remember this branches 
         w_bool = interpret(sub.children[0], env)
-        if w_bool.value:
+        if w_bool.bvalue:
             nodes.append(sub.children[1])
         for i in range(len(sub.children)-2):
             child = sub.children[i+2]
@@ -1906,7 +1910,7 @@ def exec_substitution(sub, env):
                 assert isinstance(child.children[0], Predicate)
                 assert isinstance(child.children[1], Substitution)
                 w_bool = interpret(child.children[0], env)
-                if w_bool.value:
+                if w_bool.bvalue:
                     nodes.append(child.children[1])
             else:
                 # else-branch
@@ -2163,7 +2167,7 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
         yield True  #loop has already been entered. Not condition means success of "exec possible"
     else: 
         w_bool = interpret(invariant, env)
-        assert w_bool.value
+        assert w_bool.bvalue
         ex_generator = exec_substitution(doSubst, env)
         for possible in ex_generator:
             if possible:
