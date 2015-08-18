@@ -1093,32 +1093,34 @@ def interpret(node, env):
             assert isinstance(relation, frozenset)
             lst.append(relation)
         return frozenset(lst)
-        """
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
-        if isinstance(aSet, SymbolicSet):
-            aSet = aSet.enumerate_all()
-        dom = [e[0] for e in list(aSet)]
+        #if isinstance(aSet, SymbolicSet):
+        #    aSet = aSet.enumerate_all()
+        dom = [e.tvalue[0] for e in aSet]
         return frozenset(dom)
     elif isinstance(node, ARangeExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
-        if isinstance(aSet, SymbolicSet):
-            aSet = aSet.enumerate_all()
-        ran = [e[1] for e in list(aSet)]
+        #if isinstance(aSet, SymbolicSet):
+        #    aSet = aSet.enumerate_all()       
+        ran = [e.tvalue[1] for e in aSet]
         return frozenset(ran)
     elif isinstance(node, ACompositionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-            return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
+        #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+        #    return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
         # p and q: tuples representing domain and image
-        new_rel = [(p[0],q[1]) for p in aSet1 for q in aSet2 if p[1]==q[0]]
+        new_rel = [W_Tuple((p.tvalue[0],q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1]==q.tvalue[0]]
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
+        id_rel = [W_Tuple((e,e)) for e in aSet]
+        return frozenset(id_rel)
+        #return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
+        """
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
@@ -1143,7 +1145,7 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
         # TODO: handle symbolic case
-        new_rel = [x for x in rel if not x[0] in aSet]
+        new_rel = [x for x in rel if not x.tvalue[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ARangeRestrictionExpression):
         aSet = interpret(node.children[1], env)
