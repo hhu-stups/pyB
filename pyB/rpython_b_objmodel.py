@@ -11,6 +11,14 @@ class W_Tuple(W_Object):
         # e.g. W_Tuple((W_Tuple((W_Integer(1),W_Integer(2))),W_Integer(3)))
         assert isinstance(tvalue, tuple) or isinstance(tvalue, W_Tuple) 
         self.tvalue = tvalue
+        
+    def __eq__(self, other):
+        assert isinstance(other, tuple)
+        return self.tvalue == other.tvalue
+        
+    def __ne__(self, other):
+        assert isinstance(other, tuple)
+        return self.tvalue != other.tvalue
            
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations

@@ -1083,6 +1083,7 @@ def interpret(node, env):
 #       4. Relations
 #
 # ******************
+        """
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -1093,6 +1094,7 @@ def interpret(node, env):
             assert isinstance(relation, frozenset)
             lst.append(relation)
         return frozenset(lst)
+        """
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
@@ -1141,33 +1143,54 @@ def interpret(node, env):
                 except ValueNotInDomainException:
                     continue              
         return frozenset(new_rel)
+        """
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
+        assert isinstance(aSet, frozenset)
         # TODO: handle symbolic case
-        new_rel = [x for x in rel if not x.tvalue[0] in aSet]
+        new_rel = []
+        for x in rel:
+            for e in aSet:
+                if x.tvalue[0].__ne__(e):
+                    new_rel.append(x)
+        #new_rel = [x for x in rel if not x.tvalue[0] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ARangeRestrictionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
+        assert isinstance(aSet, frozenset)
         # TODO: handle symbolic case
-        new_rel = [x for x in rel if x[1] in aSet]
+        new_rel = []
+        for x in rel:
+            for e in aSet:
+                if x.tvalue[1].__eq__(e):
+                    new_rel.append(x)
+        #new_rel = [x for x in rel if x[1] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, ARangeSubtractionExpression):
         aSet = interpret(node.children[1], env)
         rel = interpret(node.children[0], env)
+        assert isinstance(aSet, frozenset)
         # TODO: handle symbolic case
-        new_rel = [x for x in rel if not x[1] in aSet]
+        new_rel = []
+        for x in rel:
+            for e in aSet:
+                if x.tvalue[1].__ne__(e):
+                    new_rel.append(x)
+        #new_rel = [x for x in rel if not x[1] in aSet]
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
-        return SymbolicInverseRelation(rel, env, interpret, node)
+        rev_rel = []
+        for e in rel:
+            rev_rel.insert(0,e)
+        return frozenset(rev_rel)
+        #return SymbolicInverseRelation(rel, env, interpret, node)
     elif isinstance(node, AImageExpression):
-        #print "DEBUG! interpret(AImageExpression): ", pretty_print(node)
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        #print rel,
-        #print aSet
+        """
         if isinstance(rel, SymbolicSet):
             image = []
             #if isinstance(aSet, SymbolicSet):
@@ -1182,45 +1205,85 @@ def interpret(node, env):
                 except ValueNotInDomainException:
                     continue
         else:
-            image = [x[1] for x in rel if x[0] in aSet ]
-            
+        """
+        #image = [x[1] for x in rel if x[0] in aSet ]
+        image = []
+        for x in rel:
+            for e in aSet:
+                if x.tvalue[0].__eq__(e):
+                    image.append(x.tvalue[1])           
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
-        #print pretty_print(node)
         # r1 <+ r2
         r1 = interpret(node.children[0], env)
         r2 = interpret(node.children[1], env)
+        """
         if isinstance(r1, SymbolicSet):
             r1 = r1.enumerate_all()
         if isinstance(r2, SymbolicSet):
             r2 = r2.enumerate_all()
-        dom_r2 = [x[0] for x in r2]
-        new_r  = [x for x in r1 if x[0] not in dom_r2]
-        r2_list= [x for x in r2]
-        return frozenset(r2_list + new_r)
+        """
+        #dom_r2 = [x[0] for x in r2]
+        #new_r  = [x for x in r1 if x[0] not in dom_r2]
+        #r2_list= [x for x in r2]
+        #return frozenset(r2_list + new_r)
+        dom_r2 = []
+        for x in r2:
+            dom_r2.append(x.tvalue[0])
+        new_r = []
+        for x in r1:
+            for e in dom_r2:
+                if not x.tvalue[0].__eq__(e):
+                    new_r.append(x)
+        assert isinstance(r2, frozenset)
+        return frozenset(r2.lst + new_r)
     elif isinstance(node, ADirectProductExpression):
         p = interpret(node.children[0], env)
         q = interpret(node.children[1], env)
+        """
         if isinstance(p, SymbolicSet):
             p = p.enumerate_all()
         if isinstance(q, SymbolicSet):
-            q = q.enumerate_all()        
-        d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
+            q = q.enumerate_all()  
+        """
+        d_prod = []
+        for x in p:
+            for y in q:
+                if x.tvalue[0].__eq__(y.tvalue[0]):
+                    e = W_Tuple((x.tvalue[0], W_Tuple((x.tvalue[1], y.tvalue[1]))))
+                    d_prod.append(e)         
+        #d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
         return frozenset(d_prod)
     elif isinstance(node, AParallelProductExpression):
         p = interpret(node.children[0], env)
         q = interpret(node.children[1], env)
-        p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+        #p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+        p_prod = []
+        for x in p:
+            for y in q:
+                e = W_Tuple((W_Tuple((x.tvalue[0], y.tvalue[0])), W_Tuple((x.tvalue[1], y.tvalue[1]))))
+                p_prod.append(e)  
         return frozenset(p_prod)
     elif isinstance(node, AIterationExpression):
-        arel = interpret(node.children[0], env)
-        n = interpret(node.children[1], env)
+        arel  = interpret(node.children[0], env)
+        w_int = interpret(node.children[1], env)
+        n = w_int.ivalue
         assert n>=0
-        rel = list(arel)
-        rel = [(x[0],x[0]) for x in rel]
+        #rel = list(arel)
+        #rel = [(x[0],x[0]) for x in rel]
+        #for i in range(n):
+        #    rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+        rel = []
+        for x in rel:
+            rel.append(W_Tuple((x.tvalue[0], x.tvalue[0])))
         for i in range(n):
-            rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+            for y in rel:
+                for x in arel:
+                    if y.tvalue[1].__eq__(x.tvalue[0]):
+                        e = W_Tuple((y.tvalue[0],x.tvalue[1]))
+                        rel.append(e)
         return frozenset(rel)
+        """
     elif isinstance(node, AReflexiveClosureExpression):
         arel = interpret(node.children[0], env)
         rel = list(arel)
@@ -1244,36 +1307,37 @@ def interpret(node, env):
             if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
                 return frozenset(rel)
             rel =list(frozenset(new_rel).union(frozenset(rel)))
+        """
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicFirstProj(S,T, env, interpret, node)
-        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        #    return SymbolicFirstProj(S,T, env, interpret, node)
         cart = []
         for x in S:
             for y in T:
-                cart.append((x,y))
-        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+                cart.append(W_Tuple((x,y)))
         proj = []
         for t in cart:
-            proj.append((t,t[0]))
+            e = (t, t.tvalue[0])
+            proj.append(W_Tuple(e))
         return frozenset(proj)
     elif isinstance(node, ASecondProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-            return SymbolicSecondProj(S,T, env, interpret, node)
-        # NOT Rpyhon: cart = frozenset(((x,y) for x in S for y in T))
+        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+        #    return SymbolicSecondProj(S,T, env, interpret, node)
         cart = []
         for x in S:
             for y in T:
-                cart.append((x,y))
-        # NOT Rpython: proj = [(t,t[1]) for t in cart]
+                cart.append(W_Tuple((x,y)))
         proj = []
         for t in cart:
-            proj.append((t,t[1]))
+            e = (t, t.tvalue[1])
+            proj.append(W_Tuple(e))
         return frozenset(proj)
+        """
+    
 # *******************
 #
 #       4.1 Functions
