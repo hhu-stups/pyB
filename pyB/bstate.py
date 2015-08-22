@@ -26,13 +26,31 @@ class BState():
     
     # debug-helper
     def print_bstate(self):
+        from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
         for bmch in self.bmch_dict:
             if USE_RPYTHON_CODE:
                 lst = "["
                 for dic in self.bmch_dict[bmch]:
                     d = "{"
                     for e in dic:
-                        d += e +":"+ str(dic[e].value)
+                        w_obj = dic[e]
+                        if isinstance(w_obj, W_Integer):
+                            value = str(w_obj.ivalue)
+                        elif isinstance(w_obj, W_Boolean):
+                            value = str(w_obj.bvalue)
+                        #elif isinstance(w_obj, W_Set_Element):
+                        #    value = w_obj.string
+                        #elif isinstance(w_obj, W_String):
+                        #    value = w_obj.string
+                        elif isinstance(w_obj, frozenset):
+                            value = ""
+                            for le in w_obj.lst:
+                                value = value + str(le) # TODO: performance
+                        elif isinstance(w_obj, W_Tuple):
+                            value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
+                        else:
+                            value = ""
+                        d += e +":"+ str(value)
                     d +="}"   
                     lst += d
                 lst += "]"

@@ -244,6 +244,7 @@ def run_model_checking_mode():
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
     if not len(bstates)==1:
         print "WARNING: only one init. expected" 
+        print "real init number:" + len(bstates)
         return
     if not mch.has_invariant_mc:
         print "WARNING: no invariant present" 

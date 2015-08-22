@@ -930,12 +930,29 @@ def interpret(node, env):
         return NaturalSet(env, interpret)
     elif isinstance(node, ANatural1SetExpression):
         return Natural1Set(env, interpret)
+        """
     elif isinstance(node, ANatSetExpression):
-        return NatSet(env, interpret)
+        assert env is not None
+        L = []
+        for i in range(0,env._max_int+1):
+            L.append(W_Integer(i))
+        return frozenset(L)
+        #return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
-        return Nat1Set(env, interpret)
+        assert env is not None
+        L = []
+        for i in range(1,env._max_int+1):
+            L.append(W_Integer(i))
+        return frozenset(L)
+        #return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
-        return IntSet(env, interpret)
+        assert env is not None
+        L = []
+        for i in range(env._min_int, env._max_int+1):
+            L.append(W_Integer(i))
+        return frozenset(L)
+        #return IntSet(env, interpret)
+        """
     elif isinstance(node, AIntegerSetExpression):
         return IntegerSet(env, interpret)
         """
@@ -1879,6 +1896,9 @@ def exec_substitution(sub, env):
         doSubst   = sub.children[1]
         invariant = sub.children[2]
         variant   = sub.children[3]
+        if not isinstance(condition, Predicate) or not isinstance(doSubst, Substitution) or not isinstance(invariant, Predicate) or not isinstance(variant, Expression) :
+            if PRINT_WARNINGS:
+                print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP AST PARSING ERROR"
         assert isinstance(condition, Predicate) 
         assert isinstance(doSubst, Substitution)
         assert isinstance(invariant, Predicate)  
@@ -2229,15 +2249,20 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
     # after the first successful while-loop termination. 
     # This code would only be correct for non-deterministic while-loops
     bstate = env.state_space.get_state().clone()
-    if not interpret(condition, env):
+    w_bool = interpret(condition, env)
+    if not w_bool.bvalue:
         yield True  #loop has already been entered. Not condition means success of "exec possible"
     else: 
         w_bool = interpret(invariant, env)
+        if not w_bool.bvalue and PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT ERROR"
         assert w_bool.bvalue
         ex_generator = exec_substitution(doSubst, env)
         for possible in ex_generator:
             if possible:
                 temp = interpret(variant, env)
+                if not temp.__lt__(v_value) and PRINT_WARNINGS:
+                    print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT ERROR"
                 assert temp.__lt__(v_value)
                 ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, temp, env)
                 for other_possible in ex_while_generator:
@@ -2246,4 +2271,5 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
                 # restore the bstate of the last recursive call (python-level) 
                 # i.e the last loop iteration (B-level)
                 env.state_space.add_state(bstate) 
+                yield True
         yield False

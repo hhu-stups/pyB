@@ -77,6 +77,8 @@ def clean_up():
 
 #import pytest
 #@pytest.mark.skipif(True, reason="takes to much time") 
+import pytest, config
+@pytest.mark.skipif(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")     
 class TestPyPyTranslationObjects():
     def test_pypy_genAST_expr_number1(self):
         code =  """

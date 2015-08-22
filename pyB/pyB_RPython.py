@@ -14,7 +14,7 @@ from typing import type_check_bmch, type_check_root_bmch
 
 
 def main(argv):      
-    print "WARNING: model checking still experimental"
+    print "\033[1m\033[91mWARNING\033[00m: model checking still experimental"
     if len(argv)<2:
         return 0
         
@@ -40,6 +40,8 @@ def main(argv):
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
     if not len(bstates)==1:
        print "WARNING: only one init. expected" 
+       for bs in bstates:
+           bs.print_bstate()
        return -1
     if not mch.has_invariant_mc:
        print "WARNING: no invariant present" 

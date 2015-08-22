@@ -3,7 +3,7 @@
 MACHINE SigmaLoop
 VARIABLES sum,  n
 INVARIANT
-  sum:NAT & n:NAT
+  sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
 INITIALISATION 	n:=5 ; sum:=(SIGMA i. (i:0..n | i))
 OPERATIONS 
 
