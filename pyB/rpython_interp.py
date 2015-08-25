@@ -2271,5 +2271,5 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
                 # restore the bstate of the last recursive call (python-level) 
                 # i.e the last loop iteration (B-level)
                 env.state_space.add_state(bstate) 
-                yield True
         yield False
+        

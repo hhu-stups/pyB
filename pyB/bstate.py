@@ -38,10 +38,10 @@ class BState():
                             value = str(w_obj.ivalue)
                         elif isinstance(w_obj, W_Boolean):
                             value = str(w_obj.bvalue)
-                        #elif isinstance(w_obj, W_Set_Element):
-                        #    value = w_obj.string
-                        #elif isinstance(w_obj, W_String):
-                        #    value = w_obj.string
+                        elif isinstance(w_obj, W_Set_Element):
+                            value = w_obj.string
+                        elif isinstance(w_obj, W_String):
+                            value = w_obj.string
                         elif isinstance(w_obj, frozenset):
                             value = ""
                             for le in w_obj.lst:
@@ -80,6 +80,8 @@ class BState():
                     for key in self_dictionary.keys():
                         self_value  = self_dictionary[key]
                         other_value = other_dictionary[key]
+                        if self_value is None and other_value is None:
+                            continue
                         if USE_RPYTHON_CODE:
                             assert isinstance(self_value, W_Object)
                             assert isinstance(other_value, W_Object)

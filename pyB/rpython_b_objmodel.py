@@ -13,7 +13,8 @@ class W_Tuple(W_Object):
         self.tvalue = tvalue
         
     def __eq__(self, other):
-        assert isinstance(other, tuple)
+        if not isinstance(other, W_Tuple):
+            return False
         return self.tvalue == other.tvalue
         
     def __ne__(self, other):
@@ -69,7 +70,8 @@ class W_Integer(W_Object):
         return self.ivalue <= other.ivalue
          
     def __eq__(self, other):
-        assert isinstance(other, W_Integer)
+        if not isinstance(other, W_Integer):
+            return False
         return self.ivalue == other.ivalue 
         
     def __ne__(self, other):
@@ -119,7 +121,8 @@ class W_Boolean(W_Object):
         return boolean
     
     def __eq__(self, other):
-        assert isinstance(other, W_Boolean)
+        if not isinstance(other, W_Boolean):
+            return False
         boolean = self.bvalue == other.bvalue
         assert isinstance(boolean, bool)
         return boolean
@@ -145,15 +148,24 @@ class W_Set_Element(W_Object):
     
     def __init__(self, string):
         assert isinstance(string, str)
-        self.string
+        self.string = string
 
+    def __eq__(self, other):
+        if not isinstance(other, W_Set_Element):
+            return False
+        return self.string==other.string
 
 class W_String(W_Object):
     #_settled_ = True
     
     def __init__(self, string):
         assert isinstance(string, str)
-        self.string
+        self.string = string
+
+    def __eq__(self, other):
+        if not isinstance(other, W_String):
+            return False
+        return self.string==other.string
 
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.
@@ -224,8 +236,6 @@ class frozenset(W_Object):
     
     # WARNING: set([1,2,3])!=frozenset([1,2,3]) 
     def __eq__(self, other):
-        #print "equal", self, other
-        #print self.lst, other.lst
         if not isinstance(other, frozenset):
             return False
         if not len(self)==len(other):
