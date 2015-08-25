@@ -4,7 +4,7 @@ MACHINE SigmaLoop
 VARIABLES sum,  n
 INVARIANT
   sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
-INITIALISATION 	n:=5 ; sum:=(SIGMA i. (i:0..n | i))
+INITIALISATION 	n:=9 ; sum:=(SIGMA i. (i:0..n | i))
 OPERATIONS 
 
 rr <-- op = rr:=sum /* avoid deadlock */

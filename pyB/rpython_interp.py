@@ -401,8 +401,8 @@ def print_predicate_fail(env, node):
         pred_lst.append(node.children[1])
         node = node.children[0]
     for p in pred_lst:
-        result = interpret(p, env)
-        if not result:
+        w_bool = interpret(p, env)
+        if not w_bool.bvalue:
             print "FALSE = ("+pretty_print(p)+")"
             #print p.children[0].idName, env.get_value(p.children[0].idName)    
            

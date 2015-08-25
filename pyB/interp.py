@@ -2092,7 +2092,10 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
     if not interpret(condition, env):
         yield True  #loop has already been entered. Not condition means success of "exec possible"
     else: 
-        assert interpret(invariant, env)
+        boolean = interpret(invariant, env)
+        if not boolean and PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT ERROR"
+        assert boolean
         ex_generator = exec_substitution(doSubst, env)
         for possible in ex_generator:
             if possible:

@@ -19,6 +19,7 @@ def main(argv):
         return 0
         
     env = Environment()                                         # 1. create env.
+    env._max_int = 2**31
     file_name_str = argv[1]                                     # 2. read filenames
     ast_string = file_to_AST_str(file_name_str)                 # 3. parse input-file to string
     #env.set_search_dir(file_name_str)

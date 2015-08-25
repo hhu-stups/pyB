@@ -26,7 +26,7 @@ class TestModelChecker():
         dec = PRE floor>0  THEN floor := floor - 1 END 
     END
     """
-    def test_simple_model_checking(self):
+    def test_simple_model_checking0(self):
         path = "examples/Lift2.mch"
         if os.name=='nt':
             bfile_name="examples\Lift2"
@@ -84,5 +84,107 @@ class TestModelChecker():
         
           
         
+    """
+	MACHINE WhileLoop
+	VARIABLES sum, i, n
+	INVARIANT
+	  sum>=0 & sum<MAXINT & i>=0 & i<MAXINT & n>=0 & n<MAXINT
+	INITIALISATION 	
+	  BEGIN 
+		   BEGIN 
+			   n := 10 ;
+			   sum := 0 ; 
+			   i := 0
+		   END;
+		   WHILE i<n DO
+			   sum := sum + i;
+			   i := i+1 
+		   INVARIANT
+			   i>=0 & i<MAXINT & i<=n & sum>=0 & sum<MAXINT & sum = ((i-1) * (i))/2
+		   VARIANT 
+			   n - i
+		   END
+	   END
+
+	OPERATIONS    
+	   rr <-- op = rr:=sum /* avoid deadlock */
+	END
+    """
+    def test_simple_model_checking1(self):
+        path = "examples/WhileLoop.mch"
+        if os.name=='nt':
+            bfile_name="examples\WhileLoop"
+        ast_string = file_to_AST_str(path)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        env._max_int = 2**31
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         
+        solution_file_read = False
+        bstates = set_up_constants(root, env, mch, solution_file_read)
+        assert len(bstates)==0 # no setup possible
+        bstates = exec_initialisation(root, env, mch, solution_file_read)
+        assert len(bstates)==1 # only one possibility (sum:=45)  
+        assert len(env.state_space.seen_states)==0        
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])
+        assert len(env.state_space.seen_states)==1
+        invatiant = root.children[2]
+        assert isinstance(invatiant, AInvariantMachineClause)
+        assert interpret(invatiant, env)
+        assert len(env.state_space.stack)==2 
+        next_states = calc_next_states(env, mch)
+        assert len(next_states)==1
+        assert len(env.state_space.stack)==2 # init and empty setup
+        assert env.get_value('sum')==45
+        env.state_space.set_current_state(next_states[0].bstate) 
+        assert env.get_value('sum')==45
+        
+    """
+	MACHINE SigmaLoop
+	VARIABLES sum,  n
+	INVARIANT
+	  sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
+	INITIALISATION 	n:=10 ; sum:=(SIGMA i. (i:0..n | i))
+	OPERATIONS 
+
+	rr <-- op = rr:=sum /* avoid deadlock */
+  
+	END 
+	"""     
+    def test_simple_model_checking2(self):
+        path = "examples/SigmaLoop.mch"
+        if os.name=='nt':
+            bfile_name="examples\SigmaLoop"
+        ast_string = file_to_AST_str(path)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        env._max_int = 2**31
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend 
+        
+        solution_file_read = False
+        bstates = set_up_constants(root, env, mch, solution_file_read)
+        assert len(bstates)==0 # no setup possible
+        bstates = exec_initialisation(root, env, mch, solution_file_read)
+        assert len(bstates)==1 # only one possibility (sum:=45)  
+        assert len(env.state_space.seen_states)==0        
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])
+        assert len(env.state_space.seen_states)==1
+        invatiant = root.children[2]
+        assert isinstance(invatiant, AInvariantMachineClause)
+        assert interpret(invatiant, env)
+        assert len(env.state_space.stack)==2 
+        next_states = calc_next_states(env, mch)
+        assert len(next_states)==1
+        assert len(env.state_space.stack)==2 # init and empty setup
+        assert env.get_value('sum')==45
+        env.state_space.set_current_state(next_states[0].bstate) 
+        assert env.get_value('sum')==45           
         
