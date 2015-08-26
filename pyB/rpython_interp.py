@@ -609,7 +609,7 @@ def interpret(node, env):
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.get(0), env)
         if not result.bvalue:
-            print "Invariant violation"
+            print "\033[1m\033[91mWARNING\033[00mInvariant violation"
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.get(0))
             if env is not None: #Rpython typer help
@@ -2242,6 +2242,7 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
                     values.pop()
         env.state_space.undo()
 
+# TODO: maximum recursion depth exceeded
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
     # always use the bstate of the last iteration 

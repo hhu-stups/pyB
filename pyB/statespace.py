@@ -1,11 +1,11 @@
 from bstate import BState
-from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING, USE_ANIMATION_HISTORY
+from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING, USE_ANIMATION_HISTORY, USE_RPYTHON_CODE
 
 # TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]
-        self.seen_states = []
+        self.seen_states = {}
     
     # returntype: BState
     def get_state(self):
@@ -14,7 +14,7 @@ class StateSpace:
         else:
             return self.stack[0]
         
-    # returntype: boolean
+    # return type: boolean
     def empty(self):
         return len(self.stack)==1
     
@@ -26,10 +26,12 @@ class StateSpace:
            
     def is_seen_state(self, bstate):
         assert isinstance(bstate, BState)
-        for s in self.seen_states:
-            if s.equal(bstate):
-                return True
-        return False              
+        h = bstate.__hash__()
+        if h in self.seen_states:
+             # check hash collision. Be sure this state is new!
+             s = self.seen_states[h]
+             return s.equal(bstate)
+        return False             
     
     def add_state(self, bstate, op_name="unknown"):
         assert isinstance(bstate, BState)
@@ -39,8 +41,9 @@ class StateSpace:
     def set_current_state(self, bstate):
         assert isinstance(bstate, BState)
         self.stack.append(bstate)
-        self.seen_states.append(bstate) 
-  
+        h = bstate.__hash__()
+        self.seen_states[h] = bstate
+          
     
     # returntype: int
     def get_stack_size(self):

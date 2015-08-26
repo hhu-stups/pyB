@@ -1,6 +1,6 @@
-MACHINE Lift2
+MACHINE Lift0
 CONCRETE_VARIABLES  floor
-INVARIANT floor : 0..999999 /* NAT */
+INVARIANT floor>=0 & floor<=999999 /* NAT */
 INITIALISATION floor := 4
 OPERATIONS
 	inc = PRE floor<999999 THEN floor := floor + 1 END ;	

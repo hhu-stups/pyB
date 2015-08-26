@@ -621,7 +621,7 @@ def interpret(node, env):
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
         if not result:
-            print "Invariant violation"
+            print "\033[1m\033[91mInvariant violation\033[00m"
             print "\nFALSE Predicates:"
             print_predicate_fail(env, node.children[0])
             env.state_space.print_history()

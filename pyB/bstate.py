@@ -26,14 +26,24 @@ class BState():
     
     # debug-helper
     def print_bstate(self):
+        string = self.__repr__()
+        print string
+    
+    def __repr__(self):
+        string = ""
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
         for bmch in self.bmch_dict:
-            if USE_RPYTHON_CODE:
-                lst = "["
-                for dic in self.bmch_dict[bmch]:
-                    d = "{"
-                    for e in dic:
-                        w_obj = dic[e]
+            if bmch is None:
+                string += "Predicate or Expression:"
+            else:
+                string += bmch.mch_name + ":" 
+                           
+            lst = "["
+            for dic in self.bmch_dict[bmch]:
+                d = "{"
+                for k in dic:
+                    if USE_RPYTHON_CODE:
+                        w_obj = dic[k]
                         if isinstance(w_obj, W_Integer):
                             value = str(w_obj.ivalue)
                         elif isinstance(w_obj, W_Boolean):
@@ -50,18 +60,23 @@ class BState():
                             value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
                         else:
                             value = ""
-                        d += e +":"+ str(value)
-                    d +="}"   
-                    lst += d
-                lst += "]"
-            else:
-                lst = self.bmch_dict[bmch]
-                
-            if bmch is None:
-                print "Predicate or Expression:", lst
-            else:
-                print bmch.mch_name, ":", lst
-     
+                    else:
+                        value = dic[k]
+                    d += k +":"+ str(value) + " "
+                d +="}"   
+                lst += d
+            lst += "]"
+            string = string + lst + '\n' 
+        return string    
+   
+   
+    def __hash__(self):
+        if USE_RPYTHON_CODE:
+            from rpython.rlib.objectmodel import compute_hash
+            hash_str = compute_hash(self.__repr__())
+        else:
+            hash_str = hash(self.__repr__())
+        return hash_str  
                 
     def equal(self, bstate):
         if not len(self.bmch_dict)==len(bstate.bmch_dict):

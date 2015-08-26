@@ -142,6 +142,7 @@ class TestModelChecker():
         assert env.get_value('sum')==45
         env.state_space.set_current_state(next_states[0].bstate) 
         assert env.get_value('sum')==45
+
         
     """
 	MACHINE SigmaLoop
