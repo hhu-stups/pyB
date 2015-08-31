@@ -1,5 +1,5 @@
 from ast_nodes import *
-from bexceptions import ValueNotInDomainException, INITNotPossibleException, SETUPNotPossibleException
+from bexceptions import ValueNotInDomainException, ValueNotInBStateException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
 from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions #,get_image

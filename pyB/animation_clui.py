@@ -87,11 +87,14 @@ def print_values_b_style(value):
         value = value.enumerate_all()
     if isinstance(value, frozenset):
         string = "{"
-        value = list(value)
-        for i in range(len(value)):
-            entry = value[i]
+        if USE_RPYTHON_CODE:
+            value_list = value.lst
+        else:
+            value_list = list(value)
+        for i in range(len(value_list)):
+            entry = value_list[i]
             string += print_values_b_style(entry)
-            if i < len(value)-1:
+            if i < len(value_list)-1:
                 string += ", "
         string += "}"
         return string
