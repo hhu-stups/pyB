@@ -6,7 +6,7 @@ from enumeration import init_deffered_set, try_all_values, powerset, make_set_of
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
 from symbolic_helpers import make_explicit_set_of_realtion_lists
-from symbolic_sets import SymbolicIntervalSet, NaturalSet, Natural1Set, NatSet, Nat1Set, IntSet, IntegerSet
+from symbolic_sets import NatSet#, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, frozenset
 from typing import type_check_predicate, type_check_expression
 

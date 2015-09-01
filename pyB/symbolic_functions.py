@@ -3,6 +3,7 @@ from bexceptions import ValueNotInDomainException
 from config import USE_RPYTHON_CODE
 from helpers import enumerate_cross_product
 from relation_helpers import *
+from rpython_b_objmodel import W_Object
 from symbolic_helpers import check_syntacticly_equal, make_explicit_set_of_realtion_lists 
 from symbolic_sets import SymbolicSet, PowerSetType, SymbolicCartSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
@@ -38,7 +39,43 @@ class SymbolicRelationSet(SymbolicSet):
             return  True
         raise Exception("Not implemented: relation symbolic membership")
 
-    def make_generator(self):
+    def enumerate_all(self):
+        if not self.explicit_set_computed:
+            assert isinstance(self, W_Object)
+            assert isinstance(self, SymbolicSet)
+            result = []
+            # RPython typing constraints made this ugly code necessary 
+            if isinstance(self, SymbolicPartialFunctionSet):
+                for e in self.SymbolicPartialFunctionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicTotalFunctionSet):
+                for e in self.SymbolicTotalFunctionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicPartialBijectionSet):
+                for e in self.SymbolicPartialBijectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicTotalBijectionSet):
+                for e in self.SymbolicTotalBijectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicPartialInjectionSet):
+                for e in self.SymbolicPartialInjectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicTotalInjectionSet):
+                for e in self.SymbolicTotalInjectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicPartialSurjectionSet):
+                for e in self.SymbolicPartialSurjectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicTotalSurjectionSet):
+                for e in self.SymbolicTotalSurjectionSet_generator():
+                     result.append(e)
+            else:
+                raise Exception("INTERNAL ERROR: unimplemented function enumeration")                         
+            self.explicit_set_repr = frozenset(result)
+            self.explicit_set_computed = True
+        return self.explicit_set_repr
+        
+    def SymbolicRelationSet_generator(self):
         S = self.left_set
         T = self.right_set
         return make_explicit_set_of_realtion_lists(S,T)
@@ -47,10 +84,21 @@ class SymbolicRelationSet(SymbolicSet):
         # TODO: handle empty set and maybe more sp. cases
         return SymbolicSet.__eq__(self, other)
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicRelationSet_gen = self.SymbolicRelationSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicRelationSet_gen.next()    
+ 
         
 class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicPartialFunctionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation):
                 yield relation
     
@@ -62,10 +110,21 @@ class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
            return False
         return True
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPartialFunctionSet_gen = self.SymbolicPartialFunctionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPartialFunctionSet_gen.next()    
+
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicTotalFunctionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set):
                 yield relation
 
@@ -75,11 +134,21 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
         if not is_a_function(element) or not is_a_total_function(element, self.left_set):
            return False
         return True
-                        
+ 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTotalFunctionSet_gen = self.SymbolicTotalFunctionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTotalFunctionSet_gen.next()                        
     
 class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T 
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicPartialInjectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_inje_function(relation):
                 yield relation
 
@@ -89,11 +158,22 @@ class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T
         if not is_a_function(element) or not is_a_inje_function(element):
            return False
         return True
-        
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPartialInjectionSet_gen = self.SymbolicPartialInjectionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPartialInjectionSet_gen.next()   
+        
+
 class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicTotalInjectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_inje_function(relation):
                 yield relation
 
@@ -103,11 +183,33 @@ class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_inje_function(element):
            return False
         return True
-            
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTotalInjectionSet_gen = self.SymbolicTotalInjectionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTotalInjectionSet_gen.next()             
+ 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTotalInjectionSet_gen = self.SymbolicTotalInjectionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTotalInjectionSet_gen.next()    
+        
+      
 class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicPartialSurjectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_surj_function(relation, self.right_set):
                 yield relation
 
@@ -117,11 +219,22 @@ class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
         if not is_a_function(element) or not is_a_surj_function(element, self.right_set):
            return False
         return True
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPartialSurjectionSet_gen = self.SymbolicPartialSurjectionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPartialSurjectionSet_gen.next() 
             
     
 class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicTotalSurjectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set):
                 yield relation
 
@@ -131,11 +244,22 @@ class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set):
            return False
         return True
-        
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTotalSurjectionSet_gen = self.SymbolicTotalSurjectionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTotalSurjectionSet_gen.next() 
+        
+
 class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicTotalBijectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_total_function(relation, self.left_set) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
                 yield relation
 
@@ -145,11 +269,22 @@ class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
         if not is_a_function(element) or not is_a_total_function(element, self.left_set) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
            return False
         return True
-        
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTotalBijectionSet_gen = self.SymbolicTotalBijectionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTotalBijectionSet_gen.next() 
+
+                      
 class SymbolicPartialBijectionSet(SymbolicRelationSet):
-    def make_generator(self):
-        for relation in SymbolicRelationSet.make_generator(self):
+    def SymbolicPartialBijectionSet_generator(self):
+        for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
             if is_a_function(relation) and is_a_surj_function(relation, self.right_set) and is_a_inje_function(relation):
                 yield relation
 
@@ -159,7 +294,18 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
         if not is_a_function(element) or not is_a_surj_function(element, self.right_set) or not is_a_inje_function(element):
            return False
         return True
-        
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPartialBijectionSet_gen = self.SymbolicPartialBijectionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPartialBijectionSet_gen.next()   
+              
 
 class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
@@ -211,9 +357,32 @@ class SymbolicFirstProj(SymbolicSet):
                             pass # maybe equal. use brute-force in symbolic set              
             return SymbolicSet.__eq__(self, other)
     
-    def make_generator(self):
+    def enumerate_all(self):
+        if not self.explicit_set_computed:
+            assert isinstance(self, W_Object)
+            assert isinstance(self, SymbolicSet)
+            result = []
+            for e in self.SymbolicFirstProj_generator():
+                 result.append(e)                                         
+            self.explicit_set_repr = frozenset(result)
+            self.explicit_set_computed = True
+        return self.explicit_set_repr
+
+    
+    def SymbolicFirstProj_generator(self):
         for cross_prod in enumerate_cross_product(self.left_set, self.right_set):
              yield tuple([cross_prod,cross_prod[0]])      
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicFirstProj_gen = self.SymbolicFirstProj_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicFirstProj_gen.next() 
 
 
 class SymbolicSecondProj(SymbolicSet):
@@ -270,10 +439,31 @@ class SymbolicSecondProj(SymbolicSet):
                             pass # maybe equal. use brute-force in symbolic set              
             return SymbolicSet.__eq__(self, other)
 
-    def make_generator(self):
+    def enumerate_all(self):
+        if not self.explicit_set_computed:
+            assert isinstance(self, W_Object)
+            assert isinstance(self, SymbolicSet)
+            result = []
+            for e in self.SymbolicSecondProj_generator():
+                 result.append(e)                                         
+            self.explicit_set_repr = frozenset(result)
+            self.explicit_set_computed = True
+        return self.explicit_set_repr
+        
+    def SymbolicSecondProj_generator(self):
         for cross_prod in enumerate_cross_product(self.left_set, self.right_set):
              yield tuple([cross_prod,cross_prod[1]])
-                         
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicSecondProj_gen = self.SymbolicSecondProj_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicSecondProj_gen.next()                         
     
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
@@ -288,7 +478,7 @@ class SymbolicIdentitySet(SymbolicRelationSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicIdentitySet_generator(self):
         assert self.left_set==self.right_set
         for e in self.left_set:
             yield tuple([e,e])
@@ -299,7 +489,18 @@ class SymbolicIdentitySet(SymbolicRelationSet):
             return True
         else:
             return False 
-             
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicIdentitySet_gen = self.SymbolicIdentitySet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicIdentitySet_gen.next()
+                     
 class SymbolicCompositionSet(SymbolicRelationSet):
     def __init__(self, arelation0, arelation1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
@@ -351,17 +552,32 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                 self.env.pop_frame() # exit scope
                 self.explicit_set_repr = frozenset(result)
             else:
-                self.explicit_set_repr = SymbolicRelationSet.enumerate_all(self)
+                result = []
+                for e in self.SymbolicCompositionSet_generator():
+                    result.append(e)
+                self.explicit_set_repr = frozenset(result)
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicCompositionSet_generator(self):
         for e0 in self.left_relation:
             for e1 in self.right_relation:
                 #print e0[1], e1[0], e0[1]==e1[0]
                 if e0[1]==e1[0]:
                     yield (e0[0],e1[1])
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicCompositionSet_gen = self.SymbolicCompositionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicCompositionSet_gen.next()
+        
+            
     # may throw valueNotInDomainException
     def __getitem__(self, arg):
         if isinstance(self.left_relation, frozenset):
@@ -395,11 +611,22 @@ class SymbolicTransRelation(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
     
-    def make_generator(self):
+    def SymbolicTransRelation_generator(self):
         for tup in self.function:
             preimage = tup[0]
             for image in tup[1]:
                 yield tuple([preimage, image])
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTransRelation_gen = self.SymbolicTransRelation_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTransRelation_gen.next()
 
 
 # The SymbolicRelationSet methods asume a domain- and imageset present.
@@ -424,7 +651,7 @@ class SymbolicTransFunction(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr        
         
-    def make_generator(self):
+    def SymbolicTransFunction_generator(self):
         for tup in self.relation:
             image = []
             preimage = tup[0]
@@ -432,6 +659,18 @@ class SymbolicTransFunction(SymbolicSet):
                 if tup2[0]==preimage:
                     image.append(tup2[1])
             yield tuple([preimage,frozenset(image)])
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicTransFunction_gen = self.SymbolicTransFunction_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicTransFunction_gen.next()
+        
                                       
 # XXX: not enabled. see interpreter.py AReverseExpression
 class SymbolicInverseRelation(SymbolicRelationSet):
@@ -451,9 +690,20 @@ class SymbolicInverseRelation(SymbolicRelationSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
     
-    def make_generator(self):
+    def SymbolicInverseRelation_generator(self):
         for e in self.relation:
             yield tuple([e[1],e[0]])
+            
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicInverseRelation_gen = self.SymbolicInverseRelation_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicInverseRelation_gen.next()
     
     def __contains__(self, other):
         inv_element = tuple([other[1],other[0]])

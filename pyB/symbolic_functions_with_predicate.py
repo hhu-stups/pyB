@@ -3,6 +3,7 @@ from bexceptions import ValueNotInDomainException
 from config import USE_RPYTHON_CODE
 from helpers import remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
+from rpython_b_objmodel import W_Object
 from symbolic_helpers import check_syntacticly_equal 
 from symbolic_sets import SymbolicSet
 
@@ -127,7 +128,7 @@ class SymbolicLambda(SymbolicSet):
         return self.explicit_set_repr
 
     # Warning! push/pop frame
-    def make_generator(self):
+    def SymbolicLambda_generator(self):
         varList = self.variable_list
         pred    = self.predicate
         expr    = self.expression 
@@ -160,7 +161,18 @@ class SymbolicLambda(SymbolicSet):
             except ValueNotInDomainException:
                 continue                
         env.pop_frame() # exit scope
-        
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicLambda_gen = self.SymbolicLambda_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicLambda_gen.next()            
+
 
 class SymbolicComprehensionSet(SymbolicSet):
     def __init__(self, varList, pred, node, env, interpret, calc_possible_solutions):
@@ -257,7 +269,7 @@ class SymbolicComprehensionSet(SymbolicSet):
     
     
     # Warning! push/pop frame
-    def make_generator(self):
+    def SymbolicComprehensionSet_generator(self):
         varList   = self.variable_list
         pred      = self.predicate
         env       = self.env
@@ -284,6 +296,17 @@ class SymbolicComprehensionSet(SymbolicSet):
                 except ValueNotInDomainException:
                     continue
         env.pop_frame()
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicComprehensionSet_gen = self.SymbolicComprehensionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicComprehensionSet_gen.next()   
 
 
 class SymbolicQuantifiedIntersection(SymbolicSet):
@@ -334,10 +357,21 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicQuantifiedIntersection_generator(self):
         result = self.enumerate_all()
         for e in result:
             yield e
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicQuantifiedIntersection_gen = self.SymbolicQuantifiedIntersection_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicQuantifiedIntersection_gen.next() 
 
 
 class SymbolicQuantifiedUnion(SymbolicSet):
@@ -381,7 +415,18 @@ class SymbolicQuantifiedUnion(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicQuantifiedUnion_generator(self):
         result = self.enumerate_all()
         for e in result:
             yield e
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicQuantifiedUnion_gen = self.SymbolicQuantifiedUnion_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicQuantifiedUnion_gen.next() 

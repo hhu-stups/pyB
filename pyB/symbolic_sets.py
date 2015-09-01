@@ -175,33 +175,51 @@ class SymbolicSet(W_Object):
         elif len(result)>1:
             return result
         raise ValueNotInDomainException(args) 
-        
-    def __iter__(self):
-        assert isinstance(self, W_Object)
-        assert isinstance(self, SymbolicSet)
-        self.generator = self.make_generator()
-        return self 
-    
-    def next(self):
-        assert isinstance(self, W_Object)
-        assert isinstance(self, SymbolicSet)
-        return self.generator.next()
 
     def enumerate_all(self):
         if not self.explicit_set_computed:
             assert isinstance(self, W_Object)
             assert isinstance(self, SymbolicSet)
-            self.generator = self.make_generator()
-            result = []  
-            for e in self.generator:
-                result.append(e)
+            result = []
+            # RPython typing constraints made this ugly code necessary 
+            if isinstance(self, SymbolicPower1Set):
+                for e in self.SymbolicPower1Set_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicPowerSet):
+                for e in self.SymbolicPowerSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicDifferenceSet):
+                for e in self.SymbolicDifferenceSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicIntersectionSet):
+                for e in self.SymbolicIntersectionSet_generator():
+                     result.append(e)
+            elif isinstance(self, StringSet):
+                for e in self.StringSet_generator():
+                     result.append(e)
+            elif isinstance(self, IntSet):
+                for e in self.IntSet_generator():
+                     result.append(e)
+            elif isinstance(self, Nat1Set):
+                for e in self.Nat1Set_generator():
+                     result.append(e)
+            elif isinstance(self, NatSet):
+                for e in self.NatSet_generator():
+                     result.append(e)
+            elif isinstance(self, IntegerSet):
+                for e in self.IntegerSet_generator():
+                     result.append(e)
+            elif isinstance(self, Natural1Set):
+                for e in self.Natural1Set_generator():
+                     result.append(e)
+            elif isinstance(self, NaturalSet):
+                for e in self.NaturalSet_generator()():
+                     result.append(e)
+            else:
+                raise Exception("INTERNAL ERROR: unimplemented enumeration")                                           
             self.explicit_set_repr = frozenset(result)
             self.explicit_set_computed = True
         return self.explicit_set_repr
-        
-    #def make_generator(self):
-    #    raise Exception()
-    #    yield None
 
 class LargeSet(SymbolicSet):
     pass
@@ -264,12 +282,24 @@ class NaturalSet(InfiniteSet):
             return False
         return True
 
-    def make_generator(self):
+    def NaturalSet_generator(self):
         i = 0
         while True:
             yield i
             i = i +1  
     
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.NaturalSet_gen = self.NaturalSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.NaturalSet_gen.next()
+ 
+  
 # FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
     def __contains__(self, element):
@@ -317,11 +347,22 @@ class Natural1Set(InfiniteSet):
             return False
         return True
     
-    def make_generator(self):
+    def Natural1Set_generator(self):
         i = 1
         while True:
             yield i
             i = i +1  
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.Natural1Set_gen = self.Natural1Set_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.Natural1Set_gen.next()
 
 
 # the infinite B-set INTEGER 
@@ -370,7 +411,7 @@ class IntegerSet(InfiniteSet):
             return False
         return True
     
-    def make_generator(self):
+    def IntegerSet_generator(self):
         i = 1
         yield 0
         while True:
@@ -378,7 +419,18 @@ class IntegerSet(InfiniteSet):
             yield -i
             i = i +1     
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.IntegerSet_gen = self.IntegerSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.IntegerSet_gen.next()
         
+     
 # if min and max-int change over exec. this class will notice this change (env)
 # FIXME: set comprehension
 class NatSet(LargeSet):
@@ -452,28 +504,26 @@ class NatSet(LargeSet):
             return False
         return True
 
-    def enumerate_all(self):
-        if not self.explicit_set_computed:
-            if USE_RPYTHON_CODE:
-                from rpython_b_objmodel import W_Integer
-                lst = []
-                for i in range(0,self.env._max_int+1):
-                     lst.append(W_Integer(i))
-                nat_set = frozenset(lst)
-            else:
-                nat_set = frozenset(range(0,self.env._max_int+1))
-            self.explicit_set_repr = nat_set
-            self.explicit_set_computed = True
-        return self.explicit_set_repr
 
-    def make_generator(self):
+    def NatSet_generator(self):
         for i in range(0, self.env._max_int+1):
             yield i         
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.NatSet_gen = self.NatSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.NatSet_gen.next()
+        
     # not used for performance reasons
     #def __getitem__(self, key):
     #    return key
- 
+
   
 # FIXME: set comprehension      
 class Nat1Set(LargeSet):
@@ -531,25 +581,21 @@ class Nat1Set(LargeSet):
             return False
         me = self.enumerate_all()
         return not aset==me
-    
-    def enumerate_all(self):
-        if not self.explicit_set_computed:
-            if USE_RPYTHON_CODE:
-                from rpython_b_objmodel import W_Integer
-                lst = []
-                for i in range(1,self.env._max_int+1):
-                     lst.append(W_Integer(i))
-                nat_set1 = frozenset(lst)
-            else:
-                nat_set1 = frozenset(range(1,self.env._max_int+1))
-            self.explicit_set_repr = nat_set1
-            self.explicit_set_computed = True
-        return self.explicit_set_repr
         
-    def make_generator(self):
+    def Nat1Set_generator(self):
         for i in range(1, self.env._max_int+1):
             yield i         
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.Nat1Set_gen = self.Nat1Set_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.Nat1Set_gen.next()
 
 
     # not used for performance reasons
@@ -613,33 +659,30 @@ class IntSet(LargeSet):
             return False
         return True
 
-    def enumerate_all(self):
-        if not self.explicit_set_computed:
-            if USE_RPYTHON_CODE:
-                from rpython_b_objmodel import W_Integer
-                lst = []
-                for i in range(self.env._min_int, self.env._max_int+1):
-                     lst.append(W_Integer(i))
-                int_set = frozenset(lst)
-            else:
-                int_set = frozenset(range(self.env._min_int, self.env._max_int+1))
-            self.explicit_set_repr = int_set 
-            self.explicit_set_computed = True
-        return self.explicit_set_repr
-
     def __len__(self):
         return -1*self.env._min_int+self.env._max_int+1
 
     # TODO: alternate positive and negative values
-    def make_generator(self):
+    def IntSet_generator(self):
         for i in range(self.env._min_int, self.env._max_int+1):
             yield i         
  
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.IntSet_gen = self.IntSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.IntSet_gen.next()
+        
     # not used for performance reasons   
     #def __getitem__(self, key):
     #    return self.env._min_int+key
 
-
+ 
 class StringSet(SymbolicSet):
     def __contains__(self, element):
         return isinstance(element, str) or isinstance(element, StringType)
@@ -671,23 +714,20 @@ class StringSet(SymbolicSet):
             return False
         return True
     
-    def enumerate_all(self): # FIXME: hack
-        if not self.explicit_set_computed:
-            if USE_RPYTHON_CODE:
-                from rpython_b_objmodel import W_String
-                lst = []
-                for e in self.env.all_strings:
-                    lst.append(W_String(e))
-                self.explicit_set_repr = frozenset(lst)
-            else:    
-                self.explicit_set_repr = frozenset(self.env.all_strings)
-            self.explicit_set_computed = True
-        return self.explicit_set_repr
-    
-    def make_generator(self):
+    def StringSet_generator(self):
         for i in self.env.all_strings:
             yield i         
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.StringSet_gen = self.StringSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.StringSet_gen.next()
 
 ##############
 # Symbolic binary operations 
@@ -731,8 +771,12 @@ class SymbolicUnionSet(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
+    # TODO: write test-case
+    def __contains__(self, element):
+        return element in self.right_set or element in self.left_set
+        
     # TODO: think of caching possibilities 
-    def make_generator(self):
+    def SymbolicUnionSet_generator(self):
         double = []
         for x in self.left_set:
             double.append(x)
@@ -741,9 +785,17 @@ class SymbolicUnionSet(SymbolicSet):
             if y not in double:
                 yield y
 
-    # TODO: write test-case
-    def __contains__(self, element):
-        return element in self.right_set or element in self.left_set
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicUnionSet_gen = self.SymbolicUnionSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicUnionSet_gen.next()
+ 
           
 
 class SymbolicIntersectionSet(SymbolicSet):
@@ -751,9 +803,12 @@ class SymbolicIntersectionSet(SymbolicSet):
         SymbolicSet.__init__(self, env, interpret)
         self.left_set = aset0
         self.right_set = aset1
-    
+
+    def __contains__(self, element):
+        return element in self.right_set and element in self.left_set
+            
     # try to iterate the finite one    
-    def make_generator(self):
+    def SymbolicIntersectionSet_generator(self):
         if isinstance(self.left_set, frozenset):
             for x in self.left_set:
                 if x in self.right_set:
@@ -763,9 +818,17 @@ class SymbolicIntersectionSet(SymbolicSet):
                 if x in self.left_set:
                     yield x        
         
-    def __contains__(self, element):
-        return element in self.right_set and element in self.left_set
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicIntersectionSet_gen = self.SymbolicIntersectionSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicIntersectionSet_gen.next()    
+
 
 class SymbolicDifferenceSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -773,14 +836,25 @@ class SymbolicDifferenceSet(SymbolicSet):
         self.left_set = aset0
         self.right_set = aset1
 
-    def make_generator(self):
+    def __contains__(self, element):
+        return element in self.left_set and element not in self.right_set
+        
+    def SymbolicDifferenceSet_generator(self):
         for x in self.left_set:
             if x not in self.right_set:
                 yield x
 
-    def __contains__(self, element):
-        return element in self.left_set and element not in self.right_set
-        
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicDifferenceSet_gen = self.SymbolicDifferenceSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicDifferenceSet_gen.next()           
+       
         
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -825,9 +899,20 @@ class SymbolicCartSet(SymbolicSet):
             self.explicit_set_computed = True
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicCartSet_generator(self):
         return enumerate_cross_product(self.left_set, self.right_set)
  
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicCartSet_gen = self.SymbolicCartSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicCartSet_gen.next()  
 
 #################
 # Unary Set operations
@@ -850,7 +935,7 @@ class SymbolicPowerSet(SymbolicSet):
                 return False
         return True
 
-    def make_generator(self):
+    def SymbolicPowerSet_generator(self):
         yield frozenset([])
         # size = |S|*|T|
         try:
@@ -864,6 +949,16 @@ class SymbolicPowerSet(SymbolicSet):
                 yield frozenset(lst)
             i = i+1
 
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPowerSet_gen = self.SymbolicPowerSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPowerSet_gen.next() 
 
 class SymbolicPower1Set(SymbolicSet):
     def __init__(self, aset, env, interpret):
@@ -881,7 +976,7 @@ class SymbolicPower1Set(SymbolicSet):
                 return False
         return True
 
-    def make_generator(self):
+    def SymbolicPower1Set_generator(self):
         # size = |S|*|T|
         try:
             size = len(self.aSet)
@@ -894,6 +989,17 @@ class SymbolicPower1Set(SymbolicSet):
                 yield frozenset(lst)
             i = i+1
       
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicPower1Set_gen = self.SymbolicPower1Set_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicPower1Set_gen.next() 
 
 
 class SymbolicIntervalSet(LargeSet):
@@ -924,9 +1030,19 @@ class SymbolicIntervalSet(LargeSet):
             self.explicit_set_computed = True   
         return self.explicit_set_repr
 
-    def make_generator(self):
+    def SymbolicIntervalSet_generator(self):
         for i in range(self.l, self.r+1):
             yield i   
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicIntervalSet_gen = self.SymbolicIntervalSet_generator()
+        return self 
     
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicIntervalSet_gen.next()     
     
         
