@@ -685,9 +685,9 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-1]
         domain_generator = calc_possible_solutions(pred.children[0], env, varList, interpret) # use left side of implication
-        for entry in domain_generator:
+        for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
-                value = entry[name]
+                value = w_w_entry[name]
                 env.set_value(name, value)
             try:
                 if interpret(pred.children[0], env) and not interpret(pred.children[1], env):  # test
@@ -704,9 +704,9 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-1]
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
+        for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
-                value = entry[name]
+                value = w_w_entry[name]
                 env.set_value(name, value)
             try:
                 if interpret(pred, env):  # test
@@ -824,9 +824,9 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        #for entry in domain_generator:
+        #for w_entry in domain_generator:
         #    for name in [x.idName for x in varList]:
-        #        value = entry[name]
+        #        value = w_entry[name]
         #        env.set_value(name, value)
         #    try:
         #        if interpret(pred, env):  # test (|= ior)
@@ -847,9 +847,9 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        #for entry in domain_generator:
+        #for w_entry in domain_generator:
         #    for name in [x.idName for x in varList]:
-        #        value = entry[name]
+        #        value = w_entry[name]
         #        env.set_value(name, value)
         #    try:
         #        if interpret(pred, env):  # test
@@ -977,29 +977,29 @@ def interpret(node, env):
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        integer = expr1.__add__(expr2)
-        return W_Integer(integer)
+        w_integer = expr1.__add__(expr2)
+        return w_integer
     elif isinstance(node, AMinusOrSetSubtractExpression): #TODO: cart
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        integer = expr1.__sub__(expr2)
-        return W_Integer(integer)
+        w_integer = expr1.__sub__(expr2)
+        return w_integer
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        integer = expr1.__mul__(expr2)
-        return W_Integer(integer)
+        w_integer = expr1.__mul__(expr2)
+        return w_integer
     elif isinstance(node, ADivExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        integer = expr1.__floordiv__(expr2)
-        return W_Integer(integer)
+        w_integer = expr1.__floordiv__(expr2)
+        return w_integer
     elif isinstance(node, AModuloExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
         assert expr2.ivalue > 0
-        integer = expr1.__mod__(expr2)
-        return W_Integer(integer)
+        w_integer = expr1.__mod__(expr2)
+        return w_integer
     elif isinstance(node, APowerOfExpression):
         basis = interpret(node.get(0), env)
         exp = interpret(node.get(1), env)
@@ -1031,9 +1031,9 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
+        for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
-                value = entry[name]
+                value = w_entry[name]
                 env.set_value(name, value)
             try:
                 w_bool = interpret(pred, env)
@@ -1057,9 +1057,9 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        for entry in domain_generator:
+        for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
-                value = entry[name]
+                value = w_entry[name]
                 env.set_value(name, value)
             try:
                 w_bool = interpret(pred, env)
@@ -1630,7 +1630,7 @@ def interpret(node, env):
         return w_bool
     elif isinstance(node, AUnaryMinusExpression):
         w_int = interpret(node.children[0], env)
-        return W_Integer(w_int.__neg__())
+        return w_int.__neg__()
     elif isinstance(node, AIntegerExpression):
         # TODO: add flag in config.py to enable switch to long integer here
         return W_Integer(node.intValue)
@@ -1678,40 +1678,40 @@ def interpret(node, env):
         """
     elif isinstance(node, AStructExpression):
         dictionary = {}
-        for rec_entry in node.children:
-            assert isinstance(rec_entry, ARecEntry)
+        for rec_w_entry in node.children:
+            assert isinstance(rec_w_entry, ARecw_entry)
             name = ""
-            if isinstance(rec_entry.children[0], AIdentifierExpression):
-                name = rec_entry.children[0].idName
-            assert isinstance(rec_entry.children[-1], Expression)
-            value = interpret(rec_entry.children[-1], env)
+            if isinstance(rec_w_entry.children[0], AIdentifierExpression):
+                name = rec_w_entry.children[0].idName
+            assert isinstance(rec_w_entry.children[-1], Expression)
+            value = interpret(rec_w_entry.children[-1], env)
             dictionary[name] = value
         res = []
         all_records(dictionary, res, {}, 0)
         result = []
         for dic in res:
-            for entry in dic:
-                result.append(tuple([entry,dic[entry]]))
+            for w_entry in dic:
+                result.append(tuple([w_entry,dic[w_entry]]))
         return frozenset(result)
     elif isinstance(node, ARecExpression):
         result = []
-        for rec_entry in node.children:
-            assert isinstance(rec_entry, ARecEntry)
+        for rec_w_entry in node.children:
+            assert isinstance(rec_w_entry, ARecw_entry)
             name = ""
-            if isinstance(rec_entry.children[0], AIdentifierExpression):
-                name = rec_entry.children[0].idName
-            assert isinstance(rec_entry.children[-1], Expression)
-            value = interpret(rec_entry.children[-1], env)
+            if isinstance(rec_w_entry.children[0], AIdentifierExpression):
+                name = rec_w_entry.children[0].idName
+            assert isinstance(rec_w_entry.children[-1], Expression)
+            value = interpret(rec_w_entry.children[-1], env)
             result.append(tuple([name,value]))
         return frozenset(result)
     elif isinstance(node, ARecordFieldExpression):
         record = interpret(node.children[0], env)
         assert isinstance(node.children[1], AIdentifierExpression)
         name = node.children[1].idName
-        for entry in record:
-            if entry[0]==name:
-                return entry[1]
-        raise Exception("\nError: Problem inside RecordExpression - wrong entry: %s" % name)
+        for w_entry in record:
+            if w_entry[0]==name:
+                return w_entry[1]
+        raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
         return StringSet(env, interpret)
     elif isinstance(node, ATransRelationExpression):
@@ -1862,7 +1862,7 @@ def exec_substitution(sub, env):
                 # 1. possible combination found
                 if possible:
                     # 2. test: no variable can be modified twice (see page 108)
-                    # check for double entrys -> Error
+                    # check for double w_entrys -> Error
                     id_names = [x for x in names]
                     while not id_names==[]:
                         name = id_names.pop()

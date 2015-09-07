@@ -1,4 +1,6 @@
 # Wrapped basic types to allow RPYTHOn Typing (everthing is a W_Object)
+# Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
+# except boolean methods!
 
 class W_Object:
     def __contains__(self, e):
@@ -26,12 +28,11 @@ class W_Tuple(W_Object):
 # special methods are NOT supported by RPython. But they allow easy switching of
 # build-in types and wrapped types in the python version. A measurement of 
 # speed- and space-loose  is possible.
-# Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
 class W_Integer(W_Object):
     #_settled_ = True
     
     def __init__(self, ivalue):
-        #assert isinstance(ivalue, int)
+        assert isinstance(ivalue, int)
         self.ivalue = ivalue
         
     def __repr__(self):
@@ -42,24 +43,24 @@ class W_Integer(W_Object):
     
     def __add__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.ivalue + other.ivalue)   
+        return W_Integer(self.ivalue + other.ivalue)   
     
     def __sub__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.ivalue - other.ivalue)         
+        return W_Integer(self.ivalue - other.ivalue)         
 
     def __mul__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.ivalue * other.ivalue)
+        return  W_Integer(self.ivalue * other.ivalue)
         
     # Maybe unused
     def __div__(self, other):
         assert isinstance(other, W_Integer)
-        return (self.ivalue / other.ivalue) 
+        return W_Integer(self.ivalue / other.ivalue) 
         
     def __floordiv__(self, other):     
         assert isinstance(other, W_Integer)
-        return (self.ivalue // other.ivalue) 
+        return W_Integer(self.ivalue // other.ivalue) 
                 
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
@@ -83,14 +84,14 @@ class W_Integer(W_Object):
         return self.ivalue > other.ivalue 
         
     def __ge__(self, other):
-        #assert isinstance(other, W_Integer)
+        assert isinstance(other, W_Integer)
         return self.ivalue >= other.ivalue
     
     def __neg__(self):
-        return -1*self.ivalue
+        return W_Integer(-1*self.ivalue)
         
     def __mod__(self, other):
-        return (self.ivalue % other.ivalue)
+        return W_Integer(self.ivalue % other.ivalue)
 
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Integer")
@@ -135,12 +136,14 @@ class W_Boolean(W_Object):
 
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Boolean")
+
         
 class W_None(W_Object):
     #_settled_ = True
 
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_None")
+
 
 # elements of enumerated sets or machine parameter sets     
 class W_Set_Element(W_Object):
@@ -155,6 +158,9 @@ class W_Set_Element(W_Object):
             return False
         return self.string==other.string
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+        
 class W_String(W_Object):
     #_settled_ = True
     
@@ -167,6 +173,9 @@ class W_String(W_Object):
             return False
         return self.string==other.string
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+        
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.
 # Different enumeration order than build-in frozenset.
@@ -223,7 +232,9 @@ class frozenset(W_Object):
                 result.append(e)
         return frozenset(result)
         
-    
+    def __sub__(self, other):
+        return self.difference(other)
+        
     def difference(self, other):
         result = list(self.lst)
         for e in other.lst:
@@ -257,13 +268,13 @@ class frozenset(W_Object):
     # (used by recursive generators 
     def __iter__(self):
         copy = frozenset(self.lst)
-        copy.generator = self.make_generator()
+        copy.generator = self.w_frozenset_generator()
         return copy
     
     # also enables list(frozenset s) cast
     def next(self):
         return self.generator.next()
     
-    def make_generator(self):
+    def w_frozenset_generator(self):
         for e in self.lst:
             yield e 

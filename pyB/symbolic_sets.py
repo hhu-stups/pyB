@@ -8,7 +8,7 @@ from btypes import *
 from config import PRINT_WARNINGS, USE_RPYTHON_CODE
 from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
 from pretty_printer import pretty_print
-from rpython_b_objmodel import W_Object, W_Integer
+from rpython_b_objmodel import W_Object, W_Integer, W_String, W_Tuple
 from symbolic_helpers import check_syntacticly_equal, generate_powerset
 
 
@@ -30,6 +30,10 @@ class SymbolicSet(W_Object):
         self.env = env 
         self.interpret = interpret
         self.explicit_set_computed = False
+        # Otherwise Rpython can not 'prove' this attrs are present 
+        self.aSet = None
+        self.left_set = None
+        self.right_set = None
 
     def __mul__(self, aset):
         return SymbolicCartSet(self, aset, self.env, self.interpret)
@@ -47,7 +51,7 @@ class SymbolicSet(W_Object):
             values = aset.enumerate_all()
         else:
             values = aset
-        return self_values - values
+        return self_values.__sub__(values)
     
     def __rsub__(self, aset):
         return self.__sub__(aset, self)
@@ -79,7 +83,7 @@ class SymbolicSet(W_Object):
             
     # default implementation
     def __eq__(self, aset):
-        if aset==None:
+        if aset is None:
             return False
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) equality implementation called", self, aset
@@ -188,12 +192,12 @@ class SymbolicSet(W_Object):
             elif isinstance(self, SymbolicPowerSet):
                 for e in self.SymbolicPowerSet_generator():
                      result.append(e)
-            elif isinstance(self, SymbolicDifferenceSet):
-                for e in self.SymbolicDifferenceSet_generator():
-                     result.append(e)
-            elif isinstance(self, SymbolicIntersectionSet):
-                for e in self.SymbolicIntersectionSet_generator():
-                     result.append(e)
+            #elif isinstance(self, SymbolicDifferenceSet):
+            #    for e in self.SymbolicDifferenceSet_generator():
+            #         result.append(e)
+            #elif isinstance(self, SymbolicIntersectionSet):
+            #    for e in self.SymbolicIntersectionSet_generator():
+            #         result.append(e)
             elif isinstance(self, StringSet):
                 for e in self.StringSet_generator():
                      result.append(e)
@@ -213,7 +217,7 @@ class SymbolicSet(W_Object):
                 for e in self.Natural1Set_generator():
                      result.append(e)
             elif isinstance(self, NaturalSet):
-                for e in self.NaturalSet_generator()():
+                for e in self.NaturalSet_generator():
                      result.append(e)
             else:
                 raise Exception("INTERNAL ERROR: unimplemented enumeration")                                           
@@ -273,19 +277,22 @@ class NaturalSet(InfiniteSet):
         raise NotImplementedError("inclusion with unknown set-type")  
     
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, NaturalSet):
             return True
         return False
     
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, NaturalSet):
             return False
         return True
 
     def NaturalSet_generator(self):
         i = 0
         while True:
-            yield i
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i
             i = i +1  
     
     def __iter__(self):
@@ -338,19 +345,22 @@ class Natural1Set(InfiniteSet):
         raise NotImplementedError("inclusion with unknown set-type")  
 
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, Natural1Set):
             return True
         return False
    
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, Natural1Set):
             return False
         return True
     
     def Natural1Set_generator(self):
         i = 1
         while True:
-            yield i
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i
             i = i +1  
 
     def __iter__(self):
@@ -402,21 +412,28 @@ class IntegerSet(InfiniteSet):
         raise NotImplementedError("inclusion with unknown set-type")  
    
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, IntegerSet):
             return True
         return False
 
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, IntegerSet):
             return False
         return True
     
     def IntegerSet_generator(self):
         i = 1
-        yield 0
+        if USE_RPYTHON_CODE:
+            yield W_Integer(0)
+        else:
+            yield 0
         while True:
-            yield i
-            yield -i
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+                yield W_Integer(-i)
+            else:
+                yield i
+                yield -i
             i = i +1     
 
     def __iter__(self):
@@ -453,7 +470,7 @@ class NatSet(LargeSet):
         raise NotImplementedError("inclusion with unknown set-type")
     
     def issuperset(self, aset): # NatSet >= aset
-        if isinstance(aset, (InfiniteSet, IntSet)): 
+        if isinstance(aset, InfiniteSet) or isinstance(aset, IntSet) : 
             return False
         elif isinstance(aset, NatSet) or isinstance(aset,  Nat1Set):
             return True
@@ -495,19 +512,22 @@ class NatSet(LargeSet):
             raise NotImplementedError("Union of NAT1 and %s" % aset)
 
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, NatSet):
             return True
         return False
     
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, NatSet):
             return False
         return True
 
 
     def NatSet_generator(self):
         for i in range(0, self.env._max_int+1):
-            yield i         
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i      
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -565,26 +585,29 @@ class Nat1Set(LargeSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if x<0: # XXX: WINT
                     return False
                 return True
         raise NotImplementedError("inclusion with unknown set-type")  
 
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, Nat1Set):
             return True
         me = self.enumerate_all()
         return aset==me
     
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, Nat1Set):
             return False
         me = self.enumerate_all()
         return not aset==me
         
     def Nat1Set_generator(self):
         for i in range(1, self.env._max_int+1):
-            yield i         
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i   
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -650,12 +673,12 @@ class IntSet(LargeSet):
         raise NotImplementedError("inclusion with unknown set-type")  
 
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, IntSet):
             return True
         return False
     
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, IntSet):
             return False
         return True
 
@@ -665,7 +688,10 @@ class IntSet(LargeSet):
     # TODO: alternate positive and negative values
     def IntSet_generator(self):
         for i in range(self.env._min_int, self.env._max_int+1):
-            yield i         
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i    
  
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -716,7 +742,11 @@ class StringSet(SymbolicSet):
     
     def StringSet_generator(self):
         for i in self.env.all_strings:
-            yield i         
+            if USE_RPYTHON_CODE:
+                yield W_String(i)
+            else:
+                yield i
+  
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -773,6 +803,8 @@ class SymbolicUnionSet(SymbolicSet):
 
     # TODO: write test-case
     def __contains__(self, element):
+        assert self.left_set is not None
+        assert self.right_set is not None
         return element in self.right_set or element in self.left_set
         
     # TODO: think of caching possibilities 
@@ -805,10 +837,17 @@ class SymbolicIntersectionSet(SymbolicSet):
         self.right_set = aset1
 
     def __contains__(self, element):
-        return element in self.right_set and element in self.left_set
+        assert self.left_set is not None
+        assert self.right_set is not None                     
+        contains_right = element in self.right_set
+        contains_left  = element in self.left_set    
+        return contains_right and contains_left
             
     # try to iterate the finite one    
     def SymbolicIntersectionSet_generator(self):
+        assert self.left_set is not None
+        assert self.right_set is not None 
+        
         if isinstance(self.left_set, frozenset):
             for x in self.left_set:
                 if x in self.right_set:
@@ -837,9 +876,16 @@ class SymbolicDifferenceSet(SymbolicSet):
         self.right_set = aset1
 
     def __contains__(self, element):
-        return element in self.left_set and element not in self.right_set
+        assert self.left_set is not None
+        assert self.right_set is not None
+        contains_right = element in self.right_set
+        contains_left  = element in self.left_set 
+                             
+        return contains_left and not contains_right
         
     def SymbolicDifferenceSet_generator(self):
+        assert self.left_set is not None
+        assert self.right_set is not None
         for x in self.left_set:
             if x not in self.right_set:
                 yield x
@@ -854,7 +900,7 @@ class SymbolicDifferenceSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicDifferenceSet_gen.next()           
-       
+  
         
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -867,6 +913,9 @@ class SymbolicCartSet(SymbolicSet):
         if isinstance(element, tuple):
             l = element[0]
             r = element[1]
+        elif isinstance(element, W_Tuple):
+            l = element.tvalue[0]
+            r = element.tvalue[1]
         else:
             raise NotImplementedError()
         return l in self.left_set and r in self.right_set
@@ -893,7 +942,10 @@ class SymbolicCartSet(SymbolicSet):
             lst = []
             for x in aset0:
                 for y in aset1:
-                    lst.append((x,y))
+                    if USE_RPYTHON_CODE:
+                        lst.append(W_Tuple((x,y)))
+                    else:
+                        lst.append((x,y))
                     
             self.explicit_set_repr = frozenset(lst)
             self.explicit_set_computed = True
@@ -936,10 +988,12 @@ class SymbolicPowerSet(SymbolicSet):
         return True
 
     def SymbolicPowerSet_generator(self):
+        assert self.aSet is not None
+        
         yield frozenset([])
         # size = |S|*|T|
         try:
-            size = len(self.aSet)
+            size = self.aSet.__len__()
         except InfiniteSetLengthException:
             size = float("inf")
         i =0
@@ -977,9 +1031,11 @@ class SymbolicPower1Set(SymbolicSet):
         return True
 
     def SymbolicPower1Set_generator(self):
+        assert self.aSet is not None
+        
         # size = |S|*|T|
         try:
-            size = len(self.aSet)
+            size = self.aSet.__len__()
         except InfiniteSetLengthException:
             size = float("inf")
         i =0
@@ -1032,7 +1088,10 @@ class SymbolicIntervalSet(LargeSet):
 
     def SymbolicIntervalSet_generator(self):
         for i in range(self.l, self.r+1):
-            yield i   
+            if USE_RPYTHON_CODE:
+                yield W_Integer(i)
+            else:
+                yield i
 
     def __iter__(self):
         assert isinstance(self, W_Object)

@@ -1,6 +1,9 @@
 from bstate import BState
 from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING, USE_ANIMATION_HISTORY, USE_RPYTHON_CODE
 
+if USE_RPYTHON_CODE:
+     from rpython_b_objmodel import frozenset
+     
 # TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
     def __init__(self):
