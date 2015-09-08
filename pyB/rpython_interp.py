@@ -6,7 +6,8 @@ from enumeration import init_deffered_set, try_all_values, powerset, make_set_of
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
 from symbolic_helpers import make_explicit_set_of_realtion_lists
-from symbolic_sets import NatSet#, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
+from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
+from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, frozenset
 from typing import type_check_predicate, type_check_expression
 
@@ -784,19 +785,19 @@ def interpret(node, env):
         """
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
-        #return SymbolicPowerSet(aSet, env, interpret)
-        res = powerset(aSet.lst)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        return frozenset(lst)
+        return SymbolicPowerSet(aSet, env, interpret)
+        #res = powerset(aSet.lst)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #return frozenset(lst)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
-        #return SymbolicPower1Set(aSet, env, interpret)
-        res = powerset(aSet.lst)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        lst.remove(frozenset([]))
-        return frozenset(lst)
+        return SymbolicPower1Set(aSet, env, interpret)
+        #res = powerset(aSet.lst)
+        #powerlist = list(res)
+        #lst = [frozenset(e) for e in powerlist]
+        #lst.remove(frozenset([]))
+        #return frozenset(lst)
         """
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
@@ -925,37 +926,33 @@ def interpret(node, env):
 #       3. Numbers
 #
 # *****************
-        """
     elif isinstance(node, ANaturalSetExpression):
         return NaturalSet(env, interpret)
     elif isinstance(node, ANatural1SetExpression):
         return Natural1Set(env, interpret)
-        """
     elif isinstance(node, ANatSetExpression):
-        assert env is not None
-        L = []
-        for i in range(0,env._max_int+1):
-            L.append(W_Integer(i))
-        return frozenset(L)
-        #return NatSet(env, interpret)
+        #assert env is not None
+        #L = []
+        #for i in range(0,env._max_int+1):
+        #    L.append(W_Integer(i))
+        #return frozenset(L)
+        return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
-        assert env is not None
-        L = []
-        for i in range(1,env._max_int+1):
-            L.append(W_Integer(i))
-        return frozenset(L)
-        #return Nat1Set(env, interpret)
+        #assert env is not None
+        #L = []
+        #for i in range(1,env._max_int+1):
+        #    L.append(W_Integer(i))
+        #return frozenset(L)
+        return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
-        assert env is not None
-        L = []
-        for i in range(env._min_int, env._max_int+1):
-            L.append(W_Integer(i))
-        return frozenset(L)
-        #return IntSet(env, interpret)
-        """
+        #assert env is not None
+        #L = []
+        #for i in range(env._min_int, env._max_int+1):
+        #    L.append(W_Integer(i))
+        #return frozenset(L)
+        return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
         return IntegerSet(env, interpret)
-        """
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         assert isinstance(aSet, frozenset)
@@ -1012,12 +1009,14 @@ def interpret(node, env):
     elif isinstance(node, AIntervalExpression):
         left = interpret(node.get(0), env)
         right = interpret(node.get(1), env)
+        assert isinstance(left, W_Integer)
+        assert isinstance(right, W_Integer)
         L = []
         for i in range(right.ivalue+1):
             value = W_Integer(i+left.ivalue)
             L.append(value)
         return frozenset(L)
-        #return SymbolicIntervalSet(left, right, env, interpret)
+        #return SymbolicIntervalSet(left.ivalue, right.ivalue, env, interpret)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope

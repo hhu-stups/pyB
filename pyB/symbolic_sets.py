@@ -148,9 +148,12 @@ class SymbolicSet(W_Object):
                        
         for e in values:
            if USE_RPYTHON_CODE:
+               e_in_self = False
                for element in self:
-                   if not element.__eq__(e):
-                       return False
+                   if element.__eq__(e):
+                       e_in_self = True
+               if not e_in_self:
+                   return False
            else:
                if e not in self: 
                    return False
@@ -162,9 +165,12 @@ class SymbolicSet(W_Object):
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) subset-check implementation called", self, aset
         for e in self:    
             if USE_RPYTHON_CODE:
+               e_in_aset = False
                for element in aset:
-                   if not element.__eq__(e):
-                       return False
+                   if element.__eq__(e):
+                       e_in_aset = True
+               if not e_in_aset:
+                  return False
             else:
                if e not in aset: 
                    return False
@@ -260,7 +266,7 @@ class InfiniteSet(SymbolicSet):
     # must return an integer, returning float("inf") is not an option
     def __len__(self):
         from bexceptions import InfiniteSetLengthException
-        raise InfiniteSetLengthException(self)
+        raise InfiniteSetLengthException("InfiniteSet")
 
 
 # FIXME: set comprehension
@@ -883,8 +889,16 @@ class SymbolicUnionSet(SymbolicSet):
             double.append(x)
             yield x
         for y in self.right_set:
-            if y not in double:
-                yield y
+            if USE_RPYTHON_CODE:
+                y_in_double = False
+                for x in double:
+                   if y.__eq__(x):
+                       y_in_double = True
+                if not y_in_double:
+                    yield y
+            else:
+                if y not in double:
+                    yield y
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -908,8 +922,18 @@ class SymbolicIntersectionSet(SymbolicSet):
     def __contains__(self, element):
         assert self.left_set is not None
         assert self.right_set is not None                     
-        contains_right = element in self.right_set
-        contains_left  = element in self.left_set    
+        contains_right = False
+        contains_left = False
+        if USE_RPYTHON_CODE:
+            for x in self.right_set:
+                if x.__eq__(element):
+                    contains_right = True
+            for x in self.left_set:
+                if x.__eq__(element):
+                    contains_left = True           
+        else:
+            contains_right = element in self.right_set
+            contains_left  = element in self.left_set    
         return contains_right and contains_left
             
     # try to iterate the finite one    
@@ -917,14 +941,23 @@ class SymbolicIntersectionSet(SymbolicSet):
         assert self.left_set is not None
         assert self.right_set is not None 
         
-        if isinstance(self.left_set, frozenset):
+        # TODO: checking for a (finite) frozenset and including rpython code in
+        # nested loop does not translate. Reason unknown
+        if USE_RPYTHON_CODE:
             for x in self.left_set:
-                if x in self.right_set:
-                    yield x
-        else:
-            for x in self.right_set:
-                if x in self.left_set:
-                    yield x        
+                for y in self.right_set:
+                    if x.__eq__(y):
+                        yield x
+                        break
+        else:     
+            if isinstance(self.left_set, frozenset):
+                for x in self.left_set:
+                        if x in self.right_set:
+                            yield x
+            else:
+                for x in self.right_set:
+                        if x in self.left_set:
+                            yield x        
         
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -947,17 +980,34 @@ class SymbolicDifferenceSet(SymbolicSet):
     def __contains__(self, element):
         assert self.left_set is not None
         assert self.right_set is not None
-        contains_right = element in self.right_set
-        contains_left  = element in self.left_set 
-                             
+        contains_right = False
+        contains_left = False
+        if USE_RPYTHON_CODE:
+            for x in self.right_set:
+                if x.__eq__(element):
+                    contains_right = True
+            for x in self.left_set:
+                if x.__eq__(element):
+                    contains_left = True           
+        else:
+            contains_right = element in self.right_set
+            contains_left  = element in self.left_set                          
         return contains_left and not contains_right
         
     def SymbolicDifferenceSet_generator(self):
         assert self.left_set is not None
         assert self.right_set is not None
         for x in self.left_set:
-            if x not in self.right_set:
-                yield x
+            if USE_RPYTHON_CODE:
+                x_in_right_set = False
+                for y in self.right_set: 
+                    if y.__eq__(x):
+                        x_in_right_set = True
+                if not x_in_right_set:
+                    yield x
+            else:
+                if x not in self.right_set:
+                    yield x
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -1069,8 +1119,16 @@ class SymbolicPowerSet(SymbolicSet):
             
         assert element is not None
         for e in element:
-            if e not in self.aSet:
-                return False
+            if USE_RPYTHON_CODE:
+                e_in_aSet = False
+                for x in self.aSet:
+                    if e.__eq__(x):
+                        e_in_aSet = True
+                if not e_in_aSet:
+                    return False
+            else:
+                if e not in self.aSet:
+                    return False
         return True
 
     def SymbolicPowerSet_generator(self):
@@ -1117,8 +1175,16 @@ class SymbolicPower1Set(SymbolicSet):
         
         assert element is not None
         for e in element:
-            if e not in self.aSet:
-                return False
+            if USE_RPYTHON_CODE:
+                e_in_aSet = False
+                for x in self.aSet:
+                    if e.__eq__(x):
+                        e_in_aSet = True
+                if not e_in_aSet:
+                    return False
+            else:
+                if e not in self.aSet:
+                    return False
         return True
 
     def SymbolicPower1Set_generator(self):
@@ -1152,28 +1218,31 @@ class SymbolicPower1Set(SymbolicSet):
 class SymbolicIntervalSet(LargeSet):
     def __init__(self, l, r, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
+        assert isinstance(l, int)
+        assert isinstance(r, int)
         self.l = l
         self.r = r
         
     # e:S (element:l..r)
-    def __contains__(self, element):            
+    def __contains__(self, element):                     
         if not isinstance(element, int) and not isinstance(element, W_Integer):
             raise Exception("Interval membership with non-integer: %s" % element)
-        if element<=self.r and element>=self.l:
+        if element>=self.l and element<=self.r:
             return True
         else:
             return False
             
-    def __eq__(self, other):
+    def __eq__(self, other):            
         if isinstance(other, SymbolicIntervalSet):
             return other.l==self.l and other.r==self.r
         return SymbolicSet.__eq__(self,other)  
     
-    def enumerate_all(self):
+    def enumerate_all(self):        
         if not self.explicit_set_computed:
-            left = self.l
-            right = self.r   
-            self.explicit_set_repr = frozenset(range(left, right+1)) # TODO: Problem if to large  
+            assert isinstance(self.l, int)
+            assert isinstance(self.r, int)
+            
+            self.explicit_set_repr = frozenset(range(self.l, self.r+1)) # TODO: Problem if to large  
             self.explicit_set_computed = True   
         return self.explicit_set_repr
 
