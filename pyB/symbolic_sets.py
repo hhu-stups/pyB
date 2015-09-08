@@ -114,9 +114,14 @@ class SymbolicSet(W_Object):
             values = aset.enumerate_all()
         else:
             values = aset
-        for e in values: 
-            if e in self:
-                result.append(e)
+        for e in values:      
+           if USE_RPYTHON_CODE:
+               for element in self:
+                   if element.__eq__(e):
+                       result.append(e)
+           else:
+               if e in self: 
+                   result.append(e)
         return frozenset(result)
 
 
@@ -140,26 +145,44 @@ class SymbolicSet(W_Object):
             values = aset.enumerate_all()
         else:
             values = aset
-            
+                       
         for e in values:
-           if e not in self: 
-               return False
+           if USE_RPYTHON_CODE:
+               for element in self:
+                   if not element.__eq__(e):
+                       return False
+           else:
+               if e not in self: 
+                   return False
         return True           
       
     # default implementation
     def issubset(self, aset):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) subset-check implementation called", self, aset
-        for e in self:
-            if e not in aset: 
-               return False
+        for e in self:    
+            if USE_RPYTHON_CODE:
+               for element in aset:
+                   if not element.__eq__(e):
+                       return False
+            else:
+               if e not in aset: 
+                   return False
         return True        
 
     # default implementation
     def __contains__(self, element):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) membership-check implementation called", self, element
-        return element in self.enumerate_all() 
+        values = self.enumerate_all() 
+        
+        if USE_RPYTHON_CODE:
+            for e in values:
+                if element.__eq__(e):
+                    return True
+            return False
+        else:
+            return element in aSet
 
         
     # default implementation
@@ -170,8 +193,12 @@ class SymbolicSet(W_Object):
         aset = self.enumerate_all()
         result = []
         for t in aset:
-            if t[0]==args:
-                result.append(t[1])
+            if USE_RPYTHON_CODE:
+                if t.tvalue[0].__eq__(args):
+                    result.append(t.tvalue[1])
+            else:
+                if t[0]==args:
+                    result.append(t[1])
         # if only one value, return value
         if len(result)==1:
             return result[0]
@@ -192,12 +219,12 @@ class SymbolicSet(W_Object):
             elif isinstance(self, SymbolicPowerSet):
                 for e in self.SymbolicPowerSet_generator():
                      result.append(e)
-            #elif isinstance(self, SymbolicDifferenceSet):
-            #    for e in self.SymbolicDifferenceSet_generator():
-            #         result.append(e)
-            #elif isinstance(self, SymbolicIntersectionSet):
-            #    for e in self.SymbolicIntersectionSet_generator():
-            #         result.append(e)
+            elif isinstance(self, SymbolicDifferenceSet):
+                for e in self.SymbolicDifferenceSet_generator():
+                     result.append(e)
+            elif isinstance(self, SymbolicIntersectionSet):
+                for e in self.SymbolicIntersectionSet_generator():
+                     result.append(e)
             elif isinstance(self, StringSet):
                 for e in self.StringSet_generator():
                      result.append(e)
@@ -252,7 +279,11 @@ class NaturalSet(InfiniteSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
             return True
         elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
@@ -268,8 +299,13 @@ class NaturalSet(InfiniteSet):
         if isinstance(aset, IntegerSet) or isinstance(aset, NaturalSet) or isinstance(aset, IntSet):
             return False
         elif isinstance(aset, frozenset):
+            # TODO: equal impl like >= something is wrong
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
             return True
         elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or  isinstance(aset, Natural1Set):
@@ -322,7 +358,11 @@ class Natural1Set(InfiniteSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<=0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<=0
+                else:
+                    cond = x<=0
+                if cond:
                     return False
             return True
         elif isinstance(aset, Nat1Set) or isinstance(aset, Natural1Set):
@@ -339,7 +379,11 @@ class Natural1Set(InfiniteSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
                 return True
         raise NotImplementedError("inclusion with unknown set-type")  
@@ -391,7 +435,7 @@ class IntegerSet(InfiniteSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if not int(x):
+                if not isinstance(x, int):
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type")
@@ -404,7 +448,11 @@ class IntegerSet(InfiniteSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
                 return True
         elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, IntSet) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
@@ -476,7 +524,11 @@ class NatSet(LargeSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<=0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<=0
+                else:
+                    cond = x<=0
+                if cond:
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type")       
@@ -491,7 +543,11 @@ class NatSet(LargeSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
                 return True
         elif isinstance(aset, Nat1Set):
@@ -570,7 +626,11 @@ class Nat1Set(LargeSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type")
@@ -584,8 +644,13 @@ class Nat1Set(LargeSet):
         if isinstance(aset, InfiniteSet) or isinstance(aset, LargeSet):
             return False
         elif isinstance(aset, frozenset):
+            #TODO: same imple like >= something is wrong
             for x in aset:
-                if x<0: # XXX: WINT
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond: 
                     return False
                 return True
         raise NotImplementedError("inclusion with unknown set-type")  
@@ -594,13 +659,13 @@ class Nat1Set(LargeSet):
         if isinstance(aset, Nat1Set):
             return True
         me = self.enumerate_all()
-        return aset==me
+        return aset.__eq__(me)
     
     def __ne__(self, aset):
         if isinstance(aset, Nat1Set):
             return False
         me = self.enumerate_all()
-        return not aset==me
+        return not aset.__eq__(me)
         
     def Nat1Set_generator(self):
         for i in range(1, self.env._max_int+1):
@@ -650,7 +715,7 @@ class IntSet(LargeSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if not int(x):
+                if not isinstance(x, int):
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type") 
@@ -665,7 +730,11 @@ class IntSet(LargeSet):
             return False
         elif isinstance(aset, frozenset):
             for x in aset:
-                if x<0:
+                if USE_RPYTHON_CODE:
+                    cond = x.ivalue<0
+                else:
+                    cond = x<0
+                if cond:
                     return False
                 return True
         elif isinstance(aset, Nat1Set) or isinstance(aset, NatSet):
@@ -731,12 +800,12 @@ class StringSet(SymbolicSet):
         return False
     
     def __eq__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, StringSet):
             return True
         return False
     
     def __ne__(self, aset):
-        if self.__class__ == aset.__class__:
+        if isinstance(aset, StringSet):
             return False
         return True
     
@@ -828,7 +897,7 @@ class SymbolicUnionSet(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicUnionSet_gen.next()
  
-          
+         
 
 class SymbolicIntersectionSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -900,7 +969,7 @@ class SymbolicDifferenceSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicDifferenceSet_gen.next()           
-  
+ 
         
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret):
@@ -909,7 +978,7 @@ class SymbolicCartSet(SymbolicSet):
         self.right_set = aset1
     
     def __contains__(self, element):
-        #print "elemet", element
+        #print "element", element
         if isinstance(element, tuple):
             l = element[0]
             r = element[1]
@@ -918,11 +987,23 @@ class SymbolicCartSet(SymbolicSet):
             r = element.tvalue[1]
         else:
             raise NotImplementedError()
-        return l in self.left_set and r in self.right_set
+        contains_left = False
+        contains_right = False
+        if USE_RPYTHON_CODE:
+            for e in self.left_set:
+                if l.__eq__(e):
+                    contains_left = True
+            for e in self.right_set:
+                if r.__eq__(e):
+                    contains_right = True           
+        else:
+            contains_left = l in self.left_set
+            contains_right = r in self.right_set
+        return contains_left and contains_right
     
     def __eq__(self, aset):
         if isinstance(aset, SymbolicCartSet):
-            return (self.left_set==aset.left_set) and (self.right_set==aset.right_set)
+            return (self.left_set.__eq__(aset.left_set)) and (self.right_set.__eq__(aset.right_set))
         else:
             return SymbolicSet.__eq__(self, aset) 
     
@@ -980,8 +1061,13 @@ class SymbolicPowerSet(SymbolicSet):
 
     # e:S (element:self.set)
     def __contains__(self, element):
+        assert self.aSet is not None
+        if element is None:
+            return False
         if not isinstance(element, frozenset):
             element = element.enumerate_all()
+            
+        assert element is not None
         for e in element:
             if e not in self.aSet:
                 return False
@@ -1021,10 +1107,15 @@ class SymbolicPower1Set(SymbolicSet):
 
     # e:S (element:self.set)
     def __contains__(self, element):
+        assert self.aSet is not None
+        if element is None:
+            return False
         if not isinstance(element, frozenset):
             element = element.enumerate_all()
-        if element==frozenset([]):
+        if element.__eq__(frozenset([])):
             return False
+        
+        assert element is not None
         for e in element:
             if e not in self.aSet:
                 return False
@@ -1074,7 +1165,7 @@ class SymbolicIntervalSet(LargeSet):
             return False
             
     def __eq__(self, other):
-        if self.__class__ == other.__class__:
+        if isinstance(other, SymbolicIntervalSet):
             return other.l==self.l and other.r==self.r
         return SymbolicSet.__eq__(self,other)  
     
