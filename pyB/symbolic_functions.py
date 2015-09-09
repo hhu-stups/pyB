@@ -11,6 +11,14 @@ from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehens
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
+# only used by W_Objects. 
+# Rpython does not support x in S
+def x_in_S(x, S):
+    for e in S:
+        if x.__eq__(e):
+            return True
+    return False
+    
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
@@ -22,9 +30,10 @@ class SymbolicRelationSet(SymbolicSet):
     def __contains__(self, element):
         if isinstance(element, SymbolicSet):    # check with symb info
             assert isinstance(element, SymbolicCartSet)
-            #print "XXX SymbolicRelationSet", self.left_set , self.right_set
-            #print "XXX SymbolicRelationSet", element
-            return element.left_set in self.left_set and element.right_set in self.right_set
+            if USE_RPYTHON_CODE:
+                return x_in_S(element.left_set, self.left_set) and x_in_S(element.right_set, self.right_set)  
+            else:      
+                return element.left_set in self.left_set and element.right_set in self.right_set
         elif isinstance(element, PowerSetType): # check with type info
             assert isinstance(element.data, CartType)
             left  = element.data.left.data
@@ -33,9 +42,13 @@ class SymbolicRelationSet(SymbolicSet):
         else:                                   # check finite set
             assert isinstance(element, frozenset)
             for e in element:
-                assert isinstance(e, tuple)
-                if not e[0] in self.left_set or not e[1] in self.right_set:
-                    return False
+                if USE_RPYTHON_CODE:
+                    if not x_in_S(e.tvalue[0], self.left_set) or not x_in_S(e.tvalue[1], self.right_set):
+                        return False
+                else:
+                    assert isinstance(e, tuple)
+                    if not e[0] in self.left_set or not e[1] in self.right_set:
+                        return False
             return  True
         raise Exception("Not implemented: relation symbolic membership")
 
@@ -70,7 +83,9 @@ class SymbolicRelationSet(SymbolicSet):
                 for e in self.SymbolicTotalSurjectionSet_generator():
                      result.append(e)
             else:
-                raise Exception("INTERNAL ERROR: unimplemented function enumeration")                         
+                for e in self.SymbolicRelationSet_generator():
+                     result.append(e)
+                #raise Exception("INTERNAL ERROR: unimplemented function enumeration")                         
             self.explicit_set_repr = frozenset(result)
             self.explicit_set_computed = True
         return self.explicit_set_repr

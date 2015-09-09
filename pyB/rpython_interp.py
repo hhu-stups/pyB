@@ -7,7 +7,8 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from pretty_printer import pretty_print
 from symbolic_helpers import make_explicit_set_of_realtion_lists
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
-from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set
+from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
+from symbolic_functions import SymbolicRelationSet 
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, frozenset
 from typing import type_check_predicate, type_check_expression
 
@@ -761,13 +762,13 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        #return SymbolicUnionSet(aSet1, aSet2, env, interpret)
-        return aSet1.union(aSet2)
+        return SymbolicUnionSet(aSet1, aSet2, env, interpret)
+        #return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        #return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
-        return aSet1.intersection(aSet2)
+        return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
+        #return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
         assert len(node.children)>1
         a = interpret(node.children[0], env)
@@ -931,25 +932,10 @@ def interpret(node, env):
     elif isinstance(node, ANatural1SetExpression):
         return Natural1Set(env, interpret)
     elif isinstance(node, ANatSetExpression):
-        #assert env is not None
-        #L = []
-        #for i in range(0,env._max_int+1):
-        #    L.append(W_Integer(i))
-        #return frozenset(L)
         return NatSet(env, interpret)
     elif isinstance(node, ANat1SetExpression):
-        #assert env is not None
-        #L = []
-        #for i in range(1,env._max_int+1):
-        #    L.append(W_Integer(i))
-        #return frozenset(L)
         return Nat1Set(env, interpret)
     elif isinstance(node, AIntSetExpression):
-        #assert env is not None
-        #L = []
-        #for i in range(env._min_int, env._max_int+1):
-        #    L.append(W_Integer(i))
-        #return frozenset(L)
         return IntSet(env, interpret)
     elif isinstance(node, AIntegerSetExpression):
         return IntegerSet(env, interpret)
@@ -976,11 +962,14 @@ def interpret(node, env):
         expr2 = interpret(node.get(1), env)
         w_integer = expr1.__add__(expr2)
         return w_integer
-    elif isinstance(node, AMinusOrSetSubtractExpression): #TODO: cart
+    elif isinstance(node, AMinusOrSetSubtractExpression): 
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
-        w_integer = expr1.__sub__(expr2)
-        return w_integer
+        if isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer):
+            w_integer = expr1.__sub__(expr2)
+            return w_integer
+        else:
+            return SymbolicDifferenceSet(expr1, expr2, env, interpret)
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
@@ -1104,12 +1093,12 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-        #return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
-        lst = []
-        for relation in make_explicit_set_of_realtion_lists(aSet1, aSet2):
-            assert isinstance(relation, frozenset)
-            lst.append(relation)
-        return frozenset(lst)
+        return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
+        #lst = []
+        #for relation in make_explicit_set_of_realtion_lists(aSet1, aSet2):
+        #    assert isinstance(relation, frozenset)
+        #    lst.append(relation)
+        #return frozenset(lst)
         """
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple

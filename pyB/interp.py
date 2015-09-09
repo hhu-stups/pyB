@@ -942,8 +942,8 @@ def interpret(node, env):
         expr2 = interpret(node.children[1], env)
         if isinstance(expr1, (SymbolicSet, frozenset)) or isinstance(expr2, (SymbolicSet, frozenset)):
             return SymbolicDifferenceSet(expr1, expr2, env, interpret)
-        if isinstance(expr2, SymbolicSet):
-            expr2 = expr2.enumerate_all()
+        #if isinstance(expr2, SymbolicSet):
+        #    expr2 = expr2.enumerate_all()
         return expr1 - expr2
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.children[0], env)

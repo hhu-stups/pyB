@@ -16,13 +16,21 @@ if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 
+
+# only used by W_Objects. 
+# Rpython does not support x in S
+def x_in_S(x, S):
+    for e in S:
+        if x.__eq__(e):
+            return True
+    return False
+    
+    
 ##############
 # Base-class and Primitive Sets
 ###############
 # SymbolicSet, LargeSet, InfiniteSet
 # Int-,Nat-,Nat1-,Natural-,Natural1-,Integer and StringSet
-
-
 class SymbolicSet(W_Object):
     # env: min and max int values may be needed for large sets 
     # interpret: for function call on tuple-sets
@@ -199,7 +207,9 @@ class SymbolicSet(W_Object):
         aset = self.enumerate_all()
         result = []
         for t in aset:
+            assert isinstance(t, tuple) or isinstance(t, W_Tuple)
             if USE_RPYTHON_CODE:
+                assert isinstance(t.tvalue[0], W_Object)
                 if t.tvalue[0].__eq__(args):
                     result.append(t.tvalue[1])
             else:
@@ -880,7 +890,10 @@ class SymbolicUnionSet(SymbolicSet):
     def __contains__(self, element):
         assert self.left_set is not None
         assert self.right_set is not None
-        return element in self.right_set or element in self.left_set
+        if USE_RPYTHON_CODE:
+            return x_in_S(element, self.right_set) or x_in_S(element, self.left_set)
+        else:
+            return element in self.right_set or element in self.left_set
         
     # TODO: think of caching possibilities 
     def SymbolicUnionSet_generator(self):
@@ -889,11 +902,11 @@ class SymbolicUnionSet(SymbolicSet):
             double.append(x)
             yield x
         for y in self.right_set:
-            if USE_RPYTHON_CODE:
-                y_in_double = False
-                for x in double:
-                   if y.__eq__(x):
-                       y_in_double = True
+            if USE_RPYTHON_CODE: 
+                y_in_double = False 
+                for e in double:
+                    if y.__eq__(e):
+                        y_in_double = True                     
                 if not y_in_double:
                     yield y
             else:
@@ -924,13 +937,9 @@ class SymbolicIntersectionSet(SymbolicSet):
         assert self.right_set is not None                     
         contains_right = False
         contains_left = False
-        if USE_RPYTHON_CODE:
-            for x in self.right_set:
-                if x.__eq__(element):
-                    contains_right = True
-            for x in self.left_set:
-                if x.__eq__(element):
-                    contains_left = True           
+        if USE_RPYTHON_CODE:                    
+            contains_right = x_in_S(element, self.right_set)  
+            contains_left  = x_in_S(element, self.left_set)      
         else:
             contains_right = element in self.right_set
             contains_left  = element in self.left_set    
@@ -983,12 +992,8 @@ class SymbolicDifferenceSet(SymbolicSet):
         contains_right = False
         contains_left = False
         if USE_RPYTHON_CODE:
-            for x in self.right_set:
-                if x.__eq__(element):
-                    contains_right = True
-            for x in self.left_set:
-                if x.__eq__(element):
-                    contains_left = True           
+            contains_right = x_in_S(element, self.right_set)
+            contains_left  = x_in_S(element, self.left_set)          
         else:
             contains_right = element in self.right_set
             contains_left  = element in self.left_set                          
@@ -999,11 +1004,7 @@ class SymbolicDifferenceSet(SymbolicSet):
         assert self.right_set is not None
         for x in self.left_set:
             if USE_RPYTHON_CODE:
-                x_in_right_set = False
-                for y in self.right_set: 
-                    if y.__eq__(x):
-                        x_in_right_set = True
-                if not x_in_right_set:
+                if not x_in_S(x, self.right_set):
                     yield x
             else:
                 if x not in self.right_set:
@@ -1040,14 +1041,10 @@ class SymbolicCartSet(SymbolicSet):
         contains_left = False
         contains_right = False
         if USE_RPYTHON_CODE:
-            for e in self.left_set:
-                if l.__eq__(e):
-                    contains_left = True
-            for e in self.right_set:
-                if r.__eq__(e):
-                    contains_right = True           
+            contains_right = x_in_S(l, self.right_set)
+            contains_left  = x_in_S(r, self.left_set)           
         else:
-            contains_left = l in self.left_set
+            contains_left  = l in self.left_set
             contains_right = r in self.right_set
         return contains_left and contains_right
     
@@ -1120,11 +1117,7 @@ class SymbolicPowerSet(SymbolicSet):
         assert element is not None
         for e in element:
             if USE_RPYTHON_CODE:
-                e_in_aSet = False
-                for x in self.aSet:
-                    if e.__eq__(x):
-                        e_in_aSet = True
-                if not e_in_aSet:
+                if not x_in_S(e, self.aSet):
                     return False
             else:
                 if e not in self.aSet:
@@ -1176,11 +1169,7 @@ class SymbolicPower1Set(SymbolicSet):
         assert element is not None
         for e in element:
             if USE_RPYTHON_CODE:
-                e_in_aSet = False
-                for x in self.aSet:
-                    if e.__eq__(x):
-                        e_in_aSet = True
-                if not e_in_aSet:
+                if not x_in_S(e, self.aSet):
                     return False
             else:
                 if e not in self.aSet:
