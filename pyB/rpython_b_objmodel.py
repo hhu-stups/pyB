@@ -11,7 +11,10 @@ class W_Tuple(W_Object):
     
     def __init__(self, tvalue):
         # e.g. W_Tuple((W_Tuple((W_Integer(1),W_Integer(2))),W_Integer(3)))
-        assert isinstance(tvalue, tuple) or isinstance(tvalue, W_Tuple) 
+        assert isinstance(tvalue, tuple) or isinstance(tvalue, W_Tuple)
+        if isinstance(tvalue, tuple):
+            assert isinstance(tvalue[0], W_Object) 
+            assert isinstance(tvalue[1], W_Object) 
         self.tvalue = tvalue
         
     def __eq__(self, other):

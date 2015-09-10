@@ -1120,7 +1120,7 @@ def interpret(node, env):
         #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
         #    return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
         # p and q: tuples representing domain and image
-        new_rel = [W_Tuple((p.tvalue[0],q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1]==q.tvalue[0]]
+        new_rel = [W_Tuple((p.tvalue[0], q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1].__eq__(q.tvalue[0])]
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)

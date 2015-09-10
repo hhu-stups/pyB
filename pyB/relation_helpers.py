@@ -49,7 +49,7 @@ def filter_not_total(functions, S):
 # returntype: frozenset
 def is_a_total_function(function, preimage_set):
     if isinstance(preimage_set, InfiniteSet):
-        raise EnumerationNotPossibleException()
+        raise EnumerationNotPossibleException("InfiniteSet")
     preimage = [x[0] for x in function]
     preimage_set2 =  frozenset(preimage)
     return preimage_set == preimage_set2
@@ -59,7 +59,7 @@ def is_a_total_function(function, preimage_set):
 # returntype: boolean
 def is_a_surj_function(function, image_set):
     if isinstance(image_set, InfiniteSet):
-        raise EnumerationNotPossibleException()
+        raise EnumerationNotPossibleException("InfiniteSet")
     image = [x[1] for x in function]
     image_set2 = frozenset(image) # remove duplicate items
     return image_set == image_set2

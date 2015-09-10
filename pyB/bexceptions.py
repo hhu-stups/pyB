@@ -12,7 +12,7 @@ class BTypeException(Exception):
 # caused by e.g: f={(1,42)} & x=f[5] 
 class ValueNotInDomainException(BTypeException):   
     def __init__(self, value):
-        self.value = value
+        self.value = str(value)
 
 class ConstraintNotImplementedException(BTypeException):
     def __init__(self, node):

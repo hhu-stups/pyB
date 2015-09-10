@@ -209,9 +209,13 @@ class SymbolicSet(W_Object):
         for t in aset:
             assert isinstance(t, tuple) or isinstance(t, W_Tuple)
             if USE_RPYTHON_CODE:
-                assert isinstance(t.tvalue[0], W_Object)
-                if t.tvalue[0].__eq__(args):
-                    result.append(t.tvalue[1])
+                if isinstance(t.tvalue, W_Tuple):
+                    raise NotImplementedError()
+                else:
+                    assert isinstance(t.tvalue, tuple)
+                    # FIXME tvalue[0] is of type int for reasons unknown 
+                    if t.tvalue[0].__eq__(args):
+                        result.append(t.tvalue[1])
             else:
                 if t[0]==args:
                     result.append(t[1])
@@ -1132,7 +1136,8 @@ class SymbolicPowerSet(SymbolicSet):
         try:
             size = self.aSet.__len__()
         except InfiniteSetLengthException:
-            size = float("inf")
+            size = -1
+        
         i =0
         while i!=size:
             for lst in generate_powerset(self.aSet, size=i+1, skip=0):
@@ -1150,6 +1155,7 @@ class SymbolicPowerSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPowerSet_gen.next() 
+
 
 class SymbolicPower1Set(SymbolicSet):
     def __init__(self, aset, env, interpret):
@@ -1183,7 +1189,8 @@ class SymbolicPower1Set(SymbolicSet):
         try:
             size = self.aSet.__len__()
         except InfiniteSetLengthException:
-            size = float("inf")
+            size = -1
+        
         i =0
         while i!=size:
             for lst in generate_powerset(self.aSet, size=i+1, skip=0):
