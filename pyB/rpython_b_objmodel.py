@@ -6,6 +6,9 @@ class W_Object:
     def __contains__(self, e):
         raise Exception("abstract W_Object instance _contains_ called")
 
+    def __repr__(self):
+        return "w-obj"
+
 class W_Tuple(W_Object):
     #_settled_ = True
     
@@ -25,6 +28,9 @@ class W_Tuple(W_Object):
     def __ne__(self, other):
         assert isinstance(other, tuple)
         return self.tvalue != other.tvalue
+
+    def __repr__(self):
+        return str(self.tvalue)
            
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -147,6 +153,9 @@ class W_None(W_Object):
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_None")
 
+    def __repr__(self):
+        return "None"
+
 
 # elements of enumerated sets or machine parameter sets     
 class W_Set_Element(W_Object):
@@ -163,6 +172,9 @@ class W_Set_Element(W_Object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __repr__(self):
+        return self.string
         
 class W_String(W_Object):
     #_settled_ = True
@@ -178,6 +190,9 @@ class W_String(W_Object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __repr__(self):
+        return self.string
         
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.

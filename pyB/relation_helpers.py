@@ -45,9 +45,37 @@ def filter_not_total(functions, S):
     return frozenset(total_funs)
 
 
+def is_a_total_function(function, preimage_set):
+    if USE_RPYTHON_CODE:
+        return is_a_total_function_rpython(function, preimage_set)
+    else:
+        return _is_a_total_function(function, preimage_set)
+ 
+        
+def is_a_surj_function(function, image_set):
+    if USE_RPYTHON_CODE:
+        return is_a_surj_function_rpython(function, image_set)
+    else:
+        return _is_a_surj_function(function, image_set)    
+
+
+def is_a_inje_function(function):
+    if USE_RPYTHON_CODE:
+        return is_a_inje_function_rpython(function)
+    else:
+        return _is_a_inje_function(function)
+
+
+def is_a_function(relation):
+    if USE_RPYTHON_CODE:
+        return is_a_function_rpython(relation)
+    else:
+        return _is_a_function(relation)
+
+
 # checks if the function it total 
 # returntype: frozenset
-def is_a_total_function(function, preimage_set):
+def _is_a_total_function(function, preimage_set):
     if isinstance(preimage_set, InfiniteSet):
         raise EnumerationNotPossibleException("InfiniteSet")
     preimage = [x[0] for x in function]
@@ -57,7 +85,7 @@ def is_a_total_function(function, preimage_set):
 
 # checks if the function it surjective
 # returntype: boolean
-def is_a_surj_function(function, image_set):
+def _is_a_surj_function(function, image_set):
     if isinstance(image_set, InfiniteSet):
         raise EnumerationNotPossibleException("InfiniteSet")
     image = [x[1] for x in function]
@@ -67,15 +95,60 @@ def is_a_surj_function(function, image_set):
 
 # checks if the function it injective
 # returntype: booelan
-def is_a_inje_function(function):
+def _is_a_inje_function(function):
     image = [x[1] for x in function]
     return not double_element_check(image)
 
 
 # checks if a relation is a function
 # returntype: boolean
-def is_a_function(relation):
+def _is_a_function(relation):
     preimage_set = [x[0] for x in relation]
+    if double_element_check(preimage_set):
+        return False
+    else:
+        return True
+        
+
+# checks if the function it total 
+# returntype: frozenset
+def is_a_total_function_rpython(function, preimage_set):
+    if isinstance(preimage_set, InfiniteSet):
+        raise EnumerationNotPossibleException("InfiniteSet")
+    preimage = []
+    for t in function:
+         preimage.append(t.tvalue[0])
+    preimage_set2  = frozenset(preimage)
+    return preimage_set.__eq__(preimage_set2)
+
+
+# checks if the function it surjective
+# returntype: boolean
+def is_a_surj_function_rpython(function, image_set):
+    if isinstance(image_set, InfiniteSet):
+        raise EnumerationNotPossibleException("InfiniteSet")
+    image = []
+    for t in function:
+         image.append(t.tvalue[1])
+    image_set2 = frozenset(image) # remove duplicate items
+    return image_set.__eq__(image_set2)
+
+
+# checks if the function it injective
+# returntype: booelan
+def is_a_inje_function_rpython(function):
+    image = []
+    for t in function:
+         image.append(t.tvalue[1])
+    return not double_element_check(image)
+
+
+# checks if a relation is a function
+# returntype: boolean
+def is_a_function_rpython(relation):
+    preimage_set = []
+    for t in relation:
+         preimage_set.append(t.tvalue[0])
     if double_element_check(preimage_set):
         return False
     else:

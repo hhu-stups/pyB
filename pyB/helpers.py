@@ -285,13 +285,27 @@ def build_arg_by_type(atype, value_list):
          b = build_arg_by_type(atype.right, value_list)
          return tuple([a,b])
      return value_list.pop(0)
+ 
      
+# only used by RPython
+def my_count(lst, element):
+    count = 0
+    for e in lst:
+        if e.__eq__(element):
+            count = count +1
+    return count
+
 
 # checks if a list contains a duplicate element. 
 # e.g used to check if a relation is a function
 def double_element_check(lst):
     for element in lst:
-        if lst.count(element)>1:
+        more_than_one = False
+        if USE_RPYTHON_CODE:
+            more_than_one = my_count(lst, element)>1
+        else:
+            more_than_one = lst.count(element)>1
+        if more_than_one:
             return True
     return False
 

@@ -958,6 +958,7 @@ def interpret(node, env):
         else:
             return expr1 * expr2
     elif isinstance(node, ADivExpression):
+        # FIXME: -1 / 4 is -1 but must be 0
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         return expr1 / expr2

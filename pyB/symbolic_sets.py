@@ -16,7 +16,7 @@ if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 
-
+# TODO: replace by more efficient S.__contains__(x) call
 # only used by W_Objects. 
 # Rpython does not support x in S
 def x_in_S(x, S):
@@ -209,13 +209,13 @@ class SymbolicSet(W_Object):
         for t in aset:
             assert isinstance(t, tuple) or isinstance(t, W_Tuple)
             if USE_RPYTHON_CODE:
+                assert isinstance(args, W_Object)
                 if isinstance(t.tvalue, W_Tuple):
                     raise NotImplementedError()
                 else:
-                    assert isinstance(t.tvalue, tuple)
-                    # FIXME tvalue[0] is of type int for reasons unknown 
-                    if t.tvalue[0].__eq__(args):
-                        result.append(t.tvalue[1])
+                    assert isinstance(t.tvalue, tuple)   
+                    if isinstance(t.tvalue[0], W_Object) and t.tvalue[0].__eq__(args):
+                        result.append(t.tvalue[1])                                           
             else:
                 if t[0]==args:
                     result.append(t[1])
@@ -713,6 +713,7 @@ class Nat1Set(LargeSet):
 
 # FIXME: set comprehension
 class IntSet(LargeSet):
+    #__settled = True
     def __contains__(self, element):
         return isinstance(element, int) and element >= self.env._min_int and element <= self.env._max_int
     
@@ -1132,15 +1133,15 @@ class SymbolicPowerSet(SymbolicSet):
         assert self.aSet is not None
         
         yield frozenset([])
-        # size = |S|*|T|
+        # card = |S|*|T|
         try:
-            size = self.aSet.__len__()
+            card = self.aSet.__len__()
         except InfiniteSetLengthException:
-            size = -1
+            card = -1
         
         i =0
-        while i!=size:
-            for lst in generate_powerset(self.aSet, size=i+1, skip=0):
+        while i!=card:
+            for lst in generate_powerset(self.aSet, card=i+1, skip=0):
                 assert len(lst)==i+1
                 yield frozenset(lst)
             i = i+1
@@ -1185,15 +1186,15 @@ class SymbolicPower1Set(SymbolicSet):
     def SymbolicPower1Set_generator(self):
         assert self.aSet is not None
         
-        # size = |S|*|T|
+        # card = |S|*|T|
         try:
-            size = self.aSet.__len__()
+            card = self.aSet.__len__()
         except InfiniteSetLengthException:
-            size = -1
+            card = -1
         
         i =0
-        while i!=size:
-            for lst in generate_powerset(self.aSet, size=i+1, skip=0):
+        while i!=card:
+            for lst in generate_powerset(self.aSet, card=i+1, skip=0):
                 assert len(lst)==i+1
                 yield frozenset(lst)
             i = i+1
@@ -1212,12 +1213,18 @@ class SymbolicPower1Set(SymbolicSet):
 
 
 class SymbolicIntervalSet(LargeSet):
-    def __init__(self, l, r, env, interpret):
+    def __init__(self, left, right, env, interpret):
         SymbolicSet.__init__(self, env, interpret)
-        assert isinstance(l, int)
-        assert isinstance(r, int)
-        self.l = l
-        self.r = r
+        if USE_RPYTHON_CODE:
+            assert isinstance(left, W_Integer)
+            assert isinstance(right, W_Integer)
+            self.l = left.ivalue
+            self.r = right.ivalue
+        else:
+            assert isinstance(left, int)
+            assert isinstance(right, int)
+            self.l = left
+            self.r = right
         
     # e:S (element:l..r)
     def __contains__(self, element):                     
@@ -1230,7 +1237,10 @@ class SymbolicIntervalSet(LargeSet):
             
     def __eq__(self, other):            
         if isinstance(other, SymbolicIntervalSet):
-            return other.l==self.l and other.r==self.r
+            if USE_RPYTHON_CODE:
+                return other.l.__eq__(self.l) and other.r.__eq__(self.r)
+            else:
+                return other.l==self.l and other.r==self.r
         return SymbolicSet.__eq__(self,other)  
     
     def enumerate_all(self):        

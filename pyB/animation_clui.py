@@ -98,7 +98,10 @@ def print_values_b_style(value):
                 string += ", "
         string += "}"
         return string
-    return repr(value)
+    if USE_RPYTHON_CODE:
+        return value.__repr__()
+    else:
+        return repr(value)
     
 
 # - private method -
@@ -112,7 +115,7 @@ def _show_env(env):
 # helper function, prints B state (values of variables)
 def _print_state(bstate):
     for bmachine in bstate.bmch_dict:
-        if not bmachine==None:
+        if not bmachine is None:
             print bmachine.mch_name
         value_stack = bstate.bmch_dict[bmachine]
         for value_map in value_stack:

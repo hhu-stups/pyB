@@ -25,7 +25,7 @@ class SymbolicRelationSet(SymbolicSet):
         self.left_set = aset0
         self.right_set = aset1
         self.node = node   
-    
+
     # all elements in Set
     def __contains__(self, element):
         if isinstance(element, SymbolicSet):    # check with symb info
@@ -84,16 +84,17 @@ class SymbolicRelationSet(SymbolicSet):
                      result.append(e)
             else:
                 for e in self.SymbolicRelationSet_generator():
-                     result.append(e)
-                #raise Exception("INTERNAL ERROR: unimplemented function enumeration")                         
+                    result.append(e)
+                     #raise Exception("INTERNAL ERROR: unimplemented function enumeration")                         
             self.explicit_set_repr = frozenset(result)
             self.explicit_set_computed = True
         return self.explicit_set_repr
-        
+      
     def SymbolicRelationSet_generator(self):
         S = self.left_set
         T = self.right_set
         return make_explicit_set_of_realtion_lists(S,T)
+        #return frozenset([])
     
     def __eq__(self, other):
         # TODO: handle empty set and maybe more sp. cases
@@ -108,9 +109,9 @@ class SymbolicRelationSet(SymbolicSet):
     def next(self):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
-        return self.SymbolicRelationSet_gen.next()    
+        return self.SymbolicRelationSet_gen.next()  
+
  
-        
 class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
     def SymbolicPartialFunctionSet_generator(self):
         for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):

@@ -414,7 +414,7 @@ def __check_unset(names, bstate, mch):
     for id_Name in names:
         try:
             value = bstate.get_value(id_Name, mch)
-            if value==None:
+            if value is None:
                 fail_lst.append(id_Name)    
         except ValueNotInBStateException:
             fail_lst.append(id_Name)
@@ -1005,7 +1005,7 @@ def interpret(node, env):
             value = W_Integer(i+left.ivalue)
             L.append(value)
         return frozenset(L)
-        #return SymbolicIntervalSet(left.ivalue, right.ivalue, env, interpret)
+        #return SymbolicIntervalSet(left, right, env, interpret)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope

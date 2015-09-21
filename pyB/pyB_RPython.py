@@ -76,7 +76,7 @@ def run_animation_mode(argv):
     type_check_root_bmch(root, env, mch) # also checks all included, seen, used and extend  
     # TODO: Check with B spec
     
-    """                                                        # 9. animate if ops are present 
+                                                       # 9. animate if ops are present 
     # DO-WHILE Loop
     while True:
         next_states = __calc_states_and_print_ui(root, env, mch, solution_file_present)
@@ -87,7 +87,9 @@ def run_animation_mode(argv):
         if undo_possible: 
             number_of_options = number_of_options + 1 
         input_str = "Input (0-"+str(number_of_options)+"):"
-        number = raw_input(input_str)
+        #number = raw_input(input_str)
+        # XXXX
+        number = number_of_options
         number = int(number)
         
 
@@ -127,7 +129,7 @@ def run_animation_mode(argv):
             env.state_space.add_state(bstate)
         else:
             print "Error! Wrong input:", number
-    """
+
     return 0
 
 # skips set_up or init if there is nothing to setup/init

@@ -82,7 +82,7 @@ class TestInterpNumbers():
         assert interpret(root, env)
 
 
-    def test_genAST_expr_div(self):
+    def test_genAST_expr_div1(self):
         # Build AST
         string_to_file("#PREDICATE 8/2=4", file_name)
         ast_string = file_to_AST_str(file_name)
@@ -92,6 +92,17 @@ class TestInterpNumbers():
         env = Environment()
         assert interpret(root, env)
 
+    """
+    def test_genAST_expr_div2(self):
+        # Build AST
+        string_to_file("#PREDICATE -1/4=0", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root, env)
+    """
 
     def test_genAST_expr_mod(self):
         # Build AST
