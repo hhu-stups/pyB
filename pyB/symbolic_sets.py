@@ -6,10 +6,11 @@
 from bexceptions import ValueNotInDomainException, DontKnowIfEqualException, InfiniteSetLengthException
 from btypes import *
 from config import PRINT_WARNINGS, USE_RPYTHON_CODE
-from helpers import double_element_check, remove_tuples, build_arg_by_type, enumerate_cross_product
+from enumeration_lazy import generate_powerset, enumerate_cross_product
+from helpers import double_element_check, remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
 from rpython_b_objmodel import W_Object, W_Integer, W_String, W_Tuple
-from symbolic_helpers import check_syntacticly_equal, generate_powerset
+
 
 
 if USE_RPYTHON_CODE:

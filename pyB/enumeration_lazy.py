@@ -1,40 +1,17 @@
 from bexceptions import InfiniteSetLengthException
 from config import USE_RPYTHON_CODE
-from helpers import enumerate_cross_product
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
      
-# helper functions for symbolic set operations
 
-# True:  these predicates are syntacticly equal
-# True examples:
-# {x|x:NAT}=={y|y:NAT}
-# False: these predicates are unequal
-# no false cases yet implemented
-# Exception: I dont know if they are equal (likely case)
-# DontKnow examples: 
-# {x|x>3 & x<5}=={y|y=4}
-# {x|x:NAT & x<200}=={y|y<200 & y:NAT}
-# {x|x:INTEGER & x>=0 }=={y|y:NATURAL}
-# returntype: boolean
-def check_syntacticly_equal(predicate0, predicate1):
-    if predicate0.__class__ == predicate1.__class__:
-        try:
-            length = range(len(predicate0.children))
-        except AttributeError:
-            return True #clase check was successful and no more children to check
-        for index in length:
-            child0 = predicate0.children[index]
-            child1 = predicate0.children[index]
-            if not check_syntacticly_equal(child0, child1):
-                return False
-        return True
-    else:
-        message = "ERROR: failed to check if predicates are equal: '%s' and '%s'" %(pretty_print(predicate0),pretty_print(predicate1))
-        print message
-        raise DontKnowIfEqualException(message)
-        return False
+def enumerate_cross_product(S,T):
+    for x in S:
+        for y in T:
+            if USE_RPYTHON_CODE:
+                yield W_Tuple((x,y))
+            else:
+                yield (x,y)  
 
 
 # This generator returns one relation(-list) between S and T S<-->T.

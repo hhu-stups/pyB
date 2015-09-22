@@ -376,15 +376,7 @@ def couple_tree_to_conj_list(ast):
         return lst0 + lst1
     else:
         return [ast]     
-
-
-def enumerate_cross_product(S,T):
-    for x in S:
-        for y in T:
-            if USE_RPYTHON_CODE:
-                yield W_Tuple((x,y))
-            else:
-                yield (x,y)  
+        
         
 # Helper for debugging                     
 def print_ast(root):

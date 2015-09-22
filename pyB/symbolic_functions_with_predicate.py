@@ -4,12 +4,40 @@ from config import USE_RPYTHON_CODE
 from helpers import remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
 from rpython_b_objmodel import W_Object
-from symbolic_helpers import check_syntacticly_equal 
 from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
+# True:  these predicates are syntacticly equal
+# True examples:
+# {x|x:NAT}=={y|y:NAT}
+# False: these predicates are unequal
+# no false cases yet implemented
+# Exception: I dont know if they are equal (likely case)
+# DontKnow examples: 
+# {x|x>3 & x<5}=={y|y=4}
+# {x|x:NAT & x<200}=={y|y<200 & y:NAT}
+# {x|x:INTEGER & x>=0 }=={y|y:NATURAL}
+# returntype: boolean
+def check_syntactically_equal(predicate0, predicate1):
+    if predicate0.__class__ == predicate1.__class__:
+        try:
+            length = range(len(predicate0.children))
+        except AttributeError:
+            return True #clase check was successful and no more children to check
+        for index in length:
+            child0 = predicate0.children[index]
+            child1 = predicate0.children[index]
+            if not check_syntactically_equal(child0, child1):
+                return False
+        return True
+    else:
+        message = "ERROR: failed to check if predicates are equal: '%s' and '%s'" %(pretty_print(predicate0),pretty_print(predicate1))
+        print message
+        raise DontKnowIfEqualException(message)
+        return False
+        
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
@@ -48,10 +76,10 @@ class SymbolicLambda(SymbolicSet):
             if not len(self.variable_list)==len(aset.variable_list):
                 return False
             # may throw a DontKnowIfEqualException
-            if not check_syntacticly_equal(self.predicate, aset.predicate):
+            if not check_syntactically_equal(self.predicate, aset.predicate):
                 return False
             # may throw a DontKnowIfEqualException
-            if not check_syntacticly_equal(self.expression, aset.expression):
+            if not check_syntactically_equal(self.expression, aset.expression):
                 return False
             return True
         if isinstance(aset, SymbolicSet):
@@ -208,7 +236,7 @@ class SymbolicComprehensionSet(SymbolicSet):
             if not len(self.variable_list)==len(aset.variable_list):
                 return False
             # may throw a DontKnowIfEqualException
-            if not check_syntacticly_equal(self.predicate, aset.predicate):
+            if not check_syntactically_equal(self.predicate, aset.predicate):
                 return False
             return True
         if isinstance(aset, frozenset):

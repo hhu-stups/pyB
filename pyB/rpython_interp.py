@@ -3,9 +3,9 @@ from bexceptions import ValueNotInDomainException, ValueNotInBStateException, IN
 from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
 from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions #,get_image
+from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
-from symbolic_helpers import make_explicit_set_of_realtion_lists
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet 

@@ -1,12 +1,12 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException
 from config import USE_RPYTHON_CODE
-from helpers import enumerate_cross_product
+from enumeration_lazy import make_explicit_set_of_realtion_lists, enumerate_cross_product
 from relation_helpers import *
 from rpython_b_objmodel import W_Object
-from symbolic_helpers import check_syntacticly_equal, make_explicit_set_of_realtion_lists 
 from symbolic_sets import SymbolicSet, PowerSetType, SymbolicCartSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
+
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
