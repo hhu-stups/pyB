@@ -8,7 +8,7 @@ from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
 from subprocess import Popen, PIPE
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset, W_Tuple
+     from rpython_b_objmodel import frozenset
      
 #from pretty_printer import pretty_print
 #from boperation import BOperation

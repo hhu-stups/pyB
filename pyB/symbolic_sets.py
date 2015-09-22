@@ -17,14 +17,12 @@ if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
 
 
-# TODO: replace by more efficient S.__contains__(x) call
+
 # only used by W_Objects. 
 # Rpython does not support x in S
 def x_in_S(x, S):
-    for e in S:
-        if x.__eq__(e):
-            return True
-    return False
+    return S.__contains__(x)
+
     
     
 ##############

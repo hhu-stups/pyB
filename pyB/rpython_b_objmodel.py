@@ -205,6 +205,7 @@ class frozenset(W_Object):
         # frozenset([1,1,2])==frozenset([1,2])
         # TODO: maybe the performance improves if cases like frozenset([1,1,2])
         # are not used by any pyB code. (only enumerated sets and the repl. needs this check than) 
+        assert isinstance(lst, list)
         for e in lst:
             if e not in self.lst:
                 self.lst.append(e)

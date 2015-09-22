@@ -2,7 +2,7 @@ from bexceptions import InfiniteSetLengthException
 from config import USE_RPYTHON_CODE
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import frozenset, W_Tuple
      
 
 def enumerate_cross_product(S,T):
@@ -40,7 +40,45 @@ def make_explicit_set_of_realtion_lists(S,T):
             yield frozenset(lst) # removes double entries 
         i = i+1
 
-
+"""
+def make_explicit_set_of_realtion_lists_naive(S,T):
+    # card = |S|*|T|
+    try:
+        card = len(S)*len(T)
+    except InfiniteSetLengthException:
+        card = 0
+    # empty relation
+    yield frozenset([])
+    i=0
+    while i!=card:
+        result = []
+        for L in _generate_relation_naive(S,T, card=i+1):
+            assert len(L)==i+1
+            result.append(frozenset(L))
+        # remove double relations created by naive implementation
+        relations = frozenset(result)
+        for r in relations:
+            yield r
+        i = i+1
+        
+    # naive lazy enumerator which generates a relation more than once. 
+    # e.g. {(1,2),(3,4)} and {(3,4),(1,2)}. 
+    # caller needs to remove duplicate relations
+    def _generate_relation_naive(S, T, card):
+    if card==1:
+        for element in enumerate_cross_product(S,T):
+            yield [element]
+    else:
+        assert card>1
+        for element in enumerate_cross_product(S,T):              
+            for L in _generate_relation_naive(S, T, card-1):
+                if element in L:
+                    continue
+                res = L+[element]
+                if len(res)==card:
+                    yield res   
+"""
+            
 # TODO: this is copy-pase from _generate_relation. Use Metha-programming to 
 # to write generalization 
 # returntype: list
@@ -69,6 +107,7 @@ def generate_powerset(S, card, skip):
                     yield res
 
 
+                    
 # It is a helper only used by make_explicit_set_of_realtion_lists to generate 
 # all combinations/sub-lists of length n.
 # returntype: list of tuples
@@ -80,7 +119,6 @@ def generate_powerset(S, card, skip):
 # card 3:(4) {(1|->FALSE),(1|->TRUE),(2|->FALSE)} {(1|->FALSE),(1|->TRUE),(2|->TRUE)} {(1|->TRUE),(2|->FALSE),(2|->TRUE)} {(1|->FALSE),(2|->FALSE),(2|->TRUE)}
 # card 4:(1) {(1|->FALSE),(1|->TRUE),(2|->FALSE),(2|->TRUE)} 
 # cross product enumerator generates:  (1,TRUE), (1,FALSE), (2,TRUE), (2,FALSE)
-
 def _generate_relation(S, T, card, skip):
     # yield one element of all combinations (x,y)
     if card==1:
