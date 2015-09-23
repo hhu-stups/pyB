@@ -802,7 +802,7 @@ def interpret(node, env):
         """
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
-        return W_Integer(len(aSet.lst))
+        return W_Integer(aSet.__len__())
         """
     elif isinstance(node, AGeneralUnionExpression):
         set_of_sets = interpret(node.children[0], env)
@@ -1088,7 +1088,7 @@ def interpret(node, env):
 #       4. Relations
 #
 # ******************
-        """
+
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -1099,7 +1099,7 @@ def interpret(node, env):
         #    assert isinstance(relation, frozenset)
         #    lst.append(relation)
         #return frozenset(lst)
-        """
+
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)

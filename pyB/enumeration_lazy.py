@@ -30,9 +30,6 @@ def make_explicit_set_of_realtion_lists(S,T):
     # empty relation
     yield frozenset([])
     # calc all permutations
-    # XXX: Python pointer error 
-    # 'error: no member named 'rbof_inst_lst' in 'struct pypy_rpython_b_objmodel_frozenset0'
-    # caused by this code
     i=0
     while i!=card:
         for lst in _generate_relation(S,T, card=i+1, skip=0):

@@ -3,6 +3,9 @@
 # except boolean methods!
 
 class W_Object:
+    def __init__(self):
+        pass
+        
     def __contains__(self, e):
         raise Exception("abstract W_Object instance _contains_ called")
 
@@ -200,13 +203,16 @@ class W_String(W_Object):
 class frozenset(W_Object):
     #_settled_ = True
 
-    def __init__(self, lst=[]):
+    def __init__(self, L=None):
+        W_Object.__init__(self)
+    	if L is None:
+    		L = []
         self.lst = []
         # frozenset([1,1,2])==frozenset([1,2])
         # TODO: maybe the performance improves if cases like frozenset([1,1,2])
         # are not used by any pyB code. (only enumerated sets and the repl. needs this check than) 
-        assert isinstance(lst, list)
-        for e in lst:
+        assert isinstance(L, list)
+        for e in L:
             if e not in self.lst:
                 self.lst.append(e)
     
@@ -268,7 +274,9 @@ class frozenset(W_Object):
     def __eq__(self, other):
         if not isinstance(other, frozenset):
             return False
-        if not len(self)==len(other):
+            
+        assert isinstance(other, frozenset)
+        if not self.__len__()==other.__len__():
             return False
 
         for e in self.lst:
@@ -284,7 +292,7 @@ class frozenset(W_Object):
     # e.g 
     # for x in S:
     #    for y in S: ...
-    # (used by recursive generators 
+    # (used by recursive generators) 
     def __iter__(self):
         copy = frozenset(self.lst)
         copy.generator = self.w_frozenset_generator()
