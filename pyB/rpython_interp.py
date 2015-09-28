@@ -783,7 +783,6 @@ def interpret(node, env):
             assert isinstance(t, tuple)
             result = W_Tuple(t) 
         return result
-        """
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
         return SymbolicPowerSet(aSet, env, interpret)
@@ -799,7 +798,6 @@ def interpret(node, env):
         #lst = [frozenset(e) for e in powerlist]
         #lst.remove(frozenset([]))
         #return frozenset(lst)
-        """
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return W_Integer(aSet.__len__())
@@ -1717,6 +1715,7 @@ def interpret(node, env):
         return result
         """
     else:
+        print "\nError: unimplemented pyB feature: %s",node
         raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
         return W_None() # RPython: Avoid return of python None
 
