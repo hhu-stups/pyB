@@ -1,9 +1,9 @@
 # symbolic functions defined by a predicate
-from bexceptions import ValueNotInDomainException
+from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
 from config import USE_RPYTHON_CODE
 from helpers import remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
-from rpython_b_objmodel import W_Object
+from rpython_b_objmodel import W_Object, W_Tuple
 from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
@@ -230,7 +230,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         return result    
     
     def __eq__(self, aset):
-        if aset==None:
+        if aset is None:
             return False
         if isinstance(aset, SymbolicComprehensionSet):
             if not len(self.variable_list)==len(aset.variable_list):
@@ -260,6 +260,8 @@ class SymbolicComprehensionSet(SymbolicSet):
             self.env.set_value(idNode.idName, value)
         result = self.interpret(self.predicate, self.env) 
         self.env.pop_frame() # exit scope
+        if USE_RPYTHON_CODE:
+            return result.bvalue
         return result  
         
     # convert to explicit frozenset
@@ -269,22 +271,29 @@ class SymbolicComprehensionSet(SymbolicSet):
             pred      = self.predicate
             env       = self.env
             interpret = self.interpret
+            names     = [x.idName for x in varList]
             result = []
             # new scope
             self.env.push_new_frame(varList)
             domain_generator = self.domain_generator(pred, env, varList, interpret)        
             for entry in domain_generator:
-                for name in [x.idName for x in varList]:
+                for name in names:
                     value = entry[name]
                     env.set_value(name, value)
                 try:
-                    if interpret(pred, env):  # test
+                    if USE_RPYTHON_CODE:
+                        bool = interpret(pred, env).bvalue
+                    else:
+                        bool = interpret(pred, env)
+                    if bool:  # test
                         i = 0
-                        for name in [x.idName for x in varList]:
+                        name = names[0]
+                        tup = env.get_value(name)
+                        for name in names[1:]:
                             value = env.get_value(name)
                             i = i + 1
-                            if i==1:
-                                tup = value
+                            if USE_RPYTHON_CODE:
+                                tup = W_Tuple((tup, value))
                             else:
                                 tup = tuple([tup,value])
                         result.append(tup)  
@@ -302,20 +311,27 @@ class SymbolicComprehensionSet(SymbolicSet):
         pred      = self.predicate
         env       = self.env
         interpret = self.interpret
+        names     = [x.idName for x in varList]
         env.push_new_frame(varList)
         domain_generator = self.domain_generator(pred, env, varList, interpret) 
         for entry in domain_generator:
-                for name in [x.idName for x in varList]:
+                for name in names:
                     value = entry[name]
                     env.set_value(name, value)
                 try:
-                    if interpret(pred, env):  # test
+                    if USE_RPYTHON_CODE:
+                        bool = interpret(pred, env).bvalue
+                    else:
+                        bool = interpret(pred, env)
+                    if bool:  # test
                         i = 0
-                        for name in [x.idName for x in varList]:
+                        name = names[0]
+                        tup = env.get_value(name)
+                        for name in names[1:]:
                             value = env.get_value(name)
                             i = i + 1
-                            if i==1:
-                                tup = value
+                            if USE_RPYTHON_CODE:
+                                tup = W_Tuple((tup, value))
                             else:
                                 tup = tuple([tup,value])
                         env.pop_frame()

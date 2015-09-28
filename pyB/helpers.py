@@ -6,6 +6,7 @@ from ast_nodes import *
 from btypes import CartType
 from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
 from subprocess import Popen, PIPE
+from rpython_b_objmodel import W_Tuple
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
@@ -283,7 +284,10 @@ def build_arg_by_type(atype, value_list):
      if isinstance(atype, CartType):
          a = build_arg_by_type(atype.left, value_list)
          b = build_arg_by_type(atype.right, value_list)
-         return tuple([a,b])
+         if USE_RPYTHON_CODE:
+             return W_Tuple((a,b))
+         else:
+             return tuple([a,b])
      return value_list.pop(0)
  
      

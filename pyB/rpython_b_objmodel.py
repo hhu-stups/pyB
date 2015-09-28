@@ -246,15 +246,20 @@ class frozenset(W_Object):
     def union(self, other):
         result = list(other.lst)
         for e in self.lst:
-            if e not in result:
+            skip = False
+            for e2 in result:
+                if e.__eq__(e2):
+                    skip = True
+            if not skip:
                 result.append(e)
         return frozenset(result)
     
     def intersection(self, other):
         result = []
         for e in self.lst:
-            if e in other.lst:
-                result.append(e)
+            for e2 in other.lst:
+                if e.__eq__(e2):
+                    result.append(e)  
         return frozenset(result)
         
     def __sub__(self, other):
@@ -263,8 +268,9 @@ class frozenset(W_Object):
     def difference(self, other):
         result = list(self.lst)
         for e in other.lst:
-            if e in result:
-                result.remove(e)
+            for e2 in result:
+                if e2.__eq__(e):
+                    result.remove(e)                    
         return frozenset(result)
         
     def copy(self):
@@ -280,7 +286,12 @@ class frozenset(W_Object):
             return False
 
         for e in self.lst:
-            if e not in other.lst:
+            found = False
+            for e2 in other.lst:
+                if e2.__eq__(e):
+                    found = True
+                    break
+            if not found:   
                 return False
         return True
         
