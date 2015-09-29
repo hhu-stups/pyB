@@ -688,12 +688,15 @@ class SymbolicTransFunction(SymbolicSet):
         return self.SymbolicTransFunction_gen.next()
         
                                       
-# XXX: not enabled. see interpreter.py AReverseExpression
+
 class SymbolicInverseRelation(SymbolicRelationSet):
     def __init__(self, relation, env, interpret, node):
         SymbolicSet.__init__(self, env, interpret)
         self.relation = relation
         self.node = node
+        
+    def __len__(self):
+        return self.relation.__len__()
         
     def enumerate_all(self):
         if not self.explicit_set_computed:
@@ -701,14 +704,20 @@ class SymbolicInverseRelation(SymbolicRelationSet):
                 rel = self.relation.enumerate_all()
             else:
                 rel = self.relation
-            inv_rel = [(x[1],x[0]) for x in rel]
+            if USE_RPYTHON_CODE:
+                inv_rel = [W_Tuple((x.tvalue[1],x.tvalue[0])) for x in rel]
+            else:
+                inv_rel = [(x[1],x[0]) for x in rel]
             self.explicit_set_repr = frozenset(inv_rel)
             self.explicit_set_computed = True
         return self.explicit_set_repr
     
     def SymbolicInverseRelation_generator(self):
         for e in self.relation:
-            yield tuple([e[1],e[0]])
+            if USE_RPYTHON_CODE:
+                yield W_Tuple((e.tvalue[1],e.tvalue[0]))
+            else:
+                yield tuple([e[1],e[0]])
             
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -722,5 +731,12 @@ class SymbolicInverseRelation(SymbolicRelationSet):
         return self.SymbolicInverseRelation_gen.next()
     
     def __contains__(self, other):
-        inv_element = tuple([other[1],other[0]])
-        return inv_element in self.relation
+        if USE_RPYTHON_CODE:
+            inv_e = W_Tuple((other.tvalue[1],other.tvalue[0]))
+            for t in self.relation:
+                if t.__eq__(inv_e):
+                    return True
+            return False
+        else:
+            inv_element = tuple([other[1],other[0]])
+            return inv_element in self.relation

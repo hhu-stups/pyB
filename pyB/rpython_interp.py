@@ -8,9 +8,9 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from pretty_printer import pretty_print
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
-from symbolic_functions import SymbolicRelationSet 
+from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation 
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
-from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, frozenset
+from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
 from typing import type_check_predicate, type_check_expression
 
 
@@ -1168,11 +1168,7 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
-        rev_rel = []
-        for e in rel:
-            rev_rel.insert(0,e)
-        return frozenset(rev_rel)
-        #return SymbolicInverseRelation(rel, env, interpret, node)
+        return SymbolicInverseRelation(rel, env, interpret, node)
     elif isinstance(node, AImageExpression):
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
@@ -1586,9 +1582,10 @@ def interpret(node, env):
                 index = index +1
                 t.append(tuple([index, val]))
         return frozenset(t)
-    elif isinstance(node, AStringExpression):
-        return node.string
         """
+    elif isinstance(node, AStringExpression):
+        return W_String(node.string)
+
 # ****************
 #
 # 6. Miscellaneous

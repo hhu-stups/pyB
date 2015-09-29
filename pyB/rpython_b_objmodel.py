@@ -31,9 +31,18 @@ class W_Tuple(W_Object):
     def __ne__(self, other):
         assert isinstance(other, tuple)
         return self.tvalue != other.tvalue
-
+ 
+    # FIXME: Bugs in translationpro. if method is used.        
+        """
     def __getitem__(self, key):
-        return self.tvalue[key]
+        # Avoid RPython error: "TyperError: non-constant tuple index" 
+        if key==0:
+            return self.tvalue[0]
+        elif key==1:
+            return self.tvalue[1]
+        else:
+            raise Exception("illegal tuple index in W_Tuple")
+        """        
 
     def __repr__(self):
         return str(self.tvalue)
@@ -208,8 +217,8 @@ class frozenset(W_Object):
 
     def __init__(self, L=None):
         W_Object.__init__(self)
-    	if L is None:
-    		L = []
+        if L is None:
+            L = []
         self.lst = []
         # frozenset([1,1,2])==frozenset([1,2])
         # TODO: maybe the performance improves if cases like frozenset([1,1,2])
@@ -289,25 +298,36 @@ class frozenset(W_Object):
     
     # WARNING: set([1,2,3])!=frozenset([1,2,3]) 
     def __eq__(self, other):
-        if not isinstance(other, frozenset):
+        from symbolic_sets import SymbolicSet
+        if not isinstance(other, frozenset) and not isinstance(other, SymbolicSet):
             return False
-            
-        assert isinstance(other, frozenset)
+           
+        assert isinstance(other, frozenset) or isinstance(other, SymbolicSet)
         if not self.__len__()==other.__len__():
             return False
-
-        for e in self.lst:
-            found = False
-            for e2 in other.lst:
-                if e2.__eq__(e):
-                    found = True
-                    break
-            if not found:   
-                return False
-        return True
+        if isinstance(other, frozenset):
+            for e in self.lst:
+                found = False     
+                for e2 in other.lst:
+                    if e2.__eq__(e):
+                        found = True
+                        break
+                if not found:   
+                    return False
+            return True
+        else:
+            for e in self.lst:
+                found = False     
+                for e2 in other:
+                    if e2.__eq__(e):
+                        found = True
+                        break
+                if not found:   
+                    return False
+            return True     
         
     def __ne__(self, other):
-        return not self==other
+        return not self.__eq__(other)
         
     # only a copy of the instance will prevent an enumeration bug. This 
     # Bug ocures when the set is enumerated twice(or more) at the same time
