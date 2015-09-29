@@ -764,12 +764,10 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return SymbolicUnionSet(aSet1, aSet2, env, interpret)
-        #return aSet1.union(aSet2)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
-        #return aSet1.intersection(aSet2)
     elif isinstance(node, ACoupleExpression):
         assert len(node.children)>1
         a = interpret(node.children[0], env)
@@ -1082,14 +1080,7 @@ def interpret(node, env):
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
         return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
-        #lst = []
-        #for relation in make_explicit_set_of_realtion_lists(aSet1, aSet2):
-        #    assert isinstance(relation, frozenset)
-        #    lst.append(relation)
-        #return frozenset(lst)
-
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)

@@ -285,6 +285,8 @@ class InfiniteSet(SymbolicSet):
 # FIXME: set comprehension
 class NaturalSet(InfiniteSet):
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) and element.ivalue >= 0 
         return isinstance(element, int) and element >= 0 
     
     def issubset(self, aset): # NaturalSet <= aset
@@ -365,6 +367,8 @@ class NaturalSet(InfiniteSet):
 # FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) and element.ivalue > 0 
         return isinstance(element, int) and element > 0  
     
     def issubset(self, aset): # Natural1Set <= aset
@@ -442,6 +446,8 @@ class Natural1Set(InfiniteSet):
 # FIXME: set comprehension   
 class IntegerSet(InfiniteSet): 
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) or isinstance(element, IntegerType)
         return isinstance(element, int) or isinstance(element, IntegerType) #type for symbolic checks
     
     def issubset(self, aset): # IntegerSet <= aset
@@ -454,7 +460,11 @@ class IntegerSet(InfiniteSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if not isinstance(x, int):
+                if USE_RPYTHON_CODE:
+                    value = x.ivalue
+                else:
+                    value = x
+                if not isinstance(value, int):
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type")
@@ -519,6 +529,8 @@ class IntegerSet(InfiniteSet):
 # FIXME: set comprehension
 class NatSet(LargeSet):
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) and element.ivalue >=0 and element.ivalue <= self.env._max_int
         return isinstance(element, int) and element >=0 and element <= self.env._max_int
       
     def __len__(self):
@@ -623,6 +635,8 @@ class NatSet(LargeSet):
 # FIXME: set comprehension      
 class Nat1Set(LargeSet):
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) and element.ivalue >0 and element.ivalue <= self.env._max_int
         return isinstance(element, int) and element >0 and element <= self.env._max_int
 
     def __len__(self):
@@ -714,6 +728,8 @@ class Nat1Set(LargeSet):
 class IntSet(LargeSet):
     #__settled = True
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.ivalue, int) and element.ivalue >= self.env._min_int and element.ivalue <= self.env._max_int
         return isinstance(element, int) and element >= self.env._min_int and element <= self.env._max_int
     
     def issubset(self, aset): # IntSet <=
@@ -735,7 +751,11 @@ class IntSet(LargeSet):
             return True
         elif isinstance(aset, frozenset):
             for x in aset:
-                if not isinstance(x, int):
+                if USE_RPYTHON_CODE:
+                    value = x.ivalue
+                else:
+                    value = x
+                if not isinstance(value, int):
                     return False
             return True
         raise NotImplementedError("inclusion with unknown set-type") 
@@ -800,6 +820,8 @@ class IntSet(LargeSet):
  
 class StringSet(SymbolicSet):
     def __contains__(self, element):
+        if USE_RPYTHON_CODE:
+            return isinstance(element.string, str) or isinstance(element, StringType)
         return isinstance(element, str) or isinstance(element, StringType)
     
     # aSet<:STRING
@@ -814,7 +836,11 @@ class StringSet(SymbolicSet):
             return True
         if isinstance(aSet, frozenset):
             for e in aSet:
-                if not isinstance(e, str):
+                if USE_RPYTHON_CODE:
+                    value = e.string
+                else:
+                    value = e
+                if not isinstance(value, str):
                     return False
             return True
         return False

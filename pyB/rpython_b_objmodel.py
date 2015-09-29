@@ -26,11 +26,14 @@ class W_Tuple(W_Object):
     def __eq__(self, other):
         if not isinstance(other, W_Tuple):
             return False
-        return self.tvalue == other.tvalue
+        return self.tvalue[0].__eq__(other.tvalue[0]) and self.tvalue[1].__eq__(other.tvalue[1])
         
     def __ne__(self, other):
         assert isinstance(other, tuple)
         return self.tvalue != other.tvalue
+
+    def __getitem__(self, key):
+        return self.tvalue[key]
 
     def __repr__(self):
         return str(self.tvalue)
@@ -229,20 +232,28 @@ class frozenset(W_Object):
             if element.__eq__(e):
                 return True
         return False
-      
-        
+
+
     def issubset(self, other):
         for e in self.lst:
-            if e not in other.lst:
+            found = False
+            for e2 in other.lst:
+                if e.__eq__(e2):
+                    found = True
+            if not found:
                 return False
         return True
         
     def issuperset(self, other):
         for e in other.lst:
-            if e not in self.lst:
+            found = False
+            for e2 in self.lst:
+                if e.__eq__(e2):
+                    found = True
+            if not found:
                 return False
         return True
-    
+ 
     def union(self, other):
         result = list(other.lst)
         for e in self.lst:
