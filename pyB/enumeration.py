@@ -13,7 +13,7 @@ from symbolic_functions_with_predicate import *
 
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_String, frozenset
+     from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_String, W_Tuple, frozenset
 
 # WARNING: most of the functions in this module should only be used
 # if the full set is needed in an expression: The functions are very slow 
@@ -205,7 +205,11 @@ def all_records(value_dict, result, acc, index):
 def create_all_seq_w_fixlen(images, length):
     result = []
     basis = len(images)
-    noc = basis**length # number of combinations
+    assert length >=0
+    noc = 1 # number of combinations
+    for i in range(length):
+        noc = noc * basis
+    #noc = basis**length  # NOT RPython
     for i in range(noc):
         lst = create_sequence(images, i, length)
         result.append(frozenset(lst))
@@ -214,12 +218,18 @@ def create_all_seq_w_fixlen(images, length):
 
 # WARNING: this could take some time...
 def create_sequence(images, number, length):
+    assert isinstance(images, list)
     if PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing all sequences of %s" % images
     result = []
     basis = len(images)
     for i in range(length):
-        symbol = tuple([i+1,images[number % basis]])
+        index = number % basis
+        image = images[index]
+        if USE_RPYTHON_CODE:
+            symbol = W_Tuple((i+1, image))
+        else:
+            symbol = tuple([i+1, image])
         result.append(symbol)
         number /= basis
     result.reverse()

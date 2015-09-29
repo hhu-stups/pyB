@@ -10,6 +10,7 @@ from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set, 
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
+from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
 from typing import type_check_predicate, type_check_expression
 
@@ -1379,12 +1380,13 @@ def interpret(node, env):
         if isinstance(function, SymbolicSet):
             return function[args]
         return get_image(function, args)
-
+        """
 # ********************
 #
 #       4.2 Sequences
 #
 # ********************
+        """       
     elif isinstance(node,AEmptySequenceExpression):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
@@ -1441,6 +1443,8 @@ def interpret(node, env):
         #perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
         ##print perm_sequence_list
         #return frozenset(perm_sequence_list)
+        """
+        """
     elif isinstance(node, AConcatExpression):
         # u:= s^t
         s = interpret(node.children[0], env)

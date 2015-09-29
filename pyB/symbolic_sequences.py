@@ -8,7 +8,22 @@ from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
-
+     
+     
+def _check_element_in_sequence(element, sequence):
+	for tup in element:
+		if USE_RPYTHON_CODE:
+			number = tup.tvalue[0].ivalue
+			e      = tup.tvalue[1]
+		else:
+			number = tup[0]
+			e      = tup[1]
+		if not isinstance(number, int) or number>len(element) or number<1:
+			return False 
+		if not sequence.__contains__(e):
+			return False
+	return True
+        
 class AbstractSymbolicSequence(SymbolicSet):
     def enumerate_all(self):
         if not self.explicit_set_computed:
@@ -48,7 +63,11 @@ class SymbolicSequenceSet(AbstractSymbolicSequence):
         yield frozenset([])
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequences = create_all_seq_w_fixlen(list(S),i)
+            if USE_RPYTHON_CODE:
+                images = S.lst
+            else:
+                images = list(S)
+            sequences = create_all_seq_w_fixlen(images, i)
             for sequence in sequences:
                 yield sequence
 
@@ -66,16 +85,8 @@ class SymbolicSequenceSet(AbstractSymbolicSequence):
     def __contains__(self, element):
         S = self.aset
         if not is_a_function(element):
-            return False
-        
-        for tup in element:
-            number = tup[0]
-            e      = tup[1]
-            if not isinstance(number, int) or number>len(element) or number<1:
-                return False 
-            if e not in S:
-                return False
-        return True
+            return False    
+        return _check_element_in_sequence(element, S)
         
 
 class SymbolicSequence1Set(AbstractSymbolicSequence):
@@ -87,7 +98,11 @@ class SymbolicSequence1Set(AbstractSymbolicSequence):
     def SymbolicSequence1Set_generator(self):
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequences = create_all_seq_w_fixlen(list(S),i)
+            if USE_RPYTHON_CODE:
+                images = S.lst
+            else:
+                images = list(S)
+            sequences = create_all_seq_w_fixlen(images, i)
             for sequence in sequences:
                 yield sequence
 
@@ -108,15 +123,7 @@ class SymbolicSequence1Set(AbstractSymbolicSequence):
             return False  
         if not is_a_function(element):
             return False
-        
-        for tup in element:
-            number = tup[0]
-            e      = tup[1]
-            if not isinstance(number, int) or number>len(element) or number<1:
-                return False 
-            if e not in S:
-                return False
-        return True
+        return _check_element_in_sequence(element, S)
             
 
 
@@ -130,7 +137,11 @@ class SymbolicISequenceSet(AbstractSymbolicSequence):
         yield frozenset([])
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequences = create_all_seq_w_fixlen(list(S),i)
+            if USE_RPYTHON_CODE:
+                images = S.lst
+            else:
+                images = list(S)
+            sequences = create_all_seq_w_fixlen(images, i)
             for sequence in sequences:
                 if is_a_inje_function(sequence):
                     yield sequence
@@ -152,15 +163,7 @@ class SymbolicISequenceSet(AbstractSymbolicSequence):
             return False
         if not is_a_function(element):
             return False
-        
-        for tup in element:
-            number = tup[0]
-            e      = tup[1]
-            if not isinstance(number, int) or number>len(element) or number<1:
-                return False 
-            if e not in S:
-                return False
-        return True
+        return _check_element_in_sequence(element, S)
 
   
 class SymbolicISequence1Set(AbstractSymbolicSequence):
@@ -173,7 +176,11 @@ class SymbolicISequence1Set(AbstractSymbolicSequence):
         yield frozenset([]) #TODO: check this
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequences = create_all_seq_w_fixlen(list(S),i)
+            if USE_RPYTHON_CODE:
+                images = S.lst
+            else:
+                images = list(S)
+            sequences = create_all_seq_w_fixlen(images, i)
             for sequence in sequences:
                 if is_a_inje_function(sequence):
                     yield sequence
@@ -197,15 +204,7 @@ class SymbolicISequence1Set(AbstractSymbolicSequence):
             return False
         if not is_a_function(element):
             return False
-         
-        for tup in element:
-            number = tup[0]
-            e      = tup[1]
-            if not isinstance(number, int) or number>len(element) or number<1:
-                return False 
-            if e not in S:
-                return False
-        return True
+        return _check_element_in_sequence(element, S)
         
 
 class SymbolicPermutationSet(AbstractSymbolicSequence):
@@ -217,7 +216,11 @@ class SymbolicPermutationSet(AbstractSymbolicSequence):
     def SymbolicPermutationSet_generator(self):
         S = self.aset
         for i in range(1, self.env._max_int+1):
-            sequences = create_all_seq_w_fixlen(list(S),i)
+            if USE_RPYTHON_CODE:
+                images = S.lst
+            else:
+                images = list(S)
+            sequences = create_all_seq_w_fixlen(images, i)
             for sequence in sequences:
                 if is_a_inje_function(sequence) and is_a_surj_function(sequence, S):
                     yield sequence
@@ -241,13 +244,5 @@ class SymbolicPermutationSet(AbstractSymbolicSequence):
             return False
         if not is_a_function(element):
             return False
-             
-        for tup in element:
-            number = tup[0]
-            e      = tup[1]
-            if not isinstance(number, int) or number>len(element) or number<1:
-                return False 
-            if e not in S:
-                return False
-        return True       
+        return _check_element_in_sequence(element, S)     
         
