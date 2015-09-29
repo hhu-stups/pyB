@@ -8,7 +8,7 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from pretty_printer import pretty_print
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
-from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation 
+from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
 from typing import type_check_predicate, type_check_expression
@@ -1255,15 +1255,9 @@ def interpret(node, env):
         #rel = [(x[0],x[0]) for x in rel]
         #for i in range(n):
         #    rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-        rel = []
-        for x in rel:
-            rel.append(W_Tuple((x.tvalue[0], x.tvalue[0])))
+        rel = [W_Tuple((x.tvalue[0], x.tvalue[0])) for x in arel]
         for i in range(n):
-            for y in rel:
-                for x in arel:
-                    if y.tvalue[1].__eq__(x.tvalue[0]):
-                        e = W_Tuple((y.tvalue[0],x.tvalue[1]))
-                        rel.append(e)
+            rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
         return frozenset(rel)
         """
     elif isinstance(node, AReflexiveClosureExpression):
@@ -1318,7 +1312,7 @@ def interpret(node, env):
             e = (t, t.tvalue[1])
             proj.append(W_Tuple(e))
         return frozenset(proj)
-        """
+
     
 # *******************
 #
@@ -1328,79 +1322,36 @@ def interpret(node, env):
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicPartialFunctionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #return fun
     elif isinstance(node, ATotalFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicTotalFunctionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #total_fun = filter_not_total(fun, S) # S-->T
-        #return total_fun
     elif isinstance(node, APartialInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicPartialInjectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #inj_fun = filter_not_injective(fun) # S>+>T
-        #return inj_fun
     elif isinstance(node, ATotalInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicTotalInjectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #inj_fun = filter_not_injective(fun) # S>+>T
-        #total_inj_fun = filter_not_total(inj_fun, S) # S>->T
-        #return total_inj_fun
     elif isinstance(node, APartialSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicPartialSurjectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #surj_fun = filter_not_surjective(fun, T) # S+->>T
-        #return surj_fun
     elif isinstance(node, ATotalSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicTotalSurjectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #surj_fun = filter_not_surjective(fun, T) # S+->>T
-        #total_surj_fun = filter_not_total(surj_fun, S) # S-->>T
-        #return total_surj_fun
     elif isinstance(node, ATotalBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicTotalBijectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #inj_fun = filter_not_injective(fun) # S>+>T
-        #total_inj_fun = filter_not_total(inj_fun, S) # S>->T
-        #bij_fun = filter_not_surjective(total_inj_fun,T) # S>->>T
-        #return bij_fun
     elif isinstance(node, APartialBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
         return SymbolicPartialBijectionSet(S, T, env, interpret, node)
-        #relation_set = make_set_of_realtions(S,T) # S<->T
-        #fun = filter_no_function(relation_set) # S+->T
-        #inj_fun = filter_not_injective(fun) # S>+>T
-        #bij_fun = filter_not_surjective(inj_fun,T)
-        #return bij_fun
+        """
     elif isinstance(node, ALambdaExpression):
         varList = node.children[:-2]
         pred = node.children[-2]
