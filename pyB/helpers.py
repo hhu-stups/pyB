@@ -291,13 +291,29 @@ def build_arg_by_type(atype, value_list):
      return value_list.pop(0)
  
      
-# only used by RPython
+# only used by RPython. Number of 'element' in lst. used to find double entrys
 def my_count(lst, element):
     count = 0
     for e in lst:
         if e.__eq__(element):
             count = count +1
     return count
+
+# TODO: horrible runtime!
+# only used by RPython. sequence represented as list of W_Tuple
+def sort_sequence(s):
+    result = []
+    i = 0
+    while i!=len(s):
+        for w_tup in s:
+            if w_tup.tvalue[0].ivalue==i+1:
+                result.append(w_tup)
+                continue
+        i=i+1
+    assert len(s)==len(result)
+    return result
+        
+    
 
 
 # checks if a list contains a duplicate element. 

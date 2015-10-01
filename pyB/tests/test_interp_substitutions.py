@@ -255,6 +255,7 @@ class TestInterpSubstitutions():
         assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
 
+    # TODO: x,y::NAT ok?
     def test_genAST_sub_choice_by2(self):
         # Build AST
         string = '''

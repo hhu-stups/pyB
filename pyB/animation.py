@@ -152,12 +152,12 @@ def calc_next_states(env, bmachine):
     if result==[] and PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
     # alphabetic sort of results
-    result = my_sort(result)
+    result = sort_ops(result)
     #result = sorted(result, key = lambda state: state[0])
     return result
 
 # FIXME: runtime O(n**2) 
-def my_sort(lst):
+def sort_ops(lst):
     result = []
     while(len(lst)>0):
         e = lst.pop()

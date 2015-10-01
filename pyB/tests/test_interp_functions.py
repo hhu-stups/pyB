@@ -556,7 +556,7 @@ class TestInterpFunctions():
 
         env = Environment()
         env.add_ids_to_frame(["a","b","c","d","e","s"])
-        env.set_value("s", frozenset([(1, 'a'), (2, 'b')]))
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
         env.set_value("c", "c")
@@ -624,8 +624,8 @@ class TestInterpFunctions():
 
         env = Environment()
         env.add_ids_to_frame(["a","b","c","d","e","s","t"])
-        env.set_value("s", frozenset([(1, 'a'), (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
-        env.set_value("t", frozenset([ (2, 'b'),(3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("s", frozenset([(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd'),(5,'e')]))
+        env.set_value("t", frozenset([(1, 'b'), (2, 'c'), (3, 'd'),(4,'e')]))
         env.set_value("a", "a")
         env.set_value("b", "b")
         env.set_value("c", "c")

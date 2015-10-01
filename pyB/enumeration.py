@@ -211,13 +211,13 @@ def create_all_seq_w_fixlen(images, length):
         noc = noc * basis
     #noc = basis**length  # NOT RPython
     for i in range(noc):
-        lst = create_sequence(images, i, length)
+        lst = _create_sequence(images, i, length)
         result.append(frozenset(lst))
     return result
 
 
 # WARNING: this could take some time...
-def create_sequence(images, number, length):
+def _create_sequence(images, number, length):
     assert isinstance(images, list)
     if PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing all sequences of %s" % images
@@ -227,7 +227,7 @@ def create_sequence(images, number, length):
         index = number % basis
         image = images[index]
         if USE_RPYTHON_CODE:
-            symbol = W_Tuple((i+1, image))
+            symbol = W_Tuple((W_Integer(i+1), image))
         else:
             symbol = tuple([i+1, image])
         result.append(symbol)

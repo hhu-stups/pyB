@@ -4,9 +4,9 @@ from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_
 from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions #,get_image
 from enumeration_lazy import make_explicit_set_of_realtion_lists
-from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
+from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
-from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet
+from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
@@ -990,10 +990,11 @@ def interpret(node, env):
         assert isinstance(left, W_Integer)
         assert isinstance(right, W_Integer)
         L = []
-        for i in range(right.ivalue+1):
-            value = W_Integer(i+left.ivalue)
+        for i in range(self.left.ivalue, self.right.ivalue+1):
+            value = W_Integer(i)
             L.append(value)
         return frozenset(L)
+        # RPYTHON: cause segfault. reason unknown
         #return SymbolicIntervalSet(left, right, env, interpret)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
@@ -1385,157 +1386,129 @@ def interpret(node, env):
 #
 #       4.2 Sequences
 #
-# ********************
-        """       
+# ********************       
     elif isinstance(node,AEmptySequenceExpression):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
         S = interpret(node.children[0], env)
         return SymbolicSequenceSet(S, env, interpret, node)
-        #sequence_list = [frozenset([])]
-        #max_len = 1
-        ## find all seq. from 1..max_int
-        #for i in range(1, env._max_int+1):
-        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
-        #return frozenset(sequence_list)
     elif isinstance(node,ASeq1Expression):
         S = interpret(node.children[0], env)
         return SymbolicSequence1Set(S, env, interpret, node)
-        #sequence_list = []
-        #max_len = 1
-        ## find all seq. from 1..max_int
-        #for i in range(1, env._max_int+1):
-        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
-        #return frozenset(sequence_list)
     elif isinstance(node,AIseqExpression):
-        # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
         return SymbolicISequenceSet(S, env, interpret, node)
-        #sequence_list = [frozenset([])]
-        #max_len = 1
-        ## find all seq from 1..max_int
-        #for i in range(1, env._max_int+1):
-        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
-        #inj_sequence_list = filter_not_injective(sequence_list)
-        #return frozenset(inj_sequence_list)
     elif isinstance(node, AIseq1Expression):
-        # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
         return SymbolicISequence1Set(S, env, interpret, node)     
-        #sequence_list = []
-        #max_len = 1
-        ## find all seq from 1..max_int
-        #for i in range(1, env._max_int+1):
-        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
-        #inj_sequence_list = filter_not_injective(sequence_list)
-        #return frozenset(inj_sequence_list)
     elif isinstance(node,APermExpression): 
-        # TODO: this can be impl. much better
         S = interpret(node.children[0], env)
-        return SymbolicPermutationSet(S, env, interpret, node)  
-        #sequence_list = [frozenset([])]
-        #max_len = 1
-        ## TODO: maybe call all_values() here...
-        ## find all seq from 1..max_int
-        #for i in range(1, env._max_int+1):
-        #    sequence_list += create_all_seq_w_fixlen(list(S),i)
-        #inj_sequence_list = filter_not_injective(sequence_list)
-        #perm_sequence_list = filter_not_surjective(inj_sequence_list, S)
-        ##print perm_sequence_list
-        #return frozenset(perm_sequence_list)
-        """
-        """
+        return SymbolicPermutationSet(S, env, interpret, node) 
     elif isinstance(node, AConcatExpression):
+        # TODO: symbolic sets. e.g. union set
         # u:= s^t
         s = interpret(node.children[0], env)
         t = interpret(node.children[1], env)
-        u = list(s)
-        for tup in t:
-            index = tup[0]+len(s)
-            u.append(tuple([index, tup[1]]))
-        return frozenset(u)
+        u = s.lst
+        offset = len(s.lst)
+        for tup in t.lst:
+            index = tup.tvalue[0].ivalue+offset
+            u.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
+        return frozenset(u)       
     elif isinstance(node, AInsertFrontExpression):
         E = interpret(node.children[0], env)
         s = interpret(node.children[1], env)
-        new_s = [(1,E)]
-        for tup in s:
-            new_s.append(tuple([tup[0]+1,tup[1]]))
+        new_s = [W_Tuple((W_Integer(1),E))]
+        for tup in s.lst:
+            index = tup.tvalue[0].ivalue+1
+            new_s.append(W_Tuple((W_Integer(index),tup.tvalue[1])))
         return frozenset(new_s)
     elif isinstance(node, AInsertTailExpression):
         s = interpret(node.children[0], env)
         E = interpret(node.children[1], env)
-        return frozenset(list(s)+[tuple([len(s)+1,E])])
+        return frozenset(s.lst+[W_Tuple((W_Integer(len(s)+1),E))])
     elif isinstance(node, ASequenceExtensionExpression):
         sequence = []
         i = 0
         for child in node.children:
             i = i+1
             e = interpret(child, env)
-            sequence.append(tuple([i,e]))
-        #print "sequence", sequence
+            sequence.append(W_Tuple((W_Integer(i),e)))
         return frozenset(sequence)
     elif isinstance(node, ASizeExpression):
         sequence = interpret(node.children[0], env)
-        return len(sequence)
+        return W_Integer(sequence.__len__())
     elif isinstance(node, ARevExpression):
         sequence = interpret(node.children[0], env)
         new_sequence = []
         i = len(sequence)
         for tup in sequence:
-            new_sequence.append(tuple([i,tup[1]]))
+            new_sequence.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
             i = i-1
         return frozenset(new_sequence)
     elif isinstance(node, ARestrictFrontExpression):
         sequence = interpret(node.children[0], env)
         take = interpret(node.children[1], env)
-        assert take>0
-        lst = list(sequence)
-        lst.sort()
-        return frozenset(lst[:-take])
+        assert take.ivalue>0
+        lst = sequence.lst
+        lst = sort_sequence(lst)
+        index = len(lst)-(take.ivalue-1)
+        assert index>0
+        return frozenset(lst[:index])       
     elif isinstance(node, ARestrictTailExpression):
         sequence = interpret(node.children[0], env)
         drop = interpret(node.children[1], env)
-        assert drop>0
-        lst = list(sequence)
-        lst.sort()
+        lst = sequence.lst
+        lst = sort_sequence(lst)
+        assert drop.ivalue>0 and drop.ivalue<len(lst)
         new_list = []
         i = 0
-        for tup in lst[drop:]:
+        x = drop.ivalue
+        while x!=len(lst):
+            tup = lst[x]
+            x = x+1
             i = i+1
-            new_list.append(tuple([i,tup[1]]))
+            new_list.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
         return frozenset(new_list)
     elif isinstance(node, AFirstExpression):
         sequence = interpret(node.children[0], env)
-        lst = list(sequence)
-        lst.sort()
-        assert lst[0][0]==1
-        return lst[0][1]
+        lst = sequence.lst
+        lst = sort_sequence(lst)
+        assert lst[0].tvalue[0].ivalue==1
+        return lst[0].tvalue[1]
     elif isinstance(node, ALastExpression):
         sequence = interpret(node.children[0], env)
-        lst = list(sequence)
-        lst.sort()
-        assert lst[len(sequence)-1][0]==len(sequence)
-        return lst[len(sequence)-1][1]
+        lst = sequence.lst
+        lst = sort_sequence(lst)
+        assert lst[len(sequence)-1].tvalue[0].ivalue==len(lst)
+        return lst[len(sequence)-1].tvalue[1]
     elif isinstance(node, ATailExpression):
         sequence = interpret(node.children[0], env)
-        lst = list(sequence)
-        lst.sort()
-        assert lst[0][0]==1
-        return frozenset(lst[1:])
+        lst = sequence.lst
+        lst = sort_sequence(lst)
+        assert lst[0].tvalue[0].ivalue==1
+        result = []
+        i = 1
+        for e in lst[1:]:
+            result.append(W_Tuple((W_Integer(i), e.tvalue[1])))
+            i = i +1
+        return frozenset(result)
     elif isinstance(node, AFrontExpression):
         sequence = interpret(node.children[0], env)
-        lst = list(sequence)
-        lst.sort()
+        lst = sequence.lst
+        lst = sort_sequence(lst)
         lst.pop()
         return frozenset(lst)
+        """
     elif isinstance(node, AGeneralConcatExpression):
+        # AttributeError: 'FrozenDesc' object has no attribute 'pycall'
         s = interpret(node.children[0], env)
         t = []
         index = 0
-        for squ in dict(s).values():
+        for squ in dict(s.lst).values():
             for val in dict(squ).values():
                 index = index +1
-                t.append(tuple([index, val]))
+                t.append(W_Tuple((W_Integer(index), val)))
         return frozenset(t)
         """
     elif isinstance(node, AStringExpression):
@@ -1633,8 +1606,10 @@ def interpret(node, env):
             if w_entry[0]==name:
                 return w_entry[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
+        """
     elif isinstance(node, AStringSetExpression):
         return StringSet(env, interpret)
+        """
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         return SymbolicTransRelation(function, env, interpret, node)

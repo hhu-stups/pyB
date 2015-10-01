@@ -1456,7 +1456,7 @@ def interpret(node, env):
         assert take>0
         lst = list(sequence)
         lst.sort()
-        return frozenset(lst[:-take])
+        return frozenset(lst[:-(take-1)])
     elif isinstance(node, ARestrictTailExpression):
         sequence = interpret(node.children[0], env)
         drop = interpret(node.children[1], env)
@@ -1486,7 +1486,12 @@ def interpret(node, env):
         lst = list(sequence)
         lst.sort()
         assert lst[0][0]==1
-        return frozenset(lst[1:])
+        result = []
+        i = 1
+        for e in lst[1:]:
+            result.append(tuple([i,e[1]]))
+            i = i +1
+        return frozenset(result)
     elif isinstance(node, AFrontExpression):
         sequence = interpret(node.children[0], env)
         lst = list(sequence)
