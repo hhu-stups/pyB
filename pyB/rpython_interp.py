@@ -990,7 +990,7 @@ def interpret(node, env):
         assert isinstance(left, W_Integer)
         assert isinstance(right, W_Integer)
         L = []
-        for i in range(self.left.ivalue, self.right.ivalue+1):
+        for i in range(left.ivalue, right.ivalue+1):
             value = W_Integer(i)
             L.append(value)
         return frozenset(L)

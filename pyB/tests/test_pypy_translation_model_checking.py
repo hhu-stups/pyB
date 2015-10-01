@@ -32,12 +32,12 @@ def clean_up():
 import pytest, config
 @pytest.mark.skipif(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")     
 class TestPyPyTranslationModelChecking():
-    def test_pypy_mc_lift(self):
+    def test_pypy_mc_loops(self):
         translate() 
         
         c_result = execute_file(" -mc examples/Lift2.mch")       
         expected ="""\033[1m\033[91mWARNING\033[00m: model checking still experimental
-        checked 100 states. No invariant violation found.
+        checked 100 states.\033[1m\033[92m No invariant violation found.\033[00m
         """
         assert c_result.replace(" ", "").replace("\t", "").split('\n') ==  expected.replace(" ", "").replace("\t", "").split('\n') 
         
@@ -61,7 +61,7 @@ class TestPyPyTranslationModelChecking():
         c_result = execute_file(" -mc examples/WhileLoop.mch")
         expected ="""\033[1m\033[91mWARNING\033[00m: model checking still experimental
         \033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!
-        checked 2 states. No invariant violation found.
+        checked 2 states.\033[1m\033[92m No invariant violation found.\033[00m
         """
         assert c_result.replace(" ", "").replace("\t", "").split('\n') ==  expected.replace(" ", "").replace("\t", "").split('\n') 
         
