@@ -8,7 +8,7 @@ from helpers import sort_sequence, flatten, double_element_check, find_assignd_v
 from pretty_printer import pretty_print
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
-from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
+from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet, SymbolicTransRelation, SymbolicTransFunction
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet, SymbolicQuantifiedIntersection, SymbolicQuantifiedUnion 
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
@@ -1248,7 +1248,6 @@ def interpret(node, env):
         rel = frozenset(rel).lst # throw away doubles
         while True: # fixpoint-search (do-while-loop)
             new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
-            # UNION Error: List and frozenset
             S = frozenset(new_rel).union(frozenset(rel))
             T = frozenset(rel)
             assert isinstance(S, frozenset)
@@ -1263,7 +1262,6 @@ def interpret(node, env):
         rel = frozenset(arel.lst).lst
         while True: # fixpoint-search (do-while-loop)
             new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
-            # UNION Error: List and frozenset
             S = frozenset(new_rel).union(frozenset(rel))
             T = frozenset(rel)
             assert isinstance(S, frozenset)
@@ -1492,7 +1490,7 @@ def interpret(node, env):
         t = []
         index = 0
         for squ in dict(s.lst).values():
-            for val in dict(squ).values():
+            for val in dict(squ.lst).values():
                 index = index +1
                 t.append(W_Tuple((W_Integer(index), val)))
         return frozenset(t)
@@ -1595,13 +1593,14 @@ def interpret(node, env):
         """
     elif isinstance(node, AStringSetExpression):
         return StringSet(env, interpret)
-        """
+
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
         return SymbolicTransRelation(function, env, interpret, node)
     elif isinstance(node, ATransFunctionExpression):
         relation = interpret(node.children[0], env)
         return SymbolicTransFunction(relation, env, interpret, node)
+        """
     elif isinstance(node, AExternalFunctionExpression):
         args = []
         for child in node.children:

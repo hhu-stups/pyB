@@ -632,18 +632,28 @@ class SymbolicTransRelation(SymbolicSet):
         if not self.explicit_set_computed:
             relation = []
             for tup in self.function:
-                preimage = tup[0]
-                for image in tup[1]:
-                    relation.append(tuple([preimage, image]))
+                if USE_RPYTHON_CODE: 
+                    preimage = tup.tvalue[0]
+                    for image in tup.tvalue[1]:
+                        relation.append(W_Tuple((preimage, image)))
+                else:
+                    preimage = tup[0]
+                    for image in tup[1]:
+                        relation.append(tuple([preimage, image]))
             self.explicit_set_repr = frozenset(relation)
             self.explicit_set_computed = True
         return self.explicit_set_repr
     
     def SymbolicTransRelation_generator(self):
         for tup in self.function:
-            preimage = tup[0]
-            for image in tup[1]:
-                yield tuple([preimage, image])
+            if USE_RPYTHON_CODE: 
+                preimage = tup.tvalue[0]
+                for image in tup.tvalue[1]:
+                    yield W_Tuple((preimage, image))
+            else:
+                preimage = tup[0]
+                for image in tup[1]:
+                    yield tuple([preimage, image])
 
     def __iter__(self):
         assert isinstance(self, W_Object)
@@ -670,11 +680,18 @@ class SymbolicTransFunction(SymbolicSet):
             function = []
             for tup in self.relation:
                 image = []
-                preimage = tup[0]
-                for tup2 in self.relation:
-                    if tup2[0]==preimage:
-                        image.append(tup2[1])
-                function.append(tuple([preimage,frozenset(image)]))
+                if USE_RPYTHON_CODE:
+                    preimage = tup.tvalue[0]
+                    for tup2 in self.relation:
+                        if tup2.tvalue[0].__eq__(preimage):
+                            image.append(tup2.tvalue[1])
+                    function.append(W_Tuple((preimage,frozenset(image))))
+                else:
+                    preimage = tup[0]
+                    for tup2 in self.relation:
+                        if tup2[0]==preimage:
+                            image.append(tup2[1])
+                    function.append(tuple([preimage,frozenset(image)]))
             self.explicit_set_repr = frozenset(function)
             self.explicit_set_computed = True
         return self.explicit_set_repr        
@@ -682,11 +699,18 @@ class SymbolicTransFunction(SymbolicSet):
     def SymbolicTransFunction_generator(self):
         for tup in self.relation:
             image = []
-            preimage = tup[0]
-            for tup2 in self.relation:
-                if tup2[0]==preimage:
-                    image.append(tup2[1])
-            yield tuple([preimage,frozenset(image)])
+            if USE_RPYTHON_CODE:
+                preimage = tup.tvalue[0]
+                for tup2 in self.relation:
+                    if tup2.tvalue[0].__eq__(preimage):
+                        image.append(tup2.tvalue[1])
+                yield W_Tuple((preimage,frozenset(image)))
+            else: 
+                preimage = tup[0]
+                for tup2 in self.relation:
+                    if tup2[0]==preimage:
+                        image.append(tup2[1])
+                yield tuple([preimage,frozenset(image)])
 
     def __iter__(self):
         assert isinstance(self, W_Object)
