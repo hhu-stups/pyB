@@ -225,7 +225,11 @@ class frozenset(W_Object):
         # are not used by any pyB code. (only enumerated sets and the repl. needs this check than) 
         assert isinstance(L, list)
         for e in L:
-            if e not in self.lst:
+            skip = False
+            for e2 in self.lst:
+                if e.__eq__(e2):
+                    skip = True
+            if not skip:
                 self.lst.append(e)
     
     

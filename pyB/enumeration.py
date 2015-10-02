@@ -156,6 +156,12 @@ def init_deffered_set(def_set, env):
     env.set_value(name, frozenset(lst))
 
 
+def get_image_RPython(function, preimage):
+    for atuple in function:
+        if atuple.tvalue[0].__eq__(preimage):
+            return atuple.tvalue[1]
+    raise ValueNotInDomainException(preimage)
+
 def get_image(function, preimage):
     for atuple in function:
         if atuple[0] == preimage:

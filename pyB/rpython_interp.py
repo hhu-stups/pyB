@@ -2,7 +2,7 @@ from ast_nodes import *
 from bexceptions import ValueNotInDomainException, ValueNotInBStateException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
 from constrainsolver import calc_possible_solutions
-from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions #,get_image
+from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
@@ -1239,11 +1239,11 @@ def interpret(node, env):
         for i in range(n):
             rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
         return frozenset(rel)
-        """
     elif isinstance(node, AReflexiveClosureExpression):
         arel = interpret(node.children[0], env)
-        temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in arel] # also image
-        rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in arel]
+        rel  = arel.lst
+        temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in rel] # also image
+        rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in rel]
         rel += temp
         rel = frozenset(rel).lst # throw away doubles
         while True: # fixpoint-search (do-while-loop)
@@ -1256,11 +1256,11 @@ def interpret(node, env):
             if S.__eq__(T):
                 return T
             rel = S.lst
-    elif isinstance(node, AClosureExpression):
+    elif isinstance(node, AClosureExpression): #closure1
         arel = interpret(node.children[0], env)
         #if isinstance(arel, SymbolicSet):
         #    arel = arel.enumerate_all()
-        rel = frozenset(arel.lst)
+        rel = frozenset(arel.lst).lst
         while True: # fixpoint-search (do-while-loop)
             new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
             # UNION Error: List and frozenset
@@ -1271,7 +1271,6 @@ def interpret(node, env):
             if S.__eq__(T):
                 return T
             rel = S.lst
-        """
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
@@ -1345,14 +1344,15 @@ def interpret(node, env):
         pred = node.children[-2]
         expr = node.children[-1]
         return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+        """
     elif isinstance(node, AFunctionExpression):
         #print "interpret AFunctionExpression: ", pretty_print(node)
         if isinstance(node.children[0], APredecessorExpression):
             value = interpret(node.children[1], env)
-            return value-1
+            return W_Integer(value.ivalue-1)
         if isinstance(node.children[0], ASuccessorExpression):
             value = interpret(node.children[1], env)
-            return value+1
+            return W_Integer(value.ivalue+1)
         function = interpret(node.children[0], env)
         #print "FunctionName:", node.children[0].idName
         args = None
@@ -1362,12 +1362,12 @@ def interpret(node, env):
             if i==0:
                 args = arg
             else:
-                args = tuple([args, arg])
+                args = W_Tuple((args, arg))
             i = i+1
-        if isinstance(function, SymbolicSet):
-            return function[args]
-        return get_image(function, args)
-        """
+        #if isinstance(function, SymbolicSet):
+        #    return function[args]
+        return get_image_RPython(function, args)
+ 
 # ********************
 #
 #       4.2 Sequences
