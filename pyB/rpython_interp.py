@@ -1564,33 +1564,32 @@ def interpret(node, env):
             assert isinstance(rec_w_entry.children[-1], Expression)
             value = interpret(rec_w_entry.children[-1], env)
             dictionary[name] = value
-        res = []
-        all_records(dictionary, res, {}, 0)
+        res = all_records(dictionary)
         result = []
         for dic in res:
             for w_entry in dic:
                 result.append(tuple([w_entry,dic[w_entry]]))
         return frozenset(result)
+        """
     elif isinstance(node, ARecExpression):
         result = []
         for rec_w_entry in node.children:
-            assert isinstance(rec_w_entry, ARecw_entry)
+            assert isinstance(rec_w_entry, ARecEntry)
             name = ""
             if isinstance(rec_w_entry.children[0], AIdentifierExpression):
                 name = rec_w_entry.children[0].idName
             assert isinstance(rec_w_entry.children[-1], Expression)
             value = interpret(rec_w_entry.children[-1], env)
-            result.append(tuple([name,value]))
+            result.append(W_Tuple((W_String(name),value)))
         return frozenset(result)
     elif isinstance(node, ARecordFieldExpression):
         record = interpret(node.children[0], env)
         assert isinstance(node.children[1], AIdentifierExpression)
         name = node.children[1].idName
         for w_entry in record:
-            if w_entry[0]==name:
-                return w_entry[1]
+            if w_entry.tvalue[0].__eq__(W_String(name)):
+                return w_entry.tvalue[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
-        """
     elif isinstance(node, AStringSetExpression):
         return StringSet(env, interpret)
 

@@ -1569,8 +1569,7 @@ def interpret(node, env):
             assert isinstance(rec_entry.children[-1], Expression)
             value = interpret(rec_entry.children[-1], env)
             dictionary[name] = value
-        res = []
-        all_records(dictionary, res, {}, 0)
+        res = all_records(dictionary)
         result = []
         for dic in res:
             for entry in dic:

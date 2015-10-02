@@ -191,9 +191,13 @@ def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
-
+def all_records(value_dict):
+    result = []
+    _all_records(value_dict, result, {}, 0) # side-effect: fills result
+    return result
+    
 # WARNING: this could take some time...
-def all_records(value_dict, result, acc, index):
+def _all_records(value_dict, result, acc, index):
     if len(value_dict)==index:
         import copy
         result.append(copy.deepcopy(acc)) # FIXME:(#ISSUE 23) Performance-Problems
@@ -204,7 +208,7 @@ def all_records(value_dict, result, acc, index):
             values = values.enumerate_all()
         for v in values:
             acc[name] = v
-            all_records(value_dict, result, acc, index+1)
+            _all_records(value_dict, result, acc, index+1)
 
 
 # WARNING: this could take some time...
