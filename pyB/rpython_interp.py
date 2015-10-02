@@ -817,21 +817,6 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        #for w_entry in domain_generator:
-        #    for name in [x.idName for x in varList]:
-        #        value = w_entry[name]
-        #        env.set_value(name, value)
-        #    try:
-        #        if interpret(pred, env):  # test (|= ior)
-        #            aSet = interpret(expr, env)
-        #            if isinstance(aSet, SymbolicSet):
-        #                aSet = aSet.enumerate_all() 
-        #            result |= aSet
-        #    except ValueNotInDomainException:
-        #        continue
-        #env.pop_frame()
-        #return result
         return SymbolicQuantifiedUnion(varList, pred, expr, node, env, interpret, calc_possible_solutions)
     elif isinstance(node, AQuantifiedIntersectionExpression):  
         #result = frozenset([])
@@ -844,27 +829,6 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        #domain_generator = calc_possible_solutions(pred, env, varList, interpret)
-        #for w_entry in domain_generator:
-        #    for name in [x.idName for x in varList]:
-        #        value = w_entry[name]
-        #        env.set_value(name, value)
-        #    try:
-        #        if interpret(pred, env):  # test
-        #            # intersection with empty set is always empty: two cases are needed
-        #            if result==frozenset([]): 
-        #                result = interpret(expr, env)
-        #                if isinstance(result, SymbolicSet):
-        #                    result = result.enumerate_all()   
-        #            else:
-        #                aSet = interpret(expr, env)
-        #                if isinstance(aSet, SymbolicSet):
-        #                    aSet = aSet.enumerate_all()       
-        #                result &= aSet
-        #    except ValueNotInDomainException:
-        #        continue
-        #env.pop_frame()
-        #return result
         return SymbolicQuantifiedIntersection(varList, pred, expr, node, env, interpret, calc_possible_solutions)
 
     
@@ -1278,27 +1242,35 @@ def interpret(node, env):
         """
     elif isinstance(node, AReflexiveClosureExpression):
         arel = interpret(node.children[0], env)
-        rel = list(arel)
-        temp = [(x[1],x[1]) for x in rel] # also image
-        rel = [(x[0],x[0]) for x in rel]
+        temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in arel] # also image
+        rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in arel]
         rel += temp
-        rel = list(frozenset(rel)) # throw away doubles
+        rel = frozenset(rel).lst # throw away doubles
         while True: # fixpoint-search (do-while-loop)
-            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
-                return frozenset(rel)
-            rel =list(frozenset(new_rel).union(frozenset(rel)))
+            new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
+            # UNION Error: List and frozenset
+            S = frozenset(new_rel).union(frozenset(rel))
+            T = frozenset(rel)
+            assert isinstance(S, frozenset)
+            assert isinstance(T, frozenset)
+            if S.__eq__(T):
+                return T
+            rel = S.lst
     elif isinstance(node, AClosureExpression):
-        #print pretty_print(node)
         arel = interpret(node.children[0], env)
-        if isinstance(arel, SymbolicSet):
-            arel = arel.enumerate_all()
-        rel = list(arel)
+        #if isinstance(arel, SymbolicSet):
+        #    arel = arel.enumerate_all()
+        rel = frozenset(arel.lst)
         while True: # fixpoint-search (do-while-loop)
-            new_rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-            if frozenset(new_rel).union(frozenset(rel))==frozenset(rel):
-                return frozenset(rel)
-            rel =list(frozenset(new_rel).union(frozenset(rel)))
+            new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
+            # UNION Error: List and frozenset
+            S = frozenset(new_rel).union(frozenset(rel))
+            T = frozenset(rel)
+            assert isinstance(S, frozenset)
+            assert isinstance(T, frozenset)
+            if S.__eq__(T):
+                return T
+            rel = S.lst
         """
     elif isinstance(node, AFirstProjectionExpression):
         S = interpret(node.children[0], env)
