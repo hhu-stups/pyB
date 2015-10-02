@@ -8,8 +8,8 @@ from helpers import sort_sequence, flatten, double_element_check, find_assignd_v
 from pretty_printer import pretty_print
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
-from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
-from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
+from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet
+from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet, SymbolicQuantifiedIntersection, SymbolicQuantifiedUnion 
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
 from typing import type_check_predicate, type_check_expression
@@ -792,17 +792,16 @@ def interpret(node, env):
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return W_Integer(aSet.__len__())
-        """
     elif isinstance(node, AGeneralUnionExpression):
         set_of_sets = interpret(node.children[0], env)
-        elem_lst = list(set_of_sets)
+        elem_lst = set_of_sets.lst
         acc = elem_lst[0]
         for aset in elem_lst[1:]:
             acc = acc.union(aset)
         return acc
     elif isinstance(node, AGeneralIntersectionExpression):
         set_of_sets = interpret(node.children[0], env)
-        elem_lst = list(set_of_sets)
+        elem_lst = set_of_sets.lst
         acc = elem_lst[0]
         for aset in elem_lst[1:]:
             acc = acc.intersection(aset)
@@ -810,7 +809,11 @@ def interpret(node, env):
     elif isinstance(node, AQuantifiedUnionExpression):
         #result = frozenset([])
         # new scope
-        varList = node.children[:-2]
+        length = len(node.children)
+        varList = []
+        for i in range(length-2):
+            n = node.children[i]
+            varList.append(n)
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
@@ -833,7 +836,11 @@ def interpret(node, env):
     elif isinstance(node, AQuantifiedIntersectionExpression):  
         #result = frozenset([])
         # new scope
-        varList = node.children[:-2]
+        length = len(node.children)
+        varList = []
+        for i in range(length-2):
+            n = node.children[i]
+            varList.append(n)
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
@@ -859,7 +866,7 @@ def interpret(node, env):
         #env.pop_frame()
         #return result
         return SymbolicQuantifiedIntersection(varList, pred, expr, node, env, interpret, calc_possible_solutions)
-        """
+
     
 # *************************
 #
@@ -1107,14 +1114,21 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AIdentityExpression):
         aSet = interpret(node.children[0], env)
-        id_rel = [W_Tuple((e,e)) for e in aSet]
-        return frozenset(id_rel)
-        #return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
-        """
+        #id_rel = [W_Tuple((e,e)) for e in aSet]
+        #return frozenset(id_rel)
+        return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
+        assert isinstance(aSet, frozenset)
+        # TODO: handle symbolic case
+        new_rel = []
+        for x in rel:
+            for e in aSet:
+                if x.tvalue[0].__eq__(e):
+                    new_rel.append(x)
         # TODO: always try to enumerate the finite one.
+        """
         if isinstance(rel, frozenset):
             new_rel = [x for x in rel if x[0] in aSet]
         else:
@@ -1129,9 +1143,9 @@ def interpret(node, env):
                         e = (x,img)
                         new_rel.append(e)
                 except ValueNotInDomainException:
-                    continue              
+                    continue    
+        """          
         return frozenset(new_rel)
-        """
     elif isinstance(node, ADomainSubtractionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)

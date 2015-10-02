@@ -488,8 +488,11 @@ class SymbolicIdentitySet(SymbolicRelationSet):
             if isinstance(self.left_set, SymbolicSet):
                 aSet = self.left_set.enumerate_all()
             else:
-                aSet = self.left_set 
-            id_r = [(x,x) for x in aSet]
+                aSet = self.left_set
+            if USE_RPYTHON_CODE: 
+                id_r = [W_Tuple((e,e)) for e in aSet]
+            else:
+                id_r = [(x,x) for x in aSet]
             self.explicit_set_repr = frozenset(id_r)
             self.explicit_set_computed = True
         return self.explicit_set_repr
@@ -497,14 +500,23 @@ class SymbolicIdentitySet(SymbolicRelationSet):
     def SymbolicIdentitySet_generator(self):
         assert self.left_set==self.right_set
         for e in self.left_set:
-            yield tuple([e,e])
+            if USE_RPYTHON_CODE: 
+                yield W_Tuple((e,e))
+            else:
+                yield tuple([e,e])
 
     def __contains__(self, element):
-        assert isinstance(element, tuple)
-        if element[0]==element[1] and element[0] in self.left_set:
-            return True
+        if isinstance(element, W_Tuple):
+            if element.tvalue[0].__eq__(element.tvalue[1]) and self.left_set.__contains__(element.tvalue[0]):
+                return True
+            else:
+                return False 
         else:
-            return False 
+            assert isinstance(element, tuple)
+            if element[0]==element[1] and element[0] in self.left_set:
+                return True
+            else:
+                return False 
 
     def __iter__(self):
         assert isinstance(self, W_Object)

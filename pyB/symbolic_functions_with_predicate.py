@@ -373,19 +373,25 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
             expr    = self.expression 
             env       = self.env
             interpret = self.interpret
-            node    = self.node
+            node      = self.node
+            names     = [x.idName for x in varList]
             func_list = []
             # new scope
             env.push_new_frame(varList)
             domain_generator = self.domain_generator(pred, env, varList, interpret)
             for entry in domain_generator:
-                for name in [x.idName for x in varList]:
+                for name in names:
                     value = entry[name]
                     env.set_value(name, value)
                 try:
-                    if interpret(pred, env):  # test
+                    tst = interpret(pred, env)
+                    if USE_RPYTHON_CODE:
+                        cond = tst.bvalue
+                    else:
+                        cond = tst
+                    if cond:  # test
                         # intersection with empty set is always empty: two cases are needed
-                        if result==frozenset([]): 
+                        if result.__eq__(frozenset([])): 
                             result = interpret(expr, env)
                             if isinstance(result, SymbolicSet):
                                 result = result.enumerate_all()   
@@ -438,16 +444,22 @@ class SymbolicQuantifiedUnion(SymbolicSet):
             expr    = self.expression 
             env       = self.env
             interpret = self.interpret
-            node    = self.node
+            node      = self.node
+            names     = [x.idName for x in varList]
             # new scope
             env.push_new_frame(varList)
             domain_generator = self.domain_generator(pred, env, varList, interpret)
             for entry in domain_generator:
-                for name in [x.idName for x in varList]:
+                for name in names:
                     value = entry[name]
                     env.set_value(name, value)
                 try:
-                    if interpret(pred, env):  # test (|= ior)
+                    tst = interpret(pred, env)
+                    if USE_RPYTHON_CODE:
+                        cond = tst.bvalue
+                    else:
+                        cond = tst
+                    if cond:  # test (|= ior)
                         aSet = interpret(expr, env)
                         if isinstance(aSet, SymbolicSet):
                             aSet = aSet.enumerate_all() 
