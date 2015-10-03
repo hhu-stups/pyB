@@ -191,6 +191,9 @@ def powerset(iterable):
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
+# value dict is a python dict corresponding to the B struct dict
+# e.g. struct(Mark:NAT, Good_enough:BOOL)
+# becomes value_dict={"Mark":SymbolicNatSet, "Good_enough":frozenset([True,False])}
 def all_records(value_dict):
     result = []
     _all_records(value_dict, result, {}, 0) # side-effect: fills result
@@ -199,13 +202,19 @@ def all_records(value_dict):
 # WARNING: this could take some time...
 def _all_records(value_dict, result, acc, index):
     if len(value_dict)==index:
-        import copy
-        result.append(copy.deepcopy(acc)) # FIXME:(#ISSUE 23) Performance-Problems
+        clone = {}
+        for key in acc:
+            value = acc[key]
+            if isinstance(value, W_Object):
+                clone[key] = value.clone()
+            else:
+                clone[key] = value
+        result.append(clone) # TODO:(#ISSUE 23) was solved
     else:
         name = list(value_dict.keys())[index]
         values = list(value_dict.values())[index]
-        if isinstance(values, SymbolicSet):
-            values = values.enumerate_all()
+        #if isinstance(values, SymbolicSet):
+        #    values = values.enumerate_all()
         for v in values:
             acc[name] = v
             _all_records(value_dict, result, acc, index+1)

@@ -2,7 +2,7 @@ from ast_nodes import *
 from bexceptions import ValueNotInDomainException, ValueNotInBStateException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
 from constrainsolver import calc_possible_solutions
-from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython
+from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython, all_records
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
@@ -1553,11 +1553,10 @@ def interpret(node, env):
         return W_Boolean(True)
     elif isinstance(node, ABooleanFalseExpression):
         return W_Boolean(False)
-        """
     elif isinstance(node, AStructExpression):
         dictionary = {}
         for rec_w_entry in node.children:
-            assert isinstance(rec_w_entry, ARecw_entry)
+            assert isinstance(rec_w_entry, ARecEntry)
             name = ""
             if isinstance(rec_w_entry.children[0], AIdentifierExpression):
                 name = rec_w_entry.children[0].idName
@@ -1567,10 +1566,13 @@ def interpret(node, env):
         res = all_records(dictionary)
         result = []
         for dic in res:
+            rec = []
             for w_entry in dic:
-                result.append(tuple([w_entry,dic[w_entry]]))
+                key = W_String(w_entry)
+                value = dic[w_entry]
+                rec.append(W_Tuple((key,value)))
+            result.append(frozenset(rec))
         return frozenset(result)
-        """
     elif isinstance(node, ARecExpression):
         result = []
         for rec_w_entry in node.children:

@@ -1,5 +1,5 @@
 MACHINE PyB_C_Features
-VARIABLES f /*, RES */
+VARIABLES f, RES
 INVARIANT 1+1=2
         & {1,2}\/{3,4}={1,2,3,4} 
         & {1,2,3,4}/\{4}={4}
@@ -93,8 +93,8 @@ INVARIANT 1+1=2
         & {(3,1),(1,1)}=closure1({(3,1),(1,1)})
         & fnc({(0|->1), (0|->2), (1|->1), (1|->7), (2|->3)})={(0,{1,2}),(1,{1,7}),(2,{3})}
         & rel({(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})})={(-1,0),(-1,2),(1,6),(1,8),(3,3)}
-       /* & RES:struct(Mark:NATURAL, Good_enough:BOOL) & RES'Mark=14 & RES'Good_enough= TRUE */
-INITIALISATION f:={1,2,3}<->{TRUE,FALSE} /* ; RES := rec(Mark : 14, Good_enough : TRUE) */
+        & RES:struct(Mark:BOOL, Good_enough:BOOL) & RES'Mark=FALSE & RES'Good_enough= TRUE /* struct causes "norm_pred_failed(member/2) PROB WARING */
+INITIALISATION f:={1,2,3}<->{TRUE,FALSE} ; RES := rec(Mark : FALSE, Good_enough : TRUE) 
 OPERATIONS
  avoid_deadlock = skip
 END

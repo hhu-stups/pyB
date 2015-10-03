@@ -46,6 +46,11 @@ class W_Tuple(W_Object):
 
     def __repr__(self):
         return str(self.tvalue)
+    
+    def clone(self):
+        t0 = self.tvalue[0].clone()
+        t1 = self.tvalue[1].clone()
+        return W_Tuple((t0,t1))
            
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -120,6 +125,8 @@ class W_Integer(W_Object):
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Integer")
 
+    def clone(self):
+        return W_Integer(self.ivalue)
 
 class W_Boolean(W_Object):
     #_settled_ = True
@@ -161,6 +168,8 @@ class W_Boolean(W_Object):
     def __contains__(self, e):
         raise Exception("Nothing is member of a W_Boolean")
 
+    def clone(self):
+        return W_Boolean(self.bvalue)
         
 class W_None(W_Object):
     #_settled_ = True
@@ -171,6 +180,8 @@ class W_None(W_Object):
     def __repr__(self):
         return "None"
 
+    def clone(self):
+        return W_None()
 
 # elements of enumerated sets or machine parameter sets     
 class W_Set_Element(W_Object):
@@ -190,6 +201,9 @@ class W_Set_Element(W_Object):
 
     def __repr__(self):
         return self.string
+
+    def clone(self):
+        return W_Set_Element(self.string)
         
 class W_String(W_Object):
     #_settled_ = True
@@ -208,6 +222,9 @@ class W_String(W_Object):
 
     def __repr__(self):
         return self.string
+
+    def clone(self):
+        return W_String(self.string)
         
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.
@@ -351,3 +368,9 @@ class frozenset(W_Object):
     def w_frozenset_generator(self):
         for e in self.lst:
             yield e 
+    
+    def clone(self):
+        lst = []
+        for e in self.lst:
+            lst.append(e.clone())
+        return frozenset(lst)

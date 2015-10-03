@@ -1572,8 +1572,10 @@ def interpret(node, env):
         res = all_records(dictionary)
         result = []
         for dic in res:
+            rec = []
             for entry in dic:
-                result.append(tuple([entry,dic[entry]]))
+                rec.append(tuple([entry,dic[entry]]))
+            result.append(frozenset(rec))
         return frozenset(result)
     elif isinstance(node, ARecExpression):
         result = []
