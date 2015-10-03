@@ -1484,15 +1484,18 @@ def interpret(node, env):
         lst.pop()
         return frozenset(lst)
         """
+        # FIXME: segfault. reason unknown
     elif isinstance(node, AGeneralConcatExpression):
         # AttributeError: 'FrozenDesc' object has no attribute 'pycall'
-        s = interpret(node.children[0], env)
+        ss = interpret(node.children[0], env)
+        lst = sort_sequence(ss.lst)
         t = []
         index = 0
-        for squ in dict(s.lst).values():
-            for val in dict(squ.lst).values():
+        for s in lst:
+            seq_lst = sort_sequence(s.lst)
+            for tup in seq_lst:
                 index = index +1
-                t.append(W_Tuple((W_Integer(index), val)))
+                t.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
         return frozenset(t)
         """
     elif isinstance(node, AStringExpression):
