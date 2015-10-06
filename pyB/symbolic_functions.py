@@ -607,14 +607,23 @@ class SymbolicCompositionSet(SymbolicRelationSet):
         
             
     # may throw valueNotInDomainException
+    # e.g. left_relation = {(0,2), (1,5), (2,5), (3,7)} 
+    # and  right_relation = {(0,0), (2,-1), (5,8), (6,9)}, 
+    # R1 ; R2 = {(0, -1), (1,8), (2,8)}
     def __getitem__(self, arg):
         if isinstance(self.left_relation, frozenset):
-            z = [t[1] for t in self.left_relation if t[0]==arg][0]
+            image_set_left = [t[1] for t in self.left_relation if t[0]==arg]
+            if image_set_left==[]:
+                raise ValueNotInDomainException(arg)
+            z = image_set_left[0]            
         else:
             z = self.left_relation[arg]
-        # TODO: z may not be an element of self.right_relation 
+        # z may not be an element of self.right_relation 
         if isinstance(self.right_relation, frozenset):
-            image = [t[1] for t in self.right_relation if t[0]==z][0]
+            image_set_right = [t[1] for t in self.right_relation if t[0]==z]
+            if image_set_right==[]:
+                raise ValueNotInDomainException(arg)
+            image= image_set_right[0]
         else:
             image = self.right_relation[z]
         return image

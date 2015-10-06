@@ -70,7 +70,7 @@ class SymbolicLambda(SymbolicSet):
         return result
 
     def __eq__(self, aset):
-        if aset==None:
+        if aset is None:
             return False
         if isinstance(aset, SymbolicLambda):
             if not len(self.variable_list)==len(aset.variable_list):
@@ -89,6 +89,7 @@ class SymbolicLambda(SymbolicSet):
                 self.explicit_set_repr = self.enumerate_all()
                 self.explicit_set_computed = True
             return aset == self.explicit_set_repr
+        
         # FAIL!
         pp_self = pretty_print(self.node)
         pp_other = pretty_print(aset.node)

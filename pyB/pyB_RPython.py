@@ -220,7 +220,63 @@ def run_model_checking_mode(argv):
                 env.state_space.set_current_state(bstate)  
     print "checked",len(env.state_space.seen_states),"states.\033[1m\033[92m No invariant violation found.\033[00m"
     return 0
-  
+
+# check of init without animation
+def run_checking_mode():
+    env = Environment()                                          # 1. create env.
+    file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
+    ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
+    if error:
+        print error
+    #env.set_search_dir(file_name_str)
+    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
+    #if solution_file_name_str:                                  # 5. parse solution-file and write to env.
+    #    read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
+                                                                # the bmachine object-init time to the respective mch
+
+                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)  
+    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
+    if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
+        result = interpret(parse_object.root, env)              # eval predicate or expression
+        print result
+    else:
+        assert isinstance(parse_object, BMachine)               # 8. typecheck
+        type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
+        mch = parse_object                           
+        
+        #solution_file_read = not solution_file_name_str==""
+        bstates = set_up_constants(root, env, mch, solution_file_read=False)  # also evals properties
+        if not bstates==[]: 
+            bool = True
+            for bstate in bstates:
+                env.state_space.add_state(bstate)
+                #if mch.has_properties_mc:
+                #    assert interpret(mch.aPropertiesMachineClause, env)
+                init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+                for init_bstate in init_bstates:
+                    env.state_space.add_state(init_bstate)
+                    if mch.has_invariant_mc:
+                        w_bool = interpret(mch.aInvariantMachineClause, env)
+                        bool = bool and w_bool.bvalue
+                    env.state_space.undo()                  
+                if mch.has_assertions_mc:
+                    interpret(mch.aAssertionsMachineClause, env)
+                env.state_space.undo()  
+            return bool
+        else: # TODO: dont repeat yourself 
+            init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+            for bstate in init_bstates:
+                env.state_space.add_state(bstate)
+                if mch.has_invariant_mc:
+                    w_bool = interpret(mch.aInvariantMachineClause, env)  
+                    assert w_bool.bvalue      
+                if mch.has_assertions_mc:
+                    interpret(mch.aAssertionsMachineClause, env)
+                env.state_space.undo() 
+            if not init_bstates==[]:  
+                env.state_space.add_state(init_bstates[0]) 
+        return eval_Invariant(root, env, mch)   
+
   
 def main(argv): 
 ###### MAIN PROGRAM ######
@@ -242,6 +298,10 @@ def main(argv):
         if argv[1]=="-model_checking" or argv[1]=="-mc":
             res = run_model_checking_mode(argv)
             return res
+        #elif argv[1]=="-check_solution" or argv[1]=="-c":
+        #    res = run_checking_mode()
+        #    print "Invariant:", res
+        #    return res
         else:
             res = run_animation_mode(argv)
             return res

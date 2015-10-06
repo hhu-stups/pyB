@@ -1,4 +1,6 @@
 MACHINE PyB_C_Features
+CONSTANTS c
+PROPERTIES c=2
 VARIABLES f, RES
 INVARIANT 1+1=2
         & {1,2}\/{3,4}={1,2,3,4} 
@@ -95,6 +97,7 @@ INVARIANT 1+1=2
         & rel({(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})})={(-1,0),(-1,2),(1,6),(1,8),(3,3)}
         & RES:struct(Mark:BOOL, Good_enough:BOOL) & RES'Mark=FALSE & RES'Good_enough= TRUE /* struct causes "norm_pred_failed(member/2) PROB WARING */
 INITIALISATION f:={1,2,3}<->{TRUE,FALSE} ; RES := rec(Mark : FALSE, Good_enough : TRUE) 
+ASSERTIONS c>3
 OPERATIONS
  avoid_deadlock = skip
 END

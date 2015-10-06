@@ -1,6 +1,6 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException, ValueNotInBStateException, INITNotPossibleException, SETUPNotPossibleException
-from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE
+from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE, ENABLE_ASSERTIONS, PRINT_SUB_PROPERTIES
 from constrainsolver import calc_possible_solutions
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython, all_records
 from enumeration_lazy import make_explicit_set_of_realtion_lists
@@ -560,56 +560,55 @@ def interpret(node, env):
 # ********************************************
     elif isinstance(node, AConstraintsMachineClause):
         return interpret(node.get(-1), env)
-        """
     elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
         lst = conj_tree_to_conj_list(node.children[0])
         result = True
         ok = 0
         fail = 0
-        timeout = 0
+        #timeout = 0
         for n in lst:
-            try:
-                if PROPERTIES_TIMEOUT<=0:
-                    value = interpret(n, env)
-                else:
-                    import multiprocessing   
-                    que = multiprocessing.Queue()
-                    p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
-                    # TODO: safe and restore stack depth if corruption occurs by thread termination
-                    #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
-                    p.start()
-                    p.join(PROPERTIES_TIMEOUT)
-                    if not que.empty():
-                        value = que.get()
-                    else:
-                        p.terminate()
-                        print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
-                        # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
-                        timeout = timeout +1
-                        continue
-            except OverflowError:
-                print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
-                fail = fail +1
-                continue
+            #try:
+            #    if PROPERTIES_TIMEOUT<=0:
+            #        value = interpret(n, env)
+            #    else:
+            #        import multiprocessing   
+            #        que = multiprocessing.Queue()
+            #        p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
+            #        # TODO: safe and restore stack depth if corruption occurs by thread termination
+            #        #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
+            #        p.start()
+            #        p.join(PROPERTIES_TIMEOUT)
+            #        if not que.empty():
+            #            value = que.get()
+            #        else:
+            #            p.terminate()
+            #            print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
+            #            # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
+            #            timeout = timeout +1
+            #            continue
+            #except OverflowError:
+            #    print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
+            #    fail = fail +1
+            #    continue
+            value = interpret(n, env)
             if PRINT_SUB_PROPERTIES: # config.py
-                string = str(value)
-                if string=="False":
+                #string = str(value)
+                if not value.bvalue: #string=="False":
                    print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
                    fail = fail +1
-                elif string=="True":
+                elif value.bvalue: #string=="True":
                    print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
                    ok = ok +1
-                else: #XXX
-                   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
-            result = result and value
-        if fail>0:
-            print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
-        elif timeout>0:
-            print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
-        else:
-            print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
-        return result
-        """
+                #else: #XXX
+                #   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
+            result = result and value.bvalue
+        #if fail>0:
+        #    print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        #elif timeout>0:
+        #    print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        #else:
+        #    print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
+        return W_Boolean(result)
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.get(0), env)
         if not result.bvalue:
@@ -619,7 +618,6 @@ def interpret(node, env):
             if env is not None: #Rpython typer help
                 env.state_space.print_history()
         return result
-        """
     elif isinstance(node, AAssertionsMachineClause):
        if ENABLE_ASSERTIONS: #config.py
             # TODO: add timeout
@@ -629,7 +627,7 @@ def interpret(node, env):
             for child in node.children:
                 #print_ast(child)
                 result = interpret(child, env)
-                if result==True:
+                if result.bvalue:
                     print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(child)
                     ok = ok +1
                 else:
@@ -641,7 +639,6 @@ def interpret(node, env):
             #elif timeout>0:
             #    color = "94"  # yellow
             print "\033[1m\033["+color+"massertions clause - total:%s ok:%s fail:%s \033[00m" % (len(node.children), ok,fail)
-        """
         
 # *********************
 #

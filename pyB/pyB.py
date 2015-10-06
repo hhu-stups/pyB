@@ -198,6 +198,7 @@ def run_checking_mode():
                 for init_bstate in init_bstates:
                     env.state_space.add_state(init_bstate)
                     if mch.has_invariant_mc:
+                        # TODO: why not result=result and interpret ? Add comment or fix code
                         result = interpret(mch.aInvariantMachineClause, env)
                     env.state_space.undo()                  
                 if mch.has_assertions_mc:
