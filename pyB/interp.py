@@ -157,7 +157,7 @@ def __set_up_constants_generator(root, env, mch):
                     # find all constants (like x=42 or y={1,2,3}) and set them
                     learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
                     if learnd_vars and VERBOSE:
-                        print "learnd constants (no enumeration): ", learnd_vars
+                        print "learned constants (no enumeration): ", learnd_vars
                     ref_bstate2 = env.state_space.get_state().clone() # save param set up 
                     env.add_ids_to_frame(mch.const_names)
                     
@@ -477,7 +477,16 @@ def _learn_assigned_values(root, env, lst):
             # this code block musst be simplified when this is done
             if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ASequenceExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ABooleanTrueExpression) or isinstance(expression_node, ABooleanFalseExpression) or isinstance(expression_node, AEmptySetExpression):
                 try:
+                    lst = find_var_nodes(expression_node)
+                    skip = False
+                    if lst!=[]:
+                        for e in lst:
+                            if env.get_value(var_name) is None:
+                                skip = True
+                    if skip:
+                        continue
                     value = interpret(expression_node, env)
+                    print "using:", var_name, "=", value
                     env.set_value(var_name, value)
                     lst.append(var_name)
                     continue
@@ -525,7 +534,7 @@ def interpret(node, env):
             env.add_ids_to_frame(idNames)
             learnd_vars = learn_assigned_values(node, env)
             if learnd_vars and VERBOSE:
-                print "learnd(no enumeration): ", learnd_vars
+                print "learned (no enumeration): ", learnd_vars
             not_set = []
             for n in idNodes:
                 if env.get_value(n.idName)==None:
@@ -1069,6 +1078,7 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         if isinstance(aSet, SymbolicSet):
             aSet = aSet.enumerate_all()
+        # BUG: IndexError: string index out of range e.g. C578.EML.014/CF_ZAUM_12
         ran = [e[1] for e in list(aSet)]
         return frozenset(ran)
     elif isinstance(node, ACompositionExpression):

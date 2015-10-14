@@ -42,16 +42,53 @@ def read_solution_file(env, solution_file_name_str):
         print "learned from solution-file (constants and variables): ", [x for x in env.solutions] 
 
 
-# can use a solution file to speed up the init (or make it possible).
-# will go into animation mode if possible
-def run_animation_mode():
-    env = Environment()                                         # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string() # 2. read filenames
-    ast_string, error = file_to_AST_str_no_print(file_name_str) # 3. parse input-file to string
+# skips set_up or init if there is nothing to setup/init
+def __calc_states_and_print_ui(root, env, mch, solution_file_read):
+    # Schneider Book page 62-64:
+    # The parameters p make the constraints C True
+    # #p.C    
+    # Sets St and constants k which meet the constraints c make the properties B True
+    # C => #St,k.B
+    if not env.set_up_done:
+        next_states = set_up_constants(root, env, mch, solution_file_read)
+        if len(next_states)>0:
+            print_set_up_bstates(next_states, mch)
+            return next_states
+        else:
+            # no bstates and no exception: set up to do (e.g no constants)
+            env.set_up_done = True 
+        
+        
+    # If C and B is True there should be Variables v which make the Invaraiant I True
+    # B & C => #v.I
+    if not env.init_done:
+        next_states = exec_initialisation(root, env, mch, solution_file_read)
+        if len(next_states)>0:
+            undo_possible = not env.state_space.empty()
+            print_init_bstates(next_states, mch, undo_possible)
+            return next_states
+        else:
+            # no bstates and no exception: no init to do (e.g no variables)
+            env.init_done = True
+
+    print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
+    bstate_lst = calc_next_states(env, mch)
+    show_ui(env, mch, bstate_lst)
+    next_states = []
+    for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
+        next_states.append(n.bstate)
+    return next_states
+    
+
+# returns "root, env, parse_object, solution_file_present" if no error occurred 
+def startup(offset=0):
+    env = Environment()                                               # 1. create env.
+    file_name_str, solution_file_name_str = read_input_string(offset) # 2. read filenames
+    ast_string, error = file_to_AST_str_no_print(file_name_str)       # 3. parse input-file to string
     if error:
         print error
     env.set_search_dir(file_name_str)
-    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
+    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast 
     # uncomment for profiling (e.g. performance tests)
     #import cProfile
     #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
@@ -62,6 +99,14 @@ def run_animation_mode():
 
                                                                 # 6. replace defs and extern-functions inside mch and solution-file (if present)      
     parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
+    return root, env, parse_object, solution_file_present
+
+
+# can use a solution file to speed up the init (or make it possible).
+# will go into animation mode if possible
+def run_animation_mode():
+    root, env, parse_object, solution_file_present = startup()
+    
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
         is_epu = isinstance(parse_object, ExpressionParseUnit) 
@@ -123,61 +168,12 @@ def run_animation_mode():
                 env.state_space.add_state(bstate)
             else:
                 print "Error! Wrong input:", number
-                
-
-# skips set_up or init if there is nothing to setup/init
-def __calc_states_and_print_ui(root, env, mch, solution_file_read):
-    # Schneider Book page 62-64:
-    # The parameters p make the constraints C True
-    # #p.C    
-    # Sets St and constants k which meet the constraints c make the properties B True
-    # C => #St,k.B
-    if not env.set_up_done:
-        next_states = set_up_constants(root, env, mch, solution_file_read)
-        if len(next_states)>0:
-            print_set_up_bstates(next_states, mch)
-            return next_states
-        else:
-            # no bstates and no exception: set up to do (e.g no constants)
-            env.set_up_done = True 
-        
-        
-    # If C and B is True there should be Variables v which make the Invaraiant I True
-    # B & C => #v.I
-    if not env.init_done:
-        next_states = exec_initialisation(root, env, mch, solution_file_read)
-        if len(next_states)>0:
-            undo_possible = not env.state_space.empty()
-            print_init_bstates(next_states, mch, undo_possible)
-            return next_states
-        else:
-            # no bstates and no exception: no init to do (e.g no variables)
-            env.init_done = True
-
-    print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
-    bstate_lst = calc_next_states(env, mch)
-    show_ui(env, mch, bstate_lst)
-    next_states = []
-    for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
-        next_states.append(n.bstate)
-    return next_states
 
 
 # check of init without animation
 def run_checking_mode():
-    env = Environment()                                          # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
-    ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
-    if error:
-        print error
-    env.set_search_dir(file_name_str)
-    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast TODO: JSON
-    if solution_file_name_str:                                  # 5. parse solution-file and write to env.
-        read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
-                                                                # the bmachine object-init time to the respective mch
-
-                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)  
-    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
+    root, env, parse_object, solution_file_present = startup(offset=1)
+    
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         result = interpret(parse_object.root, env)              # eval predicate or expression
         print result
@@ -221,14 +217,7 @@ def run_checking_mode():
 
 def run_model_checking_mode():
     print "WARNING: model checking still experimental"
-    env = Environment()                                          # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
-    ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
-    if error:
-        print error
-    env.set_search_dir(file_name_str)
-    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast                                                                
-    parse_object = remove_defs_and_parse_ast(root, env)         # 5. replace defs and extern-functions inside mch and solution-file (if present) 
+    root, env, parse_object, solution_file_present = startup(offset=1)
     if not isinstance(parse_object, BMachine):                                  
         print "Error: only model checking of b machines" 
         return

@@ -8,6 +8,7 @@ from enumeration import all_values_by_type, all_values_by_type_RPYTHON
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
 from pretty_printer import pretty_print
 from quick_eval import quick_member_eval
+from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
@@ -511,9 +512,15 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
         # e.g {x| x:NAT & x=42}  results in {42}
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
             value = interpreter_callable(node.children[1], env)
+            # FIXME: TypeError: unhashable instance e.g. run C578.EML.014/CF_CV_1
+            # somehow a set type is returned!
+            if isinstance(value, SymbolicSet):
+                return frozenset([value.enumerate_all()])
             return frozenset([value])
         if isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName==var_node.idName:
             value = interpreter_callable(node.children[0], env)
+            if isinstance(value, SymbolicSet):
+                return frozenset([value.enumerate_all()])
             return frozenset([value])
         if isinstance(node.children[0], ACoupleExpression):
             # 2.1 search n-tuple for matching var (to be constraint)
@@ -529,22 +536,22 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             # 2.2. compute set if match found
             if match:
                 # FIXME: no caching! Recomputation at every call
-                set = interpreter_callable(node.children[1], env)
+                aset = interpreter_callable(node.children[1], env)
                 #print 
                 #assert isinstance(set, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side
-                return [remove_tuples(set)[index]]
+                return [remove_tuples(aset)[index]]
     elif isinstance(node, AMemberPredicate):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
-            set = interpreter_callable(node.children[1], env)
+            aset = interpreter_callable(node.children[1], env)
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!
-            if not isinstance(set, frozenset):
-                return set.enumerate_all() # explicit domain needed
-            return set
+            if not isinstance(aset, frozenset):
+                return aset.enumerate_all() # explicit domain needed
+            return aset
         # belong-case 2: n-tuple on left side
         elif isinstance(node.children[0], ACoupleExpression):
             # e.g. (x,y){x|->y:{(1,2),(3,4)}...} (only one id-constraint found in this pass)
@@ -563,12 +570,12 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             
             # 2.2. compute set if match found
             if match:
-                set = interpreter_callable(node.children[1], env)
+                aset = interpreter_callable(node.children[1], env)
                 # FIXME: C578.EML.014/R_PLACE_MAINTENANCE_2 returns SymbolicUnionSet
-                assert isinstance(set, frozenset)
+                assert isinstance(aset, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side
-                return [remove_tuples(t)[index] for t in set]
+                return [remove_tuples(t)[index] for t in aset]
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):

@@ -186,7 +186,7 @@ def find_constraining_var_nodes(node, varList):
 
 def find_var_nodes(node):
     #print pretty_print(node.children[0])
-    assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
+    #assert isinstance(node, APredicateParseUnit) or isinstance(node, AExpressionParseUnit)
     lst = []
     _find_var_nodes(node, lst) #side-effect: fills list
     return lst

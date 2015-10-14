@@ -48,7 +48,7 @@ def all_values_by_type(atype, env, node):
         return value
     elif isinstance(atype, PowerSetType):
         val_list = all_values_by_type(atype.data, env, node)
-        res = powerset(val_list)
+        res = powerset(val_list, node.idName)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
         return lst
@@ -106,6 +106,11 @@ def all_values_by_type_RPYTHON(atype, env, node):
 
 # generate all values that statify a predicate 'root'
 def try_all_values(root, env, idNodes):
+    for i in _try_all_values(root, env, idNodes, idNodes):
+         yield i
+
+
+def _try_all_values(root, env, idNodes, allNodes):
     if USE_RPYTHON_CODE:
         from rpython_interp import interpret
     else:
@@ -116,10 +121,14 @@ def try_all_values(root, env, idNodes):
         all_values = all_values_by_type_RPYTHON(atype, env, node)
     else:
         all_values = all_values_by_type(atype, env, node)
+    #print "trying", node.idName, all_values, pretty_print(root)
     if len(idNodes)<=1:
         for val in all_values:
             try:
                 env.set_value(node.idName, val)
+                #print "trying:"
+                #for name in [n.idName for n in allNodes]:
+                #     print name, "=", env.get_value(name)
                 if USE_RPYTHON_CODE:
                     w_bool = interpret(root, env)
                     if w_bool.bvalue:
@@ -132,11 +141,10 @@ def try_all_values(root, env, idNodes):
     else:
         for val in all_values:
             env.set_value(node.idName, val)
-            gen = try_all_values(root, env, idNodes[1:])
+            gen = _try_all_values(root, env, idNodes[1:], allNodes)
             if gen.next():
                 yield True
     yield False
-
 
 # FIXME:(#ISSUE 22) dummy-init of deffered sets
 def init_deffered_set(def_set, env):
@@ -183,9 +191,9 @@ def make_set_of_realtions(S,T):
 
 # from http://docs.python.org/library/itertools.html
 # WARNING: this could take some time...
-def powerset(iterable):
+def powerset(iterable, name=""):
     if PRINT_WARNINGS:
-        print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing powerset of %s" % iterable
+        print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing powerset of %s %s" % (iterable,name)
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     from itertools import chain, combinations
     s = list(iterable)

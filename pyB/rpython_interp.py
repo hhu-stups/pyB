@@ -476,7 +476,16 @@ def _learn_assigned_values(root, env, lst):
             # this code block musst be simplified when this is done
             if isinstance(expression_node, AIntegerExpression) or isinstance(expression_node, ASetExtensionExpression) or isinstance(expression_node, ASequenceExtensionExpression) or isinstance(expression_node, ABoolSetExpression) or isinstance(expression_node, ABooleanTrueExpression) or isinstance(expression_node, ABooleanFalseExpression) or isinstance(expression_node, AEmptySetExpression):
                 try:
+                    lst = find_var_nodes(expression_node)
+                    skip = False
+                    if lst!=[]:
+                        for e in lst:
+                            if env.get_value(var_name) is None:
+                                skip = True
+                    if skip:
+                        continue
                     value = interpret(expression_node, env)
+                    print "using:", var_name, "=", value
                     env.set_value(var_name, value)
                     lst.append(var_name)
                     continue

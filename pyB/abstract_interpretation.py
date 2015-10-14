@@ -93,14 +93,16 @@ def _abs_int(node, env, ic):
         time1 = _abs_int(right_node, env, ic)
         #print time0, time1
         if time0<TOO_MANY_ITEMS and time1<TOO_MANY_ITEMS:
-            # BUG: if this interpreter call cause the lookup of an unset variable,
-            # this will crash.
             val0 = ic(left_node, env)
             val1 = ic(right_node, env)
         else:
             # over approximation to avoid long interpretation
             val0 = env._min_int
-            val1 = env._max_int 
+            val1 = env._max_int
+        # BUGFIX: if this interpreter call cause the lookup of an unset variable,
+        # this will crash. This is a quick fix.
+        if not isinstance(val0, int) or not isinstance(val1, int):
+            return float("inf")
         return val1-val0
     ### "meet"
     # Werden hier abstrakte Interpretation und Datenflussanalyse durcheinander geworfen? Denk noch mal drueber nach....

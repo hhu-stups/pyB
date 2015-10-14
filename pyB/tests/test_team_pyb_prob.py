@@ -44,7 +44,8 @@ def run_with_pyb(bfile_name, dir=""):
     env.write_solution_nodes_to_env(root)
 
     # Init B-mch
-    dh = DefinitionHandler(env, remove_defs_and_parse_ast)                                   
+    #dh = DefinitionHandler(env, remove_defs_and_parse_ast) 
+    dh = DefinitionHandler(env, str_ast_to_python_ast)                                       
     dh.repl_defs(ast_root)
     mch = parse_ast(ast_root, env)    
     type_check_root_bmch(ast_root, env, mch) # also checks all included, seen, used and extend 
@@ -131,7 +132,7 @@ class TestTeam():
         
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
         
-        bfile_name="examples/not_public/Systerel/" + "C578/2013_08_14/machines_14082013/410_002_simple"
+        bfile_name="examples/not_public/Systerel/" + "C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001"
         if os.name=='nt':
             bfile_name="examples\not_public\Systerel\C578\2013_08_14\machines_14082013\410_002_simple\\"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)
@@ -150,40 +151,39 @@ class TestTeam():
         #run_with_pyb(bfile_name)
         
         
-#
-#   #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
-# 
-#    # every alstom-test runs about 15min.  
-#     def test_team_alstom(self):
-#         run_with_prob("-init ", bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
-#         res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
-#         assert res
-#         for i in range(43):
-#           run_with_prob(" -p TIME_OUT 30000 -init -animate "+str(i), bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
-#           res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
-#           assert res
-#       #pass 
-#       
-#       
-#     def test_team_alstom2(self):
-#         run_with_prob("-init ", bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
-#         res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
-#         assert res
-#         for i in range(43):
-#           run_with_prob(" -p TIME_OUT 30000 -init -animate "+str(i), bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
-#           res = run_with_pyb(bfile_name="Rule_DB_Route_0001ori", dir="examples/not_public/Alstom/Regles/")
-#           assert res
-#       #pass   
-# 
-# 
-#     def test_team_alstom3(self):
-#         run_with_prob("-init ", bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
-#         res = run_with_pyb(bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
-#         assert res
-#         #import cProfile
-#         #cProfile.runctx('res = run_with_pyb(bfile_name=\"examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori\")', globals(),locals())
-#         for i in range(32):
-#           run_with_prob(" -p TIME_OUT 30000 -init -animate "+str(i), bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
-#           res = run_with_pyb(bfile_name="Rule_DB_SIGAREA_0024_ori", dir="examples/not_public/Alstom/Regles/")
-#           assert res
-#       #pass             
+
+    #../ProB/probcli -init -p TIME_OUT 1000 -sptxt examples/not_public/Systerel/verdi/verdi1_values.txt examples/not_public/Systerel/verdi/verdi1.mch
+    # setup_constants_fails if MININT and MAXINT uses small values
+    # every alstom-test runs about 15min.  
+    def test_team_alstom1(self):
+         bfile_name = "Rule_DB_Route_0001ori_modified"
+         
+         run_with_prob("-init -df -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 ", bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+         run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+         #for i in range(43):
+         #  run_with_prob(" -p TIME_OUT 30000 -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 -init -animate "+str(i), bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+         #  run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+
+       
+       
+    def test_team_alstom2(self):          
+        bfile_name = "Rule_DB_Route_0001ori"
+         
+        run_with_prob("-init -df -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 ", bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+        run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+        #for i in range(43):
+        #    run_with_prob(" -p TIME_OUT 30000 -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 -init -animate "+str(i), bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+        #    run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+
+    def test_team_alstom3(self):
+        bfile_name = "Rule_DB_SIGAREA_0024_ori"
+        
+        run_with_prob("-init -df -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 ", bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+        run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+
+        #import cProfile
+        #cProfile.runctx('res = run_with_pyb(bfile_name=\"examples/not_public/Alstom/Regles/Rule_DB_SIGAREA_0024_ori\")', globals(),locals())
+        #for i in range(32):
+        #    run_with_prob(" -p TIME_OUT 30000 -p TIME_OUT 600000 -p MAXINT 2147483648 -p MININT -2147483648 -init -animate "+str(i), bfile_name="Rule_DB_Route_0001ori_modified", dir="examples/not_public/Alstom/Regles/")
+        #    run_with_pyb(bfile_name, dir="examples/not_public/Alstom/Regles/")
+          
