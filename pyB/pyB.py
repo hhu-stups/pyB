@@ -182,15 +182,14 @@ def run_checking_mode():
         type_check_root_bmch(root, env, parse_object) # also checks all included, seen, used and extend
         mch = parse_object                           
         
-        solution_file_read = not solution_file_name_str==""
-        bstates = set_up_constants(root, env, mch, solution_file_read)  # also evals properties
+        bstates = set_up_constants(root, env, mch, solution_file_present)  # also evals properties
         if not bstates==[]: 
             result = None
             for bstate in bstates:
                 env.state_space.add_state(bstate)
                 #if mch.has_properties_mc:
                 #    assert interpret(mch.aPropertiesMachineClause, env)
-                init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+                init_bstates = exec_initialisation(root, env, mch, solution_file_present)
                 for init_bstate in init_bstates:
                     env.state_space.add_state(init_bstate)
                     if mch.has_invariant_mc:
@@ -202,7 +201,7 @@ def run_checking_mode():
                 env.state_space.undo()  
             return result
         else: # TODO: dont repeat yourself 
-            init_bstates = exec_initialisation(root, env, mch, not solution_file_name_str=="")
+            init_bstates = exec_initialisation(root, env, mch, solution_file_present)
             for bstate in init_bstates:
                 env.state_space.add_state(bstate)
                 if mch.has_invariant_mc:
