@@ -694,7 +694,7 @@ def interpret(node, env):
         assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred.children[0], env, varList, interpret) # use left side of implication
+        domain_generator = calc_possible_solutions(pred.children[0], env, varList) # use left side of implication
         for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_w_entry[name]
@@ -713,7 +713,7 @@ def interpret(node, env):
         assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        domain_generator = calc_possible_solutions(pred, env, varList)
         for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_w_entry[name]
@@ -765,16 +765,16 @@ def interpret(node, env):
     elif isinstance(node, AComprehensionSetExpression):
         varList = node.children[:-1]
         pred = node.children[-1]
-        return SymbolicComprehensionSet(varList, pred, node, env, interpret, calc_possible_solutions)    
+        return SymbolicComprehensionSet(varList, pred, node, env, calc_possible_solutions)    
         """
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return SymbolicUnionSet(aSet1, aSet2, env, interpret)
+        return SymbolicUnionSet(aSet1, aSet2, env)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return SymbolicIntersectionSet(aSet1, aSet2, env, interpret)
+        return SymbolicIntersectionSet(aSet1, aSet2, env)
     elif isinstance(node, ACoupleExpression):
         assert len(node.children)>1
         a = interpret(node.children[0], env)
@@ -791,10 +791,10 @@ def interpret(node, env):
         return result
     elif isinstance(node, APowSubsetExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicPowerSet(aSet, env, interpret)
+        return SymbolicPowerSet(aSet, env)
     elif isinstance(node, APow1SubsetExpression):
         aSet = interpret(node.children[0], env)
-        return SymbolicPower1Set(aSet, env, interpret)
+        return SymbolicPower1Set(aSet, env)
     elif isinstance(node, ACardExpression):
         aSet = interpret(node.children[0], env)
         return W_Integer(aSet.__len__())
@@ -823,7 +823,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        return SymbolicQuantifiedUnion(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+        return SymbolicQuantifiedUnion(varList, pred, expr, node, env)
     elif isinstance(node, AQuantifiedIntersectionExpression):  
         #result = frozenset([])
         # new scope
@@ -835,7 +835,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        return SymbolicQuantifiedIntersection(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+        return SymbolicQuantifiedIntersection(varList, pred, expr, node, env)
 
     
 # *************************
@@ -894,17 +894,17 @@ def interpret(node, env):
 #
 # *****************
     elif isinstance(node, ANaturalSetExpression):
-        return NaturalSet(env, interpret)
+        return NaturalSet(env)
     elif isinstance(node, ANatural1SetExpression):
-        return Natural1Set(env, interpret)
+        return Natural1Set(env)
     elif isinstance(node, ANatSetExpression):
-        return NatSet(env, interpret)
+        return NatSet(env)
     elif isinstance(node, ANat1SetExpression):
-        return Nat1Set(env, interpret)
+        return Nat1Set(env)
     elif isinstance(node, AIntSetExpression):
-        return IntSet(env, interpret)
+        return IntSet(env)
     elif isinstance(node, AIntegerSetExpression):
-        return IntegerSet(env, interpret)
+        return IntegerSet(env)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
         assert isinstance(aSet, frozenset)
@@ -935,7 +935,7 @@ def interpret(node, env):
             w_integer = expr1.__sub__(expr2)
             return w_integer
         else:
-            return SymbolicDifferenceSet(expr1, expr2, env, interpret)
+            return SymbolicDifferenceSet(expr1, expr2, env)
     elif isinstance(node, AMultOrCartExpression):
         expr1 = interpret(node.get(0), env)
         expr2 = interpret(node.get(1), env)
@@ -972,7 +972,7 @@ def interpret(node, env):
             L.append(value)
         return frozenset(L)
         # RPYTHON: cause segfault. reason unknown
-        #return SymbolicIntervalSet(left, right, env, interpret)
+        #return SymbolicIntervalSet(left, right, env)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope
@@ -985,7 +985,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        domain_generator = calc_possible_solutions(pred, env, varList)
         for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_entry[name]
@@ -1011,7 +1011,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList, interpret)
+        domain_generator = calc_possible_solutions(pred, env, varList)
         for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_entry[name]
@@ -1059,7 +1059,7 @@ def interpret(node, env):
     elif isinstance(node, ARelationsExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
-        return SymbolicRelationSet(aSet1, aSet2, env, interpret, node)
+        return SymbolicRelationSet(aSet1, aSet2, env, node)
     elif isinstance(node, ADomainExpression):
         # assumption: crashs if this is not a set of 2-tuple
         aSet = interpret(node.children[0], env)
@@ -1078,7 +1078,7 @@ def interpret(node, env):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
         #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-        #    return SymbolicCompositionSet(aSet1, aSet2, env, interpret, node)
+        #    return SymbolicCompositionSet(aSet1, aSet2, env, node)
         # p and q: tuples representing domain and image
         new_rel = [W_Tuple((p.tvalue[0], q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1].__eq__(q.tvalue[0])]
         return frozenset(new_rel)
@@ -1086,7 +1086,7 @@ def interpret(node, env):
         aSet = interpret(node.children[0], env)
         #id_rel = [W_Tuple((e,e)) for e in aSet]
         #return frozenset(id_rel)
-        return SymbolicIdentitySet(aSet, aSet, env, interpret, node)
+        return SymbolicIdentitySet(aSet, aSet, env, node)
     elif isinstance(node, ADomainRestrictionExpression):
         aSet = interpret(node.children[0], env)
         rel = interpret(node.children[1], env)
@@ -1154,7 +1154,7 @@ def interpret(node, env):
         return frozenset(new_rel)
     elif isinstance(node, AReverseExpression):
         rel = interpret(node.children[0], env)
-        return SymbolicInverseRelation(rel, env, interpret, node)
+        return SymbolicInverseRelation(rel, env, node)
     elif isinstance(node, AImageExpression):
         rel = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
@@ -1279,7 +1279,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-        #    return SymbolicFirstProj(S,T, env, interpret, node)
+        #    return SymbolicFirstProj(S,T, env, node)
         cart = []
         for x in S:
             for y in T:
@@ -1293,7 +1293,7 @@ def interpret(node, env):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
         #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-        #    return SymbolicSecondProj(S,T, env, interpret, node)
+        #    return SymbolicSecondProj(S,T, env, node)
         cart = []
         for x in S:
             for y in T:
@@ -1313,41 +1313,41 @@ def interpret(node, env):
     elif isinstance(node, APartialFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicPartialFunctionSet(S, T, env, interpret, node)
+        return SymbolicPartialFunctionSet(S, T, env, node)
     elif isinstance(node, ATotalFunctionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicTotalFunctionSet(S, T, env, interpret, node)
+        return SymbolicTotalFunctionSet(S, T, env, node)
     elif isinstance(node, APartialInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicPartialInjectionSet(S, T, env, interpret, node)
+        return SymbolicPartialInjectionSet(S, T, env, node)
     elif isinstance(node, ATotalInjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicTotalInjectionSet(S, T, env, interpret, node)
+        return SymbolicTotalInjectionSet(S, T, env, node)
     elif isinstance(node, APartialSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicPartialSurjectionSet(S, T, env, interpret, node)
+        return SymbolicPartialSurjectionSet(S, T, env, node)
     elif isinstance(node, ATotalSurjectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicTotalSurjectionSet(S, T, env, interpret, node)
+        return SymbolicTotalSurjectionSet(S, T, env, node)
     elif isinstance(node, ATotalBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicTotalBijectionSet(S, T, env, interpret, node)
+        return SymbolicTotalBijectionSet(S, T, env, node)
     elif isinstance(node, APartialBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicPartialBijectionSet(S, T, env, interpret, node)
+        return SymbolicPartialBijectionSet(S, T, env, node)
         """
     elif isinstance(node, ALambdaExpression):
         varList = node.children[:-2]
         pred = node.children[-2]
         expr = node.children[-1]
-        return SymbolicLambda(varList, pred, expr, node, env, interpret, calc_possible_solutions)
+        return SymbolicLambda(varList, pred, expr, node, env, calc_possible_solutions)
         """
     elif isinstance(node, AFunctionExpression):
         #print "interpret AFunctionExpression: ", pretty_print(node)
@@ -1381,19 +1381,19 @@ def interpret(node, env):
         return frozenset([])
     elif isinstance(node,ASeqExpression):
         S = interpret(node.children[0], env)
-        return SymbolicSequenceSet(S, env, interpret, node)
+        return SymbolicSequenceSet(S, env, node)
     elif isinstance(node,ASeq1Expression):
         S = interpret(node.children[0], env)
-        return SymbolicSequence1Set(S, env, interpret, node)
+        return SymbolicSequence1Set(S, env, node)
     elif isinstance(node,AIseqExpression):
         S = interpret(node.children[0], env)
-        return SymbolicISequenceSet(S, env, interpret, node)
+        return SymbolicISequenceSet(S, env, node)
     elif isinstance(node, AIseq1Expression):
         S = interpret(node.children[0], env)
-        return SymbolicISequence1Set(S, env, interpret, node)     
+        return SymbolicISequence1Set(S, env, node)     
     elif isinstance(node,APermExpression): 
         S = interpret(node.children[0], env)
-        return SymbolicPermutationSet(S, env, interpret, node) 
+        return SymbolicPermutationSet(S, env, node) 
     elif isinstance(node, AConcatExpression):
         # TODO: symbolic sets. e.g. union set
         # u:= s^t
@@ -1602,14 +1602,14 @@ def interpret(node, env):
                 return w_entry.tvalue[1]
         raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
     elif isinstance(node, AStringSetExpression):
-        return StringSet(env, interpret)
+        return StringSet(env)
 
     elif isinstance(node, ATransRelationExpression):
         function = interpret(node.children[0], env)
-        return SymbolicTransRelation(function, env, interpret, node)
+        return SymbolicTransRelation(function, env, node)
     elif isinstance(node, ATransFunctionExpression):
         relation = interpret(node.children[0], env)
-        return SymbolicTransFunction(relation, env, interpret, node)
+        return SymbolicTransFunction(relation, env, node)
         """
     elif isinstance(node, AExternalFunctionExpression):
         args = []

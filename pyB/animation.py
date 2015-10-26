@@ -109,10 +109,10 @@ def calc_next_states(env, bmachine):
                 if isinstance(substitution, APreconditionSubstitution):
                     predicate = substitution.children[0]
                     # TODO: RYPTHON AssertionError domain_generator_1
-                    domain_generator = calc_possible_solutions(predicate, env, parameter_idNodes, interpret)
+                    domain_generator = calc_possible_solutions(predicate, env, parameter_idNodes)
                 # TODO:(#ISSUE 13) maybe more guesses elif...
                 else: # no guess possible, try all values (third-arg None cause an enum of all values)
-                    domain_generator = calc_possible_solutions(None, env, parameter_idNodes, interpret)
+                    domain_generator = calc_possible_solutions(None, env, parameter_idNodes)
                 #import types
                 #assert isinstance(domain_generator, types.GeneratorType)
                 

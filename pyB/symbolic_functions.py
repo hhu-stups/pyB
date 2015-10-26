@@ -20,8 +20,8 @@ def x_in_S(x, S):
     return False
     
 class SymbolicRelationSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env, node):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
         self.node = node   
@@ -324,8 +324,8 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
               
 
 class SymbolicFirstProj(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env, node):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
         self.node = node  
@@ -361,10 +361,14 @@ class SymbolicFirstProj(SymbolicSet):
                     y = other.variable_list[1].idName
                     xx = belong_pred0.children[0]
                     yy = belong_pred1.children[0]
+                    if USE_RPYTHON_CODE:
+                         from rpython_interp import interpret
+                    else:
+                         from interp import interpret 
                     if isinstance(xx, AIdentifierExpression) and xx.idName==x:
-                        S = self.interpret(belong_pred0.children[1], self.env)
+                        S = interpret(belong_pred0.children[1], self.env)
                     if isinstance(yy, AIdentifierExpression) and yy.idName==y:
-                        T = self.interpret(belong_pred1.children[1], self.env)
+                        T = interpret(belong_pred1.children[1], self.env)
                     if isinstance(other.expression, AIdentifierExpression): # else: maybe equal.            
                         try:
                             if self.left_set==S and self.right_set==T and x==other.expression.idName:
@@ -402,8 +406,8 @@ class SymbolicFirstProj(SymbolicSet):
 
 
 class SymbolicSecondProj(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env, node):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1  
         self.node = node
@@ -443,10 +447,14 @@ class SymbolicSecondProj(SymbolicSet):
                     y = other.variable_list[1].idName
                     xx = belong_pred0.children[0]
                     yy = belong_pred1.children[0]
+                    if USE_RPYTHON_CODE:
+                         from rpython_interp import interpret
+                    else:
+                         from interp import interpret 
                     if isinstance(xx, AIdentifierExpression) and xx.idName==x:
-                        S = self.interpret(belong_pred0.children[1], self.env)
+                        S = interpret(belong_pred0.children[1], self.env)
                     if isinstance(yy, AIdentifierExpression) and yy.idName==y:
-                        T = self.interpret(belong_pred1.children[1], self.env)
+                        T = interpret(belong_pred1.children[1], self.env)
                     if isinstance(other.expression, AIdentifierExpression): # else: maybe equal.            
                         try:
                             if self.left_set==S and self.right_set==T and y==other.expression.idName:
@@ -530,8 +538,8 @@ class SymbolicIdentitySet(SymbolicRelationSet):
         return self.SymbolicIdentitySet_gen.next()
                      
 class SymbolicCompositionSet(SymbolicRelationSet):
-    def __init__(self, arelation0, arelation1, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, arelation0, arelation1, env, node):
+        SymbolicSet.__init__(self, env)
         self.left_relation = arelation0
         self.right_relation = arelation1
         self.node = node 
@@ -572,10 +580,14 @@ class SymbolicCompositionSet(SymbolicRelationSet):
                         value = build_arg_by_type(atype, args) # args-mod via sideeffect
                         self.env.set_value(idNode.idName, value)
                     # check if value is in lambda domain
-                    pre_result = self.interpret(lambda_function.predicate, self.env)
+                    if USE_RPYTHON_CODE:
+                         from rpython_interp import interpret
+                    else:
+                         from interp import interpret 
+                    pre_result = interpret(lambda_function.predicate, self.env)
                     if pre_result:
                         # calculate element of composition expression
-                        lambda_image = self.interpret(lambda_function.expression, self.env)
+                        lambda_image = interpret(lambda_function.expression, self.env)
                         result.append(tuple([domain, lambda_image]))
                 self.env.pop_frame() # exit scope
                 self.explicit_set_repr = frozenset(result)
@@ -632,8 +644,8 @@ class SymbolicCompositionSet(SymbolicRelationSet):
 # The SymbolicRelationSet methods asume a domain- and imageset present.
 # This type of relation has none(directly).
 class SymbolicTransRelation(SymbolicSet):
-    def __init__(self, function, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, function, env, node):
+        SymbolicSet.__init__(self, env)
         self.function = function
         self.node = node
         
@@ -679,8 +691,8 @@ class SymbolicTransRelation(SymbolicSet):
 # The SymbolicRelationSet methods asume a domain- and imageset present.
 # This type of relation has none.
 class SymbolicTransFunction(SymbolicSet):
-    def __init__(self, relation, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, relation, env, node):
+        SymbolicSet.__init__(self, env)
         self.relation = relation
         self.node = node
 
@@ -735,8 +747,8 @@ class SymbolicTransFunction(SymbolicSet):
                                       
 
 class SymbolicInverseRelation(SymbolicRelationSet):
-    def __init__(self, relation, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, relation, env, node):
+        SymbolicSet.__init__(self, env)
         self.relation = relation
         self.node = node
         

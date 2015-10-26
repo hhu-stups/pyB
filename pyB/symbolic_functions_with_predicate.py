@@ -40,12 +40,19 @@ def check_syntactically_equal(predicate0, predicate1):
         
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
-    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, varList, pred, expr, node, env):
+        from constrainsolver import calc_possible_solutions
+        if USE_RPYTHON_CODE:
+            from rpython_interp import interpret
+        else:
+            from interp import interpret
+        
+        SymbolicSet.__init__(self, env)
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr
         self.node = node
+        self.interpret = interpret
         self.domain_generator = calc_possible_solutions
         self.explicit_set_computed = False
     
@@ -60,7 +67,7 @@ class SymbolicLambda(SymbolicSet):
                 value  = args
             else:
                 value = args[i]
-            self.env.set_value(idNode.idName, value)
+            self.env.set_value(idNode.idName, value)   
         value = self.interpret(self.predicate, self.env)
         # FIXME: This is not the correct position for a catch. move to higher level  
         if not value:
@@ -123,11 +130,10 @@ class SymbolicLambda(SymbolicSet):
             pred    = self.predicate
             expr    = self.expression 
             env       = self.env
-            interpret = self.interpret
             func_list = []
             # new scope
             env.push_new_frame(varList)
-            domain_generator = self.domain_generator(pred, env, varList, interpret)
+            domain_generator = self.domain_generator(pred, env, varList)
             # for every solution-entry found:
             for entry in domain_generator:
                 # set all vars (of new frame/scope) to this solution
@@ -142,9 +148,9 @@ class SymbolicLambda(SymbolicSet):
                         arg = tuple([arg, value])
                 # test if it is really a solution
                 try:
-                    if interpret(pred, env):  # test
+                    if self.interpret(pred, env):  # test
                         # yes it is! calculate lambda-fun image an add this tuple to func_list       
-                        image = interpret(expr, env)
+                        image = self.interpret(expr, env)
                         if isinstance(image, SymbolicSet):
                             image = image.enumerate_all()
                         tup = tuple([arg, image])
@@ -165,7 +171,7 @@ class SymbolicLambda(SymbolicSet):
         interpret = self.interpret
         # new scope
         env.push_new_frame(varList)
-        domain_generator = self.domain_generator(pred, env, varList, interpret)
+        domain_generator = self.domain_generator(pred, env, varList)
         # for every solution-entry found:
         for entry in domain_generator:
             # set all vars (of new frame/scope) to this solution
@@ -180,9 +186,9 @@ class SymbolicLambda(SymbolicSet):
                     arg = tuple([arg, value])
             # test if it is really a solution
             try:
-                if interpret(pred, env):  # test
+                if self.interpret(pred, env):  # test
                     # yes it is! calculate lambda-fun image and yield result (tuple-type)      
-                    image = interpret(expr, env)
+                    image = self.interpret(expr, env)
                     tup = tuple([arg, image])
                     env.pop_frame() # exit scope
                     yield tup
@@ -204,11 +210,18 @@ class SymbolicLambda(SymbolicSet):
 
 
 class SymbolicComprehensionSet(SymbolicSet):
-    def __init__(self, varList, pred, node, env, interpret, calc_possible_solutions):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, varList, pred, node, env):
+        from constrainsolver import calc_possible_solutions
+        if USE_RPYTHON_CODE:
+            from rpython_interp import interpret
+        else:
+            from interp import interpret
+            
+        SymbolicSet.__init__(self, env)
         self.variable_list = varList
         self.predicate = pred
         self.node = node
+        self.interpret = interpret
         self.domain_generator = calc_possible_solutions
         self.explicit_set_computed = False 
     
@@ -276,7 +289,7 @@ class SymbolicComprehensionSet(SymbolicSet):
             result = []
             # new scope
             self.env.push_new_frame(varList)
-            domain_generator = self.domain_generator(pred, env, varList, interpret)        
+            domain_generator = self.domain_generator(pred, env, varList)        
             for entry in domain_generator:
                 for name in names:
                     value = entry[name]
@@ -314,7 +327,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         interpret = self.interpret
         names     = [x.idName for x in varList]
         env.push_new_frame(varList)
-        domain_generator = self.domain_generator(pred, env, varList, interpret) 
+        domain_generator = self.domain_generator(pred, env, varList) 
         for entry in domain_generator:
                 for name in names:
                     value = entry[name]
@@ -355,12 +368,18 @@ class SymbolicComprehensionSet(SymbolicSet):
 
 
 class SymbolicQuantifiedIntersection(SymbolicSet):
-    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, varList, pred, expr, node, env):
+        from constrainsolver import calc_possible_solutions
+        if USE_RPYTHON_CODE:
+            from rpython_interp import interpret
+        else:
+            from interp import interpret
+        SymbolicSet.__init__(self, env)
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr
         self.node = node
+        self.interpret = interpret
         self.domain_generator = calc_possible_solutions
         self.explicit_set_computed = False               
         
@@ -379,7 +398,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
             func_list = []
             # new scope
             env.push_new_frame(varList)
-            domain_generator = self.domain_generator(pred, env, varList, interpret)
+            domain_generator = self.domain_generator(pred, env, varList)
             for entry in domain_generator:
                 for name in names:
                     value = entry[name]
@@ -426,12 +445,18 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
 
 
 class SymbolicQuantifiedUnion(SymbolicSet):
-    def __init__(self, varList, pred, expr, node, env, interpret, calc_possible_solutions):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, varList, pred, expr, node, env):
+        from constrainsolver import calc_possible_solutions
+        if USE_RPYTHON_CODE:
+            from rpython_interp import interpret
+        else:
+            from interp import interpret
+        SymbolicSet.__init__(self, env)
         self.variable_list = varList
         self.predicate = pred
         self.expression = expr
         self.node = node
+        self.interpret = interpret
         self.domain_generator = calc_possible_solutions
         self.explicit_set_computed = False
 
@@ -449,7 +474,7 @@ class SymbolicQuantifiedUnion(SymbolicSet):
             names     = [x.idName for x in varList]
             # new scope
             env.push_new_frame(varList)
-            domain_generator = self.domain_generator(pred, env, varList, interpret)
+            domain_generator = self.domain_generator(pred, env, varList)
             for entry in domain_generator:
                 for name in names:
                     value = entry[name]

@@ -18,9 +18,9 @@ if USE_RPYTHON_CODE:
 # domains of variables to avoid a set explosion during enumeration. It only checks the 
 # effort need for computation. If a predicate constrains a variable, is checked by another
 # function  
-def estimate_computation_time(predicate, env, interpreter_callable):
+def estimate_computation_time(predicate, env):
     assert isinstance(predicate, Predicate)
-    time = _abs_int(predicate, env, interpreter_callable)
+    time = _abs_int(predicate, env)
     return time
 
 
@@ -37,14 +37,14 @@ def estimate_computation_time(predicate, env, interpreter_callable):
 #       AQuantifiedUnionExpression
 # FIXME: C578.EML.014/360_002 cause'str' minus 'int' in leaf case
 # FIXME: AMinusOrSetSubtractExpression instead of AIntegerExpression
-def _abs_int(node, env, ic):
+def _abs_int(node, env):
     #print node
     if isinstance(node, ABoolSetExpression):
         return 2
     elif isinstance(node, APowSubsetExpression) or isinstance(node, APow1SubsetExpression):
-        time = _abs_int(node.children[0], env, ic)
+        time = _abs_int(node.children[0], env)
         #if time>=math.log(TOO_MANY_ITEMS,2):
-        if time>=22: # math.log is not rpython
+        if time>=22: # FIXME: math.log is not rpython
             return float("inf")
         else:
             #return 2**(time)
@@ -53,6 +53,7 @@ def _abs_int(node, env, ic):
             for i in range(time):
                 result = result *2
             return result
+    # NATURAL, NATURAL1, INTEGER, STRING
     elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
         return float("inf")
     elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):
@@ -60,8 +61,8 @@ def _abs_int(node, env, ic):
     elif isinstance(node, AIntSetExpression):
         return env._min_int*-1 + env._max_int
     elif isinstance(node, AMultOrCartExpression):
-        time0 = _abs_int(node.children[0], env, ic)
-        time1 = _abs_int(node.children[1], env, ic)    
+        time0 = _abs_int(node.children[0], env)
+        time1 = _abs_int(node.children[1], env)    
         prod = time0*time1
         if prod>TOO_MANY_ITEMS:
             return float("inf")
@@ -70,8 +71,8 @@ def _abs_int(node, env, ic):
 
     ### Relations, functions, sequences
     elif isinstance(node, APartialFunctionExpression) or isinstance(node, ARelationsExpression) or isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or isinstance(node, ATotalBijectionExpression) or isinstance(node, APartialBijectionExpression) or isinstance(node, ASeqExpression) or isinstance(node, ASeq1Expression) or isinstance(node, AIseqExpression) or isinstance(node, AIseq1Expression) or isinstance(node, APermExpression):
-        time0 = _abs_int(node.children[0], env, ic)
-        time1 = _abs_int(node.children[1], env, ic)
+        time0 = _abs_int(node.children[0], env)
+        time1 = _abs_int(node.children[1], env)
         exp0  = time0*time1 
         #if exp0>=math.log(TOO_MANY_ITEMS,2):
         if exp0>=22: # math.log is not rpython
@@ -89,12 +90,20 @@ def _abs_int(node, env, ic):
     elif isinstance(node, AIntervalExpression):
         left_node  = node.children[0]
         right_node = node.children[1]
-        time0 = _abs_int(left_node, env, ic)
-        time1 = _abs_int(right_node, env, ic)
+        time0 = _abs_int(left_node, env)
+        time1 = _abs_int(right_node, env)
         #print time0, time1
         if time0<TOO_MANY_ITEMS and time1<TOO_MANY_ITEMS:
-            val0 = ic(left_node, env)
-            val1 = ic(right_node, env)
+            if USE_RPYTHON_CODE:
+                from rpython_interp import interpret
+                v0 = interpret(left_node, env)
+                v1 = interpret(right_node, env)
+                val0 = v0.ivalue
+                val1 = v1.ivalue
+            else:
+                from interp import interpret
+                val0 = interpret(left_node, env)
+                val1 = interpret(right_node, env)
         else:
             # over approximation to avoid long interpretation
             val0 = env._min_int
@@ -109,8 +118,8 @@ def _abs_int(node, env, ic):
     elif isinstance(node, AConjunctPredicate):
         # this information is used to generate test_sets for {x|P0(x) & P1(x)}
         # the predicate is a candidate, if P0 OR P1 is finite 
-        time0 = _abs_int(node.children[0], env, ic)
-        time1 = _abs_int(node.children[1], env, ic)
+        time0 = _abs_int(node.children[0], env)
+        time1 = _abs_int(node.children[1], env)
         if time0<time1:
             return time0
         return time1
@@ -118,7 +127,7 @@ def _abs_int(node, env, ic):
     else:
         time = 1
         for child in node.children:
-           time += _abs_int(child, env, ic)
+           time += _abs_int(child, env)
         return time
 
 

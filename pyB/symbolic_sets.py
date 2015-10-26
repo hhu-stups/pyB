@@ -32,10 +32,8 @@ def x_in_S(x, S):
 # Int-,Nat-,Nat1-,Natural-,Natural1-,Integer and StringSet
 class SymbolicSet(W_Object):
     # env: min and max int values may be needed for large sets 
-    # interpret: for function call on tuple-sets
-    def __init__(self, env, interpret):
+    def __init__(self, env):
         self.env = env 
-        self.interpret = interpret
         self.explicit_set_computed = False
         # Otherwise Rpython can not 'prove' this attrs are present 
         self.aSet = None
@@ -45,10 +43,10 @@ class SymbolicSet(W_Object):
         self.r = 0
 
     def __mul__(self, aset):
-        return SymbolicCartSet(self, aset, self.env, self.interpret)
+        return SymbolicCartSet(self, aset, self.env)
     
     def __rmul__(self, aset):
-        return SymbolicCartSet(aset, self, self.env, self.interpret)
+        return SymbolicCartSet(aset, self, self.env)
         
     # default implementation
     def __sub__(self, aset):
@@ -891,8 +889,8 @@ class StringSet(SymbolicSet):
 
 
 class SymbolicUnionSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
     
@@ -965,8 +963,8 @@ class SymbolicUnionSet(SymbolicSet):
          
 
 class SymbolicIntersectionSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
 
@@ -1019,8 +1017,8 @@ class SymbolicIntersectionSet(SymbolicSet):
 
 
 class SymbolicDifferenceSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
 
@@ -1061,8 +1059,8 @@ class SymbolicDifferenceSet(SymbolicSet):
  
         
 class SymbolicCartSet(SymbolicSet):
-    def __init__(self, aset0, aset1, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset0, aset1, env):
+        SymbolicSet.__init__(self, env)
         self.left_set = aset0
         self.right_set = aset1
     
@@ -1140,8 +1138,8 @@ class SymbolicCartSet(SymbolicSet):
 # missing: union, inter, UNION, INTER
         
 class SymbolicPowerSet(SymbolicSet):
-    def __init__(self, aset, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env):
+        SymbolicSet.__init__(self, env)
         self.aSet = aset
 
     # e:S (element:self.set)
@@ -1192,8 +1190,8 @@ class SymbolicPowerSet(SymbolicSet):
 
 
 class SymbolicPower1Set(SymbolicSet):
-    def __init__(self, aset, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env):
+        SymbolicSet.__init__(self, env)
         self.aSet = aset
 
     # e:S (element:self.set)
@@ -1246,8 +1244,8 @@ class SymbolicPower1Set(SymbolicSet):
 
 
 class SymbolicIntervalSet(LargeSet):
-    def __init__(self, left, right, env, interpret):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, left, right, env):
+        SymbolicSet.__init__(self, env)
         if USE_RPYTHON_CODE:
             assert isinstance(left, W_Integer)
             assert isinstance(right, W_Integer)

@@ -30,7 +30,7 @@ class SpecialCaseEnumerationFailedException(Exception):
 # TODO: move checking inside this function i.e. generate NO FALSE values
 # TODO: maybe a new argument containing a partial computation (e.g. on of many vars with 
 #       with domain constraint) would be a nice refactoring to solve get_item in symb. comp. set
-def calc_possible_solutions(predicate, env, varList, interpreter_callable):
+def calc_possible_solutions(predicate, env, varList):
     #print "calc_possible_solutions: ", pretty_print(predicate)
     assert isinstance(varList, list)
     for n in varList:
@@ -48,7 +48,7 @@ def calc_possible_solutions(predicate, env, varList, interpreter_callable):
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
     if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
         try:
-            generator = _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable)
+            generator = _compute_generator_using_special_cases(predicate, env, varList)
             return generator
         except SpecialCaseEnumerationFailedException:
             pass
@@ -226,9 +226,9 @@ def pretty_print_python_style(env, varList, node, qme_nodes):
 # returns a generator or None if fail (e.g. special case not implemented)   
 # Todo: generate constraint set by using all "fast computable" predicates
 # Todo: call generator to return solution      
-def _compute_generator_using_special_cases(predicate, env, varList, interpreter_callable):
+def _compute_generator_using_special_cases(predicate, env, varList):
     # 1. score predicates
-    pred_map = _categorize_predicates(predicate, env, varList, interpreter_callable)
+    pred_map = _categorize_predicates(predicate, env, varList)
     assert pred_map != {}
     # 2. find possible variable enum order. 
     # variable(-domains) not constraint by others will be enumerated first.
@@ -283,7 +283,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                                     value = part_sol[name] 
                                     env.set_value(name, value)
                                     try:
-                                        part_testset = _compute_test_set(pred, env, var_node, interpreter_callable)
+                                        part_testset = _compute_test_set(pred, env, var_node)
                                     except ValueNotInDomainException:
                                         continue
                                     test_set = test_set.union(part_testset)
@@ -292,7 +292,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
                         else:
                             # no constrains by other vars. just use this sub-predicate to 
                             # compute the domain of the current variable
-                            test_set = _compute_test_set(pred, env, var_node, interpreter_callable)
+                            test_set = _compute_test_set(pred, env, var_node)
                             break
                     except PredicateDoesNotMatchException: 
                         #.eg constraining y instead of x, or using unimplemented cases
@@ -316,7 +316,7 @@ def _compute_generator_using_special_cases(predicate, env, varList, interpreter_
     # use this solution and return a generator        
     if solution_found:          
         a_cross_product_iterator = _cross_product_iterator(varList, test_dict, {})
-        iterator = _solution_generator(a_cross_product_iterator, predicate, env, interpreter_callable, varList)
+        iterator = _solution_generator(a_cross_product_iterator, predicate, env, varList)
         return iterator
     else:
         raise SpecialCaseEnumerationFailedException()
@@ -348,9 +348,9 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
 
 
 # this generator yields all combinations of values which satisfy a given predicate
-def _solution_generator(a_cross_product_iterator, predicate, env , interpreter_callable, varList):
+def _solution_generator(a_cross_product_iterator, predicate, env, varList):
     for maybe_solution in a_cross_product_iterator:
-        if _is_solution(predicate, env, interpreter_callable, varList, solution=maybe_solution):
+        if _is_solution(predicate, env, varList, solution=maybe_solution):
             solution = maybe_solution.copy()
             yield solution
 
@@ -422,14 +422,14 @@ def _compute_variable_enum_order(pred_map, varList):
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
 # input: P0 & P1 & ...PN or in special cases one predicate (like x=42)
 # output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
-def _categorize_predicates(predicate, env, varList, interpreter_callable):
+def _categorize_predicates(predicate, env, varList):
     if isinstance(predicate, AConjunctPredicate):
-        map0 = _categorize_predicates(predicate.children[0], env, varList, interpreter_callable)
-        map1 = _categorize_predicates(predicate.children[1], env, varList, interpreter_callable)
+        map0 = _categorize_predicates(predicate.children[0], env, varList)
+        map1 = _categorize_predicates(predicate.children[1], env, varList)
         map0.update(map1)
         return map0
     else:
-       time = estimate_computation_time(predicate, env, interpreter_callable)
+       time = estimate_computation_time(predicate, env)
        constraint_vars, and_vars_need_to_be_set_first = find_constraint_vars(predicate, env, varList)
        return {predicate: (time, constraint_vars, and_vars_need_to_be_set_first)}
 
@@ -506,19 +506,23 @@ def find_constraint_vars(predicate, env, varList):
 
 # TODO: be sure this cases have no side effect
 # XXX: not all cases implemented (maybe not possible)
-def _compute_test_set(node, env, var_node, interpreter_callable):
+def _compute_test_set(node, env, var_node):
+    if USE_RPYTHON_CODE:
+        from rpython_interp import interpret
+    else:
+        from interp import interpret
     if isinstance(node, AEqualPredicate):
         # if elements of the set are equal to some expression, a set has to be generated 
         # e.g {x| x:NAT & x=42}  results in {42}
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
-            value = interpreter_callable(node.children[1], env)
+            value = interpret(node.children[1], env)
             # FIXME: TypeError: unhashable instance e.g. run C578.EML.014/CF_CV_1
             # somehow a set type is returned!
             if isinstance(value, SymbolicSet):
                 return frozenset([value.enumerate_all()])
             return frozenset([value])
         if isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName==var_node.idName:
-            value = interpreter_callable(node.children[0], env)
+            value = interpret(node.children[0], env)
             if isinstance(value, SymbolicSet):
                 return frozenset([value.enumerate_all()])
             return frozenset([value])
@@ -536,7 +540,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             # 2.2. compute set if match found
             if match:
                 # FIXME: no caching! Recomputation at every call
-                aset = interpreter_callable(node.children[1], env)
+                aset = interpret(node.children[1], env)
                 #print 
                 #assert isinstance(set, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
@@ -544,8 +548,8 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
                 return [remove_tuples(aset)[index]]
     elif isinstance(node, AMemberPredicate):
         # belong-case 1: left side is just an id
-        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName:
-            aset = interpreter_callable(node.children[1], env)
+        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName: 
+            aset = interpret(node.children[1], env)
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!
@@ -570,7 +574,7 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
             
             # 2.2. compute set if match found
             if match:
-                aset = interpreter_callable(node.children[1], env)
+                aset = interpret(node.children[1], env)
                 # FIXME: C578.EML.014/R_PLACE_MAINTENANCE_2 returns SymbolicUnionSet
                 assert isinstance(aset, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
@@ -579,33 +583,38 @@ def _compute_test_set(node, env, var_node, interpreter_callable):
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
     elif isinstance(node, ADisjunctPredicate):
-        set0 = _compute_test_set(node.children[0], env, var_node, interpreter_callable)
-        set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
+        set0 = _compute_test_set(node.children[0], env, var_node)
+        set1 = _compute_test_set(node.children[1], env, var_node)
         return set0.union(set1)
     elif isinstance(node, AConjunctPredicate):
         try:
-            set0 = _compute_test_set(node.children[0], env, var_node, interpreter_callable)
+            set0 = _compute_test_set(node.children[0], env, var_node)
             try:
-                set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
+                set1 = _compute_test_set(node.children[1], env, var_node)
                 return set0.union(set1)
             except PredicateDoesNotMatchException:
                 return set0
         except PredicateDoesNotMatchException:
-            set1 = _compute_test_set(node.children[1], env, var_node, interpreter_callable)
+            set1 = _compute_test_set(node.children[1], env, var_node)
             return set1   
     else:
         raise PredicateDoesNotMatchException()
 
 
 # check if solution satisfies predicate 
-def _is_solution(pred, env, interpreter_callable, varList, solution):
+def _is_solution(pred, env, varList, solution):
+    if USE_RPYTHON_CODE:
+        from rpython_interp import interpret
+    else:
+        from interp import interpret
+    
     env.push_new_frame(varList)
     for key in solution:
         value = solution[key]
         #print "set",key,"to",value
         env.set_value(key, value)
     try:
-        result = interpreter_callable(pred, env)
+        result = interpret(pred, env)
     except ValueNotInDomainException: # function app with wrong value
         result = False
     env.pop_frame()

@@ -54,8 +54,8 @@ class AbstractSymbolicSequence(SymbolicSet):
         
 # represents NOT a sequence, but a set of sequences
 class SymbolicSequenceSet(AbstractSymbolicSequence):
-    def __init__(self, aset, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env, node):
+        SymbolicSet.__init__(self, env)
         self.aset = aset
         self.node = node  
     
@@ -90,8 +90,8 @@ class SymbolicSequenceSet(AbstractSymbolicSequence):
         
 
 class SymbolicSequence1Set(AbstractSymbolicSequence):
-    def __init__(self, aset, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env, node):
+        SymbolicSet.__init__(self, env)
         self.aset = aset
         self.node = node  
     
@@ -128,8 +128,8 @@ class SymbolicSequence1Set(AbstractSymbolicSequence):
 
 
 class SymbolicISequenceSet(AbstractSymbolicSequence):
-    def __init__(self, aset, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env, node):
+        SymbolicSet.__init__(self, env)
         self.aset = aset
         self.node = node  
     
@@ -167,8 +167,8 @@ class SymbolicISequenceSet(AbstractSymbolicSequence):
 
   
 class SymbolicISequence1Set(AbstractSymbolicSequence):
-    def __init__(self, aset, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env, node):
+        SymbolicSet.__init__(self, env)
         self.aset = aset
         self.node = node  
     
@@ -208,8 +208,8 @@ class SymbolicISequence1Set(AbstractSymbolicSequence):
         
 
 class SymbolicPermutationSet(AbstractSymbolicSequence):
-    def __init__(self, aset, env, interpret, node):
-        SymbolicSet.__init__(self, env, interpret)
+    def __init__(self, aset, env, node):
+        SymbolicSet.__init__(self, env)
         self.aset = aset
         self.node = node  
     

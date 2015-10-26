@@ -1,8 +1,13 @@
 from ast_nodes import *
+from config import USE_RPYTHON_CODE
 from environment import Environment
 from helpers import  string_to_file, file_to_AST_str_no_print
-from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
+
+if USE_RPYTHON_CODE:
+	from rpython_interp import interpret
+else:
+	from interp import interpret
 
 
 def run_repl():
