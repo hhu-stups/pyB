@@ -1778,7 +1778,8 @@ def exec_substitution(sub, env):
         assert isinstance(invariant, Predicate)  
         assert isinstance(variant, Expression) 
         v_value = interpret(variant, env)
-        ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+        ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+        #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
         for possible in ex_while_generator:
             yield possible
 
@@ -2098,20 +2099,60 @@ def exec_parallel_substitution(subst_list, env, ref_state, new_values):
                     new_values.pop()
         env.state_space.undo()
                                          
-                                            
+
+# Uses a state stack instead of recursion. 
+# Avoids max recursion level on "long" loops (up to 5000 iterations)
+def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
+
+    bstate = env.state_space.get_state()  # avoid undesired side effects 
+    clone = bstate.clone()
+    states = [clone]
+    cond = interpret(condition, env)
+    if not cond:
+        yield True # Not condition means skip whole loop 
+    
+    # repeat until no valid (cond True) state can be explored. (breadth first search)
+    while not states==[]:
+        next_states = []      
+        for state in states:
+            env.state_space.add_state(state)	# push this bstate
+            v_value = interpret(variant, env)
+            inv     = interpret(invariant, env)
+            if not inv and PRINT_WARNINGS:
+                print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
+            assert inv
+            ex_generator = exec_substitution(doSubst, env)
+            
+            # compute all successor states 
+            for do_possible in ex_generator:
+                if do_possible:
+                    do_state = env.state_space.get_state()
+                    cond = interpret(condition, env)
+                    if not cond:
+                        yield True # Not condition means leave loop 
+                    else:
+                        # only consider states in the next loop which fullfil the condition 
+                        next_states.append(do_state.clone())
+                        temp = interpret(variant, env)
+                        if not temp < v_value:
+                            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
+                        assert temp < v_value
+            env.state_space.undo() 				# pop last bstate
+        states = next_states
+"""                                            
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
-    # always use the bstate of the last iteration 
-    # without this copy the state of the last iteration can not restored 
+    # Always use the bstate of the last iteration.
+    # Without this copy the state of the last iteration can not restored
     # after the first successful while-loop termination. 
     # This code would only be correct for non-deterministic while-loops
-    bstate = env.state_space.get_state().clone()
+    bstate = env.state_space.get_state().clone()   
     if not interpret(condition, env):
-        yield True  #loop has already been entered. Not condition means success of "exec possible"
+        yield True  # Not condition means leave loop or skip loop (both is exec success)
     else: 
         boolean = interpret(invariant, env)
         if not boolean and PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT ERROR"
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
         assert boolean
         ex_generator = exec_substitution(doSubst, env)
         for possible in ex_generator:
@@ -2124,10 +2165,12 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
                 env.state_space.undo() # pop last bstate
                 # restore the bstate of the last recursive call (python-level) 
                 # i.e the last loop iteration (B-level)
-                env.state_space.add_state(bstate) 
-        yield False
+                env.state_space.add_state(bstate)
+            else: 
+                yield False
+""" 
 
-                 
+      
 #def replace_node(ast, idNode, replaceNode):
 #    if isinstance(ast, AIdentifierExpression) or isinstance(ast, AStringExpression) or isinstance(ast, AIntegerExpression):
 #        return ast

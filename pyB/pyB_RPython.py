@@ -197,6 +197,7 @@ def run_model_checking_mode(argv):
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
     if not len(bstates)==1:
        print "WARNING: only one init. expected" 
+       print "real init number:", len(bstates)
        for bs in bstates:
            bs.print_bstate()
        return -1

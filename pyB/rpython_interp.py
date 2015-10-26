@@ -2143,6 +2143,7 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
     # This code would only be correct for non-deterministic while-loops
     bstate = env.state_space.get_state().clone()
     w_bool = interpret(condition, env)
+    #print "EBUG-MSG: w_bool", w_bool.bvalue
     if not w_bool.bvalue:
         yield True  #loop has already been entered. Not condition means success of "exec possible"
     else: 
@@ -2164,5 +2165,6 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
                 # restore the bstate of the last recursive call (python-level) 
                 # i.e the last loop iteration (B-level)
                 env.state_space.add_state(bstate) 
+        #print "DEBUG-MSG: return False in while loop"
         yield False
         

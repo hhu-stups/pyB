@@ -93,6 +93,7 @@ class W_Integer(W_Object):
                 
     def __lt__(self, other):
         assert isinstance(other, W_Integer)
+        #print "DEBUG:", self.ivalue, other.ivalue  ,self.ivalue < other.ivalue  
         return self.ivalue < other.ivalue  
         
     def __le__(self, other):
