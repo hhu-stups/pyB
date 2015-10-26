@@ -251,7 +251,7 @@ def run_model_checking_mode():
             opName = s.opName
             #bstate.print_bstate() # TODO: check double values with Lift2.mch example
             if not env.state_space.is_seen_state(bstate):
-                env.state_space.set_current_state(bstate)  
+                env.state_space.set_current_state(bstate) 
     print "checked",len(env.state_space.seen_states),"states.\033[1m\033[92mNo invariant violation found.\033[00m"
     return True
       

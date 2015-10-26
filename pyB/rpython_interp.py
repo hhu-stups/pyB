@@ -1796,7 +1796,7 @@ def exec_substitution(sub, env):
         assert isinstance(invariant, Predicate)  
         assert isinstance(variant, Expression) 
         v_value = interpret(variant, env)
-        ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+        ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
         for possible in ex_while_generator:
             yield possible
 
@@ -2134,6 +2134,47 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
                     values.pop()
         env.state_space.undo()
 
+# Uses a state stack instead of recursion. 
+# Avoids max recursion level on "long" loops (up to 5000 iterations)
+def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
+
+    bstate = env.state_space.get_state()  # avoid undesired side effects 
+    clone = bstate.clone()
+    states = [clone]
+    cond = interpret(condition, env)
+    if not cond.bvalue:
+        yield True # Not condition means skip whole loop 
+    
+    # repeat until no valid (cond True) state can be explored. (breadth first search)
+    while not states==[]:
+        next_states = []      
+        for state in states:
+            env.state_space.add_state(state)	# push this bstate
+            v_value = interpret(variant, env)
+            inv     = interpret(invariant, env)
+            if not inv.bvalue and PRINT_WARNINGS:
+                print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
+            assert inv
+            ex_generator = exec_substitution(doSubst, env)
+            
+            # compute all successor states 
+            for do_possible in ex_generator:
+                if do_possible:
+                    do_state = env.state_space.get_state()
+                    cond = interpret(condition, env)
+                    if not cond.bvalue:
+                        yield True # Not condition means leave loop 
+                    else:
+                        # only consider states in the next loop which fullfil the condition 
+                        next_states.append(do_state.clone())
+                        temp = interpret(variant, env)
+                        if not  temp.__lt__(v_value):
+                            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
+                        assert temp.__lt__(v_value)
+            env.state_space.undo() 				# pop last bstate
+        states = next_states
+
+"""        
 # TODO: maximum recursion depth exceeded
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
@@ -2167,4 +2208,4 @@ def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env
                 env.state_space.add_state(bstate) 
         #print "DEBUG-MSG: return False in while loop"
         yield False
-        
+"""        
