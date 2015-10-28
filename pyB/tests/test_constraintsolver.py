@@ -289,7 +289,7 @@ class TestConstraintSolver():
         map = _categorize_predicates(set_predicate, env, [var])
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
-        assert time0==float("inf")    
+        assert time0==TOO_MANY_ITEMS+2    
         assert isinstance(time1, int)   
         assert vars0==["x"]
         assert vars1==["x"]
@@ -321,7 +321,7 @@ class TestConstraintSolver():
         map = _categorize_predicates(set_predicate, env, [var])
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
-        assert time0==float("inf")    
+        assert time0==TOO_MANY_ITEMS+2    
         assert isinstance(time1, int) 
         assert vars0==["x"]
         assert vars1==["x"]
@@ -353,7 +353,7 @@ class TestConstraintSolver():
         map = _categorize_predicates(set_predicate, env, [var]) 
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
-        assert time0==float("inf")    
+        assert time0==TOO_MANY_ITEMS+2    
         assert time1 <TOO_MANY_ITEMS
         assert vars0==["x"]
         assert vars1==["x"] 
@@ -383,7 +383,7 @@ class TestConstraintSolver():
         map = _categorize_predicates(set_predicate, env, [var])
         (time0, vars0, compute_first0) = map[set_predicate.children[0]]
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]
-        assert time0==float("inf")    
+        assert time0==TOO_MANY_ITEMS+2    
         assert time1 <TOO_MANY_ITEMS
         assert vars0==["x"]
         assert vars1==["x"]  
@@ -513,7 +513,7 @@ class TestConstraintSolver():
         (time1, vars1, compute_first1) = map[set_predicate.children[1]]         
         assert vars0==["x"]
         assert vars1==["x"]
-        assert time0==float("inf")
+        assert time0==TOO_MANY_ITEMS+2
         assert time1<2**22   
         assert compute_first0 == []
         assert compute_first1 == []
@@ -543,7 +543,7 @@ class TestConstraintSolver():
         (time1, vars1, compute_first1) = map[set_predicate.children[1]] 
         assert vars0==["x"]
         assert vars1==["x"]
-        assert time0==float("inf")
+        assert time0==TOO_MANY_ITEMS+2
         assert time1<2**22   
         assert compute_first0 == []
         assert compute_first1 == []

@@ -49,7 +49,7 @@ def calc_possible_solutions(predicate, env, varList):
     if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
         try:
             generator = _compute_generator_using_special_cases(predicate, env, varList)
-            return generator
+            return generator.__iter__()
         except SpecialCaseEnumerationFailedException:
             pass
 
@@ -246,7 +246,7 @@ def _compute_generator_using_special_cases(predicate, env, varList):
             #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
             # Avoid interference between bound variables: check find_constraint_vars
             # This is less powerful, but correct
-            if time!=float("inf") and time<TOO_MANY_ITEMS and var_node.idName in vars:
+            if time<TOO_MANY_ITEMS and var_node.idName in vars:
                 # at least on predicate of this conjunction can easiely be used
                 # to compute a testset. The exact solution musst contain all 
                 # or less elements than test_set

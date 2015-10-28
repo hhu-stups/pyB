@@ -45,7 +45,7 @@ def _abs_int(node, env):
         time = _abs_int(node.children[0], env)
         #if time>=math.log(TOO_MANY_ITEMS,2):
         if time>=22: # FIXME: math.log is not rpython
-            return float("inf")
+            return TOO_MANY_ITEMS
         else:
             #return 2**(time)
             assert time >=0
@@ -55,7 +55,7 @@ def _abs_int(node, env):
             return result
     # NATURAL, NATURAL1, INTEGER, STRING
     elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
-        return float("inf")
+        return TOO_MANY_ITEMS
     elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):
         return env._max_int
     elif isinstance(node, AIntSetExpression):
@@ -65,7 +65,7 @@ def _abs_int(node, env):
         time1 = _abs_int(node.children[1], env)    
         prod = time0*time1
         if prod>TOO_MANY_ITEMS:
-            return float("inf")
+            return TOO_MANY_ITEMS
         else:
             return prod
 
@@ -76,7 +76,7 @@ def _abs_int(node, env):
         exp0  = time0*time1 
         #if exp0>=math.log(TOO_MANY_ITEMS,2):
         if exp0>=22: # math.log is not rpython
-            return float("inf")
+            return TOO_MANY_ITEMS
         else:
             #return 2**(exp0)
             assert exp0 >=0
@@ -111,7 +111,7 @@ def _abs_int(node, env):
         # BUGFIX: if this interpreter call cause the lookup of an unset variable,
         # this will crash. This is a quick fix.
         if not isinstance(val0, int) or not isinstance(val1, int):
-            return float("inf")
+            return TOO_MANY_ITEMS
         return val1-val0
     ### "meet"
     # Werden hier abstrakte Interpretation und Datenflussanalyse durcheinander geworfen? Denk noch mal drueber nach....

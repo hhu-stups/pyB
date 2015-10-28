@@ -181,6 +181,8 @@ def find_constraining_var_nodes(node, varList):
         name = var.idName
         if name in [x.idName for x in varList]:
             result.append(var)
+    for x in result:
+        assert isinstance(x, AIdentifierExpression)
     #print [x.idName for x in result]
     return result    
 
