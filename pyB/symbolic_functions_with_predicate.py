@@ -21,7 +21,7 @@ if USE_RPYTHON_CODE:
 # {x|x:INTEGER & x>=0 }=={y|y:NATURAL}
 # returntype: boolean
 def check_syntactically_equal(predicate0, predicate1):
-    if predicate0.__class__ == predicate1.__class__:
+    if predicate0._same_class_(predicate1):
         try:
             length = range(len(predicate0.children))
         except AttributeError:

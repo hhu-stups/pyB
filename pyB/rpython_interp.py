@@ -507,7 +507,8 @@ def _learn_assigned_values(root, env, lst):
         elif isinstance(node, AConjunctPredicate):
             _learn_assigned_values(node, env, lst)
       
-# returns a W_Object. Wrapping is a interpreter task. Not a task of the obejcts or their methods     
+# returns a W_Object. Wrapping is a interpreter task. Not a task of the obejcts or their methods   
+# jitdriver.jit_merge_point(node=node, env=env)  
 def interpret(node, env):
 # ********************************************
 #
@@ -761,12 +762,10 @@ def interpret(node, env):
         return frozenset(lst)
     elif isinstance(node, AEmptySetExpression):
         return frozenset()
-        """
     elif isinstance(node, AComprehensionSetExpression):
         varList = node.children[:-1]
         pred = node.children[-1]
-        return SymbolicComprehensionSet(varList, pred, node, env, calc_possible_solutions)    
-        """
+        return SymbolicComprehensionSet(varList, pred, node, env)    
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
@@ -2134,10 +2133,14 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
                     values.pop()
         env.state_space.undo()
 
+from rpython.rlib.jit import JitDriver
+ALWAYS_INLINE = False
+jitdriver = JitDriver(greens=['states', 'cond', 'condition', 'doSubst', 'invariant', 'variant'], reds=['env','v_value'])
 # Uses a state stack instead of recursion. 
 # Avoids max recursion level on "long" loops (up to 5000 iterations)
 def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
-
+    ALWAYS_INLINE = False
+     
     bstate = env.state_space.get_state()  # avoid undesired side effects 
     clone = bstate.clone()
     states = [clone]
@@ -2146,6 +2149,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
         yield True # Not condition means skip whole loop 
     
     # repeat until no valid (cond True) state can be explored. (breadth first search)
+    jitdriver.jit_merge_point(states=states, cond=cond, condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, v_value=v_value)
     while not states==[]:
         next_states = []      
         for state in states:

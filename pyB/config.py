@@ -3,8 +3,8 @@ import os
 
 
 DEPTH_FIRST_SEARCH_MODEL_CHECKING = True # else
-MIN_INT = -1
-MAX_INT = 5
+MIN_INT = -2**31
+MAX_INT = 2**31
 MAX_OP_SOLUTIONS = 4    # not implemented yet
 MAX_NEXT_STATES  = 20   # not implemented yet
 MAX_SELECT_BRANCHES = 4 # not implemented yet 
@@ -28,8 +28,8 @@ USE_ANIMATION_HISTORY = True
 PROPERTIES_TIMEOUT = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
 
 # *** Set to True if you want to translate to C. Otherwise loose of performance **
-USE_RPYTHON_CODE     = False # use code which can be translated
-USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
+USE_RPYTHON_CODE     = True # use code which can be translated
+USE_RPYTHON_POPEN    = True # Enable java call from RPython if you want to translate to C
 
 # method should used by pypy translation test only    
 def set_USE_RPYTHON_POPEN(boolean):

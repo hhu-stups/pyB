@@ -14,6 +14,12 @@ from parsing import PredicateParseUnit, ExpressionParseUnit, parse_ast, remove_d
 from rpython_interp import interpret, exec_initialisation, set_up_constants, eval_Invariant
 from typing import type_check_bmch, type_check_root_bmch
 
+#from rpython.rlib.jit import JitDriver
+# green: ast node defines the evaluation of a particular expression
+#        env is the variable which
+# red:   none, the interpreter is side effect free. Nothing is modified by the exec
+# maybe all of this is wrong and exec_substitution instead of interp must be considered
+#jitdriver = JitDriver(greens=['node', 'env']) # for interp
 
 # console input like python 'pyB.py somefile.mch some_solutionfile.txt'
 def read_input_string(argv, offset=0):
