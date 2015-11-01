@@ -90,7 +90,7 @@ class SymbolicLambda(SymbolicSet):
                 return False
             return True
         if isinstance(aset, SymbolicSet):
-            return aset==self # impl. use of symbolicSet.__eq__
+            return aset.__eq__(self) # impl. use of symbolicSet.__eq__. This is NOT this method
         if isinstance(aset, frozenset):
             if not self.explicit_set_computed:
                 self.explicit_set_repr = self.enumerate_all()
@@ -120,7 +120,10 @@ class SymbolicLambda(SymbolicSet):
         domain_value = self.interpret(self.predicate, self.env)
         image_value  = self.interpret(self.expression, self.env) 
         self.env.pop_frame() # exit scope
-        return domain_value and image_value==args[-1]
+        if USE_RPYTHON_CODE:
+            return domain_value.bvalue and image_value.__eq__(args[-1])
+        else:
+            return domain_value and image_value==args[-1]
     
     # convert to explicit frozenset
     # dont use generator to avoid rapid frame push/pop
@@ -129,31 +132,39 @@ class SymbolicLambda(SymbolicSet):
             varList = self.variable_list
             pred    = self.predicate
             expr    = self.expression 
-            env       = self.env
+            env     = self.env
+            names   = [x.idName for x in varList]
             func_list = []
             # new scope
             env.push_new_frame(varList)
             domain_generator = self.domain_generator(pred, env, varList)
             # for every solution-entry found:
             for entry in domain_generator:
-                # set all vars (of new frame/scope) to this solution
-                i = 0
-                for name in [x.idName for x in varList]:
+                # set all vars (of new frame/scope) to this solution    
+                arg = entry[names[0]]
+                env.set_value(names[0], arg)
+                for name in names[1:]:
                     value = entry[name]
                     env.set_value(name, value)
-                    i = i + 1
-                    if i==1:
-                        arg = value
+                    if USE_RPYTHON_CODE:
+                        arg = W_Tuple((arg, value))
                     else:
                         arg = tuple([arg, value])
                 # test if it is really a solution
                 try:
-                    if self.interpret(pred, env):  # test
+                    if USE_RPYTHON_CODE:
+                        bool = self.interpret(pred, env).bvalue
+                    else:
+                        bool = self.interpret(pred, env)
+                    if bool:  # test
                         # yes it is! calculate lambda-fun image an add this tuple to func_list       
                         image = self.interpret(expr, env)
                         if isinstance(image, SymbolicSet):
                             image = image.enumerate_all()
-                        tup = tuple([arg, image])
+                        if USE_RPYTHON_CODE:
+                            tup = W_Tuple((arg, image))
+                        else:
+                            tup = tuple([arg, image])                    
                         func_list.append(tup) 
                 except ValueNotInDomainException:
                     continue
@@ -169,27 +180,35 @@ class SymbolicLambda(SymbolicSet):
         expr    = self.expression 
         env       = self.env
         interpret = self.interpret
+        names     = [x.idName for x in varList]
         # new scope
         env.push_new_frame(varList)
         domain_generator = self.domain_generator(pred, env, varList)
         # for every solution-entry found:
         for entry in domain_generator:
             # set all vars (of new frame/scope) to this solution
-            i = 0 #i-th argument 
-            for name in [x.idName for x in varList]:
+            arg = entry[names[0]]
+            env.set_value(names[0], arg)
+            for name in names[1:]:
                 value = entry[name]
                 env.set_value(name, value)
-                i = i + 1
-                if i==1:
-                    arg = value
+                if USE_RPYTHON_CODE:
+                    arg = W_Tuple((arg, value))
                 else:
-                    arg = tuple([arg, value])
+                    arg = tuple([arg, value])  
             # test if it is really a solution
             try:
-                if self.interpret(pred, env):  # test
+                if USE_RPYTHON_CODE:
+                    bool = self.interpret(pred, env).bvalue
+                else:
+                    bool = self.interpret(pred, env)
+                if bool:  # test
                     # yes it is! calculate lambda-fun image and yield result (tuple-type)      
                     image = self.interpret(expr, env)
-                    tup = tuple([arg, image])
+                    if USE_RPYTHON_CODE:
+                        tup = W_Tuple((arg, image))
+                    else:
+                        tup = tuple([arg, image])  
                     env.pop_frame() # exit scope
                     yield tup
                     env.push_new_frame(varList)

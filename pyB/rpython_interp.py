@@ -1340,14 +1340,16 @@ def interpret(node, env):
     elif isinstance(node, APartialBijectionExpression):
         S = interpret(node.children[0], env)
         T = interpret(node.children[1], env)
-        return SymbolicPartialBijectionSet(S, T, env, node)
-        """
+        return SymbolicPartialBijectionSet(S, T, env, node)        
     elif isinstance(node, ALambdaExpression):
-        varList = node.children[:-2]
+        #varList = node.children[:-2]
+        varList = []
+        for i in range(len(node.children)-2):
+            idNode = node.children[i]
+            varList.append(idNode)
         pred = node.children[-2]
         expr = node.children[-1]
-        return SymbolicLambda(varList, pred, expr, node, env, calc_possible_solutions)
-        """
+        return SymbolicLambda(varList, pred, expr, node, env)       
     elif isinstance(node, AFunctionExpression):
         #print "interpret AFunctionExpression: ", pretty_print(node)
         if isinstance(node.children[0], APredecessorExpression):
@@ -2133,9 +2135,8 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
                     values.pop()
         env.state_space.undo()
 
-from rpython.rlib.jit import JitDriver
-ALWAYS_INLINE = False
-jitdriver = JitDriver(greens=['states', 'cond', 'condition', 'doSubst', 'invariant', 'variant'], reds=['env','v_value'])
+#from rpython.rlib.jit import JitDriver
+#jitdriver = JitDriver(greens=['states', 'cond', 'condition', 'doSubst', 'invariant', 'variant'], reds=['env','v_value'])
 # Uses a state stack instead of recursion. 
 # Avoids max recursion level on "long" loops (up to 5000 iterations)
 def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
@@ -2149,7 +2150,8 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
         yield True # Not condition means skip whole loop 
     
     # repeat until no valid (cond True) state can be explored. (breadth first search)
-    jitdriver.jit_merge_point(states=states, cond=cond, condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, v_value=v_value)
+    # Nut supported inside generators!
+    #jitdriver.jit_merge_point(states=states, cond=cond, condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, v_value=v_value)
     while not states==[]:
         next_states = []      
         for state in states:

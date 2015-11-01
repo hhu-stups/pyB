@@ -274,6 +274,10 @@ def remove_tuples(tup):
         a = remove_tuples(tup[0])
         b = remove_tuples(tup[1])
         return a+b
+    elif isinstance(tup, W_Tuple):
+        a = remove_tuples(tup.tvalue[0])
+        b = remove_tuples(tup.tvalue[1])
+        return a+b        
     else:
         return [tup]
 
