@@ -35,13 +35,13 @@ class TestPyPyTranslationModelChecking():
     def test_pypy_mc_loops(self):
         translate() 
         
-        c_result = execute_file(" -mc examples/Lift2.mch")       
+        c_result = execute_file(" -mc examples/rpython_performance/Lift2.mch")       
         expected ="""\033[1m\033[91mWARNING\033[00m: model checking still experimental
         checked 100 states.\033[1m\033[92m No invariant violation found.\033[00m
         """
         assert c_result.replace(" ", "").replace("\t", "").split('\n') ==  expected.replace(" ", "").replace("\t", "").split('\n') 
         
-        c_result = execute_file(" -mc examples/Lift.mch")
+        c_result = execute_file(" -mc examples/rpython_performance/Lift.mch")
         expected ="""\033[1m\033[91mWARNING\033[00m: model checking still experimental
         \033[1m\033[91mWARNING\033[00mInvariant violation
 
@@ -58,7 +58,7 @@ class TestPyPyTranslationModelChecking():
         """
         assert c_result.replace(" ", "").replace("\t", "").split('\n') ==  expected.replace(" ", "").replace("\t", "").split('\n') 
         
-        c_result = execute_file(" -mc examples/WhileLoop.mch")
+        c_result = execute_file(" -mc examples/rpython_performance/WhileLoop.mch")
         expected ="""\033[1m\033[91mWARNING\033[00m: model checking still experimental
         \033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!
         checked 2 states.\033[1m\033[92m No invariant violation found.\033[00m

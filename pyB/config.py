@@ -4,7 +4,7 @@ import os
 
 DEPTH_FIRST_SEARCH_MODEL_CHECKING = True # else
 MIN_INT = -10
-MAX_INT = 10
+MAX_INT = 100
 MAX_OP_SOLUTIONS = 4    # not implemented yet
 MAX_NEXT_STATES  = 20   # not implemented yet
 MAX_SELECT_BRANCHES = 4 # not implemented yet 
