@@ -1,6 +1,4 @@
 MACHINE PyB_C_Features
-CONSTANTS c
-PROPERTIES c=2
 VARIABLES f, RES
 INVARIANT 1+1=2
         & {1,2}\/{3,4}={1,2,3,4} 
@@ -38,7 +36,8 @@ INVARIANT 1+1=2
 		& {((1,2),(11,21)), ((1,7),(11,22)),((4,2),(12,21)), ((4,7),(12,22))}= ({(1,11), (4,12)} || {(2,21), (7,22)})
 		& {(1,1),(3,3)}=iterate({(1,3),(3,1)},0)
 	/*	& (({(1,True)});({(42,1)}))={(42,True)} */
-		& {1}={x|x=1} /* set MIN/MAX Int low */
+		& {1}={x|x=1} /* set MININT and MAXINT -10 .. 10 */
+		& {(1,1),(2,4),(3,9),(4,16),(5,25)}=%x.(x:1..5|x*x) /* set MININT and MAXINT -10 .. 10 */
 	    & {{},{("a","x")},{("a","y")},{("b","x")},{("b","y")},{("a","x"),("b","x")},{("a","y"),("b","y")},{("a","x"),("b","y")},{("a","y"),("b","x")}}={"a","b"}+->{"x","y"}
 	    & {{},{(1,"hallo_welt")},{(2,"hallo_welt")},{(1,"hallo_welt"),(2,"hallo_welt")}}={1,2}+->{"hallo_welt"}
 	    & {{("a","x"),("b","x")},{("a","y"),("b","y")},{("a","x"),("b","y")},{("a","y"),("b","x")}}={"a","b"}-->{"x","y"}
@@ -97,7 +96,6 @@ INVARIANT 1+1=2
         & rel({(-1|->{0, 2}), (1|->{6, 8}), (3|->{3})})={(-1,0),(-1,2),(1,6),(1,8),(3,3)}
         & RES:struct(Mark:BOOL, Good_enough:BOOL) & RES'Mark=FALSE & RES'Good_enough= TRUE /* struct causes "norm_pred_failed(member/2) PROB WARING */
 INITIALISATION f:={1,2,3}<->{TRUE,FALSE} ; RES := rec(Mark : FALSE, Good_enough : TRUE) 
-ASSERTIONS c>3
 OPERATIONS
  avoid_deadlock = skip
 END
