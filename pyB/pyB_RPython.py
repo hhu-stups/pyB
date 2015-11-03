@@ -179,6 +179,9 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
 def run_model_checking_mode(argv):
     print "\033[1m\033[91mWARNING\033[00m: model checking still experimental"
     env = Environment()                                                # 1. create env.
+    # TODO: remove this hack when MIN MAX INT switch is implemented
+    env._max_int = 2**31
+    env._min_int = -2**31
     file_name_str, solution_file_name_str = read_input_string(argv, 1) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)        # 3. parse input-file to string
     if error:

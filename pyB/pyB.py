@@ -15,7 +15,6 @@ from repl import run_repl
 from typing import type_check_root_bmch, type_check_predicate
 
 
-
 # console input like python 'pyB.py somefile.mch some_solutionfile.txt'
 def read_input_string(offset=0):
     file_name_str = DEFAULT_INPUT_FILENAME
@@ -81,13 +80,14 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     
 
 # returns "root, env, parse_object, solution_file_present" if no error occurred 
-def startup(offset=0):
+def startup(argv, offset):
     env = Environment()                                               # 1. create env.
     file_name_str, solution_file_name_str = read_input_string(offset) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)       # 3. parse input-file to string
     if error:
         print error
     env.set_search_dir(file_name_str)
+    #env.parse_config_parameter(argv)
     root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast 
     # uncomment for profiling (e.g. performance tests)
     #import cProfile
@@ -104,8 +104,8 @@ def startup(offset=0):
 
 # can use a solution file to speed up the init (or make it possible).
 # will go into animation mode if possible
-def run_animation_mode():
-    root, env, parse_object, solution_file_present = startup()
+def run_animation_mode(argv):
+    root, env, parse_object, solution_file_present = startup(argv, offset=0)
     
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
@@ -171,8 +171,8 @@ def run_animation_mode():
 
 
 # check of init without animation
-def run_checking_mode():
-    root, env, parse_object, solution_file_present = startup(offset=1)
+def run_checking_mode(argv):
+    root, env, parse_object, solution_file_present = startup(argv, offset=1)
     
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         result = interpret(parse_object.root, env)              # eval predicate or expression
@@ -214,9 +214,9 @@ def run_checking_mode():
         return eval_Invariant(root, env, mch)   
 
 
-def run_model_checking_mode():
+def run_model_checking_mode(argv):
     print "WARNING: model checking still experimental"
-    root, env, parse_object, solution_file_present = startup(offset=1)
+    root, env, parse_object, solution_file_present = startup(argv, offset=1)
     if not isinstance(parse_object, BMachine):                                  
         print "Error: only model checking of b machines" 
         return
@@ -259,14 +259,14 @@ def run_model_checking_mode():
 ###### MAIN PROGRAM ######
 try:
     if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
-        run_repl()
+        run_repl(sys.argv)
     elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
-        result = run_checking_mode()
+        result = run_checking_mode(sys.argv)
         print "Invariant:", result
     elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
-        run_model_checking_mode()
+        run_model_checking_mode(sys.argv)
     else:
-        run_animation_mode()
+        run_animation_mode(sys.argv)
 except Exception as e:
     print "Error in pyB:", type(e), e.args, e
     print "Usage: python pyB.py <options> MachineFile <SolutionFile>"

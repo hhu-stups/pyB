@@ -46,6 +46,19 @@ class Environment():
         #self.op_substitution_value = None # Sores the last value of an op-substitution
 
 
+    def parse_config_parameter(self, argv):
+        for i in range(len(argv)):          
+            if argv[i]=="-p":
+                if string[i+1]=="MAXINT":
+                    self._max_int = int(string[i+2])
+                elif string[i+1]=="MININT":
+                    self._min_int = int(string[i+2])
+                else:
+                    print "Unknown or missing flag/value pair"
+                    print "pyB File.mch Solution.txt (-p FLAG VALUE)*"
+                    print "Flags: MAXINT, MININT"
+            
+            
     # This method is a dirty solution to enumerate the set of all strings.
     # It collects all string expressions inside the machine
     def get_all_strings(self, node):

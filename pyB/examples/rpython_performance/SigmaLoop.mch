@@ -1,12 +1,13 @@
-/* johnwitulski$ ./probcli -mc 2 -p MAXINT 10000000 ../pyB/examples/SigmaLoop.mch */
+/* johnwitulski$ time ./probcli -mc 2147483648 -p MAXINT 2147483648 -p MININT -2147483648 
+../pyB/examples/rpython_performance/SigmaLoop.mch  */
 
 MACHINE SigmaLoop
-VARIABLES n
+VARIABLES n, sum
 INVARIANT
-  n:NAT & 55=(SIGMA i. (i:0..n | i)) 
-INITIALISATION 	n:=10
-OPERATIONS 
+  n:NAT & sum=45
+  /* (10,55),  (100,5050), (1000, 500500), (10000, 50005000) */
+INITIALISATION 	n:=10 ; sum:=(SIGMA i. (i:0..n-1 | i)) 
 
-op = skip /* avoid deadlock */
+OPERATIONS op = skip /* avoid deadlock */
   
 END

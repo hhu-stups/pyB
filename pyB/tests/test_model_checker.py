@@ -27,9 +27,9 @@ class TestModelChecker():
     END
     """
     def test_simple_model_checking0(self):
-        path = "examples/Lift2.mch"
+        path = "examples/rpython_performance/Lift2.mch"
         if os.name=='nt':
-            bfile_name="examples\Lift2"
+            bfile_name="examples/rpython_performance\Lift2"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -111,9 +111,9 @@ class TestModelChecker():
 	END
     """
     def test_simple_model_checking1(self):
-        path = "examples/WhileLoop.mch"
+        path = "examples/rpython_performance/WhileLoop.mch"
         if os.name=='nt':
-            bfile_name="examples\WhileLoop"
+            bfile_name="examples/rpython_performance\WhileLoop"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -157,9 +157,9 @@ class TestModelChecker():
 	END 
 	"""     
     def test_simple_model_checking2(self):
-        path = "examples/SigmaLoop.mch"
+        path = "examples/rpython_performance/SigmaLoop.mch"
         if os.name=='nt':
-            bfile_name="examples\SigmaLoop"
+            bfile_name="examples/rpython_performance\SigmaLoop"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 

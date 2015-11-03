@@ -10,10 +10,11 @@ else:
 	from interp import interpret
 
 
-def run_repl():
+def run_repl(argv):
     print "PyB repl. Version: 08.01.2013"
     print "Input: e.g. '1+1' or '1+1<42'"
     print "quit to exit."
+    env.parse_config_parameter(argv)
     string = None
     while True:
         string = raw_input(">>")

@@ -965,13 +965,13 @@ def interpret(node, env):
         right = interpret(node.get(1), env)
         assert isinstance(left, W_Integer)
         assert isinstance(right, W_Integer)
-        L = []
-        for i in range(left.ivalue, right.ivalue+1):
-            value = W_Integer(i)
-            L.append(value)
-        return frozenset(L)
+        #L = []
+        #for i in range(left.ivalue, right.ivalue+1):
+        #    value = W_Integer(i)
+        #    L.append(value)
+        #return frozenset(L)
         # RPYTHON: cause segfault. reason unknown
-        #return SymbolicIntervalSet(left, right, env)
+        return SymbolicIntervalSet(left, right, env)
     elif isinstance(node, AGeneralSumExpression):
         sum_ = 0
         # new scope

@@ -66,3 +66,4 @@ class TestPyPyTranslationModelChecking():
         assert c_result.replace(" ", "").replace("\t", "").split('\n') ==  expected.replace(" ", "").replace("\t", "").split('\n') 
         
         clean_up()
+

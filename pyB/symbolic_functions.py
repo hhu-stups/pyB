@@ -28,12 +28,24 @@ class SymbolicRelationSet(SymbolicSet):
 
     # all elements in Set
     def __contains__(self, element):
-        if isinstance(element, SymbolicSet):    # check with symb info
-            assert isinstance(element, SymbolicCartSet)
+        if isinstance(element, SymbolicCartSet):    # check with symb info
             if USE_RPYTHON_CODE:
                 return x_in_S(element.left_set, self.left_set) and x_in_S(element.right_set, self.right_set)  
             else:      
                 return element.left_set in self.left_set and element.right_set in self.right_set
+        elif isinstance(element, SymbolicSet):
+            if USE_RPYTHON_CODE:
+                for t in element:
+                    assert isinstance(t, W_Tuple)
+                    if not x_in_S(t.tvalue[0], self.left_set) or not x_in_S(t.tvalue[1], self.right_set):
+                        return False
+                return True 
+            else:      
+                for t in element:
+                    assert isinstance(t, tuple)
+                    if not t[0] in self.left_set or not t[1] in self.right_set:
+                        return False
+                return True 
         elif isinstance(element, PowerSetType): # check with type info
             assert isinstance(element.data, CartType)
             left  = element.data.left.data
