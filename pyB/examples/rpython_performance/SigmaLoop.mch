@@ -6,7 +6,7 @@ VARIABLES n, sum
 INVARIANT
   n:NAT & sum=45
   /* (10,55),  (100,5050), (1000, 500500), (10000, 50005000) */
-INITIALISATION 	n:=10 ; sum:=(SIGMA i. (i:0..n-1 | i)) 
+INITIALISATION 	n:=9 ; sum:=(SIGMA i. (i:0..n | i)) 
 
 OPERATIONS op = skip /* avoid deadlock */
   

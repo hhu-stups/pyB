@@ -37,7 +37,7 @@ class TestModelChecker():
         env = Environment()
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
-        
+        env._max_int = 2**31
         solution_file_read = False
         bstates = set_up_constants(root, env, mch, solution_file_read)
         assert len(bstates)==0 # no setup possible

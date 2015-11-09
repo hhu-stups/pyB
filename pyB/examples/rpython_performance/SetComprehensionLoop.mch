@@ -3,7 +3,7 @@
 
 MACHINE    		SetComprehensionLoop
 VARIABLES  		n, f
-INVARIANT  		n:NAT & f:NAT<->NAT & max(ran(f))=n+1 
-INITIALISATION 	n:=10000; f:={(x,y)|x:1..n & y=x+1}
+INVARIANT  		n:NAT & f:NAT<->NAT & max(ran(f))=n+1
+INITIALISATION 	n:=99; f:={(x,y)|x:1..n & y=x+1}
 OPERATIONS op = skip /* avoid deadlock */
 END
