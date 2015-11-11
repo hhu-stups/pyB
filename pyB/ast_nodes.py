@@ -121,6 +121,7 @@ class AOperation(Node):
 # old parser: AEnumeratedSet
 class AEnumeratedSetSet(Node):
     def __init__(self, childNum, idName):
+        assert isinstance(idName, str)
         self.childNum = int(childNum)
         self.idName = idName
         self.children = []
@@ -135,6 +136,7 @@ class AEnumeratedSetSet(Node):
 # old parser: ADeferredSet
 class ADeferredSetSet(Node):
     def __init__(self, idName):
+        assert isinstance(idName, str)
         self.idName = idName
         self.children = []
     
@@ -1687,9 +1689,9 @@ class AIdentifierExpression(Expression):
         self.idName = idName
         self.children =[]
         
-    #def get_idName(self):
-    # 	assert isinstance(self.idName, str)
-    # 	return self.idName
+    def get_idName(self):
+     	assert isinstance(self.idName, str)
+     	return self.idName
     
     def clone(self):
         assert isinstance(self.idName, str)

@@ -3,7 +3,7 @@
 
 MACHINE    		LambdaLoop
 VARIABLES  		n, f 
-INVARIANT  		n:NAT & f:NAT<->NAT & max(ran(f))=n+1
-INITIALISATION 	n:=1000000; f:=%x.(x:1..n | x+1) 
+INVARIANT  		n:NAT & f:NAT<->NAT & max(ran(f))=n
+INITIALISATION 	n:=100; f:=%x.(x:1..n-1 | x+1) 
 OPERATIONS op = skip /* avoid deadlock */
 END
