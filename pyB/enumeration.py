@@ -164,6 +164,30 @@ def init_deffered_set(def_set, env):
     env.set_value(name, frozenset(lst))
 
 
+def gen_all_values(env, varList):
+    for dic in _gen_all_values(env, varList, {}):
+        yield dic
+
+
+# yields a dict {String-->W_Object} or {String-->value}
+def _gen_all_values(env, varList, dic):
+    idNode = varList[0]
+    assert isinstance(idNode, AIdentifierExpression)
+    atype = env.get_type_by_node(idNode)
+    if USE_RPYTHON_CODE:
+        domain = all_values_by_type_RPYTHON(atype, env, idNode)
+    else:
+        domain = all_values_by_type(atype, env, idNode)
+    var_name = idNode.idName
+    for value in domain:
+        dic[var_name] = value
+        if len(varList)==1:
+            yield dic.copy()
+        else:
+            for d in _gen_all_values(env, varList[1:], dic):
+                yield d
+                
+    
 def get_image_RPython(function, preimage):
     for atuple in function:
         if atuple.tvalue[0].__eq__(preimage):

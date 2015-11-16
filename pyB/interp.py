@@ -828,21 +828,6 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        #domain_generator = calc_possible_solutions(pred, env, varList)
-        #for entry in domain_generator:
-        #    for name in [x.idName for x in varList]:
-        #        value = entry[name]
-        #        env.set_value(name, value)
-        #    try:
-        #        if interpret(pred, env):  # test (|= ior)
-        #            aSet = interpret(expr, env)
-        #            if isinstance(aSet, SymbolicSet):
-        #                aSet = aSet.enumerate_all() 
-        #            result |= aSet
-        #    except ValueNotInDomainException:
-        #        continue
-        #env.pop_frame()
-        #return result
         return SymbolicQuantifiedUnion(varList, pred, expr, node, env)
     elif isinstance(node, AQuantifiedIntersectionExpression):  
         #result = frozenset([])
@@ -851,27 +836,6 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        #domain_generator = calc_possible_solutions(pred, env, varList)
-        #for entry in domain_generator:
-        #    for name in [x.idName for x in varList]:
-        #        value = entry[name]
-        #        env.set_value(name, value)
-        #    try:
-        #        if interpret(pred, env):  # test
-        #            # intersection with empty set is always empty: two cases are needed
-        #            if result==frozenset([]): 
-        #                result = interpret(expr, env)
-        #                if isinstance(result, SymbolicSet):
-        #                    result = result.enumerate_all()   
-        #            else:
-        #                aSet = interpret(expr, env)
-        #                if isinstance(aSet, SymbolicSet):
-        #                    aSet = aSet.enumerate_all()       
-        #                result &= aSet
-        #    except ValueNotInDomainException:
-        #        continue
-        #env.pop_frame()
-        #return result
         return SymbolicQuantifiedIntersection(varList, pred, expr, node, env)
 
 

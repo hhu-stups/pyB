@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # module-description: 
 # animation calculations
-from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE, BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_ANIMATION_HISTORY
-from enumeration import try_all_values
 from ast_nodes import *
-from constrainsolver import calc_possible_solutions
 from bexceptions import ValueNotInDomainException
+from config import MAX_OP_SOLUTIONS, MAX_SELECT_BRANCHES, PRINT_WARNINGS, USE_RPYTHON_CODE, BMACHINE_SEARCH_DIR, BFILE_EXTENSION, USE_ANIMATION_HISTORY
+from constrainsolver import calc_possible_solutions
+from enumeration import try_all_values, gen_all_values
+
 
 if USE_RPYTHON_CODE:
     from rpython_interp import exec_substitution, interpret 
@@ -26,7 +27,18 @@ class Executed_Operation():
         self.return_names  = return_names
         self.return_values = return_values 
         self.bstate        = bstate
-    
+
+# RPython helper to avoid type error of different generator instances
+def _gen_parameter_solutions(substitution, env, parameter_idNodes):
+	if isinstance(substitution, APreconditionSubstitution):
+		predicate = substitution.children[0]
+		# TODO: RYPTHON AssertionError domain_generator_1
+		for dic in calc_possible_solutions(predicate, env, parameter_idNodes):
+		    yield dic
+	# TODO:(#ISSUE 13) maybe more guesses elif...
+	else: # no guess possible, try all values (third-arg None cause an enum of all values)
+		for dic in gen_all_values(env, parameter_idNodes):
+		    yield dic  
     
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO:(#ISSUE 6) implement filter MAX_NEXT_EVENTS
@@ -105,14 +117,7 @@ def calc_next_states(env, bmachine):
                 # parameter values. Of course this guess can produce false values but it will 
                 # never drop possible values
                 # (3.2.1) find top_level predicate
-                domain_generator = None
-                if isinstance(substitution, APreconditionSubstitution):
-                    predicate = substitution.children[0]
-                    # TODO: RYPTHON AssertionError domain_generator_1
-                    domain_generator = calc_possible_solutions(predicate, env, parameter_idNodes)
-                # TODO:(#ISSUE 13) maybe more guesses elif...
-                else: # no guess possible, try all values (third-arg None cause an enum of all values)
-                    domain_generator = calc_possible_solutions(None, env, parameter_idNodes)
+                domain_generator = _gen_parameter_solutions(substitution, env, parameter_idNodes)             
                 #import types
                 #assert isinstance(domain_generator, types.GeneratorType)
                 

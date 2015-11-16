@@ -365,4 +365,16 @@ def f():
         assert python_result == c_result               
               
 
+    def test_pypy_mixed_dict_and_tuple(self):
+        code =  """      
+            d0 = {"a":(1,"hello"), None:(2,"world")}
+            print d0.values()[0][0]
+            print d0.values()[0][1]
+            return 0\n"""
+        
+        translate(code) 
+        python_result, c_result = execute_files()
+        clean_up()
+        assert python_result == ['1','hello','']
+        assert python_result == c_result  
         

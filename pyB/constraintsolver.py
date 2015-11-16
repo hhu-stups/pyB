@@ -4,10 +4,10 @@ from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_RPYTHON_CODE
-from enumeration import all_values_by_type, all_values_by_type_RPYTHON
-from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes
+from enumeration import all_values_by_type, all_values_by_type_RPYTHON, gen_all_values
+from external_constraintsolver import calc_constraint_domain
+from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes, set_to_list
 from pretty_printer import pretty_print
-from quick_eval import quick_member_eval
 from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
@@ -22,36 +22,32 @@ class SpecialCaseEnumerationFailedException(Exception):
 
 
         
-# assumption: the variables of varList are typed may constraint by the
-# predicate. If predicate is None(no constraint), all values of the variable type is returned.
+# assumption: the variables of varList are typed and be constrained by the predicate. 
+# If predicate is None (no constraint), all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
-# This function may be generate false values, but does not omit right ones 
-# i.e no values are missing 
-# varList: variables need to be constraint
-# returns a list of dicts [{x1:value00, ... ,xN:valueN0}, ... ,{x1:value0N, ... ,xN:value1NN}]
+# This function may be generate false values, but does not omit correct ones 
+# i.e no values are missing.
+# 
+# predicate: 	predicate which may constrain the variables
+# env: 			environment. possible lookup of values (other scopes)
+# varList: 		variables x1 .. xN need to be constraint 
+#
+# yields a dicts {x1:value0, ... ,xN:valueM}
 # TODO: move checking inside this function i.e. generate NO FALSE values
 # TODO: maybe a new argument containing a partial computation (e.g. on of many vars with 
 #       with domain constraint) would be a nice refactoring to solve get_item in symb. comp. set
 def calc_possible_solutions(predicate, env, varList):
     #print "calc_possible_solutions: ", pretty_print(predicate)
+    assert isinstance(predicate, Predicate)
     assert isinstance(varList, list)
     for n in varList:
         assert isinstance(n, AIdentifierExpression)
-    # check which kind of predicate: 3 cases
+    # check which kind of predicate: 2 cases
 
-    # case 1: None = no predicate constraining parameter values, generate all values
-    if predicate is None: 
-        generator = gen_all_values(env, varList, {})
-        for d in generator:
-            yield d
-        raise StopIteration()
-        #return generator.__iter__()
-
-
-    # case 2: a special case implemented by pyB    
+    # case 1: a special case implemented by pyB    
     # check if a solution-set is computable without a external contraint solver
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
-    if QUICK_EVAL_CONJ_PREDICATES:
+    if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
         try:
             generator = _compute_generator_using_special_cases(predicate, env, varList)
             for d in generator:
@@ -62,7 +58,7 @@ def calc_possible_solutions(predicate, env, varList):
             pass
 
     
-    # case 3: default, use external constraint solver and hope the best
+    # case 2: default, use external constraint solver and hope the best
     # If iterator.next() is called the caller musst handel a StopIteration Exception
     # TODO: Handle OverflowError, print Error message and go on
     try:
@@ -71,7 +67,7 @@ def calc_possible_solutions(predicate, env, varList):
         #TODO: enable this call in RPYTHON
         if USE_RPYTHON_CODE: # Using external constraint solver not supported yet
             raise ImportError()
-        iterator = _calc_constraint_domain(env, varList, predicate)
+        iterator = calc_constraint_domain(env, varList, predicate)
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
         for d in iterator:
@@ -84,158 +80,12 @@ def calc_possible_solutions(predicate, env, varList):
         # TODO: maybe case 2 was able to constrain the domain of some variables but not all
         # this computation is thrown away in this step. This makes no senese. Fix it!
         # constraint solving failed, enumerate all values (may cause a pyB fail)
-        generator = gen_all_values(env, varList, {})
+        generator = gen_all_values(env, varList)
         for d in generator:
             yield d
         raise StopIteration()
         #return generator.__iter__()
-    
-
-# yields a dict {String-->W_Object} or {String-->value}
-def gen_all_values(env, varList, dic):
-    idNode = varList[0]
-    assert isinstance(idNode, AIdentifierExpression)
-    atype = env.get_type_by_node(idNode)
-    if USE_RPYTHON_CODE:
-        domain = all_values_by_type_RPYTHON(atype, env, idNode)
-    else:
-        domain = all_values_by_type(atype, env, idNode)
-    var_name = idNode.idName
-    for value in domain:
-        dic[var_name] = value
-        if len(varList)==1:
-            yield dic.copy()
-        else:
-            for d in gen_all_values(env, varList[1:], dic):
-                yield d
-
-
-# wrapper-function for external contraint solver 
-# WARNING: asumes that every variable in varList has no value!
-def _calc_constraint_domain(env, varList, predicate):
-    # TODO: import at module level
-    # external software:
-    # install http://labix.org/python-constraint
-    # download and unzip python-constraint-1.1.tar.bz2
-    # python setup.py build
-    # python setup.py install
-    #from pretty_printer import pretty_print
-    #print "predicate:", pretty_print(predicate)
-    from constraint import Problem
-    assert isinstance(predicate, Predicate)
-    var_and_domain_lst = []
-    # get domain 
-    for idNode in varList:
-        assert isinstance(idNode, AIdentifierExpression)
-        atype = env.get_type_by_node(idNode)
-        if USE_RPYTHON_CODE:
-            domain = all_values_by_type_RPYTHON(atype, env, idNode)
-        else:
-            domain = all_values_by_type(atype, env, idNode)
-        tup = (idNode.idName, domain)
-        var_and_domain_lst.append(tup)
-    problem = Problem() # import from "constraint"
-    for tup in var_and_domain_lst:
-        name = tup[0]
-        lst  = tup[1]
-        if isinstance(lst, frozenset):
-            lst = _set_to_list(lst) 
-        problem.addVariable(name, lst)
-    qme_nodes = []
-    constraint_string = pretty_print_python_style(env, varList, predicate, qme_nodes)
-    names = [x.idName for x in varList]
-    expr = "lambda "
-    for n in names[0:-1]:
-        expr += n+","
-    expr += varList[-1].idName+":"+constraint_string
-    #print expr
-    my_globales = {"qme_nodes":qme_nodes, "quick_member_eval":quick_member_eval, "env":env}
-    lambda_func = eval(expr, my_globales)  # TODO:(#ISSUE 16) not Rpython
-    problem.addConstraint(lambda_func, names)
-    return problem.getSolutionIter()
-
-
-def _set_to_list(aSet):
-    return list(aSet) # TODO: list of lists
-
-def function(env, func_name, key):
-    f = env.get_value(func_name)
-    return dict(f)[key]
-
-    
-# TODO: not, include and much more
-# only a list of special cases at the moment
-# helper-function for calc_constraint_domain
-# This pretty printer prints B python-style. 
-# The pretty printer in pretty_printer.py prints B B-style
-def pretty_print_python_style(env, varList, node, qme_nodes):
-    #print node
-    if isinstance(node, AConjunctPredicate):
-        string0 = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
-        string1 = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
-        if string0 and string1:
-            return "("+string0 +") and ("+ string1 +")"    
-        elif string0:
-            return string0
-        elif string1:
-            return string1
-    elif isinstance(node, ADisjunctPredicate):
-        string0 = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
-        string1 = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
-        if string0 and string1:
-            return "("+string0 +") or ("+ string1 +")"    
-        elif string0:
-            return string0
-        elif string1:
-            return string1    
-    elif isinstance(node, AMemberPredicate) and isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
-        qme_nodes.append(node.children[1])
-        return " quick_member_eval( qme_nodes["+str(len(qme_nodes)-1)+"], env,"+node.children[0].idName+")"
-    elif isinstance(node, AGreaterPredicate) or isinstance(node, ALessPredicate) or isinstance(node, ALessEqualPredicate) or isinstance(node, AGreaterEqualPredicate) or isinstance(node, AEqualPredicate) or isinstance(node, ANotEqualPredicate):
-        left = ""
-        right = ""
-        name = ""
-        if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName in [x.idName for x in varList]:
-            name = str(node.children[0].idName)
-            left = name
-            right = pretty_print_python_style(env, varList, node.children[1], qme_nodes)
-        elif isinstance(node.children[1], AIdentifierExpression) and node.children[1].idName in [x.idName for x in varList]:
-            name = str(node.children[1].idName)
-            right = name
-            left = pretty_print_python_style(env, varList, node.children[0], qme_nodes)
-        if left and right and name:
-            bin_op = ""
-            if isinstance(node, AGreaterPredicate):
-                bin_op = ">"
-            elif isinstance(node, ALessPredicate):
-                bin_op = "<"
-            elif isinstance(node, AGreaterEqualPredicate):
-                bin_op = ">="
-            elif isinstance(node, ALessEqualPredicate):
-                bin_op = "<="
-            elif isinstance(node, AEqualPredicate):
-                bin_op = "=="
-            elif isinstance(node, ANotEqualPredicate):
-                bin_op = "!="
-            string = left+bin_op+right
-            return string
-    elif isinstance(node, AIntegerExpression):
-        number = node.intValue
-        return str(number) 
-    elif isinstance(node, AUnaryMinusExpression):
-        number = node.children[0].intValue * -1
-        return str(number)
-    elif isinstance(node, AFunctionExpression) and isinstance(node.children[1],AIdentifierExpression):
-        func_name =  node.children[0].idName # TODO:(#ISSUE 13) this may not be an id node in all cases
-        function = env.get_value(func_name)
-        arg = node.children[1].idName  # TODO:(#ISSUE 13) more args possible. 
-        string = arg + " in " + str(dict(function).keys()) + " and " # only try values in domain
-        string += str(dict(env.get_value(func_name)))
-        string += "["+arg +"]" 
-        return string
-    #print node.children
-    raise ConstraintNotImplementedException(node)
-
+        
 
 # returns a generator or None if fail (e.g. special case not implemented)   
 # Todo: generate constraint set by using all "fast computable" predicates
@@ -376,7 +226,7 @@ def _solution_generator(a_cross_product_iterator, predicate, env, varList):
             yield solution
 
 
-# computed the order of variables
+# compute the order of variables
 # TODO:only correct if abstract interpretation computed predicate eval-time correct
 #
 # e.g.
@@ -463,6 +313,7 @@ class ConstraintVarsTuple():
         self.constraint_vars = constraint_vars
         self.vars_need_to_be_set_first = vars_need_to_be_set_first
         
+# constrained
 
 # Input predicate is always a sub-predicate of a conjunction predicate or a single predicate.
 # This helper may only be used to find test_set(constraint domain) generation candidates.

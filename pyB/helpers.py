@@ -38,6 +38,10 @@ option_str = " -python "
 # only introduced for PyPy rtpyer. Base class of BMachine, PredicateParseUnit, ExpressionParseUnit
 class ParseObject:
     pass
+ 
+    
+def set_to_list(aSet):
+    return list(aSet) # TODO: list of lists
 
 def solution_file_to_AST_str(file_name_str):
     f = open(file_name_str,"r")

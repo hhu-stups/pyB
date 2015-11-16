@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from bexceptions import ValueNotInDomainException
 from config import TOO_MANY_ITEMS
-from constrainsolver import _calc_constraint_domain, _categorize_predicates, calc_possible_solutions
+from constrainsolver import calc_constraint_domain, _categorize_predicates, calc_possible_solutions
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from interp import interpret
@@ -39,7 +39,7 @@ class TestConstraintSolver():
         assert isinstance(Q, Predicate)
         #env._min_int = -2**32
         #env._max_int = 2**32
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["z"] for x in domain])==frozenset([3,4])
 
 
@@ -69,9 +69,9 @@ class TestConstraintSolver():
         varList = unqantPred.children[0:-1]
         P = unqantPred.children[-1].children[0]
         Q = unqantPred.children[-1].children[1]
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([1,2,3])
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["y"] for x in domain])==frozenset(range(8,42))
         
 
@@ -94,7 +94,7 @@ class TestConstraintSolver():
         Q = exqantPred.children[-1].children[1]
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["z"] for x in domain])== frozenset([2,3,4,5])
 
     
@@ -118,7 +118,7 @@ class TestConstraintSolver():
         assert isinstance(E, Expression)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         #print domain
         assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
 
@@ -145,7 +145,7 @@ class TestConstraintSolver():
         env._min_int = -2**8
         env._max_int = 2**8
         env.all_strings = ['abc', '', 'hello']
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         sol = frozenset([x["x"] for x in domain])
         assert sol==frozenset(env.all_strings)    
         
@@ -169,7 +169,7 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([12])
 
 
@@ -853,7 +853,7 @@ class TestConstraintSolver():
         assert isinstance(P, Predicate)
         env._min_int = -2**8
         env._max_int = 2**8
-        domain = _calc_constraint_domain(env, varList, P)
+        domain = calc_constraint_domain(env, varList, P)
         assert frozenset([x["x"] for x in domain])==frozenset([-4,-3,-2,-1,1,2,3,4])
         
 
