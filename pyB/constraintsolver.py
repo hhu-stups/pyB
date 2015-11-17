@@ -62,7 +62,7 @@ def compute_constrained_domains(predicate, env, varList):
     # case 1: Using the PyB constraint solver    
     # check if a solution-set is computable without a external contraint solver
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
-    if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
+    if QUICK_EVAL_CONJ_PREDICATES:# and not USE_RPYTHON_CODE:
         try:
             generator = _compute_using_pyB_solver(predicate, env, varList)
             for d in generator:
@@ -109,7 +109,7 @@ def compute_constrained_domains(predicate, env, varList):
 def _compute_using_pyB_solver(predicate, env, varList):
     # 1. score predicates
     pred_map = _categorize_predicates(predicate, env, varList)
-    assert pred_map is not {}
+    assert not len(pred_map)==0 
     
     # 2. find possible variable enum order. 
     # variable(-domains) not constraint by others will be enumerated first.
@@ -157,7 +157,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
                             for mbcf in must_be_computed_first:
                                 if mbcf not in names_string:
                                     raise PredicateDoesNotMatchException()
-                            assert not test_dict=={}
+                            assert not len(test_dict)==0
                             # generate partial solution: all domain combinations of a subset of bound vars
                             a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
                             # use partial solution to gen testset
@@ -273,33 +273,33 @@ def _compute_variable_enum_order(pred_map, varList):
     # 0. init of data structures 
     result = []
     graph  = {}
+    constraint_list = pred_map.values()
     # 1. construct directed graph: 
-    # nodes: variables
+    # nodes: variable name of type string
     # edges: variable has to be enumerated first
     # node-degree zero: variable can be enumerated
     for varNode in varList:
         name = varNode.idName
+        assert isinstance(name, str) 
         # search for all variables to be enumerated before 'name'
-        listOfidNames = frozenset([]) # set-type to avoid more than one edge between two nodes
-        for constraint in pred_map.values():
+        listOfidNames = []
+        for constraint in constraint_list:
             if name in constraint.constrained_vars:
                # XXX: intersection instead of union 
                # e.g "x=z+1 & x=y+1 & x=5" in this case x can be enumerated without knowing y or z!
                # But it is importend if predicates are inf. computable. 
                # e.g. "x=y & x={a lot of time needed} & y:{1,2,...43}" here y has to be computed first
-               var_list = frozenset(constraint.vars_need_to_be_set_first)
-               for string in var_list:
-                   assert isinstance(string, str)
-               listOfidNames.union(var_list) # edges
+               for other in constraint.vars_need_to_be_set_first:
+                   if not other==name and not other in listOfidNames:
+                        assert isinstance(other, str) 
+                        # set edge from name to other
+                        listOfidNames.append(other)
         # all variables found: add edges to this nodes:
-        if USE_RPYTHON_CODE:
-            graph[name] = listOfidNames.lst
-        else:
-            graph[name] = list(listOfidNames)
+        graph[name] = listOfidNames
 
     # 2. topologic sorting
     removed = [] # list of removed nodes (implicit list of removed edges)
-    while not graph=={}:
+    while not len(graph)==0:
         change = False
         for varNode in varList:
             # check if node degree is zero
@@ -313,7 +313,7 @@ def _compute_variable_enum_order(pred_map, varList):
             if edges==[]:
                 assert isinstance(varNode, Node)
                 result.append(varNode)
-                removed.append(name) #TODO:string and w_object, not rpython, maybe from pred_map
+                removed.append(name)
                 del graph[name]
                 change = True
         if not change:

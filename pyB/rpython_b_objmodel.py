@@ -248,6 +248,7 @@ class frozenset(W_Object):
                 if e.__eq__(e2):
                     skip = True
             if not skip:
+                assert isinstance(e, W_Object)
                 self.lst.append(e)
     
     
