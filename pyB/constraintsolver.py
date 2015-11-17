@@ -5,7 +5,7 @@ from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration import all_values_by_type, all_values_by_type_RPYTHON, gen_all_values
-from external_constraintsolver import calc_constraint_domain
+from external_constraintsolver import compute_using_external_solver
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes, set_to_list
 from pretty_printer import pretty_print
 from symbolic_sets import SymbolicSet
@@ -20,63 +20,78 @@ class PredicateDoesNotMatchException(Exception):
 class SpecialCaseEnumerationFailedException(Exception):
     pass
 
+# Wrapper for RPython translation to avoid multiple return values 
+# of helper function _find_constrained_vars. 
+# Example usage: see _find_constrained_vars
+class Constraint():
+    def __init__(self, constrained_vars, vars_need_to_be_set_first):
+        self.constrained_vars = constrained_vars # vars constrained by a predicate
+        self.vars_need_to_be_set_first = vars_need_to_be_set_first # vars to be computed first
+    
+    def set_predicate(self, predicate):
+        self.predicate = predicate # predicate which belongs to this constraint (only a unused backlink)
+        
+    def set_time(self, time):
+        self.time = time # time needed to use this constraint (threshold in config.py)
+
 
         
 # assumption: the variables of varList are typed and be constrained by the predicate. 
 # If predicate is None (no constraint), all values of the variable type is returned.
 # After this function returns a generator, every solution-candidate musst be checked! 
-# This function may be generate false values, but does not omit correct ones 
+# This function may be generate false values, but does not omit correct ones.
+# It filters values which are obviously wrong.
 # i.e no values are missing.
 # 
-# predicate: 	predicate which may constrain the variables
-# env: 			environment. possible lookup of values (other scopes)
-# varList: 		variables x1 .. xN need to be constraint 
+# predicate:	predicate which may (or may not) constrain all variables
+# env:			environment. possible lookup of values (other scopes)
+# varList:		variables x1 .. xN need to be constrained 
 #
-# yields a dicts {x1:value0, ... ,xN:valueM}
+# yields a dict {x1:value0, ... ,xN:valueM}
 # TODO: move checking inside this function i.e. generate NO FALSE values
 # TODO: maybe a new argument containing a partial computation (e.g. on of many vars with 
 #       with domain constraint) would be a nice refactoring to solve get_item in symb. comp. set
-def calc_possible_solutions(predicate, env, varList):
-    #print "calc_possible_solutions: ", pretty_print(predicate)
+def compute_constrained_domains(predicate, env, varList):
     assert isinstance(predicate, Predicate)
     assert isinstance(varList, list)
-    for n in varList:
-        assert isinstance(n, AIdentifierExpression)
-    # check which kind of predicate: 2 cases
+    for idNode in varList:
+        assert isinstance(idNode, AIdentifierExpression)      
+    # check which kind of predicate: 3 cases
 
-    # case 1: a special case implemented by pyB    
+
+    # case 1: Using the PyB constraint solver    
     # check if a solution-set is computable without a external contraint solver
     # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
     if QUICK_EVAL_CONJ_PREDICATES and not USE_RPYTHON_CODE:
         try:
-            generator = _compute_generator_using_special_cases(predicate, env, varList)
+            generator = _compute_using_pyB_solver(predicate, env, varList)
             for d in generator:
                 yield d
             raise StopIteration()
             #return generator.__iter__()
         except SpecialCaseEnumerationFailedException:
-            pass
+            print "\033[1m\033[91mDEBUG\033[00m: special case not found"
 
     
-    # case 2: default, use external constraint solver and hope the best
-    # If iterator.next() is called the caller musst handel a StopIteration Exception
+    # case 2: Using a external constraint solver
     # TODO: Handle OverflowError, print Error message and go on
     try:
-        if PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: External constraint solver called. Caused by: %s" % pretty_print(predicate) 
-        #TODO: enable this call in RPYTHON
         if USE_RPYTHON_CODE: # Using external constraint solver not supported yet
             raise ImportError()
-        iterator = calc_constraint_domain(env, varList, predicate)
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: External constraint solver called. Caused by: %s" % pretty_print(predicate) 
+        iterator = compute_using_external_solver(predicate, env, varList)
         # constraint solving succeed. Use iterator in next computation step
         # This generates a list and not a frozenset. 
         for d in iterator:
             yield d
         raise StopIteration()
-        #return iterator 
+
+
+    # case 3: Using brute force enumeration 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
-            print "\033[1m\033[91mWARNING\033[00m: External constraint solver faild. Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
+            print "\033[1m\033[91mWARNING\033[00m: Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
         # TODO: maybe case 2 was able to constrain the domain of some variables but not all
         # this computation is thrown away in this step. This makes no senese. Fix it!
         # constraint solving failed, enumerate all values (may cause a pyB fail)
@@ -84,31 +99,35 @@ def calc_possible_solutions(predicate, env, varList):
         for d in generator:
             yield d
         raise StopIteration()
-        #return generator.__iter__()
-        
 
-# returns a generator or None if fail (e.g. special case not implemented)   
+
+
+# returns a generator or None if fail (e.g. special case not implemented)
+# the generator returns a dict which maps id names to possible values of this variables.   
 # Todo: generate constraint set by using all "fast computable" predicates
 # Todo: call generator to return solution      
-def _compute_generator_using_special_cases(predicate, env, varList):
+def _compute_using_pyB_solver(predicate, env, varList):
     # 1. score predicates
     pred_map = _categorize_predicates(predicate, env, varList)
     assert pred_map is not {}
+    
     # 2. find possible variable enum order. 
     # variable(-domains) not constraint by others will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
-    #print [x.idName for x in varList]
+    
     # 3. calc variable domains
     test_dict = {}
     for var_node in varList:
-        #print "DEBUG: searching for", var_node.idName,"constraint"
         test_set = None 
         for pred in pred_map:
-            (time, vars, must_be_computed_first) = pred_map[pred]
+            constraint = pred_map[pred]
+            time = constraint.time
+            vars = constraint.constrained_vars
+            must_be_computed_first = constraint.vars_need_to_be_set_first
             #print (time, vars, must_be_computed_first, pred)
             #print [x.idName for x in test_dict.keys()], must_be_computed_first
             #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
-            # Avoid interference between bound variables: check _find_constraint_vars
+            # Avoid interference between bound variables: check _find_constrained_vars
             # This is less powerful, but correct
             if time<TOO_MANY_ITEMS and var_node.idName in vars:
                 # at least on predicate of this conjunction can easiely be used
@@ -193,6 +212,23 @@ def _compute_generator_using_special_cases(predicate, env, varList):
         raise SpecialCaseEnumerationFailedException()
 
 
+# TODO: support more than one variable
+# FIMXE: doesnt finds finite-time computable sub-predicates. 
+#        e.g P0="P00(x) or P01(y)" with P01 infinite
+# input: predicate = P0 & P1 & ...PN or in special cases one predicate (like x=42)
+# output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
+def _categorize_predicates(predicate, env, varList):
+    if isinstance(predicate, AConjunctPredicate):
+        map0 = _categorize_predicates(predicate.children[0], env, varList)
+        map1 = _categorize_predicates(predicate.children[1], env, varList)
+        map0.update(map1)
+        return map0
+    else:
+        time = estimate_computation_time(predicate, env)
+        constraint = _find_constrained_vars(predicate, env, varList)
+        constraint.set_time(time)
+        constraint.set_predicate(predicate)     
+        return {predicate: constraint}
 
 # this generator yield every combination of values for some variables with finite domains
 # partial_cross_product is a accumulator which is reseted to the empty dict {} at every call
@@ -229,9 +265,9 @@ def _solution_generator(a_cross_product_iterator, predicate, env, varList):
 # compute the order of variables
 # TODO:only correct if abstract interpretation computed predicate eval-time correct
 #
-# e.g.
-# pred_map = {<ast_nodes.AEqualPredicate instance at 0x10e245128>: (19, ['z'], ['x', 'y']), <ast_nodes.AMemberPredicate instance at 0x10e2b84d0>: (11, ['x', 'y'], [])}
-# varList = [<ast_nodes.AIdentifierExpression instance at 0x10e2b8758>, <ast_nodes.AIdentifierExpression instance at 0x10e2b8d40>, <ast_nodes.AIdentifierExpression instance at 0x10e2b87a0>]
+# example:
+# pred_map = { AEqualPredicate: Constraint(19, ['z'], ['x', 'y']), AMemberPredicate: Constraint(11, ['x', 'y'], [])}
+# varList = [AIdentifierExpression, AIdentifierExpression, AIdentifierExpression]
 #
 def _compute_variable_enum_order(pred_map, varList):
     # 0. init of data structures 
@@ -245,13 +281,13 @@ def _compute_variable_enum_order(pred_map, varList):
         name = varNode.idName
         # search for all variables to be enumerated before 'name'
         listOfidNames = frozenset([]) # set-type to avoid more than one edge between two nodes
-        for entry in pred_map.values():
-            if name in entry[1]:
+        for constraint in pred_map.values():
+            if name in constraint.constrained_vars:
                # XXX: intersection instead of union 
                # e.g "x=z+1 & x=y+1 & x=5" in this case x can be enumerated without knowing y or z!
                # But it is importend if predicates are inf. computable. 
                # e.g. "x=y & x={a lot of time needed} & y:{1,2,...43}" here y has to be computed first
-               var_list = frozenset(entry[2])
+               var_list = frozenset(constraint.vars_need_to_be_set_first)
                for string in var_list:
                    assert isinstance(string, str)
                listOfidNames.union(var_list) # edges
@@ -291,63 +327,52 @@ def _compute_variable_enum_order(pred_map, varList):
     return result
             
 
-# TODO: support more than one variable
-# FIMXE: doesnt finds finite-time computable sub-predicates. 
-#        e.g P0="P00(x) or P01(y)" with P01 infinite
-# input: P0 & P1 & ...PN or in special cases one predicate (like x=42)
-# output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
-def _categorize_predicates(predicate, env, varList):
-    if isinstance(predicate, AConjunctPredicate):
-        map0 = _categorize_predicates(predicate.children[0], env, varList)
-        map1 = _categorize_predicates(predicate.children[1], env, varList)
-        map0.update(map1)
-        return map0
-    else:
-       time = estimate_computation_time(predicate, env)
-       constraintVarsTuple = _find_constraint_vars(predicate, env, varList)   
-       return {predicate: (time, constraintVarsTuple.constraint_vars, constraintVarsTuple.vars_need_to_be_set_first)}
 
-# Wrapper for RPython to avoid multiple return values    
-class ConstraintVarsTuple():
-    def __init__(self, constraint_vars, vars_need_to_be_set_first):
-        self.constraint_vars = constraint_vars
-        self.vars_need_to_be_set_first = vars_need_to_be_set_first
-        
-# constrained
-
-# Input predicate is always a sub-predicate of a conjunction predicate or a single predicate.
-# This helper may only be used to find test_set(constraint domain) generation candidates.
-# The test sets (constraint domains of bound vars with possible false elements) are
+# Input predicate is a sub-predicate of a conjunction predicate or a single predicate.
+# This helper may only be used to find test_set generation candidates.
+# The test sets (=constrained domains of bound vars with possible false elements) are
 # computed in a second step (not in this function!) because of the predicate-selection process. 
-# return: list of variable names_string, constraint by this predicated AND with possible test_set gen
-# using a wrapper object ConstraintVarsTuple.
-# AND a list of variable names_string (second return value) which need a value before the computation
-# e.g. "x:{1,2,3} & y=x+1" here x is constraint by {1,2,3} and y is constraint by x 
+#
+# return: a Constraint with: constrained_vars and vars_need_to_be_set_first
+# constrained_vars: list of var names constrained by this predicate 
+# vars_need_to_be_set_first: list of var names which need a value before the evaluation of this predicate is possible.
+#
+#
+#
+# example: 
+# Predicate P1: f(x)=y  and P: {(x,y)| P1 .... Pn }
+# constrained_vars = [idNode(x)]
+# vars_need_to_be_set_first = [idNode(y)]
+# example:
+# Predicate P1: a*a+b*b=c*c and P: in {(a,b,c)| P1 .... Pn }
+# constrained_vars = [idNode(c)]
+# vars_need_to_be_set_first = [idNode(a), idNode(b)]
+#
 #
 # WARNING: before modifying this part, be sure "_compute_test_set" can handle it!  
-def _find_constraint_vars(predicate, env, varList):
-    # (1) Base case. This case should only be matched by a recursive call of _find_constraint_vars.
+def _find_constrained_vars(predicate, env, varList):
+    # (1) Base case. This case should only be matched by a recursive call of _find_constrained_vars.
     # otherwise it could produce wrong results!     
     if isinstance(predicate, AIdentifierExpression):
         lst = [predicate.idName]
-        return ConstraintVarsTuple(lst, []) #predicate constrain idName and no computation constraint by other variables
+        return Constraint(lst, []) #predicate constrain idName and no computation constraint by other variables
     elif isinstance(predicate, ACoupleExpression):
-        varTuple0 = _find_constraint_vars(predicate.children[0], env, varList)
-        varTuple1 = _find_constraint_vars(predicate.children[1], env, varList)
+        varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
+        varTuple1 = _find_constrained_vars(predicate.children[1], env, varList)
         
-        lst = varTuple0.constraint_vars # remove double entries
-        for e in varTuple1.constraint_vars:
+        lst = varTuple0.constrained_vars # remove double entries
+        for e in varTuple1.constrained_vars:
              if e not in lst:
                  assert isinstance(e, str)
                  lst.append(e)
         #lst  =  list(set(lst0 + lst1)) 
-        return ConstraintVarsTuple(lst, []) #predicate constrain idName and no computation constraint by other variables
+        return Constraint(lst, []) #predicate constrain idName and no computation constraint by other variables
         
     # (2) implemented predicates (by _compute_test_set)
     # WARNING: never add a case if the method "_compute_test_set" can not handle it.
     # This may introduce a Bug!
     if isinstance(predicate, AMemberPredicate):
-        varTuple0 = _find_constraint_vars(predicate.children[0], env, varList)
+        varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
         constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
         #names_string = []
         #for x in constraint_by_vars:
@@ -359,7 +384,7 @@ def _find_constraint_vars(predicate, env, varList):
         #for s in names_string:
         #    assert isinstance(s, str)
         names_string = [x.idName for x in constraint_by_vars]
-        return ConstraintVarsTuple(varTuple0.constraint_vars, names_string)
+        return Constraint(varTuple0.constrained_vars, names_string)
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
@@ -374,7 +399,7 @@ def _find_constraint_vars(predicate, env, varList):
             #for s in names_string:
             #    assert isinstance(s, str)
             names_string = [x.idName for x in constraint_by_vars]
-            return ConstraintVarsTuple(test_set_var, names_string)
+            return Constraint(test_set_var, names_string)
         elif isinstance(predicate.children[1], AIdentifierExpression):
             test_set_var = [predicate.children[1].idName]
             constraint_by_vars = find_constraining_var_nodes(predicate.children[0], varList)
@@ -388,10 +413,10 @@ def _find_constraint_vars(predicate, env, varList):
             #for s in names_string:
             #    assert isinstance(s, str)
             names_string = [x.idName for x in constraint_by_vars]
-            return ConstraintVarsTuple(test_set_var, names_string)
+            return Constraint(test_set_var, names_string)
         elif isinstance(predicate.children[0], ACoupleExpression):
             # FIXME not symmetrical! a|->b = (1,2) found but not (1,2)=a|->b
-            varTuple0 = _find_constraint_vars(predicate.children[0], env, varList)
+            varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
             constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
             #names_string = []
             #for x in constraint_by_vars:
@@ -403,16 +428,16 @@ def _find_constraint_vars(predicate, env, varList):
             #for s in names_string:
             #    assert isinstance(s, str)
             names_string = [x.idName for x in constraint_by_vars]
-            return ConstraintVarsTuple(varTuple0.constraint_vars, names_string)
+            return Constraint(varTuple0.constrained_vars, names_string)
             
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
     # because this sub-predicate may be a candidate for test-set generation
     elif isinstance(predicate, ADisjunctPredicate) or isinstance(predicate, AConjunctPredicate):
-        varTuple0 = _find_constraint_vars(predicate.children[0], env, varList)
-        varTuple1 = _find_constraint_vars(predicate.children[1], env, varList) 
-        test_set_var = varTuple0.constraint_vars
-        for e in varTuple1.constraint_vars:
+        varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
+        varTuple1 = _find_constrained_vars(predicate.children[1], env, varList) 
+        test_set_var = varTuple0.constrained_vars
+        for e in varTuple1.constrained_vars:
             if e not in test_set_var:
                 test_set_var.append(e)
         c_set_var =  varTuple0.vars_need_to_be_set_first
@@ -422,10 +447,10 @@ def _find_constraint_vars(predicate, env, varList):
         # remove double entries 
         #test_set_var = list(set(lst0 + lst1)) # remove double entries 
         #c_set_var =  list(set(cvarlst0 + cvarlst1)) # remove double entries 
-        return ConstraintVarsTuple(test_set_var, c_set_var)
+        return Constraint(test_set_var, c_set_var)
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
     # TODO: Implement more cases, but only that on handeld in _compute_test_set
-    return ConstraintVarsTuple([], [])
+    return Constraint([], [])
 
 
 # TODO: be sure this cases have no side effect

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
 from ast_nodes import *
-from constrainsolver import calc_possible_solutions
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from interp import interpret

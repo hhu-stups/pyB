@@ -9,7 +9,7 @@ from quick_eval import quick_member_eval
 
 # TODO: not, include and much more
 # only a list of special cases at the moment
-# helper-function for calc_constraint_domain
+# helper-function for compute_using_external_solver
 # This pretty printer prints B python-style. 
 # The pretty printer in pretty_printer.py prints B B-style
 def pretty_print_python_style(env, varList, node, qme_nodes):
@@ -87,7 +87,7 @@ def function(env, func_name, key):
 
 # wrapper-function for external contraint solver 
 # WARNING: asumes that every variable in varList has no value!
-def calc_constraint_domain(env, varList, predicate):
+def compute_using_external_solver(predicate, env, varList):
     # TODO: import at module level
     # external software:
     # install http://labix.org/python-constraint

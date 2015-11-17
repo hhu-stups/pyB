@@ -1,7 +1,7 @@
 from ast_nodes import *
 from bexceptions import ValueNotInDomainException, ValueNotInBStateException, INITNotPossibleException, SETUPNotPossibleException
 from config import MAX_INIT, MAX_SET_UP, PRINT_WARNINGS, SET_PARAMETER_NUM, USE_ANIMATION_HISTORY, VERBOSE, ENABLE_ASSERTIONS, PRINT_SUB_PROPERTIES
-from constrainsolver import calc_possible_solutions
+from constraintsolver import compute_constrained_domains
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython, all_records
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
@@ -695,7 +695,7 @@ def interpret(node, env):
         assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred.children[0], env, varList) # use left side of implication
+        domain_generator = compute_constrained_domains(pred.children[0], env, varList) # use left side of implication
         for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_w_entry[name]
@@ -714,7 +714,7 @@ def interpret(node, env):
         assert env is not None
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for w_w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_w_entry[name]
@@ -984,7 +984,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_entry[name]
@@ -1010,7 +1010,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for w_entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = w_entry[name]

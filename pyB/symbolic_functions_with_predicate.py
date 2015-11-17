@@ -41,7 +41,7 @@ def check_syntactically_equal(predicate0, predicate1):
 # __getitem__ implemented inside interp to avoid env and interp_callable link
 class SymbolicLambda(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
-        from constrainsolver import calc_possible_solutions
+        from constraintsolver import compute_constrained_domains
         if USE_RPYTHON_CODE:
             from rpython_interp import interpret
         else:
@@ -53,7 +53,7 @@ class SymbolicLambda(SymbolicSet):
         self.expression = expr
         self.node = node
         self.interpret = interpret
-        self.domain_generator = calc_possible_solutions
+        self.domain_generator = compute_constrained_domains
         self.explicit_set_computed = False
     
     # TODO: all __getitem__ methods have problems with implicit enum
@@ -230,7 +230,7 @@ class SymbolicLambda(SymbolicSet):
 
 class SymbolicComprehensionSet(SymbolicSet):
     def __init__(self, varList, pred, node, env):
-        from constrainsolver import calc_possible_solutions
+        from constraintsolver import compute_constrained_domains
         if USE_RPYTHON_CODE:
             from rpython_interp import interpret
         else:
@@ -241,7 +241,7 @@ class SymbolicComprehensionSet(SymbolicSet):
         self.predicate = pred
         self.node = node
         self.interpret = interpret
-        self.domain_generator = calc_possible_solutions
+        self.domain_generator = compute_constrained_domains
         self.explicit_set_computed = False 
     
     def __getitem__(self, args):
@@ -388,7 +388,7 @@ class SymbolicComprehensionSet(SymbolicSet):
 
 class SymbolicQuantifiedIntersection(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
-        from constrainsolver import calc_possible_solutions
+        from constraintsolver import compute_constrained_domains
         if USE_RPYTHON_CODE:
             from rpython_interp import interpret
         else:
@@ -399,7 +399,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
         self.expression = expr
         self.node = node
         self.interpret = interpret
-        self.domain_generator = calc_possible_solutions
+        self.domain_generator = compute_constrained_domains
         self.explicit_set_computed = False               
         
     # convert to explicit frozenset
@@ -465,7 +465,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
 
 class SymbolicQuantifiedUnion(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
-        from constrainsolver import calc_possible_solutions
+        from constraintsolver import compute_constrained_domains
         if USE_RPYTHON_CODE:
             from rpython_interp import interpret
         else:
@@ -476,7 +476,7 @@ class SymbolicQuantifiedUnion(SymbolicSet):
         self.expression = expr
         self.node = node
         self.interpret = interpret
-        self.domain_generator = calc_possible_solutions
+        self.domain_generator = compute_constrained_domains
         self.explicit_set_computed = False
 
     # convert to explicit frozenset

@@ -3,7 +3,7 @@ from animation_clui import print_values_b_style
 from ast_nodes import *
 from bmachine import BMachine
 from config import *
-from constrainsolver import calc_possible_solutions
+from constraintsolver import compute_constrained_domains
 from environment import Environment
 from enumeration import *
 from helpers import flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
@@ -692,7 +692,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred.children[0], env, varList) # use left side of implication
+        domain_generator = compute_constrained_domains(pred.children[0], env, varList) # use left side of implication
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -710,7 +710,7 @@ def interpret(node, env):
         varList = node.children[:-1]
         env.push_new_frame(varList)
         pred = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -961,7 +961,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
@@ -980,7 +980,7 @@ def interpret(node, env):
         env.push_new_frame(varList)
         pred = node.children[-2]
         expr = node.children[-1]
-        domain_generator = calc_possible_solutions(pred, env, varList)
+        domain_generator = compute_constrained_domains(pred, env, varList)
         for entry in domain_generator:
             for name in [x.idName for x in varList]:
                 value = entry[name]
