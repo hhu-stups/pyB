@@ -374,61 +374,25 @@ def _find_constrained_vars(predicate, env, varList):
     if isinstance(predicate, AMemberPredicate):
         varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
         constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
-        #names_string = []
-        #for x in constraint_by_vars:
-        #        assert isinstance(x, AIdentifierExpression)
-        #        assert isinstance(x.idName, str)
-        #        name = x.idName
-        #        assert isinstance(name, str)
-        #        names_string.append(name)
-        #for s in names_string:
-        #    assert isinstance(s, str)
-        names_string = [x.idName for x in constraint_by_vars]
-        return Constraint(varTuple0.constrained_vars, names_string)
+        names = [x.idName for x in constraint_by_vars]
+        return Constraint(varTuple0.constrained_vars, names)
     elif isinstance(predicate, AEqualPredicate):
         if isinstance(predicate.children[0], AIdentifierExpression):
             test_set_var = [predicate.children[0].idName]
             constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
-            #names_string = []
-            #for x in constraint_by_vars:
-            #    assert isinstance(x, AIdentifierExpression)
-            #    assert isinstance(x.idName, str)
-            #    name = x.idName
-            #    assert isinstance(name, str)
-            #    names_string.append(name)
-            #for s in names_string:
-            #    assert isinstance(s, str)
-            names_string = [x.idName for x in constraint_by_vars]
-            return Constraint(test_set_var, names_string)
+            names = [x.idName for x in constraint_by_vars]
+            return Constraint(test_set_var, names)
         elif isinstance(predicate.children[1], AIdentifierExpression):
             test_set_var = [predicate.children[1].idName]
             constraint_by_vars = find_constraining_var_nodes(predicate.children[0], varList)
-            #names_string = []
-            #for x in constraint_by_vars:
-            #    assert isinstance(x, AIdentifierExpression)
-            #    assert isinstance(x.idName, str)
-            #    name = x.idName
-            #    assert isinstance(name, str)
-            #    names_string.append(name)
-            #for s in names_string:
-            #    assert isinstance(s, str)
-            names_string = [x.idName for x in constraint_by_vars]
-            return Constraint(test_set_var, names_string)
+            names = [x.idName for x in constraint_by_vars]
+            return Constraint(test_set_var, names)
         elif isinstance(predicate.children[0], ACoupleExpression):
             # FIXME not symmetrical! a|->b = (1,2) found but not (1,2)=a|->b
             varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
             constraint_by_vars = find_constraining_var_nodes(predicate.children[1], varList)
-            #names_string = []
-            #for x in constraint_by_vars:
-            #    assert isinstance(x, AIdentifierExpression)
-            #    assert isinstance(x.idName, str)
-            #    name = x.idName
-            #    assert isinstance(name, str)
-            #    names_string.append(name)
-            #for s in names_string:
-            #    assert isinstance(s, str)
-            names_string = [x.idName for x in constraint_by_vars]
-            return Constraint(varTuple0.constrained_vars, names_string)
+            names = [x.idName for x in constraint_by_vars]
+            return Constraint(varTuple0.constrained_vars, names)
             
     # if the subpredicate consists of a conjunction or disjunction, it 
     # constraints a var x if x is constraint by one sub-predicate,
