@@ -3,7 +3,7 @@
 from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
-from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_RPYTHON_CODE
+from config import TOO_MANY_ITEMS, USE_PYB_CONSTRAINT_SOLVER, PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration import all_values_by_type, all_values_by_type_RPYTHON, gen_all_values
 from external_constraintsolver import compute_using_external_solver
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes, set_to_list
@@ -22,7 +22,7 @@ class SpecialCaseEnumerationFailedException(Exception):
 
 # Wrapper for RPython translation to avoid multiple return values 
 # of helper function _find_constrained_vars. 
-# Example usage: see _find_constrained_vars
+# Example usage: see comments in _find_constrained_vars
 class Constraint():
     def __init__(self, constrained_vars, vars_need_to_be_set_first):
         self.constrained_vars = constrained_vars # vars constrained by a predicate
@@ -56,45 +56,40 @@ def compute_constrained_domains(predicate, env, varList):
     assert isinstance(varList, list)
     for idNode in varList:
         assert isinstance(idNode, AIdentifierExpression)      
-    # check which kind of predicate: 3 cases
+    # check which kind of strategy: 3 cases
 
 
     # case 1: Using the PyB constraint solver    
-    # check if a solution-set is computable without a external contraint solver
-    # FIXME: assertion fail in rptyhon.interpret (maybe unwrepped data)
-    if QUICK_EVAL_CONJ_PREDICATES:# and not USE_RPYTHON_CODE:
+    # check if a solution-set (variable domain) is computable without a external contraint solver
+    if USE_PYB_CONSTRAINT_SOLVER:
         try:
             generator = _compute_using_pyB_solver(predicate, env, varList)
             for d in generator:
                 yield d
             raise StopIteration()
-            #return generator.__iter__()
         except SpecialCaseEnumerationFailedException:
-            print "\033[1m\033[91mDEBUG\033[00m: special case not found"
+            print "\033[1m\033[91mDEBUG\033[00m: PyB constraint solver failed. Case not implemented"
 
     
     # case 2: Using a external constraint solver
     # TODO: Handle OverflowError, print Error message and go on
     try:
-        if USE_RPYTHON_CODE: # Using external constraint solver not supported yet
+        if USE_RPYTHON_CODE: # Using external constraint solver not supported by RPython yet
             raise ImportError()
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: External constraint solver called. Caused by: %s" % pretty_print(predicate) 
         iterator = compute_using_external_solver(predicate, env, varList)
-        # constraint solving succeed. Use iterator in next computation step
-        # This generates a list and not a frozenset. 
+        # constraint solving succeed. 
         for d in iterator:
             yield d
         raise StopIteration()
-
-
     # case 3: Using brute force enumeration 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: Brute force enumeration caused by: %s! enumerating: %s" % (pretty_print(predicate), [v.idName for v in varList])
         # TODO: maybe case 2 was able to constrain the domain of some variables but not all
         # this computation is thrown away in this step. This makes no senese. Fix it!
-        # constraint solving failed, enumerate all values (may cause a pyB fail)
+        # constraint solving failed, enumerate all values (may cause a pyB fail or a timeout)
         generator = gen_all_values(env, varList)
         for d in generator:
             yield d
@@ -108,7 +103,7 @@ def compute_constrained_domains(predicate, env, varList):
 # Todo: call generator to return solution      
 def _compute_using_pyB_solver(predicate, env, varList):
     # 1. score predicates
-    pred_map = _categorize_predicates(predicate, env, varList)
+    pred_map = _analyze_predicates(predicate, env, varList) # {Predicate --> Constraint}
     assert not len(pred_map)==0 
     
     # 2. find possible variable enum order. 
@@ -217,15 +212,17 @@ def _compute_using_pyB_solver(predicate, env, varList):
 #        e.g P0="P00(x) or P01(y)" with P01 infinite
 # input: predicate = P0 & P1 & ...PN or in special cases one predicate (like x=42)
 # output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
-def _categorize_predicates(predicate, env, varList):
+def _analyze_predicates(predicate, env, varList):
     if isinstance(predicate, AConjunctPredicate):
-        map0 = _categorize_predicates(predicate.children[0], env, varList)
-        map1 = _categorize_predicates(predicate.children[1], env, varList)
+        map0 = _analyze_predicates(predicate.children[0], env, varList)
+        map1 = _analyze_predicates(predicate.children[1], env, varList)
         map0.update(map1)
         return map0
     else:
+        # analyse
         time = estimate_computation_time(predicate, env)
         constraint = _find_constrained_vars(predicate, env, varList)
+        # return result
         constraint.set_time(time)
         constraint.set_predicate(predicate)     
         return {predicate: constraint}
@@ -239,7 +236,7 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
     assert not aSet==frozenset([])
     assert isinstance(idNode, AIdentifierExpression)
     var_name = idNode.idName
-    #print "DEBUG: enum: %s" % var_name
+
     # 2. compute partial cross product for every element/value 
     for element in aSet:
         partial_cross_product[var_name] = element
@@ -247,7 +244,7 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
         if len(varList)==1:
             solution = partial_cross_product.copy()
             yield solution
-        # case 2.2: more variables to handel
+        # case 2.2: more variables to handle
         else:
             for solution in _cross_product_iterator(varList[1:], domain_dict, partial_cross_product):
                 # give solution to highest level of recursion
@@ -256,9 +253,9 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
 
 # this generator yields all combinations of values which satisfy a given predicate
 def _solution_generator(a_cross_product_iterator, predicate, env, varList):
-    for maybe_solution in a_cross_product_iterator:
-        if _is_solution(predicate, env, varList, solution=maybe_solution):
-            solution = maybe_solution.copy()
+    for maybe_solution_dict in a_cross_product_iterator:
+        if _is_solution(predicate, env, varList, solution=maybe_solution_dict):
+            solution = maybe_solution_dict.copy()
             yield solution
 
 
@@ -494,7 +491,7 @@ def _compute_test_set(node, env, var_node):
                 # searched variable inside the tuple on the left side
                 return frozenset([remove_tuples(t)[index] for t in aset])
     # this is only called because both branches (node.childern[0] and node.childern[1])
-    # of the disjunction are computable in finite time. (as analysed by _categorize_predicates)
+    # of the disjunction are computable in finite time. (as analysed by _analyze_predicates)
     elif isinstance(node, ADisjunctPredicate):
         set0 = _compute_test_set(node.children[0], env, var_node)
         set1 = _compute_test_set(node.children[1], env, var_node)

@@ -1,7 +1,7 @@
 #from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException
-from config import TOO_MANY_ITEMS, QUICK_EVAL_CONJ_PREDICATES, PRINT_WARNINGS, USE_RPYTHON_CODE
+from config import TOO_MANY_ITEMS, PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration import all_values_by_type, all_values_by_type_RPYTHON
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes, set_to_list
 from quick_eval import quick_member_eval
