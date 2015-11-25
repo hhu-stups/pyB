@@ -3,7 +3,7 @@ from ast_nodes import *
 from btypes import *
 from bexceptions import ValueNotInDomainException
 from config import TOO_MANY_ITEMS
-from constraintsolver import Constraint, compute_using_external_solver, _categorize_predicates, compute_constrained_domains
+from constraintsolver import Constraint, compute_using_external_solver, _analyze_predicates, compute_constrained_domains
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
 from interp import interpret
@@ -189,7 +189,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -227,7 +227,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -265,7 +265,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -304,7 +304,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -342,7 +342,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -380,7 +380,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var]) 
+        map = _analyze_predicates(set_predicate, env, [var]) 
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -416,7 +416,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])
+        map = _analyze_predicates(set_predicate, env, [var])
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -454,7 +454,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])  
+        map = _analyze_predicates(set_predicate, env, [var])  
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -492,7 +492,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])  
+        map = _analyze_predicates(set_predicate, env, [var])  
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -530,7 +530,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])    
+        map = _analyze_predicates(set_predicate, env, [var])    
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -568,7 +568,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])    
+        map = _analyze_predicates(set_predicate, env, [var])    
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -604,7 +604,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])  
+        map = _analyze_predicates(set_predicate, env, [var])  
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -650,7 +650,7 @@ class TestConstraintSolver():
         set_predicate = root.children[0].children[1]
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AEqualPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])  
+        map = _analyze_predicates(set_predicate, env, [var])  
         constraint0 = map[set_predicate]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -683,7 +683,7 @@ class TestConstraintSolver():
         set_predicate = union_predicate.children[1]
         var = union_predicate.children[0]
         assert isinstance(set_predicate, AEqualPredicate)
-        map = _categorize_predicates(set_predicate, env, [var])  
+        map = _analyze_predicates(set_predicate, env, [var])  
         constraint0 = map[set_predicate]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -712,7 +712,7 @@ class TestConstraintSolver():
         var0 = union_predicate.children[0]
         var1 = union_predicate.children[1]
         assert isinstance(set_predicate, AMemberPredicate)
-        map = _categorize_predicates(set_predicate, env, [var0, var1])  
+        map = _analyze_predicates(set_predicate, env, [var0, var1])  
         constraint = map[set_predicate]
         time0 = constraint.time
         vars0 = constraint.constrained_vars
@@ -745,7 +745,7 @@ class TestConstraintSolver():
         var1 = union_predicate.children[1]
         var2 = union_predicate.children[2]
         assert isinstance(set_predicate, AMemberPredicate)
-        map = _categorize_predicates(set_predicate, env, [var0, var1, var2])  
+        map = _analyze_predicates(set_predicate, env, [var0, var1, var2])  
         constraint = map[set_predicate]
         time = constraint.time
         vars = constraint.constrained_vars
@@ -799,7 +799,7 @@ class TestConstraintSolver():
         var3 = union_predicate.children[3]
         var4 = union_predicate.children[4]
         assert isinstance(set_predicate, AConjunctPredicate)
-        map = _categorize_predicates(set_predicate, env, [var0, var1, var2, var3, var4])  
+        map = _analyze_predicates(set_predicate, env, [var0, var1, var2, var3, var4])  
         assert interpret(root, env) 
 
 
@@ -887,7 +887,7 @@ class TestConstraintSolver():
         var0 = setcomp_predicate.children[0]
         var1 = setcomp_predicate.children[1]
         assert isinstance(set_predicate, AConjunctPredicate )
-        map = _categorize_predicates(set_predicate, env, [var0, var1]) 
+        map = _analyze_predicates(set_predicate, env, [var0, var1]) 
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
@@ -963,7 +963,7 @@ class TestConstraintSolver():
         b = root.children[0].children[1]
         c = root.children[0].children[2]
         equal_predicate = root.children[0].children[-1]
-        map = _categorize_predicates(equal_predicate, env, [a, b, c]) 
+        map = _analyze_predicates(equal_predicate, env, [a, b, c]) 
         constraint = map[equal_predicate]
         time = constraint.time
         vars = constraint.constrained_vars
