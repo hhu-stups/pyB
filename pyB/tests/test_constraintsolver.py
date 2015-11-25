@@ -417,14 +417,18 @@ class TestConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var])
+        
+        assert isinstance(set_predicate.children[0], AMemberPredicate)
         constraint0 = map[set_predicate.children[0]]
         time0 = constraint0.time
         vars0 = constraint0.constrained_vars
         compute_first0 = constraint0.vars_need_to_be_set_first
+        assert isinstance(set_predicate.children[1], ADisjunctPredicate)
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first
+        
         assert time0==TOO_MANY_ITEMS+2    
         assert time1 <TOO_MANY_ITEMS
         assert vars0==["x"]
@@ -433,7 +437,7 @@ class TestConstraintSolver():
         assert compute_first1 == []   
         # works, but take too much time (232.09 seconds)
         #result = interpret(root, env)
-        #print result    
+        #assert len(result)==44100    
         #TODO:     
         #(prj1(INTEGER*INTEGER,BOOL)(x) /: dom({((3|->10)|->TRUE),((3|->12)|->TRUE),
 
