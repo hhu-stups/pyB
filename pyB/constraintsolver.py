@@ -4,7 +4,7 @@ from abstract_interpretation import estimate_computation_time
 from ast_nodes import *
 from bexceptions import ConstraintNotImplementedException, ValueNotInDomainException
 from config import TOO_MANY_ITEMS, USE_PYB_CONSTRAINT_SOLVER, PRINT_WARNINGS, USE_RPYTHON_CODE
-from enumeration import all_values_by_type, all_values_by_type_RPYTHON, gen_all_values
+from enumeration import gen_all_values, enum_all_values_by_type
 from external_constraintsolver import compute_using_external_solver
 from helpers import remove_tuples, couple_tree_to_conj_list, find_constraining_var_nodes, set_to_list
 from pretty_printer import pretty_print
@@ -43,9 +43,9 @@ class Constraint():
 # It filters values which are obviously wrong.
 # i.e no values are missing.
 # 
-# predicate:	predicate which may (or may not) constrain all variables
-# env:			environment. possible lookup of values (other scopes)
-# varList:		variables x1 .. xN need to be constrained 
+# predicate:    predicate which may (or may not) constrain all variables
+# env:          environment. possible lookup of values (other scopes)
+# varList:      variables x1 .. xN need to be constrained 
 #
 # yields a dict {x1:value0, ... ,xN:valueM}
 # TODO: move checking inside this function i.e. generate NO FALSE values
@@ -69,6 +69,7 @@ def compute_constrained_domains(predicate, env, varList):
             raise StopIteration()
         except SpecialCaseEnumerationFailedException:
             print "\033[1m\033[91mDEBUG\033[00m: PyB constraint solver failed. Case not implemented"
+            raise StopIteration()
 
     
     # case 2: Using a external constraint solver
@@ -110,92 +111,101 @@ def _compute_using_pyB_solver(predicate, env, varList):
     # variable(-domains) not constraint by others will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
     
-    # 3. calc variable domains
+    # 3. calc variable domains. Goal: mapping from vars to domain sets
     test_dict = {}
     for var_node in varList:
-        test_set = None 
+        domain = None 
         for pred in pred_map:
+            assert isinstance(pred, Predicate)
             constraint = pred_map[pred]
             time = constraint.time
             vars = constraint.constrained_vars
             must_be_computed_first = constraint.vars_need_to_be_set_first
-            #print (time, vars, must_be_computed_first, pred)
-            #print [x.idName for x in test_dict.keys()], must_be_computed_first
-            #print "DEBUG:  vars:",vars, "contraint by", pretty_print(pred)
-            # Avoid interference between bound variables: check _find_constrained_vars
-            # This is less powerful, but correct
-            if time<TOO_MANY_ITEMS and var_node.idName in vars:
-                # at least on predicate of this conjunction can easiely be used
-                # to compute a testset. The exact solution musst contain all 
-                # or less elements than test_set
-                if test_set is None:
-                    try:
-                        assert isinstance(pred, Predicate)
-                        # This predicate needs the computation of an other variable
-                        # in test_dict first. e.g x={(0,1),(2,3)}(y).
-                        # If step 2 was successful, the values of the needed bound vars
-                        # are already computed for some pred in pred_map
-                        # This may NOT be this pred!
-                        if not must_be_computed_first==[]:
-                            # all already computed variables have to be considered to
-                            # find a domain for 'var_node'. must_be_computed_first contains
-                            # only variables with direct constraints e.g 'var_node=f(x)' but not 'x=y+1'
-                            already_computed_var_List = [key for key in varList if key in test_dict]
-                            # check if all informations are present to use 'pred' to compute domain of 'var_node'
-                            names_string = []
-                            #for x in already_computed_var_List:
-                            #    assert isinstance(x, AIdentifierExpression)
-                            #    name = x.idName
-                            #    assert isinstance(name, str)
-                            #    names_string.append(name)
-                            names_string = [x.idName for x in already_computed_var_List]
-                            for mbcf in must_be_computed_first:
-                                if mbcf not in names_string:
-                                    raise PredicateDoesNotMatchException()
-                            assert not len(test_dict)==0
-                            # generate partial solution: all domain combinations of a subset of bound vars
-                            a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
-                            # use partial solution to gen testset
-                            test_set = frozenset([])
-                            env.push_new_frame(varList)
-                            #print "XXX:", pretty_print(pred)
-                            # TODO: throwing away the partial solution makes no sense,
-                            # because it will be computed anyway. Refactor this code
-                            # by computing the cross product after every iteration
-                            for part_sol in a_cross_product_iterator:
-                                for v in already_computed_var_List:
-                                    name  = v.idName
-                                    value = part_sol[name] 
-                                    env.set_value(name, value)
-                                    try:
-                                        part_testset = _compute_test_set(pred, env, var_node)
-                                    except ValueNotInDomainException:
-                                        continue
-                                    test_set = test_set.union(part_testset)
-                            env.pop_frame()
-                            break
-                        else:
-                            # no constrains by other vars. just use this sub-predicate to 
-                            # compute the domain of the current variable
-                            test_set = _compute_test_set(pred, env, var_node)
-                            break
-                    except PredicateDoesNotMatchException: 
-                        #.eg constraining y instead of x, or using unimplemented cases
-                        test_set = None
-        if test_set is None:
-            # there is no predicate to constrain this variable in finite time. FAIL!
+            takes_to_much_time     = time>=TOO_MANY_ITEMS
+            does_not_constrain_var = var_node.idName not in vars
+            # Only consider constraints which can be computed fast 
+            # and which constraint this variable. This checks all arcs from the
+            # node var_node in the constraint-graph which can be evaluated with low costs
+            if takes_to_much_time or does_not_constrain_var:
+                continue
+                
+            # This constraint can easiely be used to compute a constraint domain.
+            # The exact solution musst contain all or less elements than "sub_domain"
+            try:
+                is_unary_constraint = must_be_computed_first==[]
+                if is_unary_constraint:
+                    # no constrains by other vars. just use this sub-predicate to 
+                    # compute the domain of the current variable
+                    sub_domain = _compute_test_set(pred, env, var_node)
+                # This is a binary or n-ary constraint.
+                # This predicate needs the computation of an other variable
+                # in test_dict first. e.g x={(0,1),(2,3)}(y).
+                # If var order computation was successful, the values of the 
+                # needed bound vars are already computed for some pred in pred_map
+                # This may NOT be this pred (in this iteration)!
+                else:
+                    # all already computed variables have to be considered to
+                    # find a domain for 'var_node'. must_be_computed_first contains
+                    # only variables with direct constraints e.g 'var_node=f(x)' but not 'x=y+1'
+                    already_computed_var_List = [key for key in varList if key in test_dict]
+                    # check if all informations are present to use 'pred' to compute domain of 'var_node'
+                    names_string = []
+                    names_string = [x.idName for x in already_computed_var_List]
+                    for mbcf in must_be_computed_first:
+                        if mbcf not in names_string:
+                            raise PredicateDoesNotMatchException()
+                    assert not len(test_dict)==0
+                    # generate partial solution: all domain combinations of a subset of bound vars
+                    a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
+                    # use partial solution to gen testset
+                    sub_domain = frozenset([])
+                    env.push_new_frame(varList)
+                    #print "XXX:", pretty_print(pred)
+                    # TODO: throwing away the partial solution makes no sense,
+                    # because it will be computed anyway. Refactor this code
+                    # by computing the cross product after every iteration
+                    for part_sol in a_cross_product_iterator:
+                        for v in already_computed_var_List:
+                            name  = v.idName
+                            value = part_sol[name] 
+                            env.set_value(name, value)
+                            try:
+                                part_testset = _compute_test_set(pred, env, var_node)
+                            except ValueNotInDomainException:
+                                continue
+                            sub_domain = sub_domain.union(part_testset)
+                    env.pop_frame()
+            except PredicateDoesNotMatchException: 
+                #.eg constraining y instead of x, or using unimplemented cases
+                sub_domain = None
+                
+            # first constraint successfully used
+            if domain is None:
+                domain = sub_domain
+            # the domain was already constraint in an other iteration.
+            # use this sub_domain to constrain it even more.
+            else:
+                domain = domain.intersection(sub_domain)
+                                       
+        if domain is None:
+            # there is no predicate to constrain this variable in finite time. 
+            # Use all possible elements of the variable type
             if PRINT_WARNINGS:
-                print "\033[1m\033[91mWARNING\033[00m: Quick enumeration fails. Unable to constrain domain of %s" % var_node.idName
-            raise SpecialCaseEnumerationFailedException()
+                print "\033[1m\033[91mWARNING\033[00m: Quick enumeration warning: Unable to constrain domain of %s" % var_node.idName
+            all_values = enum_all_values_by_type(env, var_node)
+            domain = frozenset(all_values)
+
         # assigning constraint set or none
-        test_dict[var_node] = test_set
+        test_dict[var_node] = domain
                     
     # check if a solution has been found for every bound variable
     solution_found = True
     for var_node in varList:
-        if test_dict[var_node] is None or test_dict[var_node]==frozenset([]):
+        domain = test_dict[var_node]
+        assert domain is not None
+        if domain==frozenset([]):
             if PRINT_WARNINGS:
-                print "\033[1m\033[91mWARNING\033[00m: Unable to constrain bound variable: %s" % var_node.idName
+                print "\033[1m\033[91mWARNING\033[00m: Empty solution. Unable to constrain bound variable: %s" % var_node.idName
             solution_found = False
             
     # use this solution and return a generator        
@@ -229,6 +239,7 @@ def _analyze_predicates(predicate, env, varList):
 
 # this generator yield every combination of values for some variables with finite domains
 # partial_cross_product is a accumulator which is reseted to the empty dict {} at every call
+# This is the labeling procedure. It uses preconstrained domains (only unary constraints)
 def _cross_product_iterator(varList, domain_dict, partial_cross_product):
     # 1. get next variable and non-empty finite domain
     idNode = varList[0]
@@ -259,7 +270,7 @@ def _solution_generator(a_cross_product_iterator, predicate, env, varList):
             yield solution
 
 
-# compute the order of variables
+# compute the ordering of the variables. This is a trick to handle binary constraints as uniary 
 # TODO:only correct if abstract interpretation computed predicate eval-time correct
 #
 # example:
@@ -326,7 +337,7 @@ def _compute_variable_enum_order(pred_map, varList):
 
 
 # Input predicate is a sub-predicate of a conjunction predicate or a single predicate.
-# This helper may only be used to find test_set generation candidates.
+# This helper may only be used to find domain generation candidates.
 # The test sets (=constrained domains of bound vars with possible false elements) are
 # computed in a second step (not in this function!) because of the predicate-selection process. 
 #

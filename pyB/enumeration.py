@@ -27,7 +27,7 @@ def all_values(node, env):
     return all_values_by_type(atype, env)
 
 
-# generate all values of a type (basetype or composed)
+# generate list of all values of a type (basetype or composed)
 # the node parameter is used for debugging 
 def all_values_by_type(atype, env, node):
     if PRINT_WARNINGS:
@@ -104,6 +104,17 @@ def all_values_by_type_RPYTHON(atype, env, node):
     #print string
     raise Exception(string)
 
+
+def enum_all_values_by_type(env, node):
+    atype = env.get_type_by_node(node)
+    if USE_RPYTHON_CODE:
+        all_values = all_values_by_type_RPYTHON(atype, env, node)
+        return all_values
+    else:
+        all_values = all_values_by_type(atype, env, node)
+        return all_values
+        
+
 # generate all values that statify a predicate 'root'
 def try_all_values(root, env, idNodes):
     for i in _try_all_values(root, env, idNodes, idNodes):
@@ -116,11 +127,8 @@ def _try_all_values(root, env, idNodes, allNodes):
     else:
         from interp import interpret
     node = idNodes[0]
-    atype = env.get_type_by_node(node)
-    if USE_RPYTHON_CODE:
-        all_values = all_values_by_type_RPYTHON(atype, env, node)
-    else:
-        all_values = all_values_by_type(atype, env, node)
+    all_values = enum_all_values_by_type(env, node)
+    
     #print "trying", node.idName, all_values, pretty_print(root)
     if len(idNodes)<=1:
         for val in all_values:
