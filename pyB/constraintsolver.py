@@ -121,12 +121,12 @@ def _compute_using_pyB_solver(predicate, env, varList):
             time = constraint.time
             vars = constraint.constrained_vars
             must_be_computed_first = constraint.vars_need_to_be_set_first
-            takes_to_much_time     = time>=TOO_MANY_ITEMS
+            takes_too_much_time     = time>=TOO_MANY_ITEMS
             does_not_constrain_var = var_node.idName not in vars
             # Only consider constraints which can be computed fast 
             # and which constraint this variable. This checks all arcs from the
             # node var_node in the constraint-graph which can be evaluated with low costs
-            if takes_to_much_time or does_not_constrain_var:
+            if takes_too_much_time or does_not_constrain_var:
                 continue
                 
             # This constraint can easiely be used to compute a constraint domain.
