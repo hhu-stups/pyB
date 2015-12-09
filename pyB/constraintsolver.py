@@ -58,7 +58,6 @@ def compute_constrained_domains(predicate, env, varList):
         assert isinstance(idNode, AIdentifierExpression)      
     # check which kind of strategy: 3 cases
 
-
     # case 1: Using the PyB constraint solver    
     # check if a solution-set (variable domain) is computable without a external contraint solver
     if USE_PYB_CONSTRAINT_SOLVER:
