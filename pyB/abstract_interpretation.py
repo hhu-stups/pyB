@@ -60,7 +60,7 @@ def _abstr_eval(node, env):
             return result
     # NATURAL, NATURAL1, INTEGER, STRING
     elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
-        #raise InfiniteConstraintException("")
+        raise InfiniteConstraintException("")
         # TODO: infinite exception
         return TOO_MANY_ITEMS
     elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):

@@ -561,17 +561,14 @@ class SymbolicCompositionSet(SymbolicRelationSet):
     # WARNING: may cause Timeout
     # FIXME: works only for min/max int because of all types enumeration in enumeration.py
     def __contains__(self, element):
-        #for t in [y for y in self.right_relation]:
-        #    print t
-        #    if t[1]>1000:
-        #        break
         assert isinstance(element, tuple)
         for tup in [x for x in self.left_relation if x[0]== element[0]]:
+            if isinstance(self.right_relation, SymbolicLambda):
+                return self.right_relation.__getitem__(tup[1])==element[1]
             for tup2 in [y for y in self.right_relation if y[0]==tup[1]]:
                 if tup2[1]==element[1]:
                     return True
         return False
-        return SymbolicRelationSet.__contains__(self, element)
                 
     # convert to explicit set
     def enumerate_all(self):

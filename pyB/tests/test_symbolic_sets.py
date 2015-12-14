@@ -744,8 +744,6 @@ class TestSymbolicSets():
         assert interpret(root, env) 
 
     # enumeration.py: constraint domain only for min/max int values. This is a bug
-    import pytest
-    @pytest.mark.xfail
     def test_symbolic_lambda_composition_contains2(self):
         # Build AST
         string_to_file("#PREDICATE (2,256):({(2,16)};(%x.(x:NATURAL|x*x)))", file_name)
