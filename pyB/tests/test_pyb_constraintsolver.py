@@ -189,19 +189,19 @@ class TestPyBConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var])
-        constraint0 = map[set_predicate.children[0]]
-        time0 = constraint0.time
-        vars0 = constraint0.constrained_vars
-        compute_first0 = constraint0.vars_need_to_be_set_first
+        #constraint0 = map[set_predicate.children[0]]
+        #time0 = constraint0.time
+        #vars0 = constraint0.constrained_vars
+        #compute_first0 = constraint0.vars_need_to_be_set_first
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first
-        assert time0==TOO_MANY_ITEMS+2    
+        #assert time0==TOO_MANY_ITEMS+2    
         assert isinstance(time1, int) 
-        assert vars0==["x"]
+        #assert vars0==["x"]
         assert vars1==["x"]
-        assert compute_first0 == []
+        #assert compute_first0 == []
         assert compute_first1 == []
         iterator = compute_constrained_domains(set_predicate, env, [var])
         solution = list(iterator)
@@ -227,19 +227,19 @@ class TestPyBConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var]) 
-        constraint0 = map[set_predicate.children[0]]
-        time0 = constraint0.time
-        vars0 = constraint0.constrained_vars
-        compute_first0 = constraint0.vars_need_to_be_set_first
+        #constraint0 = map[set_predicate.children[0]]
+        #time0 = constraint0.time
+        #vars0 = constraint0.constrained_vars
+        #compute_first0 = constraint0.vars_need_to_be_set_first
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first
-        assert time0==TOO_MANY_ITEMS+2    
+        #assert time0==TOO_MANY_ITEMS+2    
         assert time1 <TOO_MANY_ITEMS
-        assert vars0==["x"]
+        #assert vars0==["x"]
         assert vars1==["x"] 
-        assert compute_first0 == []
+        #assert compute_first0 == []
         assert compute_first1 == []
         # works, but take too much time
         #result = interpret(root, env)
@@ -264,22 +264,22 @@ class TestPyBConstraintSolver():
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var])
         
-        assert isinstance(set_predicate.children[0], AMemberPredicate)
-        constraint0 = map[set_predicate.children[0]]
-        time0 = constraint0.time
-        vars0 = constraint0.constrained_vars
-        compute_first0 = constraint0.vars_need_to_be_set_first
+        #assert isinstance(set_predicate.children[0], AMemberPredicate)
+        #constraint0 = map[set_predicate.children[0]]
+        #time0 = constraint0.time
+        #vars0 = constraint0.constrained_vars
+        #compute_first0 = constraint0.vars_need_to_be_set_first
         assert isinstance(set_predicate.children[1], ADisjunctPredicate)
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first
         
-        assert time0==TOO_MANY_ITEMS+2    
+        #assert time0==TOO_MANY_ITEMS+2    
         assert time1 <TOO_MANY_ITEMS
-        assert vars0==["x"]
+        #assert vars0==["x"]
         assert vars1==["x"]  
-        assert compute_first0 == []
+        #assert compute_first0 == []
         assert compute_first1 == []   
         # works, but take too much time (232.09 seconds)
         #result = interpret(root, env)
@@ -419,19 +419,19 @@ class TestPyBConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var])    
-        constraint0 = map[set_predicate.children[0]]
-        time0 = constraint0.time
-        vars0 = constraint0.constrained_vars
-        compute_first0 = constraint0.vars_need_to_be_set_first
+        #constraint0 = map[set_predicate.children[0]]
+        #time0 = constraint0.time
+        #vars0 = constraint0.constrained_vars
+        #compute_first0 = constraint0.vars_need_to_be_set_first
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first      
-        assert vars0==["x"]
+        #assert vars0==["x"]
         assert vars1==["x"]
-        assert time0==TOO_MANY_ITEMS+2
+        #assert time0==TOO_MANY_ITEMS+2
         assert time1<2**22   
-        assert compute_first0 == []
+        #assert compute_first0 == []
         assert compute_first1 == []
         # works, but take too much time
         #result = interpret(root, env)
@@ -455,19 +455,19 @@ class TestPyBConstraintSolver():
         var = root.children[0].children[0]
         assert isinstance(set_predicate, AConjunctPredicate)
         map = _analyze_predicates(set_predicate, env, [var])  
-        constraint0 = map[set_predicate.children[0]]
-        time0 = constraint0.time
-        vars0 = constraint0.constrained_vars
-        compute_first0 = constraint0.vars_need_to_be_set_first
+        #constraint0 = map[set_predicate.children[0]]
+        #time0 = constraint0.time
+        #vars0 = constraint0.constrained_vars
+        #compute_first0 = constraint0.vars_need_to_be_set_first
         constraint1 = map[set_predicate.children[1]]
         time1 = constraint1.time
         vars1 = constraint1.constrained_vars
         compute_first1 = constraint1.vars_need_to_be_set_first
-        assert vars0==["x"]
+        #assert vars0==["x"]
         assert vars1==["x"]
-        assert time0==TOO_MANY_ITEMS+2
+        #assert time0==TOO_MANY_ITEMS+2
         assert time1<2**22   
-        assert compute_first0 == []
+        #assert compute_first0 == []
         assert compute_first1 == []
         result = interpret(root, env)
         assert result==frozenset([(2, 0), (2, 3), (2, 1)])
@@ -705,6 +705,24 @@ class TestPyBConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32  
+        x = root.children[0].children[0]
+        y = root.children[0].children[1]
+        conjunct_predicate = root.children[0].children[-1]
+        map = _analyze_predicates(conjunct_predicate, env, [x,y]) 
+        constraint = map[conjunct_predicate.children[0]]
+        time = constraint.time
+        vars = constraint.constrained_vars
+        compute_first = constraint.vars_need_to_be_set_first 
+        assert time<2**32
+        assert set(vars) ==set(["x"])  
+        assert compute_first == ["y"]
+        constraint = map[conjunct_predicate.children[1]]
+        time = constraint.time
+        vars = constraint.constrained_vars
+        compute_first = constraint.vars_need_to_be_set_first 
+        assert time<2**32
+        assert set(vars) ==set(["y"])  
+        assert compute_first == ["x"]
         assert interpret(root.children[0], env)        
         
     # verdi/verdi
@@ -810,6 +828,20 @@ class TestPyBConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
+        a = root.children[0].children[0]
+        b = root.children[0].children[1]
+        c = root.children[0].children[2]
+        d = root.children[0].children[3]
+        e = root.children[0].children[4]
+        equal_predicate = root.children[0].children[-1]
+        map = _analyze_predicates(equal_predicate, env, [a, b, c, d, e]) 
+        constraint = map[equal_predicate]
+        time = constraint.time
+        vars = constraint.constrained_vars
+        compute_first = constraint.vars_need_to_be_set_first 
+        assert time<2**32
+        assert set(vars) ==set(["a","b","c","d","e"])  
+        assert compute_first == []
         assert interpret(root, env)   
         
 

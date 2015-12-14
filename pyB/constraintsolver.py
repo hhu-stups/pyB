@@ -27,12 +27,14 @@ class Constraint():
     def __init__(self, constrained_vars, vars_need_to_be_set_first):
         self.constrained_vars = constrained_vars # vars constrained by a predicate
         self.vars_need_to_be_set_first = vars_need_to_be_set_first # vars to be computed first
+        self.infinite = False
     
     def set_predicate(self, predicate):
         self.predicate = predicate # predicate which belongs to this constraint (only a unused backlink)
         
     def set_time(self, time):
         self.time = time # time needed to use this constraint (threshold in config.py)
+
 
 
         
@@ -83,6 +85,7 @@ def compute_constrained_domains(predicate, env, varList):
         for d in iterator:
             yield d
         raise StopIteration()
+    # TODO: Remove this case when case 1 used brute force enum on default for unconstraint vars 
     # case 3: Using brute force enumeration 
     except (ConstraintNotImplementedException, ImportError):
         if PRINT_WARNINGS:
@@ -104,7 +107,8 @@ def compute_constrained_domains(predicate, env, varList):
 def _compute_using_pyB_solver(predicate, env, varList):
     # 1. score predicates
     pred_map = _analyze_predicates(predicate, env, varList) # {Predicate --> Constraint}
-    assert not len(pred_map)==0 
+    if len(pred_map)==0:
+        raise SpecialCaseEnumerationFailedException()
     
     # 2. find possible variable enum order. 
     # variable(-domains) not constraint by others will be enumerated first.
@@ -125,6 +129,8 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # Only consider constraints which can be computed fast 
             # and which constraint this variable. This checks all arcs from the
             # node var_node in the constraint-graph which can be evaluated with low costs
+            # TODO: sort constraints by time
+            # TODO: use constraints as long as ( domain empty) OR ( domain not empty and NOT too much time )
             if takes_too_much_time or does_not_constrain_var:
                 continue
                 
@@ -215,6 +221,13 @@ def _compute_using_pyB_solver(predicate, env, varList):
     else:
         raise SpecialCaseEnumerationFailedException()
 
+def _conj_predicate_to_list(predicate):
+    if isinstance(predicate, AConjunctPredicate):
+        lst0 = _conj_predicate_to_list(predicate.children[0])
+        lst1 = _conj_predicate_to_list(predicate.children[1])
+        return lst0+lst1
+    else:
+        return [predicate]
 
 # TODO: support more than one variable
 # FIMXE: doesnt finds finite-time computable sub-predicates. 
@@ -222,19 +235,20 @@ def _compute_using_pyB_solver(predicate, env, varList):
 # input: predicate = P0 & P1 & ...PN or in special cases one predicate (like x=42)
 # output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
 def _analyze_predicates(predicate, env, varList):
-    if isinstance(predicate, AConjunctPredicate):
-        map0 = _analyze_predicates(predicate.children[0], env, varList)
-        map1 = _analyze_predicates(predicate.children[1], env, varList)
-        map0.update(map1)
-        return map0
-    else:
+    from abstract_interpretation import InfiniteConstraintException
+    pred_list = _conj_predicate_to_list(predicate)
+    pred_map  = {}
+    for pred in pred_list:
         # analyse
-        time = estimate_computation_time(predicate, env)
-        constraint = _find_constrained_vars(predicate, env, varList)
-        # return result
+        try:
+            time = estimate_computation_time(pred, env)
+        except InfiniteConstraintException:
+            continue # e.g. x:INTEGER (throw constraint away)
+        constraint = _find_constrained_vars(pred, env, varList)
         constraint.set_time(time)
-        constraint.set_predicate(predicate)     
-        return {predicate: constraint}
+        constraint.set_predicate(pred)    
+        pred_map[pred] = constraint
+    return pred_map
 
 # this generator yield every combination of values for some variables with finite domains
 # partial_cross_product is a accumulator which is reseted to the empty dict {} at every call
@@ -511,7 +525,7 @@ def _compute_test_set(node, env, var_node):
             set0 = _compute_test_set(node.children[0], env, var_node)
             try:
                 set1 = _compute_test_set(node.children[1], env, var_node)
-                return set0.union(set1)
+                return set0.intersection(set1)
             except PredicateDoesNotMatchException:
                 return set0
         except PredicateDoesNotMatchException:

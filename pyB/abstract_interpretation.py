@@ -1,12 +1,16 @@
 from ast_nodes import *
+from bexceptions import BTypeException
 from config import TOO_MANY_ITEMS, USE_RPYTHON_CODE
 from pretty_printer import pretty_print
 import math
 
 if USE_RPYTHON_CODE:
     from rpython_b_objmodel import frozenset
-
-
+    
+class InfiniteConstraintException(BTypeException):
+    def __init__(self, value):
+        self.value = str(value)
+    
 # TODO: support more than one variable (which is constraint by the predicate to be analysed
 # this approximation is still not good. Eg. x/:NAT   
 # TODO: enable caching if the predicate is "state-indipendent" i.e if the computation time
@@ -21,7 +25,8 @@ if USE_RPYTHON_CODE:
 def estimate_computation_time(predicate, env):
     assert isinstance(predicate, Predicate)
     time = _abstr_eval(predicate, env)
-    return time
+    return time 
+
 
 
 # helper for estimate_computation_time
@@ -55,6 +60,8 @@ def _abstr_eval(node, env):
             return result
     # NATURAL, NATURAL1, INTEGER, STRING
     elif isinstance(node, AIntegerSetExpression) or isinstance(node, ANaturalSetExpression) or isinstance(node, ANatural1SetExpression) or isinstance(node, AStringSetExpression):
+        #raise InfiniteConstraintException("")
+        # TODO: infinite exception
         return TOO_MANY_ITEMS
     elif isinstance(node, ANatSetExpression) or isinstance(node, ANat1SetExpression):
         return env._max_int
@@ -73,7 +80,7 @@ def _abstr_eval(node, env):
     elif isinstance(node, APartialFunctionExpression) or isinstance(node, ARelationsExpression) or isinstance(node, APartialFunctionExpression) or isinstance(node, ATotalFunctionExpression) or isinstance(node, APartialInjectionExpression) or isinstance(node, ATotalInjectionExpression) or isinstance(node, APartialSurjectionExpression) or isinstance(node, ATotalSurjectionExpression) or isinstance(node, ATotalBijectionExpression) or isinstance(node, APartialBijectionExpression) or isinstance(node, ASeqExpression) or isinstance(node, ASeq1Expression) or isinstance(node, AIseqExpression) or isinstance(node, AIseq1Expression) or isinstance(node, APermExpression):
         time0 = _abstr_eval(node.children[0], env)
         time1 = _abstr_eval(node.children[1], env)
-        exp0  = time0*time1 
+        exp0  = time0*time1
         #if exp0>=math.log(TOO_MANY_ITEMS,2):
         if exp0>=22: # math.log is not rpython
             return TOO_MANY_ITEMS
@@ -118,9 +125,22 @@ def _abstr_eval(node, env):
     # Werden hier abstrakte Interpretation und Datenflussanalyse durcheinander geworfen? Denk noch mal drueber nach....
     elif isinstance(node, AConjunctPredicate):
         # this information is used to generate test_sets for {x|P0(x) & P1(x)}
-        # the predicate is a candidate, if P0 OR P1 is finite 
-        time0 = _abstr_eval(node.children[0], env)
-        time1 = _abstr_eval(node.children[1], env)
+        # the predicate is a candidate, if P0 OR P1 is finite
+        inf0 = False
+        inf1 = False
+        try: 
+            time0 = _abstr_eval(node.children[0], env)
+        except InfiniteConstraintException:
+            inf0  = True
+            time0 = TOO_MANY_ITEMS
+        try:
+            time1 = _abstr_eval(node.children[1], env)
+        except InfiniteConstraintException:
+            inf1  = True
+            time1 = TOO_MANY_ITEMS
+            
+        if inf0 and inf1:
+            raise InfiniteConstraintException("")
         if time0<time1:
             return time0
         return time1

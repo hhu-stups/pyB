@@ -88,8 +88,8 @@ class TestSymbolicSequences():
 
                 
     # TODO: undefined size. Throw exception
-    #import pytest
-    #@pytest.mark.xfail     
+    import pytest
+    @pytest.mark.xfail     
     def test_symbolic_sequences_size2(self):
         # Build AST
         string_to_file("#EXPRESSION size(%x.(x:NATURAL|x))", file_name)
