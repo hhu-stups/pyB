@@ -113,26 +113,30 @@ def _compute_using_pyB_solver(predicate, env, varList):
     # 2. find possible variable enum order. 
     # variable(-domains) not constraint by others will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
+    predList  = _compute_predicate_enum_order(pred_map)
+    [pred_map[x].time for x in predList]
     
     # 3. calc variable domains. Goal: mapping from vars to domain sets
     test_dict = {}
     for var_node in varList:
         domain = None 
-        for pred in pred_map:
+        for pred in predList:
             assert isinstance(pred, Predicate)
             constraint = pred_map[pred]
             time = constraint.time
             vars = constraint.constrained_vars
             must_be_computed_first = constraint.vars_need_to_be_set_first
             takes_too_much_time     = time>=TOO_MANY_ITEMS
-            does_not_constrain_var = var_node.idName not in vars
+            does_not_constrain_var  = var_node.idName not in vars
+            domain_found            = not domain is None
             # Only consider constraints which can be computed fast 
             # and which constraint this variable. This checks all arcs from the
             # node var_node in the constraint-graph which can be evaluated with low costs
-            # TODO: sort constraints by time
-            # TODO: use constraints as long as ( domain empty) OR ( domain not empty and NOT too much time )
-            if takes_too_much_time or does_not_constrain_var:
+            if does_not_constrain_var:
                 continue
+                
+            if takes_too_much_time and domain_found:
+                break
                 
             # This constraint can easiely be used to compute a constraint domain.
             # The exact solution musst contain all or less elements than "sub_domain"
@@ -197,6 +201,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # Use all possible elements of the variable type
             if PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: Quick enumeration warning: Unable to constrain domain of %s" % var_node.idName
+            # Fixme: If the domain of 'var_node' is infinite, this is wrong
             all_values = enum_all_values_by_type(env, var_node)
             domain = frozenset(all_values)
 
@@ -349,6 +354,22 @@ def _compute_variable_enum_order(pred_map, varList):
     return result
             
 
+# FIXME: O(n**2)
+def _compute_predicate_enum_order(pred_map):
+    lst = pred_map.keys()
+    result = [lst.pop(0)]
+    while not len(lst)==0:
+        predicate  = lst.pop(0)
+        constraint = pred_map[predicate]
+        index = 0
+        for pred in result:
+            c = pred_map[pred]
+            if c.time<constraint.time:
+                index = index +1
+            else:
+                break
+        result.insert(index, predicate)
+    return result
 
 # Input predicate is a sub-predicate of a conjunction predicate or a single predicate.
 # This helper may only be used to find domain generation candidates.
