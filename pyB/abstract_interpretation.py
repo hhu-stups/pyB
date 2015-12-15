@@ -1,5 +1,5 @@
 from ast_nodes import *
-from bexceptions import BTypeException
+from bexceptions import BTypeException, ValueNotInDomainException
 from config import TOO_MANY_ITEMS, USE_RPYTHON_CODE
 from pretty_printer import pretty_print
 import math
@@ -102,16 +102,22 @@ def _abstr_eval(node, env):
         #print time0, time1
         if time0<TOO_MANY_ITEMS and time1<TOO_MANY_ITEMS:
             # TODO: This block is not O(n)  - n ast nodes
-            if USE_RPYTHON_CODE:
-                from rpython_interp import interpret
-                v0 = interpret(left_node, env)
-                v1 = interpret(right_node, env)
-                val0 = v0.ivalue
-                val1 = v1.ivalue
-            else:
-                from interp import interpret
-                val0 = interpret(left_node, env)
-                val1 = interpret(right_node, env)
+            try:
+                if USE_RPYTHON_CODE:
+                    from rpython_interp import interpret
+                    v0 = interpret(left_node, env)
+                    v1 = interpret(right_node, env)
+                    val0 = v0.ivalue
+                    val1 = v1.ivalue
+                else:
+                    from interp import interpret
+                    val0 = interpret(left_node, env)
+                    val1 = interpret(right_node, env)
+            except ValueNotInDomainException:
+                # what went wrong: A bound variable is used to estimate this block
+                # e.g. y: A..B. expect the worst case
+                val0 = env._min_int
+                val1 = env._max_int
         else:
             # over approximation to avoid long interpretation
             val0 = env._min_int

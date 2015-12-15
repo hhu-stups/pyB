@@ -478,7 +478,14 @@ class TestPyBConstraintSolver():
         # Build AST:
         string_to_file("#EXPRESSION %x.(x : STRING - {\"CL\",\"CM\"}|-1)", file_name)
         ast_string = file_to_AST_str(file_name)
-        root = str_ast_to_python_ast(ast_string)         
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test
+        env = Environment()
+        env._min_int = -2**32
+        env._max_int = 2**32
+        type_with_known_types(root, env, [], [""])
+        assert isinstance(get_type_by_name(env, "x"), StringType)       
         #TODO : "ck = ({uo,LAMBDA_RESULT___|(uo : STRING & LAMBDA_RESULT___ : INTEGER) & uo |-> LAMBDA_RESULT___ : {("CL"|->0),("CM"|->1)}} \/ %uo.(uo : STRING - {"CL","CM"}|-1))"        
 
 
@@ -846,10 +853,7 @@ class TestPyBConstraintSolver():
         
 
     # C578_Urgent_Jul13/151_001 
-    import pytest
-    @pytest.mark.xfail
     def test_constraint_interval_fun_app_one_args(self):
-        # solution a,b,c,d,e = 1,1,1,1,1
         string_to_file("#PREDICATE !x,y.(x:{3,4,5} & y:0..{0 |-> 4,1 |-> 4,2 |-> 4,3 |-> 4}(x)-1 => 1<2)", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -858,14 +862,11 @@ class TestPyBConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
-        py.test.raises(ValueNotInDomainException, "assert interpret(root, env)")       
+        assert interpret(root, env)    
 
 
     # C578_Urgent_Jul13/151_001 
-    import pytest
-    @pytest.mark.xfail
     def test_constraint_interval_fun_app_two_args(self):
-        # solution a,b,c,d,e = 1,1,1,1,1
         string_to_file("#PREDICATE !x,y,z.(x:{3,4,5} & y:{1,2,3} & z:0..{3|->{0 |-> 4,1 |-> 4,2 |-> 4,3 |-> 4}}(x)(y)-1 => 1<2)", file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -874,7 +875,7 @@ class TestPyBConstraintSolver():
         env = Environment()
         env._min_int = -2**32
         env._max_int = 2**32
-        py.test.raises(ValueNotInDomainException, "assert interpret(root, env)")
+        assert interpret(root, env)  
 
         
 # Write tests:        
