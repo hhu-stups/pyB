@@ -243,6 +243,7 @@ def _analyze_predicates(predicate, env, varList):
         try:
             time = estimate_computation_time(pred, env)
         except InfiniteConstraintException:
+            #print "DEBUG: skiping predicate", pretty_print(pred)
             continue # e.g. x:INTEGER (throw constraint away)
         constraint = _find_constrained_vars(pred, env, varList)
         constraint.set_time(time)

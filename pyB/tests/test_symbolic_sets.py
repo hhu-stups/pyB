@@ -917,8 +917,8 @@ class TestSymbolicSets():
         assert interpret(root, env)
 
 
-    #import pytest
-    #@pytest.mark.xfail  
+    import pytest
+    @pytest.mark.xfail  
     def test_symbolic_min(self):
         # Build AST
         string_to_file("#PREDICATE min({x|x:NATURAL})=0", file_name)

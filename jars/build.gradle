@@ -1,14 +1,11 @@
 apply plugin: 'java'
 
 repositories {
-	maven {
-		name "cobra"
-		url "http://cobra.cs.uni-duesseldorf.de/artifactory/repo"
-	}
+ mavenCentral()
 }
 
 dependencies {
-  compile group: "de.prob", name: "bparser", version: '2.4.36'
+  compile group: "de.hhu.stups", name: "bparser", version: '2.4.40'
 }
 
 task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {
