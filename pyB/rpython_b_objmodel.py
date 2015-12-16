@@ -31,18 +31,14 @@ class W_Tuple(W_Object):
     def __ne__(self, other):
         assert isinstance(other, tuple)
         return self.tvalue != other.tvalue
- 
-    # FIXME: Bugs in translationpro. if method is used.        
-        """
+       
     def __getitem__(self, key):
-        # Avoid RPython error: "TyperError: non-constant tuple index" 
         if key==0:
             return self.tvalue[0]
         elif key==1:
             return self.tvalue[1]
         else:
-            raise Exception("illegal tuple index in W_Tuple")
-        """        
+            raise Exception("PyB-ERROR: illegal tuple index in W_Tuple")      
 
     def __repr__(self):
         return str(self.tvalue)

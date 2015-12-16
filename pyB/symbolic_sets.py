@@ -202,20 +202,17 @@ class SymbolicSet(W_Object):
     def __getitem__(self, args):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: default (brute force) function app f(x) implementation called", self, args
-        # set may be a relation
+        # set may be a relation, so enumerate: 
         aset = self.enumerate_all()
         result = []
         for t in aset:
-            assert isinstance(t, tuple) or isinstance(t, W_Tuple)
             if USE_RPYTHON_CODE:
-                assert isinstance(args, W_Object)
-                if isinstance(t.tvalue, W_Tuple):
-                    raise NotImplementedError()
-                else:
-                    assert isinstance(t.tvalue, tuple)   
-                    if isinstance(t.tvalue[0], W_Object) and t.tvalue[0].__eq__(args):
-                        result.append(t.tvalue[1])                                           
+                assert isinstance(t, W_Tuple)
+                assert isinstance(args, W_Object) 
+                if t[0].__eq__(args):
+                    result.append(t[1])                                           
             else:
+                assert isinstance(t, tuple)
                 if t[0]==args:
                     result.append(t[1])
         # if only one value, return value
@@ -896,6 +893,7 @@ class SymbolicUnionSet(SymbolicSet):
     
     # function call of set
     def __getitem__(self, arg):
+        # union musst be a set of tuples
         if isinstance(self.left_set, SymbolicSet) and isinstance(self.right_set, SymbolicSet):
             try:
                 result = self.left_set[arg] 

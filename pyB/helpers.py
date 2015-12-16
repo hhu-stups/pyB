@@ -3,6 +3,7 @@
 import os
 
 from ast_nodes import *
+from bexceptions import ValueNotInDomainException
 from btypes import CartType
 from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
 from subprocess import Popen, PIPE
@@ -39,7 +40,25 @@ option_str = " -python "
 class ParseObject:
     pass
 
- 
+# TODO: ((0,1),2)[0]==(0,1)
+def _tuple_equal(t0, t1):
+    if USE_RPYTHON_CODE:
+        return t0.__eq__(t1)
+    else:
+        return t0==t1
+
+# f(x) on frozensets
+def my_get_item(finite_set, arg):
+    assert isinstance(finite_set, frozenset)
+    result = []
+    for atuple in finite_set:
+        if _tuple_equal(atuple[0], arg):
+            result.append(atuple[1])
+    if result==[]:
+        raise ValueNotInDomainException("")
+    return result
+    
+    
 # TODO: list of lists    
 def set_to_list(aSet):
     if USE_RPYTHON_CODE:

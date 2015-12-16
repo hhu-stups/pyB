@@ -4,6 +4,7 @@ from environment import Environment
 from helpers import contains_lower_character, file_to_AST_str, string_to_file, all_ids_known, select_ast_to_list, find_var_nodes
 from parsing import str_ast_to_python_ast
 
+
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
@@ -146,3 +147,4 @@ class TestHelpers():
         assert contains_lower_character("capacity")
         assert contains_lower_character("Book")
         assert contains_lower_character("az")
+        
