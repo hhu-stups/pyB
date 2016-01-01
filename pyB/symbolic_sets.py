@@ -206,6 +206,9 @@ class SymbolicSet(W_Object):
         aset = self.enumerate_all()
         result = []
         for t in aset:
+            # if assetion fails, than aset was not a
+            # list of tuples. get_item was called on
+            # a non-relation set e.g. {1,2,3}(3) makes no sense
             if USE_RPYTHON_CODE:
                 assert isinstance(t, W_Tuple)
                 assert isinstance(args, W_Object) 
@@ -219,6 +222,9 @@ class SymbolicSet(W_Object):
         if len(result)==1:
             return result[0]
         # else, return list of values (will be packed into a set by interp function)
+        # e.g. {(1,2),(1,3)}(1)={2,3}
+        # TODO: AImageExpression type problem
+        # this means a expression like r:S<->T r[x] can have the type T or set of T. This must be wrong. Check this!
         elif len(result)>1:
             return result
         raise ValueNotInDomainException(args) 
@@ -275,7 +281,8 @@ class SymbolicSet(W_Object):
         return print_values_b_style(aset)
 
 class LargeSet(SymbolicSet):
-    pass
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation")
     
 
 class InfiniteSet(SymbolicSet):
@@ -283,6 +290,9 @@ class InfiniteSet(SymbolicSet):
     def __len__(self):
         from bexceptions import InfiniteSetLengthException
         raise InfiniteSetLengthException("InfiniteSet")
+
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation")
 
 
 # FIXME: set comprehension
@@ -630,9 +640,6 @@ class NatSet(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.NatSet_gen.next()
         
-    # not used for performance reasons
-    #def __getitem__(self, key):
-    #    return key
 
   
 # FIXME: set comprehension      
@@ -721,10 +728,6 @@ class Nat1Set(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.Nat1Set_gen.next()
 
-
-    # not used for performance reasons
-    #def __getitem__(self, key):
-    #    return 1+key
         
 
 # FIXME: set comprehension
@@ -797,7 +800,7 @@ class IntSet(LargeSet):
     def __len__(self):
         return -1*self.env._min_int+self.env._max_int+1
 
-    # TODO: alternate positive and negative values
+    # TODO: enum-strategy: alternate positive and negative values
     def IntSet_generator(self):
         for i in range(self.env._min_int, self.env._max_int+1):
             if USE_RPYTHON_CODE:
@@ -816,9 +819,6 @@ class IntSet(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.IntSet_gen.next()
         
-    # not used for performance reasons   
-    #def __getitem__(self, key):
-    #    return self.env._min_int+key
 
  
 class StringSet(SymbolicSet):
@@ -876,6 +876,10 @@ class StringSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.StringSet_gen.next()
+    
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation(string)")
+
 
 ##############
 # Symbolic binary operations 
@@ -893,16 +897,36 @@ class SymbolicUnionSet(SymbolicSet):
     
     # function call of set
     def __getitem__(self, arg):
-        # union musst be a set of tuples
-        if isinstance(self.left_set, SymbolicSet) and isinstance(self.right_set, SymbolicSet):
-            try:
+        # must be set of tuples to work
+        try:
+            if isinstance(self.left_set, SymbolicSet):
                 result = self.left_set[arg] 
                 return result
-            except:
+            else:
+                for e in self.left_set:
+                    image = e[0]
+                    if USE_RPYTHON_CODE:
+                        if image.__eq__(arg):
+                            return e[1]
+                    else:
+                        if image==arg:
+                            return e[1]
+                raise IndexError()
+        except IndexError:
+            if isinstance(self.right_set, SymbolicSet):
                 result = self.right_set[arg] 
                 return result
-        # TODO frozensets
-        raise Exception("Not implemented: relation symbolic membership")  
+            else:
+                for e in self.right_set:
+                    image = e[0]
+                    if USE_RPYTHON_CODE:
+                        if image.__eq__(arg):
+                            return e[1]
+                    else:
+                        if image==arg:
+                            return e[1]
+        raise IndexError()
+
     
     def enumerate_all(self):
         if not self.explicit_set_computed:
@@ -1013,6 +1037,47 @@ class SymbolicIntersectionSet(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicIntersectionSet_gen.next()    
 
+   # function call of set
+    def __getitem__(self, arg):
+        # must be set of tuples to work
+        resultL = None
+        resultR = None
+        try:
+            if isinstance(self.left_set, SymbolicSet):
+                resultL = self.left_set[arg] 
+            else:
+                for e in self.left_set:
+                    image = e[0]
+                    if USE_RPYTHON_CODE:
+                        if image.__eq__(arg):
+                            resultL = e[1]
+                            break
+                    else:
+                        if image==arg:
+                            resultL = e[1]
+                            break
+                raise IndexError()
+        except IndexError:
+            if isinstance(self.right_set, SymbolicSet):
+                resultR = self.right_set[arg] 
+            else:
+                for e in self.right_set:
+                    image = e[0]
+                    if USE_RPYTHON_CODE:
+                        if image.__eq__(arg):
+                            resultR = e[1]
+                            break
+                    else:
+                        if image==arg:
+                            resultR = e[1]
+                            break
+        if USE_RPYTHON_CODE:
+            if not resultL is None and resultL.__eq__(resultR):
+                return resultL
+        else:
+            if not resultL is None and resultL==resultR:
+                return resultL
+        raise IndexError()
 
 class SymbolicDifferenceSet(SymbolicSet):
     def __init__(self, aset0, aset1, env):
@@ -1054,7 +1119,40 @@ class SymbolicDifferenceSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicDifferenceSet_gen.next()           
- 
+
+    def __getitem__(self, arg):
+        # must be set of tuples to work
+        result = None
+        if isinstance(self.left_set, SymbolicSet):
+            result = self.left_set[arg] 
+        else:
+            for e in self.left_set:
+                image = e[0]
+                if USE_RPYTHON_CODE:
+                    if image.__eq__(arg):
+                        result = e[1]
+                        break
+                else:
+                    if image==arg:
+                        result = e[1]
+                        break
+        try:
+            if isinstance(self.right_set, SymbolicSet):
+                NoResult = self.right_set[arg] 
+            else:
+                for e in self.right_set:
+                    image = e[0]
+                    if USE_RPYTHON_CODE:
+                        if image.__eq__(arg):
+                            NoResult = e[1]
+                            break
+                    else:
+                        if image==arg:
+                            NoResult = e[1]
+                            break
+            raise IndexError()
+        except IndexError:
+            return result
         
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env):
@@ -1186,6 +1284,8 @@ class SymbolicPowerSet(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPowerSet_gen.next() 
 
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation (pow)")
 
 class SymbolicPower1Set(SymbolicSet):
     def __init__(self, aset, env):
@@ -1240,6 +1340,8 @@ class SymbolicPower1Set(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPower1Set_gen.next() 
 
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation (pow1)")
 
 class SymbolicIntervalSet(LargeSet):
     def __init__(self, left, right, env):
@@ -1305,5 +1407,8 @@ class SymbolicIntervalSet(LargeSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicIntervalSet_gen.next()     
-    
+
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation (interval)")
+
         

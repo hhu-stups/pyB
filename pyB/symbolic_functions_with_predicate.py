@@ -247,18 +247,26 @@ class SymbolicComprehensionSet(SymbolicSet):
     def __getitem__(self, args):
         assert len(self.variable_list)>1
         # 1. map args to var-nodes
-        args = remove_tuples(args)
+
+        arg_list = remove_tuples(args)
         self.env.push_new_frame(self.variable_list)
         unset = len(self.variable_list)
-        for i in range(len(args)):
+        for i in range(len(arg_list)):
             idNode = self.variable_list[i]
             atype = self.env.get_type_by_node(idNode)
-            value = build_arg_by_type(atype, args)
+            value = build_arg_by_type(atype, arg_list)
             self.env.set_value(idNode.idName, value)
             unset = unset -1
         # TODO: 2. compute missing bound variables 
-        print unset, "unset bound variables:", [x.idName for x in self.variable_list[unset:]]  
-        raise NotImplementedError()
+        # only implemented one case: {P(x,y)}(x) returning y
+        if not unset==1:
+            print unset, "unset bound variables:", [x.idName for x in self.variable_list[unset:]]
+            raise NotImplementedError()
+        from enumeration import try_all_values
+        result = None
+        for possible in try_all_values(self.predicate, self.env, self.variable_list[unset:]):
+            if possible:
+                result = self.env.get_value(self.variable_list[-1].idName)
         self.env.pop_frame() # exit scope
         return result    
     

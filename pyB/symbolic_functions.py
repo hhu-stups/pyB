@@ -52,6 +52,7 @@ class SymbolicRelationSet(SymbolicSet):
             right = element.data.right.data
             return left in self.left_set and right in self.right_set 
         else:                                   # check finite set
+            # FIXME: AST Node
             assert isinstance(element, frozenset)
             for e in element:
                 if USE_RPYTHON_CODE:
@@ -121,7 +122,12 @@ class SymbolicRelationSet(SymbolicSet):
     def next(self):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
-        return self.SymbolicRelationSet_gen.next()  
+        return self.SymbolicRelationSet_gen.next() 
+    
+    # This is NOT a set of tuples but a Set of functions or relations 
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation")
+
 
  
 class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
@@ -355,6 +361,8 @@ class SymbolicFirstProj(SymbolicSet):
     
     # proj1(S,T)(arg)
     def __getitem__(self, arg):
+        if not (isinstance(arg, tuple) or isinstance(arg, W_Tuple)):
+            raise TypeError()
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
         return arg[0]  
@@ -438,7 +446,7 @@ class SymbolicSecondProj(SymbolicSet):
     
     # proj2(S,T)(arg)
     def __getitem__(self, arg):
-        if not isinstance(arg, tuple):
+        if not (isinstance(arg, tuple) or isinstance(arg, W_Tuple)):
             raise TypeError()
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
@@ -500,7 +508,8 @@ class SymbolicSecondProj(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicSecondProj_gen.next()                         
-    
+
+# self.left_set==self.right_set    
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
         if not self.explicit_set_computed:
@@ -548,6 +557,11 @@ class SymbolicIdentitySet(SymbolicRelationSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicIdentitySet_gen.next()
+
+    def __getitem__(self, arg):
+        if self.left_set.__contains__(arg):
+            return arg 
+        raise IndexError()
                      
 class SymbolicCompositionSet(SymbolicRelationSet):
     def __init__(self, arelation0, arelation1, env, node):
@@ -806,3 +820,20 @@ class SymbolicInverseRelation(SymbolicRelationSet):
         else:
             inv_element = tuple([other[1],other[0]])
             return inv_element in self.relation
+
+
+    def __getitem__(self, arg):
+        result = []
+        for t in self.relation:
+            if USE_RPYTHON_CODE:
+                if t[1].__eq__(arg):
+                    result.append(t[0])
+            else:
+                if t[1]==arg:
+                    result.append(t[0])
+        if len(result)==1:
+            return result[0]
+        else:
+            return result
+        raise IndexError()
+  

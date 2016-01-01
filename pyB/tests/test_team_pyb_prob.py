@@ -132,7 +132,7 @@ class TestTeam():
         
         ####C578/2013_08_14/machines_14082013/440_004 topologic-sort key error
         
-        bfile_name="examples/not_public/Systerel/" + "C578_Final_Jul13/m-PROP_SCL_VTT_S_0316_001"
+        bfile_name="examples/not_public/Systerel/" + "C578/2013/machines_14082013/Z_01_001"
         if os.name=='nt':
             bfile_name="examples\not_public\Systerel\C578\2013_08_14\machines_14082013\410_002_simple\\"
         run_with_prob("-init -p CLPFD true -p use_large_jvm_for_parser true -p TIME_OUT 600000", bfile_name)

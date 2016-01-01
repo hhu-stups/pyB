@@ -1,5 +1,6 @@
 // AST Walker
-package pyB;
+package pyB; 
+
 
 import de.be4.classicalb.core.parser.analysis.DepthFirstAdapter;
 import de.be4.classicalb.core.parser.node.*;

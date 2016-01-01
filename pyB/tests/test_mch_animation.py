@@ -1485,7 +1485,7 @@ class TestMCHAnimation():
         names = [op.opName for op in next_states]
         assert frozenset(names)==frozenset(['setprice', 'pricequery','total','sale'])
         
-        
+       
     def test_schneider_sees3(self):
         # TODO: crashs if min_int = -2
         # side effect: loades examples/Goods.mch and Price.mch           

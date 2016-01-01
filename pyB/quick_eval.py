@@ -91,6 +91,8 @@ def quick_member_eval(ast, env, element):
                     return True            
         # else use other checks 
     #TODO:(#ISSUE 18) no quick eval, can crash
+    if isinstance(element, Node):
+        element = interpret(element, env)
     aSet = interpret(ast, env)
     #print "element, set:", element, aSet
     return element in aSet                                             

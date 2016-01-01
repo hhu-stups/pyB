@@ -588,7 +588,19 @@ class TestSymbolicSets():
         # Test creation 
         env = Environment()
         assert interpret(root, env)         
-               
+
+
+    # Z_01_001.mc be
+    def test_symbolic_function_set3(self):
+        # Build AST
+        string_to_file("#PREDICATE {(0|->FALSE),(1|->TRUE),(2|->FALSE)}: INTEGER <-> BOOL", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test creation 
+        env = Environment()
+        assert interpret(root, env)                
+
 
     # This test fails if max_int=5. (25 is not in domain)
     def test_symbolic_lambda1(self):
@@ -1280,9 +1292,131 @@ class TestSymbolicSets():
         env = Environment()
         env._min_int = -2**31
         env._max_int = 2**31
-        assert interpret(root, env)     
+        assert interpret(root, env)    
+
+
+    def test_symbolic_getitem0(self):
+        # Build AST
+        string_to_file("#PREDICATE {(1,2)}(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+
+    def test_symbolic_getitem1(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(1,2)}\/{(3,4)})(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env)
+
+
+    def test_symbolic_getitem2(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(1,2)}/\{(1,2)})(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+
+    def test_symbolic_getitem3(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(1,2),(1,4)}-{(1,4)})(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
+
+    def test_symbolic_getitem4(self):
+        # Build AST
+        string_to_file("#PREDICATE ({1}*{2})(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+
+    def test_symbolic_getitem5(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(1,2)}~)(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
+        
+
+    def test_symbolic_getitem5(self):
+        # Build AST
+        string_to_file("#PREDICATE ({(1,3)};{(3,2)})(1)=2", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
  
  
+    def test_symbolic_getitem6(self):
+        # Build AST
+        string_to_file("#PREDICATE id({1,2})(1)=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+    def test_symbolic_getitem7(self):
+        # Build AST
+        string_to_file("#PREDICATE (%x.(x:NAT|x*x))(3)=9", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+
+
+    def test_symbolic_getitem8(self):
+        # Build AST
+        string_to_file("#PREDICATE ({x,y|x:NAT & y:NAT & y=x*x})(2)=4", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+ 
+ 
+    def test_symbolic_getitem9(self):
+        # Build AST
+        string_to_file("#PREDICATE UNION(x).(x:{(2,4)}|{x})(2)=4", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)  
+        
+        # Test fapp
+        env = Environment()
+        assert interpret(root, env) 
+        
+    # TODO:more getitem test for lambda, setcomp, gen uinon/intersect, proj1, proj2  
+    
     # e.g. C578/2013_08_14/machines_14082013/PS_00611_006
     import pytest
     @pytest.mark.xfail
