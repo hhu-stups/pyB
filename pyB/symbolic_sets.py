@@ -897,6 +897,7 @@ class SymbolicUnionSet(SymbolicSet):
     
     # function call of set
     def __getitem__(self, arg):
+        #print self.left_set, self.right_set, arg
         # must be set of tuples to work
         try:
             if isinstance(self.left_set, SymbolicSet):
@@ -912,20 +913,24 @@ class SymbolicUnionSet(SymbolicSet):
                         if image==arg:
                             return e[1]
                 raise IndexError()
-        except IndexError:
-            if isinstance(self.right_set, SymbolicSet):
-                result = self.right_set[arg] 
-                return result
-            else:
-                for e in self.right_set:
-                    image = e[0]
-                    if USE_RPYTHON_CODE:
-                        if image.__eq__(arg):
-                            return e[1]
-                    else:
-                        if image==arg:
-                            return e[1]
-        raise IndexError()
+        except (IndexError, ValueNotInDomainException):
+            pass
+        # check other set if left fails to return a value    
+        if isinstance(self.right_set, SymbolicSet):
+            result = self.right_set[arg] 
+            return result
+        else:
+            for e in self.right_set:
+                image = e[0]
+                if USE_RPYTHON_CODE:
+                    if image.__eq__(arg):
+                        result = e[1]
+                        return result
+                else:
+                    if image==arg:
+                        result = e[1]
+                        return result
+            raise IndexError()
 
     
     def enumerate_all(self):
@@ -1042,35 +1047,33 @@ class SymbolicIntersectionSet(SymbolicSet):
         # must be set of tuples to work
         resultL = None
         resultR = None
-        try:
-            if isinstance(self.left_set, SymbolicSet):
-                resultL = self.left_set[arg] 
-            else:
-                for e in self.left_set:
-                    image = e[0]
-                    if USE_RPYTHON_CODE:
-                        if image.__eq__(arg):
-                            resultL = e[1]
-                            break
-                    else:
-                        if image==arg:
-                            resultL = e[1]
-                            break
-                raise IndexError()
-        except IndexError:
-            if isinstance(self.right_set, SymbolicSet):
-                resultR = self.right_set[arg] 
-            else:
-                for e in self.right_set:
-                    image = e[0]
-                    if USE_RPYTHON_CODE:
-                        if image.__eq__(arg):
-                            resultR = e[1]
-                            break
-                    else:
-                        if image==arg:
-                            resultR = e[1]
-                            break
+        if isinstance(self.left_set, SymbolicSet):
+            resultL = self.left_set[arg] 
+        else:
+            for e in self.left_set:
+                image = e[0]
+                if USE_RPYTHON_CODE:
+                    if image.__eq__(arg):
+                        resultL = e[1]
+                        break
+                else:
+                    if image==arg:
+                        resultL = e[1]
+                        break
+        if isinstance(self.right_set, SymbolicSet):
+            resultR = self.right_set[arg] 
+        else:
+            for e in self.right_set:
+                image = e[0]
+                if USE_RPYTHON_CODE:
+                    if image.__eq__(arg):
+                        resultR = e[1]
+                        break
+                else:
+                    if image==arg:
+                        resultR = e[1]
+                        break
+        # return value only if both set produce the same result
         if USE_RPYTHON_CODE:
             if not resultL is None and resultL.__eq__(resultR):
                 return resultL

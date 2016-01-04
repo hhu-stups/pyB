@@ -1,1 +1,1 @@
-#PREDICATE UNION(x).(x:{(2,4)}|{x})(2)=4
+#PREDICATE A=bool(1<2)

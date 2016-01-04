@@ -1318,7 +1318,8 @@ def interpret(node, env):
                 args = tuple([args, arg])
             i = i+1
         if isinstance(function, SymbolicSet):
-            return function[args]
+            result = function[args]
+            return result
         return get_image(function, args)
 
 
