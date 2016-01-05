@@ -69,7 +69,7 @@ def compute_constrained_domains(predicate, env, varList):
                 yield d
             raise StopIteration()
         except SpecialCaseEnumerationFailedException:
-            print "\033[1m\033[91mDEBUG\033[00m: PyB constraint solver failed. Case not implemented"
+            #print "\033[1m\033[91mDEBUG\033[00m: PyB constraint solver failed. Case not implemented"
             raise StopIteration()
 
     
@@ -114,7 +114,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
     # variable(-domains) not constraint by others will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
     predList  = _compute_predicate_enum_order(pred_map)
-    [pred_map[x].time for x in predList]
+    #[pred_map[x].time for x in predList]
     
     # 3. calc variable domains. Goal: mapping from vars to domain sets
     test_dict = {}
@@ -141,6 +141,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # This constraint can easiely be used to compute a constraint domain.
             # The exact solution musst contain all or less elements than "sub_domain"
             try:
+                #print "DEBUG: using constraint",var_node.idName, must_be_computed_first
                 is_unary_constraint = must_be_computed_first==[]
                 if is_unary_constraint:
                     # no constrains by other vars. just use this sub-predicate to 
@@ -165,6 +166,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
                             raise PredicateDoesNotMatchException()
                     assert not len(test_dict)==0
                     # generate partial solution: all domain combinations of a subset of bound vars
+                    #print "xxx", [x.idName for x in already_computed_var_List], [x.idName for x in varList], pred
                     a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
                     # use partial solution to gen testset
                     sub_domain = frozenset([])
@@ -205,26 +207,20 @@ def _compute_using_pyB_solver(predicate, env, varList):
             all_values = enum_all_values_by_type(env, var_node)
             domain = frozenset(all_values)
 
-        # assigning constraint set or none
-        test_dict[var_node] = domain
-                    
-    # check if a solution has been found for every bound variable
-    solution_found = True
-    for var_node in varList:
-        domain = test_dict[var_node]
-        assert domain is not None
+        # e.g. in case of nested predicates, this may be a result of an empty image
+        # {x,y| .... {z| z=r[x,y] ...}}. This is a result of an over approximation 
         if domain==frozenset([]):
             if PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: Empty solution. Unable to constrain bound variable: %s" % var_node.idName
-            solution_found = False
-            
-    # use this solution and return a generator        
-    if solution_found:          
-        a_cross_product_iterator = _cross_product_iterator(varList, test_dict, {})
-        iterator = _solution_generator(a_cross_product_iterator, predicate, env, varList)
-        return iterator
-    else:
-        raise SpecialCaseEnumerationFailedException()
+                raise SpecialCaseEnumerationFailedException()
+        # assigning constraint set or none
+        test_dict[var_node] = domain
+                           
+    # use this solution and return a generator             
+    a_cross_product_iterator = _cross_product_iterator(varList, test_dict, {})
+    iterator = _solution_generator(a_cross_product_iterator, predicate, env, varList)
+    return iterator
+
 
 def _conj_predicate_to_list(predicate):
     if isinstance(predicate, AConjunctPredicate):
@@ -241,7 +237,7 @@ def _conj_predicate_to_list(predicate):
 # output(example): mapping {P0->(time0, vars0, compute_first0), , P1->(time1, vars1),... PN->(timeN, varsN, compute_firstN)}        
 def _analyze_predicates(predicate, env, varList):
     from abstract_interpretation import InfiniteConstraintException
-    pred_list = _conj_predicate_to_list(predicate)
+    pred_list = _conj_predicate_to_list(predicate) # AST to list
     pred_map  = {}
     for pred in pred_list:
         # analyse
@@ -250,6 +246,7 @@ def _analyze_predicates(predicate, env, varList):
         except InfiniteConstraintException:
             #print "DEBUG: skiping predicate", pretty_print(pred)
             continue # e.g. x:INTEGER (throw constraint away)
+        #print "DEBUG: analyzing constraint ",pred,  [x.idName for x in varList]
         constraint = _find_constrained_vars(pred, env, varList)
         constraint.set_time(time)
         constraint.set_predicate(pred)    
@@ -263,6 +260,8 @@ def _cross_product_iterator(varList, domain_dict, partial_cross_product):
     # 1. get next variable and non-empty finite domain
     idNode = varList[0]
     aSet = domain_dict[idNode]
+    if aSet==frozenset([]):
+        print "\033[1m\033[91mError\033[00m: Labeling failed. Empty domain. Unable to constrain bound variable: %s" % idNode.idName     
     assert not aSet==frozenset([])
     assert isinstance(idNode, AIdentifierExpression)
     var_name = idNode.idName
@@ -505,7 +504,9 @@ def _compute_test_set(node, env, var_node):
     elif isinstance(node, AMemberPredicate):
         # belong-case 1: left side is just an id
         if isinstance(node.children[0], AIdentifierExpression) and node.children[0].idName==var_node.idName: 
+            #print var_node.idName, node.children[1]
             aset = interpret(node.children[1], env)
+            #print "xxx", aset
             # e.g. x:{1,2,3} or x:S
             # return finite set on the left as test_set/constraint domain
             # FIXME: isinstance('x', frozenset) -> find enumeration order!

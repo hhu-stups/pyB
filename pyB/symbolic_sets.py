@@ -278,7 +278,7 @@ class SymbolicSet(W_Object):
     def __repr__(self):
         aset = self.enumerate_all()
         from animation_clui import print_values_b_style
-        return print_values_b_style(aset)
+        return "@symbolic set" + print_values_b_style(aset)
 
 class LargeSet(SymbolicSet):
     def __getitem__(self, args):

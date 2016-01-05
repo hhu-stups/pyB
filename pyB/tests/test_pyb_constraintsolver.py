@@ -876,7 +876,39 @@ class TestPyBConstraintSolver():
         env._min_int = -2**32
         env._max_int = 2**32
         assert interpret(root, env)  
+
+
+    def test_constraint_inverse0(self):
+        # Build AST:
+        string_to_file("#PREDICATE {(99,42),(100,43)}={x|x:0..100<|{(42,99),(43,100),(44,101)}~}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env)
+
+
+    def test_constraint_inverse1(self):
+        # Build AST:
+        string_to_file("#PREDICATE {(0,1),(1,0),(1,1)}={x,y|x:0..1 & y:0..1 & #(z).(z:(0..100<|{(42,99),(43,100),(44,101)})~[{{((1|->1)|->99),((0|->0)|->102),((1|->0)|->101),((0|->1)|->100)}(x|->y)}])}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env) 
+ 
         
+    def test_constraint_inverse2(self):
+        # Build AST:
+        string_to_file("#PREDICATE {((0,1)|->43), ((1,0)|->44), ((1,1)|->42) }={x,y,z|x:0..1 & y:0..1 & z:(0..100<|{(42,99),(43,100),(44,101)})~[{{((1|->1)|->99),((0|->0)|->102),((1|->0)|->101),((0|->1)|->100)}(x|->y)}]}", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        assert interpret(root,env)       
     
     # C578/2013_08_14/machines_14082013/Z_01_001.mch 
     # S= {(0|->64),(0|->65),(1|->66),(1|->67),(2|->68),(2|->69),(3|->70),(3|->71),(4|->0),

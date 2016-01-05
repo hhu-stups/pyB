@@ -364,7 +364,6 @@ class TestInterpRelations():
         env = Environment()
         assert interpret(root,env)
 
-
     def test_genAST_pred_rel_image(self):
         # Build AST:
         string_to_file("#PREDICATE f=r[S]", file_name)

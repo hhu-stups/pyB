@@ -1118,7 +1118,11 @@ def interpret(node, env):
                     continue
         else:
             image = [x[1] for x in rel if x[0] in aSet ]
-            
+        
+        if PRINT_WARNINGS and image==[]:
+            print "\033[1m\033[91mWARNING\033[00m: image expression returned empty set" 
+            #print "\033[1m\033[91mWARNING\033[00m: image expression returned empty set rel=%s args=%s" % (rel, aSet)
+     
         return frozenset(image)
     elif isinstance(node, AOverwriteExpression):
         #print pretty_print(node)
