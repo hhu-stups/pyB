@@ -909,7 +909,29 @@ class TestPyBConstraintSolver():
         # Test
         env = Environment()
         assert interpret(root,env)       
+
+    # C578/2013_08_14/machines_27082013/R_02_002
+    #def test_constraint_restr(self):
+    #    # Build AST:
+    #    string_to_file("#PREDICATE {((2,1),7)}  = (0..100)*INTEGER<|({((2|->1)|->42)};{(7|->42)}~) ", file_name)
+    #    ast_string = file_to_AST_str(file_name)
+    #    root = str_ast_to_python_ast(ast_string)
+    #
+    #    # Test
+    #    env = Environment()
+    #    assert interpret(root,env)
     
+     
+    #def test_constraint_lambda_membership(self):
+    #    # Build AST:
+    #    string_to_file("#PREDICATE {z_|z_ : (INTEGER * INTEGER) * INTEGER & (z_ : {((2|->3)|->180)} or (prj1(INTEGER*INTEGER,INTEGER)(z_) /: dom({((2|->3)|->180)}) & z_ : ((0 .. 209) * (0 .. 209)) * {-1}))}:INTEGER*INTEGER<->INTEGER   ", file_name)
+    #    ast_string = file_to_AST_str(file_name)
+    #    root = str_ast_to_python_ast(ast_string)
+    #
+    #    # Test
+    #    env = Environment()
+    #    assert interpret(root,env)   
+
     # C578/2013_08_14/machines_14082013/Z_01_001.mch 
     # S= {(0|->64),(0|->65),(1|->66),(1|->67),(2|->68),(2|->69),(3|->70),(3|->71),(4|->0),
     # (4|->1),(5|->2),(5|->3),(6|->4),(6|->5),(7|->6),(7|->7),(8|->8),(8|->9),(9|->10),
@@ -969,3 +991,6 @@ class TestPyBConstraintSolver():
 # TODO AComprehensionSetExpression:  verdi/verdi
 # seg:{"DR_SEG_0101001","DR_SEG_0101002","DR_SEG_0101003" }) & seg/:lim & suiv:{seg_suiv,dir_suiv,dist_suiv,lim_suiv,|seg_suiv:STRING & dir_suiv:INTEGER & dist_suiv:INTEGER & lim_suiv:POW(STRING) & seg|->dir|->seg_suiv|->dir_suiv:{"DR_SEG_0201106"|->0|->"DR_SEG_0201013"|->0,"DR_SEG_0201106"|->1|->"DR_SEG_0201105"|->1}& dist_suiv=dist-{"DR_SEG_0201106"|->2000}(seg_suiv) & lim_suiv=lim}
 #TODO: write testcase with other tuple combinations... (Klammerung)
+# C578/2013_08_14/machines_27082013/R_02_002
+# C578/2013_08_14/machines_14082013/PB_00611_005
+# (ox=%(pw,pd).(pd:nw & pw:il|{bg|->ns(pw),bc|->mc(pw),bh|->mg(pw),be|->me(pw),bd|->md(pw),bf|->mf(pw)}(pd)))
