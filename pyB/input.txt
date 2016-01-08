@@ -1,1 +1,1 @@
-#PREDICATE {z_|z_ : (INTEGER * INTEGER) * INTEGER & (z_ : {((2|->3)|->180)} or (prj1(INTEGER*INTEGER,INTEGER)(z_) /: dom({((2|->3)|->180)}) & z_ : ((0 .. 209) * (0 .. 209)) * {-1}))}:INTEGER*INTEGER<->INTEGER   
+#PREDICATE A=bool(1<2)
