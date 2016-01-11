@@ -269,6 +269,9 @@ class SymbolicSet(W_Object):
             elif isinstance(self, NaturalSet):
                 for e in self.NaturalSet_generator():
                      result.append(e)
+            elif isinstance(self, SymbolicStructSet):
+                for e in self.SymbolicStructSet_generator():
+                     result.append(e)
             else:
                 raise Exception("INTERNAL ERROR: unimplemented enumeration")                                           
             self.explicit_set_repr = frozenset(result)

@@ -1,7 +1,6 @@
 MACHINE StructTest
-CONSTANTS record
+CONSTANTS c
 PROPERTIES
-record : struct(a: STRING, b : INTEGER) &
-record =  rec(a: "abc", b : 1)
-
+c : struct(a: 6..10)
+& c = rec(a : 6)
 END
