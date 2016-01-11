@@ -268,11 +268,23 @@ def check_properties(node, env, mch):
                 at_least_one_solution = False
                 if VERBOSE:
                     print "enum. constants:", [n.idName for n in const_nodes]
-                gen = try_all_values(mch.aPropertiesMachineClause.children[0], env, const_nodes)
-                for prop_result in gen:
-                    if prop_result.bvalue:
+                generator = compute_constrained_domains(mch.aPropertiesMachineClause.children[0], env, const_nodes)
+                for dic in generator:
+                    for name in dic:
+                        value = dic[name]
+                        env.set_value(name, value)
+                    constant_unset = False
+                    for c in const_nodes:
+                        if env.get_value(c.idName) is None:
+                            constant_unset = True
+                    if not constant_unset and interpret(mch.aPropertiesMachineClause.children[0], env):
                         at_least_one_solution = True
-                        yield True
+                        yield True 
+                #gen = try_all_values(mch.aPropertiesMachineClause.children[0], env, const_nodes)
+                #for prop_result in gen:
+                #    if prop_result.bvalue:
+                #        at_least_one_solution = True
+                #        yield True
                 # This generator is only called when the Constraints are True.
                 # No Properties-solution means set_up fail
                 if not at_least_one_solution:

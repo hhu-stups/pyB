@@ -428,7 +428,7 @@ def couple_tree_to_conj_list(ast):
         return lst0 + lst1
     else:
         return [ast]     
-        
+ 
         
 # Helper for debugging                     
 def print_ast(root):
