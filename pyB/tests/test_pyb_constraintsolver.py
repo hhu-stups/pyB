@@ -994,3 +994,15 @@ class TestPyBConstraintSolver():
 # C578/2013_08_14/machines_27082013/R_02_002
 # C578/2013_08_14/machines_14082013/PB_00611_005
 # (ox=%(pw,pd).(pd:nw & pw:il|{bg|->ns(pw),bc|->mc(pw),bh|->mg(pw),be|->me(pw),bd|->md(pw),bf|->mf(pw)}(pd)))
+# TODO: C578.EML.014/CC_ZAUM_1, C578.EML.014/CF_ZSM_SIG_3
+#File "/Users/johnwitulski/witulski/git/pyB/pyB/interp.py", line 1046, in interpret
+#    ran = [e[1] for e in list(aSet)]
+#IndexError: string index out of range
+# TODO: C578.EML.014/CF_SEGMENT_9, C578.EML.014/CF_ZSM_SIG_4
+#   File "/Users/johnwitulski/witulski/git/pyB/pyB/constraintsolver.py", line 536, in _compute_test_set
+#    assert isinstance(aset, frozenset)
+# INDEXERROR _getitem__
+# C578.EML.014/CF_ZSM_SIG_6, C578.EML.014/CF_ZMA_PRUD_1
+# C578.EML.014/360_002:
+#   File "/Users/johnwitulski/witulski/git/pyB/pyB/bstate.py", line 164, in get_value
+#    raise ValueNotInBStateException(string)

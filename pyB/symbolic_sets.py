@@ -41,6 +41,7 @@ class SymbolicSet(W_Object):
         self.right_set = None
         self.l = 0
         self.r = 0
+        self.aDict = None
 
     def __mul__(self, aset):
         return SymbolicCartSet(self, aset, self.env)
@@ -375,7 +376,9 @@ class NaturalSet(InfiniteSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.NaturalSet_gen.next()
- 
+
+    def __repr__(self):
+        return "@symbolic set NATURAL" 
   
 # FIXME: set comprehension        
 class Natural1Set(InfiniteSet):
@@ -454,6 +457,8 @@ class Natural1Set(InfiniteSet):
         assert isinstance(self, SymbolicSet)
         return self.Natural1Set_gen.next()
 
+    def __repr__(self):
+        return "@symbolic set NATURAL1" 
 
 # the infinite B-set INTEGER 
 # FIXME: set comprehension   
@@ -537,6 +542,8 @@ class IntegerSet(InfiniteSet):
         assert isinstance(self, SymbolicSet)
         return self.IntegerSet_gen.next()
         
+    def __repr__(self):
+        return "@symbolic set INTEGER"
      
 # if min and max-int change over exec. this class will notice this change (env)
 # FIXME: set comprehension
@@ -1290,6 +1297,7 @@ class SymbolicPowerSet(SymbolicSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (pow)")
 
+        
 class SymbolicPower1Set(SymbolicSet):
     def __init__(self, aset, env):
         SymbolicSet.__init__(self, env)
@@ -1414,4 +1422,65 @@ class SymbolicIntervalSet(LargeSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (interval)")
 
+
+class SymbolicStructSet(SymbolicSet):
+    def __init__(self, aDict, env):
+        SymbolicSet.__init__(self, env)
+        self.aDict = aDict
+
+    # e:S (element:self.aDict)
+    def __contains__(self, element):
+        if not isinstance(element, frozenset):
+            raise NotImplementedError("Symbolic membership of structs")
+        for tup in element:    
+            if USE_RPYTHON_CODE: 
+                assert isinstance(tup, W_Tuple)
+                name  = tup[0]
+                value =  tup[1] 
+                values = self.aDict[name.string] # set of all values of'name'
+                assert isinstance(value, W_Object)
+                assert isinstance(values, W_Object)
+                if not values.__contains__(value):
+                    return False
+            else:
+                name  = tup[0]
+                value =  tup[1] 
+                values = self.aDict[name]
+                if value not in values:
+                    return False
+        return True 
+
+
+    # Warning: This is not lazy because of all_records()
+    def SymbolicStructSet_generator(self):
+        from enumeration import all_records
+        res = all_records(self.aDict)
+        result = []
+        for dic in res:
+            rec = []
+            for name in dic:
+                if USE_RPYTHON_CODE:
+                    value = dic[name]
+                    rec.append(W_Tuple((W_String(name),value)))
+                else:
+                    value = dic[name]
+                    rec.append(tuple([name,value]))
+            yield frozenset(rec)   
+
+    def __iter__(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        self.SymbolicStructSet_gen = self.SymbolicStructSet_generator()
+        return self 
+    
+    def next(self):
+        assert isinstance(self, W_Object)
+        assert isinstance(self, SymbolicSet)
+        return self.SymbolicStructSet_gen.next() 
+
+    def __getitem__(self, args):
+        raise Exception("INTERNAL ERROR: function application f(x) on none-relation (struct)")
+
+    def __repr__(self):
+        return "@symbolic set STRUCT" 
         

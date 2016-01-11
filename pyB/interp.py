@@ -1548,14 +1548,15 @@ def interpret(node, env):
             assert isinstance(rec_entry.children[-1], Expression)
             value = interpret(rec_entry.children[-1], env)
             dictionary[name] = value
-        res = all_records(dictionary)
-        result = []
-        for dic in res:
-            rec = []
-            for entry in dic:
-                rec.append(tuple([entry,dic[entry]]))
-            result.append(frozenset(rec))
-        return frozenset(result)
+        #res = all_records(dictionary)
+        #result = []
+        #for dic in res:
+        #    rec = []
+        #    for entry in dic:
+        #        rec.append(tuple([entry,dic[entry]]))
+        #    result.append(frozenset(rec))
+        #return frozenset(result)
+        return SymbolicStructSet(dictionary, env)
     elif isinstance(node, ARecExpression):
         result = []
         for rec_entry in node.children:

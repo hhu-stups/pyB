@@ -6,7 +6,7 @@ from enumeration import init_deffered_set, try_all_values, powerset, make_set_of
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print
-from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet
+from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet, SymbolicStructSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet, SymbolicTransRelation, SymbolicTransFunction
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet, SymbolicQuantifiedIntersection, SymbolicQuantifiedUnion 
@@ -1563,26 +1563,25 @@ def interpret(node, env):
         return W_Boolean(True)
     elif isinstance(node, ABooleanFalseExpression):
         return W_Boolean(False)
-    elif isinstance(node, AStructExpression):
+    elif isinstance(node, AStructExpression):        
         dictionary = {}
-        for rec_w_entry in node.children:
-            assert isinstance(rec_w_entry, ARecEntry)
+        for rec_entry in node.children:
+            assert isinstance(rec_entry, ARecEntry)
             name = ""
-            if isinstance(rec_w_entry.children[0], AIdentifierExpression):
-                name = rec_w_entry.children[0].idName
-            assert isinstance(rec_w_entry.children[-1], Expression)
-            value = interpret(rec_w_entry.children[-1], env)
+            if isinstance(rec_entry.children[0], AIdentifierExpression):
+                name = rec_entry.children[0].idName
+            assert isinstance(rec_entry.children[-1], Expression)
+            value = interpret(rec_entry.children[-1], env)
             dictionary[name] = value
-        res = all_records(dictionary)
-        result = []
-        for dic in res:
-            rec = []
-            for w_entry in dic:
-                key = W_String(w_entry)
-                value = dic[w_entry]
-                rec.append(W_Tuple((key,value)))
-            result.append(frozenset(rec))
-        return frozenset(result)
+        #res = all_records(dictionary)
+        #result = []
+        #for dic in res:
+        #    rec = []
+        #    for entry in dic:
+        #        rec.append(tuple([entry,dic[entry]]))
+        #    result.append(frozenset(rec))
+        #return frozenset(result)
+        return SymbolicStructSet(dictionary, env)
     elif isinstance(node, ARecExpression):
         result = []
         for rec_w_entry in node.children:

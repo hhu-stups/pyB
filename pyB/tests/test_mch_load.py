@@ -386,6 +386,29 @@ class TestMCHLaod():
         arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
         assert env.get_value("xx") == 4
 
+    
+    def test_structs4(self):
+        string = '''
+        MACHINE StructTest
+        CONSTANTS record
+        PROPERTIES
+        record : struct(a: STRING, b : INTEGER) &
+        record =  rec(a: "abc", b : 1)
+
+        END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env, mch) # search for CONSTANTS which make PROPERTIES True
+        assert env.get_value("record")==frozenset([('a', 'abc'), ('b', 1)])
+    
+
 
     def test_string_set(self):
         string = '''
@@ -517,12 +540,12 @@ class TestMCHLaod():
 
     def test_ProB_vs_pyB_num_rounding(self):
         string = '''
-		MACHINE Test
-		VARIABLES xx
-		INVARIANT xx:NAT
-		INITIALISATION xx:=(2 + 3) / 2
-		END'''
-		# Build AST
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=(2 + 3) / 2
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -537,12 +560,12 @@ class TestMCHLaod():
 
     def test_ProB_vs_pyB_num_rounding2(self):
         string = '''
-		MACHINE Test
-		VARIABLES xx
-		INVARIANT xx:NAT
-		INITIALISATION xx:=(99) / 100
-		END'''
-		# Build AST
+        MACHINE Test
+        VARIABLES xx
+        INVARIANT xx:NAT
+        INITIALISATION xx:=(99) / 100
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -557,10 +580,10 @@ class TestMCHLaod():
 
     def test_only_properties(self):
         string = '''
-  		MACHINE Only
-		PROPERTIES 4=4 	
-		END'''
-		# Build AST
+        MACHINE Only
+        PROPERTIES 4=4  
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)
@@ -574,10 +597,10 @@ class TestMCHLaod():
 
     def test_only_invariant(self):
         string = '''
-  		MACHINE Only
-		INVARIANT 4=4 	
-		END'''
-		# Build AST
+        MACHINE Only
+        INVARIANT 4=4   
+        END'''
+        # Build AST
         string_to_file(string, file_name)
         ast_string = file_to_AST_str(file_name)
         root = str_ast_to_python_ast(ast_string)

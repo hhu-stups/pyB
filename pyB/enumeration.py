@@ -58,6 +58,20 @@ def all_values_by_type(atype, env, node):
         # TODO: test for realtions, seams incomplete
         lst = frozenset([(x,y) for x in val_pi for y in val_i])
         return lst
+    elif isinstance(atype, StructType):
+        value_dict = {}
+        for name in atype.dictionary:
+            rec_type = atype.dictionary[name]
+            values = all_values_by_type(rec_type, env, node)
+            value_dict[name]=values
+        res = all_records(value_dict)
+        lst = []
+        for dic in res:
+            rec = []
+            for entry in dic:
+                rec.append(tuple([entry,dic[entry]]))
+            lst.append(frozenset(rec))
+        return frozenset(lst)
     string = "Unknown Type / Not Implemented: %s" % atype
     #print string
     raise Exception(string)

@@ -1419,6 +1419,7 @@ class TestSymbolicSets():
         assert interpret(root, env) 
         
     # TODO:more getitem test for lambda, setcomp, gen uinon/intersect, proj1, proj2  
+    # e.g. C578.EML.014/CF_CV_1 __getitem__ fail
     
     # e.g. C578/2013_08_14/machines_14082013/PS_00611_006
     import pytest
