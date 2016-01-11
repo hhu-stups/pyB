@@ -6,7 +6,7 @@ from animation import calc_next_states
 from ast_nodes import *
 from bmachine import BMachine
 from bexceptions import *
-from config import DEFAULT_INPUT_FILENAME, VERBOSE
+from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
@@ -71,6 +71,11 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
             env.init_done = True
 
     print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
+    if EVAL_CHILD_INVARIANT:
+        bstate = env.state_space.get_state()
+        for bmachine in bstate.bmch_dict:
+            if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
     bstate_lst = calc_next_states(env, mch)
     show_ui(env, mch, bstate_lst)
     next_states = []
@@ -244,6 +249,13 @@ def run_model_checking_mode(argv):
         if not interpret(mch.aInvariantMachineClause, env):
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
             return False
+        if EVAL_CHILD_INVARIANT:
+            bstate = env.state_space.get_state()
+            for bmachine in bstate.bmch_dict:
+                if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                    if not interpret(bmachine.aInvariantMachineClause, env):
+                        print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
+                        return False 
         next_states = calc_next_states(env, mch)
         env.state_space.undo()
         for s in next_states:

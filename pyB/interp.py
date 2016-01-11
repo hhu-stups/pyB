@@ -629,6 +629,7 @@ def interpret(node, env):
         return result
     elif isinstance(node, AInvariantMachineClause):
         result = interpret(node.children[0], env)
+        # TODO: Check invariant of child machines (Includes, ...)
         if not result:
             print "\033[1m\033[91mInvariant violation\033[00m"
             print "\nFALSE Predicates:"

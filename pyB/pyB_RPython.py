@@ -7,7 +7,7 @@ from animation_clui import show_ui, print_values_b_style, print_set_up_bstates ,
 from animation import calc_next_states
 from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AOperationsMachineClause
 from bmachine import BMachine
-from config import DEFAULT_INPUT_FILENAME, VERBOSE
+from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT
 from environment import Environment
 from helpers import file_to_AST_str, file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, parse_ast, remove_definitions, str_ast_to_python_ast, remove_defs_and_parse_ast
@@ -168,6 +168,11 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
             env.init_done = True
 
     print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
+    if EVAL_CHILD_INVARIANT:
+        bstate = env.state_space.get_state()
+        for bmachine in bstate.bmch_dict:
+            if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
     bstate_lst = calc_next_states(env, mch)
     show_ui(env, mch, bstate_lst)
     next_states = []
@@ -228,6 +233,14 @@ def _run_model_checking_mode(env, mch):
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
             #print env.state_space.history
             return -1
+        if EVAL_CHILD_INVARIANT:
+            bstate = env.state_space.get_state()
+            for bmachine in bstate.bmch_dict:
+                if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                    w_bool = interpret(bmachine.aInvariantMachineClause, env)
+                    if not w_bool.bvalue:
+                        print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
+                        return False 
         next_states = calc_next_states(env, mch)
         s_space.undo()
         for tup in next_states:

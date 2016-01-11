@@ -25,6 +25,7 @@ USE_PYB_CONSTRAINT_SOLVER = True # Performance optimisation. Quick eval of conj.
 PRINT_SUB_PROPERTIES  = True # P0 & P1 & ...PN
 #PRINT_SUB_INVARIANT  = True
 USE_ANIMATION_HISTORY = True
+EVAL_CHILD_INVARIANT  = True
 PROPERTIES_TIMEOUT    = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
 
 # *** Set to True if you want to translate to C. Otherwise loose of performance **
