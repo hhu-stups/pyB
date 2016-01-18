@@ -5,7 +5,7 @@ repositories {
 }
 
 dependencies {
-  compile group: "de.hhu.stups", name: "bparser", version: '2.4.40'
+  compile group: "de.hhu.stups", name: "bparser", version: '2.5.1'
 }
 
 task uberjar(type: Jar, dependsOn: [':compileJava', ':processResources']) {

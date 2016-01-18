@@ -859,14 +859,12 @@ def interpret(node, env):
 #
 # *************************
     elif isinstance(node, AMemberPredicate):
-        #print pretty_print(node)
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
             elm = interpret(node.children[0], env)
             result = quick_member_eval(node.children[1], env, elm)
             return result
         elm = interpret(node.children[0], env)
         aSet = interpret(node.children[1], env)
-        #print elm, aSet
         return elm in aSet
     elif isinstance(node, ANotMemberPredicate):
         if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?

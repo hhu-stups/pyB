@@ -910,7 +910,27 @@ class TestMCHAnimation():
         assert len(next_states)==2
 
 
-    def test_init_nondeterministic(self):        
+    def test_setup_nondeterministic1(self):        
+        string = '''
+        MACHINE Test
+		CONSTANTS x
+		PROPERTIES x:0..3
+
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        assert len(bstates)==4
+        
+
+    def test_init_nondeterministic1(self):        
         string = '''
         MACHINE         Test
         INVARIANT       xx:NAT & xx <4
@@ -935,7 +955,29 @@ class TestMCHAnimation():
             xx = bstate.get_value("xx", mch)
             assert xx in [0,1,2,3]
             env.state_space.undo()
-      
+            
+
+    def test_init_nondeterministic2(self):        
+        string = '''
+        MACHINE Test
+		VARIABLES x
+		INVARIANT x:0..5
+		INITIALISATION x::0..5
+		END'''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+        
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch)
+        bstates = set_up_constants(root, env, mch)
+        assert len(bstates)==0
+        bstates = exec_initialisation(root, env, mch)
+        assert len(bstates)==6
+                        
       
     # kills ProB Performance :)
     def test_ani_toplevel_any_op_args(self):
