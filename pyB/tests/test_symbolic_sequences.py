@@ -48,7 +48,7 @@ class TestSymbolicSequences():
 
     import pytest
     @pytest.mark.xfail         
-    def test_symbolic_sequences_first2(self):
+    def test_symbolic_sequences_first3(self):
         # Build AST
         # f(1)=1
         string_to_file("#PREDICATE first(%x.(x:INTEGER|x))=1", file_name)
@@ -71,6 +71,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)    
         
         
@@ -84,6 +86,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
 
                 
@@ -112,6 +116,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)              
         
 
@@ -126,6 +132,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
  
         
@@ -141,6 +149,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)        
 
 
@@ -155,6 +165,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)        
  
  
@@ -168,6 +180,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)    
     
  
@@ -179,6 +193,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)    
         
         
@@ -191,6 +207,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
         
     import pytest
@@ -203,6 +221,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)       
         
  
@@ -228,6 +248,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)               
     
 
@@ -240,6 +262,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)  
     
     
@@ -252,6 +276,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)        
     
     
@@ -264,6 +290,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)    
 
 
@@ -276,6 +304,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)     
   
     
@@ -288,6 +318,8 @@ class TestSymbolicSequences():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)       
     
     # C578.EML.014/019_100 DontKnowIfEqualException

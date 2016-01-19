@@ -51,6 +51,9 @@ class AbstractSymbolicSequence(SymbolicSet):
             self.explicit_set_repr = frozenset(result)
             self.explicit_set_computed = True
         return self.explicit_set_repr
+
+    def __repr__(self):
+        return "@symbolic sequence"
         
 # represents NOT a sequence, but a set of sequences
 class SymbolicSequenceSet(AbstractSymbolicSequence):

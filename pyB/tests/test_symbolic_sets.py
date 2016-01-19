@@ -73,6 +73,8 @@ class TestSymbolicSets():
                     break
                 i = i-1    
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         
         aSet = NatSet(env)
         check_enum(aSet, 10, int)
@@ -98,6 +100,8 @@ class TestSymbolicSets():
                     break
                 i = i-1    
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         
         aSet = SymbolicCartSet(NatSet(env), IntegerSet(env), env)
         check_enum(aSet, 10, tuple) 
@@ -133,6 +137,8 @@ class TestSymbolicSets():
                     break
                 i = i-1    
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         aSet = SymbolicPowerSet(NatSet(env), env)
         check_enum(aSet, 10, frozenset)
         aSet = SymbolicPowerSet(frozenset([1,2]), env)
@@ -150,6 +156,8 @@ class TestSymbolicSets():
                     break
                 i = i-1    
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         
         aSet = SymbolicRelationSet(NatSet(env), IntegerSet(env), env, node=None)
         check_enum(aSet, 10, frozenset)     
@@ -200,6 +208,8 @@ class TestSymbolicSets():
                     break
                 i = i-1    
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         
         aSet = SymbolicRelationSet(frozenset([1,2]), frozenset([3]), env, node=None) 
         assert [x for x in aSet] == [frozenset([]), frozenset([(1, 3)]), frozenset([(2, 3)]), frozenset([(2, 3), (1, 3)])]
@@ -287,6 +297,9 @@ class TestSymbolicSets():
                                     
     def test_symbolic_set_element_of(self):
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
+        
         inf_set = IntegerSet(env)
         assert 1 in inf_set
         inf_set = NaturalSet(env)
@@ -317,6 +330,9 @@ class TestSymbolicSets():
         
     def test_symbolic_set_compare(self):
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
+        
         inf_set = IntegerSet(env)
         inf_set2 = IntegerSet(env)
         assert inf_set == inf_set2
@@ -331,6 +347,9 @@ class TestSymbolicSets():
     
     def test_symbolic_set_len(self):
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
+        
         large_set = NatSet(env)
         assert len(large_set)== env._max_int +1
         large_set = Nat1Set(env)
@@ -341,7 +360,7 @@ class TestSymbolicSets():
     
     
     def test_symbolic_set_subset(self):
-        env = Environment()
+        env = Environment()        
         env._min_int = -2**31
         env._max_int = 2**31
         nat_set = NatSet(env)
@@ -397,6 +416,8 @@ class TestSymbolicSets():
 
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root.children[0], env)
         
         # Build AST
@@ -406,6 +427,8 @@ class TestSymbolicSets():
 
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root.children[0], env)
         
         # Build AST
@@ -424,6 +447,8 @@ class TestSymbolicSets():
 
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root.children[0], env)
  
         
@@ -506,6 +531,7 @@ class TestSymbolicSets():
 
         # Test fapp
         env = Environment()
+        
         assert interpret(root.children[0], env)
         
         # Build AST
@@ -804,6 +830,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         env.get_all_strings(root)
         assert interpret(root, env) 
         
@@ -837,6 +865,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
         
     import pytest
@@ -850,6 +880,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
 
 
@@ -861,6 +893,8 @@ class TestSymbolicSets():
         
         # Test enum
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
         
        
@@ -926,6 +960,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
 
@@ -939,6 +975,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
 
@@ -952,6 +990,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
 
@@ -967,6 +1007,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
 
@@ -980,6 +1022,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)   
 
     
@@ -992,6 +1036,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
 
 
@@ -1004,6 +1050,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
 
 
@@ -1030,6 +1078,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
 
@@ -1041,6 +1091,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
         
  
@@ -1052,6 +1104,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)       
 
     def test_symbolic_overwrite(self):
@@ -1062,6 +1116,8 @@ class TestSymbolicSets():
         
         # Test 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env)
 
     # TODO: union and inter tests for symbolic instances  
@@ -1405,6 +1461,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
  
  
@@ -1416,6 +1474,8 @@ class TestSymbolicSets():
         
         # Test fapp
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         assert interpret(root, env) 
         
     # TODO:more getitem test for lambda, setcomp, gen uinon/intersect, proj1, proj2  

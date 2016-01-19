@@ -278,7 +278,7 @@ class SymbolicSet(W_Object):
             self.explicit_set_computed = True
         return self.explicit_set_repr
         
-        
+    # FIXME: maybe a endless loop?    
     def __repr__(self):
         aset = self.enumerate_all()
         from animation_clui import print_values_b_style

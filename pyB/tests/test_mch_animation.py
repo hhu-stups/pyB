@@ -373,6 +373,7 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -415,6 +416,7 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -492,6 +494,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -527,6 +531,7 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
         env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
@@ -563,6 +568,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -591,6 +598,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -625,6 +634,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -661,6 +672,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -689,6 +702,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -717,6 +732,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -812,6 +829,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -900,6 +919,8 @@ class TestMCHAnimation():
         
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -996,7 +1017,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
-        env._max_int = 8
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1028,8 +1050,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
-        env._max_int = 8
         env._min_int = -1
+        env._max_int = 8
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1038,7 +1060,7 @@ class TestMCHAnimation():
         assert 8 == env.get_value("xx")
         next_states = calc_next_states(env,mch)
         assert next_states[0].opName=="op"
-        assert len(next_states)==5
+        assert len(next_states)==5 #max(abs(min_int),max_int)+1 (zero)
         for op_and_state in next_states:
             bstate = op_and_state.bstate
             zz = op_and_state.parameter_values[0]
@@ -1062,6 +1084,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1132,8 +1156,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
-        env._max_int = 5
         env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1165,6 +1189,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1200,6 +1226,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
@@ -1230,6 +1258,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env,mch)
@@ -1483,6 +1513,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.visible_operations]
@@ -1515,6 +1547,8 @@ class TestMCHAnimation():
         
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.visible_operations]
@@ -1552,6 +1586,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         possible_ops = [op.op_name for op in env.visible_operations]
@@ -2002,6 +2038,8 @@ class TestMCHAnimation():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)

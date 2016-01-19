@@ -344,6 +344,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         type_with_known_types(root.children[0], env, [], ["f"])
         assert interpret(root,env)
 
@@ -365,6 +367,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         env.add_ids_to_frame(["f"])
         type_with_known_types(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(1,1),(2,4),(3,9)]))
@@ -378,6 +382,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8        
         env.add_ids_to_frame(["f"])
         type_with_known_types(root, env, [], ["f","x"])
         env.set_value("f", frozenset([(((1,1),1),3),(((1,1),2),4),(((1,2),1),4),(((2,1),1),4),(((1,2),2),5),(((2,2),1),5),(((2,1),2),5),(((2,2),2),6)]))
@@ -432,6 +438,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a')]), frozenset([(1, 'a'), (2, 'b')]), frozenset([]), frozenset([(1, 'b')])]))
@@ -445,6 +453,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5 
         env.add_ids_to_frame(["s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([frozenset([(2, 'a'), (1, 'b')]), frozenset([(1, 'a'), (2, 'b')])]))
@@ -491,6 +501,7 @@ class TestInterpFunctions():
         assert env.get_value("s")==frozenset([(2,'a'), (1,'b')])
         assert env.get_value("t")==frozenset([(1,'a'), (2,'b')])
         assert env.get_value("u")==frozenset([(1,'b'), (2,'a'), (3,'a'), (4,'b')])
+
 
     def test_genAST_pred_seq_prepend(self):
         # Build AST:
@@ -659,6 +670,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         env.add_ids_to_frame(["S","s"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
@@ -672,6 +685,8 @@ class TestInterpFunctions():
         root = str_ast_to_python_ast(ast_string)
 
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         env.add_ids_to_frame(["t","s","S"])
         env.set_value("S", frozenset(["a","b"]))
         env.set_value("s", frozenset([(2, frozenset([(1, 'a'), (2, 'b')])), (1, frozenset([(2, 'a'), (1, 'b')]))]))
@@ -687,6 +702,7 @@ class TestInterpFunctions():
 
         # Test
         env = Environment()
+        
         assert interpret(root,env)
         f = env.get_value("f")
         assert f == frozenset([(0,frozenset([1,2])),(1,frozenset([1,7])),(2,frozenset([3]))])

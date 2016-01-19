@@ -28,6 +28,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "z"), IntegerType)
         unqantPred = root.children[0]
@@ -37,8 +39,6 @@ class TestConstraintSolver():
         Q = unqantPred.children[-1].children[1]
         assert isinstance(P, Predicate)
         assert isinstance(Q, Predicate)
-        #env._min_int = -2**32
-        #env._max_int = 2**32
         domain = compute_using_external_solver(P, env, varList)
         assert frozenset([x["z"] for x in domain])==frozenset([3,4])
 
@@ -85,6 +85,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "z"), IntegerType)
         exqantPred = root.children[0]
@@ -107,6 +109,8 @@ class TestConstraintSolver():
         
         # Test
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
         lambdaexpr = root.children[0].children[0].children[0] 
@@ -116,8 +120,6 @@ class TestConstraintSolver():
         E = lambdaexpr.children[-1]
         assert isinstance(P, Predicate)
         assert isinstance(E, Expression)
-        env._min_int = -2**8
-        env._max_int = 2**8
         domain = compute_using_external_solver(P, env, varList)
         #print domain
         assert frozenset([x["x"] for x in domain])== frozenset(range(1,100+1))
@@ -133,6 +135,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         type_with_known_types(root, env, [], ["length"])
         assert isinstance(get_type_by_name(env, "x"), StringType)
         lambdaexpr = root.children[0].children[1].children[1] 
@@ -142,8 +146,6 @@ class TestConstraintSolver():
         E = lambdaexpr.children[-1]
         assert isinstance(P, Predicate)
         assert isinstance(E, Expression)
-        env._min_int = -2**8
-        env._max_int = 2**8
         env.all_strings = ['abc', '', 'hello']
         domain = compute_using_external_solver(P, env, varList)
         sol = frozenset([x["x"] for x in domain])
@@ -160,6 +162,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
         setexpr = root.children[0].children[0].children[0] 
@@ -167,8 +171,6 @@ class TestConstraintSolver():
         varList = setexpr.children[0:-1]
         P = setexpr.children[-1]
         assert isinstance(P, Predicate)
-        env._min_int = -2**8
-        env._max_int = 2**8
         domain = compute_using_external_solver(P, env, varList)
         assert frozenset([x["x"] for x in domain])==frozenset([12])
 
@@ -185,6 +187,8 @@ class TestConstraintSolver():
 
         # Test
         env = Environment()
+        env._min_int = -2**8
+        env._max_int = 2**8
         type_with_known_types(root, env, [], [""])
         assert isinstance(get_type_by_name(env, "x"), IntegerType)
         setexpr = root.children[0].children[0]
@@ -193,8 +197,6 @@ class TestConstraintSolver():
         P = setexpr.children[-2]
         E = setexpr.children[-1]
         assert isinstance(P, Predicate)
-        env._min_int = -2**8
-        env._max_int = 2**8
         domain = compute_using_external_solver(P, env, varList)
         assert frozenset([x["x"] for x in domain])==frozenset([-4,-3,-2,-1,1,2,3,4])
         

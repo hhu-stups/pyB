@@ -296,6 +296,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
@@ -308,6 +310,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root.children[0], env, [], [])
         assert not interpret(root.children[0],env)
 
@@ -320,6 +324,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
@@ -347,6 +353,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root.children[0], env, [], [])
         assert interpret(root.children[0],env)
 
@@ -359,6 +367,8 @@ class TestInterpNumbers():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         type_with_known_types(root.children[0], env, [], [])
         assert not interpret(root.children[0],env)
 

@@ -236,15 +236,18 @@ def run_model_checking_mode(argv):
         print "WARNING: set up constants not supported yet" 
         return
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
-    if not len(bstates)==1:
-        print "WARNING: only one init. expected" 
-        print "real init number:", len(bstates)
-        return
+    for bstate in bstates:
+        if not env.state_space.is_seen_state(bstate):
+            env.state_space.set_current_state(bstate) 
+    #if not len(bstates)==1:
+    #    print "WARNING: only one init. expected" 
+    #    print "real init number:", len(bstates)
+    #    return
     if not mch.has_invariant_mc:
         print "WARNING: no invariant present" 
         return   
      
-    env.state_space.set_current_state(bstates[0])
+    #env.state_space.set_current_state(bstates[0])
     while not env.state_space.empty():                          # 7. model check  
         if not interpret(mch.aInvariantMachineClause, env):
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
@@ -260,7 +263,7 @@ def run_model_checking_mode(argv):
         env.state_space.undo()
         for s in next_states:
             bstate = s.bstate
-            opName = s.opName
+            #opName = s.opName
             #bstate.print_bstate() # TODO: check double values with Lift2.mch example
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate) 

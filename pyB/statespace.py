@@ -31,6 +31,7 @@ class StateSpace:
         assert isinstance(bstate, BState)
         h = bstate.__hash__()
         if h in self.seen_states:
+
              # check hash collision. Be sure this state is new!
              s = self.seen_states[h]
              return s.equal(bstate)

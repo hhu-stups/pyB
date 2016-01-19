@@ -285,6 +285,8 @@ class TestMCHLaod():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -474,6 +476,8 @@ class TestMCHLaod():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)
@@ -500,6 +504,8 @@ class TestMCHLaod():
 
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)
@@ -527,6 +533,8 @@ class TestMCHLaod():
         
         # Test
         env = Environment()
+        env._min_int = -16
+        env._max_int = 16
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch)
         bstates = set_up_constants(root, env, mch)

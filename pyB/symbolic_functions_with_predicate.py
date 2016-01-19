@@ -228,6 +228,9 @@ class SymbolicLambda(SymbolicSet):
         return self.SymbolicLambda_gen.next()            
 
 
+    def __repr__(self):
+        return "@symbolic lambda" + pretty_print(self.node)
+
 class SymbolicComprehensionSet(SymbolicSet):
     def __init__(self, varList, pred, node, env):
         from constraintsolver import compute_constrained_domains
@@ -393,6 +396,8 @@ class SymbolicComprehensionSet(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicComprehensionSet_gen.next()   
 
+    def __repr__(self):
+        return "@symbolic set comprehension" + pretty_print(self.node)
 
 class SymbolicQuantifiedIntersection(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
@@ -470,6 +475,8 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicQuantifiedIntersection_gen.next() 
 
+    def __repr__(self):
+        return "@symbolic quantified intersection" + pretty_print(self.node)
 
 class SymbolicQuantifiedUnion(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
@@ -528,6 +535,9 @@ class SymbolicQuantifiedUnion(SymbolicSet):
         result = self.enumerate_all()
         for e in result:
             yield e
+
+    def __repr__(self):
+        return "@symbolic quantified uniton" + pretty_print(self.node)
 
     def __iter__(self):
         assert isinstance(self, W_Object)

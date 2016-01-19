@@ -245,6 +245,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -295,6 +297,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -318,6 +322,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -834,6 +840,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -863,6 +871,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -894,6 +904,8 @@ class TestInterpSubstitutions():
 
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
@@ -929,6 +941,8 @@ class TestInterpSubstitutions():
         
         # Test
         env = Environment()
+        env._min_int = -1
+        env._max_int = 5
         mch = parse_ast(root, env)
         type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
         arbitrary_init_machine(root, env, mch) # init VARIABLES and eval INVARIANT
