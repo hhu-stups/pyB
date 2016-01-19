@@ -231,10 +231,13 @@ def run_model_checking_mode(argv):
     mch = parse_object      
 
     bstates = set_up_constants(root, env, mch, solution_file_read=False)  # also evals properties
-    # TODO: implement setup and init non determinism 
-    if len(bstates)>0:
-        print "WARNING: set up constants not supported yet" 
+    # TODO: implement setup and init non determinism
+    if len(bstates)==1:
+        env.state_space.set_current_state(bstates[0])  
+    elif len(bstates)>1:
+        print "WARNING: non det. set up constants not supported yet" 
         return
+        
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
     for bstate in bstates:
         if not env.state_space.is_seen_state(bstate):

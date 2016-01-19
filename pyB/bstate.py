@@ -29,9 +29,43 @@ class BState():
         string = self.__repr__()
         print string
     
+    def __get_sorted_key_list(self, dic):
+        key_list = []
+        for key in dic:
+            if key_list == []:
+                key_list.append(key)
+            else:
+                for index in range(len(key_list)):
+                    if key>key_list[index]:
+                        continue
+                    else:
+                        key_list.insert(index,key)
+        return key_list
+        
+        
+    def __get_sorted_machine_list(self, dic):
+        key_list = [] 
+        for bmch in dic:
+            if bmch is None:
+                continue
+            if key_list == []:
+                key_list.append(bmch)
+            else:
+                for index in range(len(key_list)):
+                    if bmch.mch_name > key_list[index].mch_name:
+                        continue
+                    else:
+                        key_list.insert(index, bmch)
+        if None in dic:
+            key_list.append(None)
+        return key_list       
+
+            
     def __repr__(self):
         string = ""
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
+        #sorted_bmch_list = self.__get_sorted_machine_list(self.bmch_dict)
+        #for bmch in sorted_bmch_list:
         for bmch in self.bmch_dict:
             if bmch is None:
                 string += "Predicate or Expression:"
@@ -41,6 +75,8 @@ class BState():
             lst = "["
             for dic in self.bmch_dict[bmch]:
                 d = "{"
+                #sorted_key_list = self.__get_sorted_key_list(dic)
+                #for k in sorted_key_list:
                 for k in dic:
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
