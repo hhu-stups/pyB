@@ -1647,6 +1647,11 @@ class TestMCHAnimation():
         arbitrary_init_machine(root, env, mch)
         value = env.get_value("marriage") 
         assert value==frozenset([])
+        value1 = env.get_value("male")
+        assert value1==frozenset([])
+        value2 = env.get_value("female")
+        assert value2==frozenset([])
+
         
         next_states = calc_next_states(env,mch)
         assert next_states[0].opName=="born"

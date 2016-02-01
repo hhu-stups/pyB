@@ -141,7 +141,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # This constraint can easiely be used to compute a constraint domain.
             # The exact solution musst contain all or less elements than "sub_domain"
             try:
-                #print "DEBUG: using constraint",var_node.idName, must_be_computed_first
+                print "DEBUG: using constraint",var_node.idName, must_be_computed_first
                 is_unary_constraint = must_be_computed_first==[]
                 if is_unary_constraint:
                     # no constrains by other vars. just use this sub-predicate to 
@@ -212,7 +212,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
         if domain==frozenset([]):
             if PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: Empty solution. Unable to constrain bound variable: %s" % var_node.idName
-                raise SpecialCaseEnumerationFailedException()
+            raise SpecialCaseEnumerationFailedException()
         # assigning constraint set or none
         test_dict[var_node] = domain
                            
@@ -345,7 +345,7 @@ def _compute_variable_enum_order(pred_map, varList):
         if not change:
             if PRINT_WARNINGS:
                 print "\033[1m\033[91mError\033[00m: Unable to compute topologic order of bound vars %s" % [x.idName for x in varList]
-                raise Exception()
+            raise Exception()
     
     # 3. variable order found. return result
     assert len(result)==len(varList)
