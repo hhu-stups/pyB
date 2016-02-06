@@ -10,6 +10,8 @@ class Node():
     
     # Rpython typing fails on direct access like node.children[i].
     # But it doesnt fails when a method does it
+    #from rpython.rlib.jit import JitDriver
+    #@jit.elidable_promote('all')
     def get(self, index):
         return self.children[index]
         
@@ -25,6 +27,11 @@ class Node():
     
     def copy(self):
         return self.clone()
+        
+    def eval(self, env):
+        print "\nError: unimplemented pyB feature: %s", self
+        raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s", self)
+        return W_None() # RPython: Avoid return of python None
 
 # Baseclasses Clause, Predicate, Expression and Substitution are used for assertions
 # inside the interpreter. (node classification )

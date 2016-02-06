@@ -522,332 +522,382 @@ def _learn_assigned_values(root, env, lst):
 # returns a W_Object. Wrapping is a interpreter task. Not a task of the obejcts or their methods   
 # jitdriver.jit_merge_point(node=node, env=env)  
 def interpret(node, env):
+    return node.eval(env)
+    
 # ********************************************
 #
 #        0. Interpretation-mode 
 #
 # ********************************************
-    if isinstance(node, APredicateParseUnit): #TODO: move print to animation_clui
-        #type_check_predicate(node, env)
-        #idNodes = find_var_nodes(node) 
-        #idNames = [n.idName for n in idNodes]
-        #if idNames ==[]: # variable free predicate
-        result = interpret(node.get(0), env)
-        return result
-        """   
-        else:            # there are variables 
-            env.add_ids_to_frame(idNames)
-            learnd_vars = learn_assigned_values(node, env)
-            if learnd_vars and VERBOSE:
-                print "learnd(no enumeration): ", learnd_vars
-            not_set = []
-            for n in idNodes:
-                if env.get_value(n.idName)==None:
-                    not_set.append(n)
-            # enumerate only unknown vars
-            # Dont enums quantified vars like !x.(P=>Q). This is done later
-            if not_set:
-                if VERBOSE:
-                    print "enum. vars:", [n.idName for n in not_set]
-                gen = try_all_values(node.get(0), env, not_set)
-                if gen.next():
-                    for i in idNames:
-                        if VERBOSE:
-                            print i,"=", print_values_b_style(env.get_value(i))
-                else:
-                    print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
-                    return False
-            else:
+def eval_APredicateParseUnit(self, env): #TODO: move print to animation_clui
+    #type_check_predicate(node, env)
+    #idNodes = find_var_nodes(node) 
+    #idNames = [n.idName for n in idNodes]
+    #if idNames ==[]: # variable free predicate
+    result = self.get(0).eval(env)
+    return result
+    """   
+    else:            # there are variables 
+        env.add_ids_to_frame(idNames)
+        learnd_vars = learn_assigned_values(node, env)
+        if learnd_vars and VERBOSE:
+            print "learnd(no enumeration): ", learnd_vars
+        not_set = []
+        for n in idNodes:
+            if env.get_value(n.idName)==None:
+                not_set.append(n)
+        # enumerate only unknown vars
+        # Dont enums quantified vars like !x.(P=>Q). This is done later
+        if not_set:
+            if VERBOSE:
+                print "enum. vars:", [n.idName for n in not_set]
+            gen = try_all_values(node.get(0), env, not_set)
+            if gen.next():
                 for i in idNames:
-                    print i,"=", print_values_b_style(env.get_value(i))
-                result = interpret(node.get(0), env)
-                return result
-        return True
-    elif isinstance(node, AExpressionParseUnit): #TODO more
-        #TODO: move print to animation_clui
-        type_check_expression(node, env)
-        idNodes = find_var_nodes(node) 
-        idNames = [n.idName for n in idNodes]
-        if idNames ==[]: # variable free expression
-            result = interpret(node.get(0), env)
-            return result
+                    if VERBOSE:
+                        print i,"=", print_values_b_style(env.get_value(i))
+            else:
+                print "No Solution found! MIN_INT=%s MAX_INT=%s (see config.py)" % (env._min_int, env._max_int)
+                return False
         else:
-            return "\033[1m\033[91mWARNING\033[00m: Expressions with variables are not implemented now"
-        """
+            for i in idNames:
+                print i,"=", print_values_b_style(env.get_value(i))
+            result = self.get(0).eval(env)
+            return result
+    return True
+elif isinstance(node, AExpressionParseUnit): #TODO more
+    #TODO: move print to animation_clui
+    type_check_expression(node, env)
+    idNodes = find_var_nodes(node) 
+    idNames = [n.idName for n in idNodes]
+    if idNames ==[]: # variable free expression
+        result = self.get(0).eval(env)
+        return result
+    else:
+        return "\033[1m\033[91mWARNING\033[00m: Expressions with variables are not implemented now"
+    """
+APredicateParseUnit.eval = eval_APredicateParseUnit
 
 # ********************************************
 #
 #        0. Clauses
 #
 # ********************************************
-    elif isinstance(node, AConstraintsMachineClause):
-        return interpret(node.get(-1), env)
-    elif isinstance(node, APropertiesMachineClause): #TODO: maybe predicate fail?
-        lst = conj_tree_to_conj_list(node.get(0))
-        result = True
+def eval_AConstraintsMachineClause(self, env):
+    return self.get(-1).eval(env)
+AConstraintsMachineClause.eval = eval_AConstraintsMachineClause      
+        
+def eval_APropertiesMachineClause(self, env): #TODO: maybe predicate fail?
+    lst = conj_tree_to_conj_list(self.get(0))
+    result = True
+    ok = 0
+    fail = 0
+    #timeout = 0
+    for n in lst:
+        #try:
+        #    if PROPERTIES_TIMEOUT<=0:
+        #        value = interpret(n, env)
+        #    else:
+        #        import multiprocessing   
+        #        que = multiprocessing.Queue()
+        #        p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
+        #        # TODO: safe and restore stack depth if corruption occurs by thread termination
+        #        #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
+        #        p.start()
+        #        p.join(PROPERTIES_TIMEOUT)
+        #        if not que.empty():
+        #            value = que.get()
+        #        else:
+        #            p.terminate()
+        #            print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
+        #            # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
+        #            timeout = timeout +1
+        #            continue
+        #except OverflowError:
+        #    print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
+        #    fail = fail +1
+        #    continue
+        value = n.eval(env)
+        if PRINT_SUB_PROPERTIES: # config.py
+            #string = str(value)
+            if not value.bvalue: #string=="False":
+               print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
+               fail = fail +1
+            elif value.bvalue: #string=="True":
+               print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
+               ok = ok +1
+            #else: #XXX
+            #   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
+        result = result and value.bvalue
+    #if fail>0:
+    #    print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+    #elif timeout>0:
+    #    print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+    #else:
+    #    print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
+    return W_Boolean(result)
+APropertiesMachineClause.eval = eval_APropertiesMachineClause
+        
+def eval_AInvariantMachineClause(self, env):
+    result = self.get(0).eval(env)
+    if not result.bvalue:
+        print "\033[1m\033[91mWARNING\033[00mInvariant violation"
+        print "\nFALSE Predicates:"
+        print_predicate_fail(env, self.get(0))
+        if env is not None: #Rpython typer help
+            env.state_space.print_history()
+    return result
+AInvariantMachineClause.eval = eval_AInvariantMachineClause
+        
+def eval_AAssertionsMachineClause(self, env):
+   if ENABLE_ASSERTIONS: #config.py
+        # TODO: add timeout
         ok = 0
         fail = 0
-        #timeout = 0
-        for n in lst:
-            #try:
-            #    if PROPERTIES_TIMEOUT<=0:
-            #        value = interpret(n, env)
-            #    else:
-            #        import multiprocessing   
-            #        que = multiprocessing.Queue()
-            #        p = multiprocessing.Process(target = parallel_caller, args = (que, n, env))
-            #        # TODO: safe and restore stack depth if corruption occurs by thread termination
-            #        #  length_dict = env.get_state().get_valuestack_depth_of_all_bmachines()
-            #        p.start()
-            #        p.join(PROPERTIES_TIMEOUT)
-            #        if not que.empty():
-            #            value = que.get()
-            #        else:
-            #            p.terminate()
-            #            print "\033[1m\033[94mTIMEOUT\033[00m: ("+pretty_print(n)+")"
-            #            # TODO: a timeout(cancel) can result in a missing stack pop (e.g. AGeneralProductExpression
-            #            timeout = timeout +1
-            #            continue
-            #except OverflowError:
-            #    print "\033[1m\033[91mFAIL\033[00m: Enumeration overflow caused by: ("+pretty_print(n)+")"
-            #    fail = fail +1
-            #    continue
-            value = interpret(n, env)
-            if PRINT_SUB_PROPERTIES: # config.py
-                #string = str(value)
-                if not value.bvalue: #string=="False":
-                   print '\033[1m\033[91m'+'False'+'\033[00m'+": "+pretty_print(n)
-                   fail = fail +1
-                elif value.bvalue: #string=="True":
-                   print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(n)
-                   ok = ok +1
-                #else: #XXX
-                #   print '\033[1m\033[94m'+string+'\033[00m'+": "+pretty_print(n)
-            result = result and value.bvalue
-        #if fail>0:
-        #    print "\033[1m\033[91mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
+        print "checking assertions clause"
+        for child in self.children:
+            #print_ast(child)
+            result = child.eval(env)
+            if result.bvalue:
+                print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(child)
+                ok = ok +1
+            else:
+                print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
+                fail = fail +1
+        color = "92"      # green
+        if fail>0:
+            color = "91"  # red
         #elif timeout>0:
-        #    print "\033[1m\033[94mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst), ok,fail,timeout)
-        #else:
-        #    print "\033[1m\033[92mproperties clause - total:%s ok:%s fail:%s timeout:%s\033[00m" % (len(lst),ok,fail,timeout)       
-        return W_Boolean(result)
-    elif isinstance(node, AInvariantMachineClause):
-        result = interpret(node.get(0), env)
-        if not result.bvalue:
-            print "\033[1m\033[91mWARNING\033[00mInvariant violation"
-            print "\nFALSE Predicates:"
-            print_predicate_fail(env, node.get(0))
-            if env is not None: #Rpython typer help
-                env.state_space.print_history()
-        return result
-    elif isinstance(node, AAssertionsMachineClause):
-       if ENABLE_ASSERTIONS: #config.py
-            # TODO: add timeout
-            ok = 0
-            fail = 0
-            print "checking assertions clause"
-            for child in node.children:
-                #print_ast(child)
-                result = interpret(child, env)
-                if result.bvalue:
-                    print '\033[1m\033[92m'+'True'+'\033[00m'+": "+pretty_print(child)
-                    ok = ok +1
-                else:
-                    print '\033[1m\033[91m'+str(result)+'\033[00m'+": "+pretty_print(child)
-                    fail = fail +1
-            color = "92"      # green
-            if fail>0:
-                color = "91"  # red
-            #elif timeout>0:
-            #    color = "94"  # yellow
-            print "\033[1m\033["+color+"massertions clause - total:%s ok:%s fail:%s \033[00m" % (len(node.children), ok,fail)
+        #    color = "94"  # yellow
+        print "\033[1m\033["+color+"massertions clause - total:%s ok:%s fail:%s \033[00m" % (len(self.children), ok,fail)
+AAssertionsMachineClause.eval = eval_AAssertionsMachineClause
         
 # *********************
 #
 #        1. Predicates
 #
 # *********************
-    elif isinstance(node, AConjunctPredicate):
-        bexpr1 = interpret(node.get(0), env)
-        bexpr2 = interpret(node.get(1), env)
-        assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = W_Boolean(bexpr1.__and__(bexpr2))
+def eval_AConjunctPredicate(self, env):
+    bexpr1 = self.get(0).eval(env)
+    bexpr2 = self.get(1).eval(env)
+    assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
+    w_bool = W_Boolean(bexpr1.__and__(bexpr2))
+    return w_bool
+AConjunctPredicate.eval = eval_AConjunctPredicate 
+     
+def eval_ADisjunctPredicate(self, env):
+    bexpr1 = self.get(0).eval(env)
+    bexpr2 = self.get(1).eval(env)
+    assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
+    w_bool = W_Boolean(bexpr1.__or__(bexpr2))
+    return w_bool
+ADisjunctPredicate.eval = eval_ADisjunctPredicate
+        
+def eval_AImplicationPredicate(self, env):
+    bexpr1 = self.get(0).eval(env)
+    bexpr2 = self.get(1).eval(env)
+    assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
+    if bexpr1.bvalue and not bexpr2.bvalue:
+        w_bool = W_Boolean(False) # True=>False is False
         return w_bool
-    elif isinstance(node, ADisjunctPredicate):
-        bexpr1 = interpret(node.get(0), env)
-        bexpr2 = interpret(node.get(1), env)
-        assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = W_Boolean(bexpr1.__or__(bexpr2))
+    else:
+        w_bool = W_Boolean(True)
         return w_bool
-    elif isinstance(node, AImplicationPredicate):
-        bexpr1 = interpret(node.get(0), env)
-        bexpr2 = interpret(node.get(1), env)
-        assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        if bexpr1.bvalue and not bexpr2.bvalue:
-            w_bool = W_Boolean(False) # True=>False is False
-            return w_bool
-        else:
-            w_bool = W_Boolean(True)
-            return w_bool
-    elif isinstance(node, AEquivalencePredicate):
-        bexpr1 = interpret(node.get(0), env)
-        bexpr2 = interpret(node.get(1), env)
-        assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
-        w_bool = W_Boolean(bexpr1.__eq__(bexpr2))
-        return w_bool
-    elif isinstance(node, ANegationPredicate):
-        bexpr = interpret(node.get(0), env)
-        assert isinstance(bexpr, W_Boolean)
-        w_bool = W_Boolean(bexpr.__not__())
-        return w_bool
-    elif isinstance(node, AForallPredicate):
-        # notice: the all and any keywords are not used, because they need the generation of the whole set
-        # new scope
-        varList = node.children[:-1]
-        assert env is not None
-        env.push_new_frame(varList)
-        pred = node.children[-1]
-        domain_generator = compute_constrained_domains(pred.children[0], env, varList) # use left side of implication
-        for w_w_entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = w_w_entry[name]
-                env.set_value(name, value)
-            try:
-                if interpret(pred.children[0], env) and not interpret(pred.children[1], env):  # test
-                    env.pop_frame()           
-                    return W_Boolean(False)
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame() # leave scope
-        return W_Boolean(True)       
-    elif isinstance(node, AExistsPredicate):
-        # new scope
-        varList = node.children[:-1]
-        assert env is not None
-        env.push_new_frame(varList)
-        pred = node.children[-1]
-        domain_generator = compute_constrained_domains(pred, env, varList)
-        for w_w_entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = w_w_entry[name]
-                env.set_value(name, value)
-            try:
-                if interpret(pred, env):  # test
-                    env.pop_frame()           
-                    return W_Boolean(True)
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame() # leave scope
-        return W_Boolean(False)     
-    elif isinstance(node, AEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        # frozensets can only be compared to frozensets
-        """
-        if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
-            expr2 = expr2.enumerate_all()
-            return expr1 == expr2
-        else:
-            # else normal check, also symbolic (implemented by symbol classes)
-            return expr1 == expr2
-        """
-        w_bool = W_Boolean(expr1.__eq__(expr2))
-        return w_bool
-    elif isinstance(node, ANotEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        w_bool = W_Boolean(not expr1.__eq__(expr2))
-        return w_bool
-        # TODO: handle symbolic sets
- 
+AImplicationPredicate.eval = eval_AImplicationPredicate
+            
+def eval_AEquivalencePredicate(self, env):
+    bexpr1 = self.get(0).eval(env)
+    bexpr2 = self.get(1).eval(env)
+    assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
+    w_bool = W_Boolean(bexpr1.__eq__(bexpr2))
+    return w_bool
+AEquivalencePredicate.eval = eval_AEquivalencePredicate
+        
+def eval_ANegationPredicate(self, env):
+    bexpr = self.get(0).eval(env)
+    assert isinstance(bexpr, W_Boolean)
+    w_bool = W_Boolean(bexpr.__not__())
+    return w_bool
+ANegationPredicate.eval = eval_ANegationPredicate
+
+def eval_AForallPredicate(self, env):
+    # notice: the all and any keywords are not used, because they need the generation of the whole set
+    # new scope
+    varList = self.children[:-1]
+    assert env is not None
+    env.push_new_frame(varList)
+    pred = self.get(-1)
+    domain_generator = compute_constrained_domains(pred.children[0], env, varList) # use left side of implication
+    for w_w_entry in domain_generator:
+        for name in [x.idName for x in varList]:
+            value = w_w_entry[name]
+            env.set_value(name, value)
+        try:
+            if pred.get(0).eval(env) and not pred.get(1).eval(env):  # test
+                env.pop_frame()           
+                return W_Boolean(False)
+        except ValueNotInDomainException:
+            continue
+    env.pop_frame() # leave scope
+    return W_Boolean(True)   
+AForallPredicate.eval =  eval_AForallPredicate
+   
+def eval_AExistsPredicate(self, env):
+    # new scope
+    varList = self.children[:-1]
+    assert env is not None
+    env.push_new_frame(varList)
+    pred = self.get(-1)
+    domain_generator = compute_constrained_domains(pred, env, varList)
+    for w_w_entry in domain_generator:
+        for name in [x.idName for x in varList]:
+            value = w_w_entry[name]
+            env.set_value(name, value)
+        try:
+            if pred.eval(env):  # test
+                env.pop_frame()           
+                return W_Boolean(True)
+        except ValueNotInDomainException:
+            continue
+    env.pop_frame() # leave scope
+    return W_Boolean(False) 
+AExistsPredicate.eval = eval_AExistsPredicate
+    
+def eval_AEqualPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    # frozensets can only be compared to frozensets
+    """
+    if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
+        expr2 = expr2.enumerate_all()
+        return expr1 == expr2
+    else:
+        # else normal check, also symbolic (implemented by symbol classes)
+        return expr1 == expr2
+    """
+    w_bool = W_Boolean(expr1.__eq__(expr2))
+    return w_bool
+AEqualPredicate.eval = eval_AEqualPredicate
+
+def eval_ANotEqualPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    w_bool = W_Boolean(not expr1.__eq__(expr2))
+    return w_bool
+    # TODO: handle symbolic sets
+ANotEqualPredicate.eval = eval_ANotEqualPredicate
         
 # **************
 #
 #       2. Sets
 #
 # **************        
-    elif isinstance(node, ASetExtensionExpression):
-        lst = []
-        for child in node.children:
-            elm = interpret(child, env)
-            lst.append(elm)
-        return frozenset(lst)
-    elif isinstance(node, AEmptySetExpression):
-        return frozenset()
-    elif isinstance(node, AComprehensionSetExpression):
-        varList = node.children[:-1]
-        pred = node.children[-1]
-        return SymbolicComprehensionSet(varList, pred, node, env)    
-    elif isinstance(node, AUnionExpression):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        return SymbolicUnionSet(aSet1, aSet2, env)
-    elif isinstance(node, AIntersectionExpression):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        return SymbolicIntersectionSet(aSet1, aSet2, env)
-    elif isinstance(node, ACoupleExpression):
-        assert len(node.children)>1
-        a = interpret(node.get(0), env)
-        b = interpret(node.get(1), env)
-        t = (a, b)
-        assert isinstance(t, tuple)
-        result = W_Tuple(t)
-        for i in range(len(node.children)-2):
-            child = node.children[i+2]
-            elm = interpret(child, env)
-            t = (result, elm)
-            assert isinstance(t, tuple)
-            result = W_Tuple(t) 
-        return result
-    elif isinstance(node, APowSubsetExpression):
-        aSet = interpret(node.get(0), env)
-        return SymbolicPowerSet(aSet, env)
-    elif isinstance(node, APow1SubsetExpression):
-        aSet = interpret(node.get(0), env)
-        return SymbolicPower1Set(aSet, env)
-    elif isinstance(node, ACardExpression):
-        aSet = interpret(node.get(0), env)
-        return W_Integer(aSet.__len__())
-    elif isinstance(node, AGeneralUnionExpression):
-        set_of_sets = interpret(node.get(0), env)
-        elem_lst = set_of_sets.lst
-        acc = elem_lst[0]
-        for aset in elem_lst[1:]:
-            acc = acc.union(aset)
-        return acc
-    elif isinstance(node, AGeneralIntersectionExpression):
-        set_of_sets = interpret(node.get(0), env)
-        elem_lst = set_of_sets.lst
-        acc = elem_lst[0]
-        for aset in elem_lst[1:]:
-            acc = acc.intersection(aset)
-        return acc
-    elif isinstance(node, AQuantifiedUnionExpression):
-        #result = frozenset([])
-        # new scope
-        length = len(node.children)
-        varList = []
-        for i in range(length-2):
-            n = node.children[i]
-            varList.append(n)
-        env.push_new_frame(varList)
-        pred = node.children[-2]
-        expr = node.children[-1]
-        return SymbolicQuantifiedUnion(varList, pred, expr, node, env)
-    elif isinstance(node, AQuantifiedIntersectionExpression):  
-        #result = frozenset([])
-        # new scope
-        length = len(node.children)
-        varList = []
-        for i in range(length-2):
-            n = node.children[i]
-            varList.append(n)
-        env.push_new_frame(varList)
-        pred = node.children[-2]
-        expr = node.children[-1]
-        return SymbolicQuantifiedIntersection(varList, pred, expr, node, env)
+def eval_ASetExtensionExpression(self, env):
+    lst = []
+    for child in self.children:
+        elm = child.eval(env)
+        lst.append(elm)
+    return frozenset(lst)
+ASetExtensionExpression.eval = eval_ASetExtensionExpression 
 
+def eval_AEmptySetExpression(self, env):
+    return frozenset()
+AEmptySetExpression.eval = eval_AEmptySetExpression
+
+def eval_AComprehensionSetExpression(self, env):
+    varList = self.children[:-1]
+    pred = self.get(-1)
+    return SymbolicComprehensionSet(varList, pred, self, env)
+AComprehensionSetExpression.eval = eval_AComprehensionSetExpression
+    
+def eval_AUnionExpression(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    return SymbolicUnionSet(aSet1, aSet2, env)
+AUnionExpression.eval = eval_AUnionExpression
+
+def eval_AIntersectionExpression(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    return SymbolicIntersectionSet(aSet1, aSet2, env)
+AIntersectionExpression.eval = eval_AIntersectionExpression
+
+def eval_ACoupleExpression(self, env):
+    assert len(self.children)>1
+    a = self.get(0).eval(env)
+    b = self.get(1).eval(env)
+    t = (a, b)
+    assert isinstance(t, tuple)
+    result = W_Tuple(t)
+    for i in range(len(self.children)-2):
+        child = self.get(i+2)
+        elm = child.eval(env)
+        t = (result, elm)
+        assert isinstance(t, tuple)
+        result = W_Tuple(t) 
+    return result
+ACoupleExpression.eval = eval_ACoupleExpression
+
+def eval_APowSubsetExpression(self, env):
+    aSet = self.get(0).eval(env)
+    return SymbolicPowerSet(aSet, env)
+APowSubsetExpression.eval = eval_APowSubsetExpression
+
+def eval_APow1SubsetExpression(self, env):
+    aSet = self.get(0).eval(env)
+    return SymbolicPower1Set(aSet, env)
+APow1SubsetExpression.eval = eval_APow1SubsetExpression
+
+def eval_ACardExpression(self, env):
+    aSet = self.get(0).eval(env)
+    return W_Integer(aSet.__len__())
+ACardExpression.eval = eval_ACardExpression
+
+def eval_AGeneralUnionExpression(self, env):
+    set_of_sets = self.get(0).eval(env)
+    elem_lst = set_of_sets.lst
+    acc = elem_lst[0]
+    for aset in elem_lst[1:]:
+        acc = acc.union(aset)
+    return acc
+AGeneralUnionExpression.eval = eval_AGeneralUnionExpression
+
+def eval_AGeneralIntersectionExpression(self, env):
+    set_of_sets = self.get(0).eval(env)
+    elem_lst = set_of_sets.lst
+    acc = elem_lst[0]
+    for aset in elem_lst[1:]:
+        acc = acc.intersection(aset)
+    return acc
+AGeneralIntersectionExpression.eval = eval_AGeneralIntersectionExpression
+
+def eval_AQuantifiedUnionExpression(self, env):
+    #result = frozenset([])
+    # new scope
+    length = len(self.children)
+    varList = []
+    for i in range(length-2):
+        n = self.get(i)
+        varList.append(n)
+    env.push_new_frame(varList)
+    pred = self.get(-2)
+    expr = self.get(-1)
+    return SymbolicQuantifiedUnion(varList, pred, expr, self, env)
+AQuantifiedUnionExpression.eval = eval_AQuantifiedUnionExpression
+
+def eval_AQuantifiedIntersectionExpression(self, env):  
+    #result = frozenset([])
+    # new scope
+    length = len(self.children)
+    varList = []
+    for i in range(length-2):
+        n = self.get(i)
+        varList.append(n)
+    env.push_new_frame(varList)
+    pred = self.get(-2)
+    expr = self.get(-1)
+    return SymbolicQuantifiedIntersection(varList, pred, expr, self, env)
+AQuantifiedIntersectionExpression.eval = eval_AQuantifiedIntersectionExpression
     
 # *************************
 #
@@ -855,210 +905,260 @@ def interpret(node, env):
 #
 # ************************* 
     
-    elif isinstance(node, AMemberPredicate):
-        #print pretty_print(node)
-        #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
-        #    elm = interpret(node.get(0), env)
-        #    result = quick_member_eval(node.get(1), env, elm)
-        #    return result
-        elm = interpret(node.get(0), env)
-        aSet = interpret(node.get(1), env)
-        w_bool = W_Boolean(aSet.__contains__(elm))
-        return w_bool
-    elif isinstance(node, ANotMemberPredicate):
-        #if all_ids_known(node, env): #TODO: check over-approximation. All ids need to be bound?
-        #    elm = interpret(node.get(0), env)
-        #    result = quick_member_eval(node.get(1), env, elm)
-        #    return not result
-        elm = interpret(node.get(0), env)
-        aSet = interpret(node.get(1), env)
-        boolean = W_Boolean(aSet.__contains__(elm)).__not__()
-        return W_Boolean(boolean)
-    elif isinstance(node, ASubsetPredicate):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        """
-        if isinstance(aSet2, SymbolicSet):
-            return aSet2.issuperset(aSet1)
-        """
-        boolean = aSet1.issubset(aSet2)
-        return W_Boolean(boolean)
-    elif isinstance(node, ANotSubsetPredicate):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        boolean = not aSet1.issubset(aSet2)
-        return W_Boolean(boolean)
-    elif isinstance(node, ASubsetStrictPredicate):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        boolean = aSet1.issubset(aSet2) and aSet1.__ne__(aSet2)
-        return W_Boolean(boolean)
-    elif isinstance(node, ANotSubsetStrictPredicate):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        boolean = not (aSet1.issubset(aSet2) and aSet1.__ne__(aSet2))
-        return W_Boolean(boolean)
+def eval_AMemberPredicate(self, env):
+    #print pretty_print(self)
+    #if all_ids_known(self, env): #TODO: check over-approximation. All ids need to be bound?
+    #    elm = self.get(0).eval(env)
+    #    result = quick_member_eval(self.get(1), env, elm)
+    #    return result
+    elm = self.get(0).eval(env)
+    aSet = self.get(1).eval(env)
+    w_bool = W_Boolean(aSet.__contains__(elm))
+    return w_bool
+AMemberPredicate.eval = eval_AMemberPredicate
+
+def eval_ANotMemberPredicate(self, env):
+    #if all_ids_known(self, env): #TODO: check over-approximation. All ids need to be bound?
+    #    elm = self.get(0).eval(env)
+    #    result = quick_member_eval(self.get(1), env, elm)
+    #    return not result
+    elm = self.get(0).eval(env)
+    aSet = self.get(1).eval(env)
+    boolean = W_Boolean(aSet.__contains__(elm)).__not__()
+    return W_Boolean(boolean)
+ANotMemberPredicate.eval = eval_ANotMemberPredicate
+
+def eval_ASubsetPredicate(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    """
+    if isinstance(aSet2, SymbolicSet):
+        return aSet2.issuperset(aSet1)
+    """
+    boolean = aSet1.issubset(aSet2)
+    return W_Boolean(boolean)
+ASubsetPredicate.eval = eval_ASubsetPredicate
+
+def eval_ANotSubsetPredicate(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    boolean = not aSet1.issubset(aSet2)
+    return W_Boolean(boolean)
+ANotSubsetPredicate.eval = eval_ANotSubsetPredicate
+
+def eval_ASubsetStrictPredicate(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    boolean = aSet1.issubset(aSet2) and aSet1.__ne__(aSet2)
+    return W_Boolean(boolean)
+ASubsetStrictPredicate.eval = eval_ASubsetStrictPredicate
+
+def eval_ANotSubsetStrictPredicate(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    boolean = not (aSet1.issubset(aSet2) and aSet1.__ne__(aSet2))
+    return W_Boolean(boolean)
+ANotSubsetStrictPredicate.eval = eval_ANotSubsetStrictPredicate
 
 # *****************
 #
 #       3. Numbers
 #
 # *****************
-    elif isinstance(node, ANaturalSetExpression):
-        return NaturalSet(env)
-    elif isinstance(node, ANatural1SetExpression):
-        return Natural1Set(env)
-    elif isinstance(node, ANatSetExpression):
-        return NatSet(env)
-    elif isinstance(node, ANat1SetExpression):
-        return Nat1Set(env)
-    elif isinstance(node, AIntSetExpression):
-        return IntSet(env)
-    elif isinstance(node, AIntegerSetExpression):
-        return IntegerSet(env)
-    elif isinstance(node, AMinExpression):
-        aSet = interpret(node.get(0), env)
-        assert isinstance(aSet, frozenset)
-        lst = aSet.lst
-        min = lst[0].ivalue
-        for w_int in lst:
-            if w_int.ivalue< min:
-                min = w_int.ivalue
-        return W_Integer(min)
-    elif isinstance(node, AMaxExpression):
-        aSet = interpret(node.get(0), env)
-        assert isinstance(aSet, frozenset)
-        lst = aSet.lst
-        max = lst[0].ivalue
-        for w_int in lst:
-            if w_int.ivalue> max:
-                max = w_int.ivalue
-        return W_Integer(max)
-    elif isinstance(node, AAddExpression):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        w_integer = expr1.__add__(expr2)
-        return w_integer
-    elif isinstance(node, AMinusOrSetSubtractExpression): 
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        if isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer):
-            w_integer = expr1.__sub__(expr2)
-            return w_integer
-        else:
-            return SymbolicDifferenceSet(expr1, expr2, env)
-    elif isinstance(node, AMultOrCartExpression):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        w_integer = expr1.__mul__(expr2)
-        return w_integer
-    elif isinstance(node, ADivExpression):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        w_integer = expr1.__floordiv__(expr2)
-        return w_integer
-    elif isinstance(node, AModuloExpression):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        assert expr2.ivalue > 0
-        w_integer = expr1.__mod__(expr2)
-        return w_integer
-    elif isinstance(node, APowerOfExpression):
-        basis = interpret(node.get(0), env)
-        exp = interpret(node.get(1), env)
-        # not RPython: result = basis ** exp
-        assert exp.ivalue >=0
-        result = 1
-        for i in range(exp.ivalue):
-            result = result * basis.ivalue
-        return W_Integer(result)     
-    elif isinstance(node, AIntervalExpression):
-        left = interpret(node.get(0), env)
-        right = interpret(node.get(1), env)
-        assert isinstance(left, W_Integer)
-        assert isinstance(right, W_Integer)
-        #L = []
-        #for i in range(left.ivalue, right.ivalue+1):
-        #    value = W_Integer(i)
-        #    L.append(value)
-        #return frozenset(L)
-        # RPYTHON: cause segfault. reason unknown
-        return SymbolicIntervalSet(left, right, env)
-    elif isinstance(node, AGeneralSumExpression):
-        sum_ = 0
-        # new scope
-        #varList = node.children[:-2]
-        varList = []
-        for i in range(len(node.children)-2):
-            idNode = node.children[i]
-            varList.append(idNode)
-        assert env is not None
-        env.push_new_frame(varList)
-        pred = node.children[-2]
-        expr = node.children[-1]
-        domain_generator = compute_constrained_domains(pred, env, varList)
-        for w_entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = w_entry[name]
-                env.set_value(name, value)
-            try:
-                w_bool = interpret(pred, env)
-                if w_bool.bvalue:  # test 
-                    w_int = interpret(expr, env)         
-                    sum_ += w_int.ivalue
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame() # exit scope
-        return W_Integer(sum_)
-    elif isinstance(node, AGeneralProductExpression):
-        prod_ = 1
-        # new scope
-        #varList = node.children[:-2]
-        varList = []
-        for i in range(len(node.children)-2):
-            idNode = node.children[i]
-            varList.append(idNode)
-        assert env is not None
-        env.push_new_frame(varList)
-        pred = node.children[-2]
-        expr = node.children[-1]
-        domain_generator = compute_constrained_domains(pred, env, varList)
-        for w_entry in domain_generator:
-            for name in [x.idName for x in varList]:
-                value = w_entry[name]
-                env.set_value(name, value)
-            try:
-                w_bool = interpret(pred, env)
-                if w_bool.bvalue:  # test 
-                    w_int = interpret(expr, env)         
-                    prod_ *= w_int.ivalue
-            except ValueNotInDomainException:
-                continue
-        env.pop_frame() # exit scope
-        return W_Integer(prod_)
+def eval_ANaturalSetExpression(self, env):
+    return NaturalSet(env)
+ANaturalSetExpression.eval = eval_ANaturalSetExpression
 
+def eval_ANatural1SetExpression(self, env):
+    return Natural1Set(env)
+ANatural1SetExpression.eval = eval_ANatural1SetExpression
+
+def eval_ANatSetExpression(self, env):
+    return NatSet(env)
+ANatSetExpression.eval = eval_ANatSetExpression
+
+def eval_ANat1SetExpression(self, env):
+    return Nat1Set(env)
+ANat1SetExpression.eval = eval_ANat1SetExpression
+
+def eval_AIntSetExpression(self, env):
+    return IntSet(env)
+AIntSetExpression.eval = eval_AIntSetExpression
+
+def eval_AIntegerSetExpression(self, env):
+    return IntegerSet(env)
+AIntegerSetExpression.eval = eval_AIntegerSetExpression
+
+def eval_AMinExpression(self, env):
+    aSet = self.get(0).eval(env)
+    assert isinstance(aSet, frozenset)
+    lst = aSet.lst
+    min = lst[0].ivalue
+    for w_int in lst:
+        if w_int.ivalue< min:
+            min = w_int.ivalue
+    return W_Integer(min)
+AMinExpression.eval = eval_AMinExpression
+
+def eval_AMaxExpression(self, env):
+    aSet = self.get(0).eval(env)
+    assert isinstance(aSet, frozenset)
+    lst = aSet.lst
+    max = lst[0].ivalue
+    for w_int in lst:
+        if w_int.ivalue> max:
+            max = w_int.ivalue
+    return W_Integer(max)
+AMaxExpression.eval = eval_AMaxExpression
+
+def eval_AAddExpression(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    w_integer = expr1.__add__(expr2)
+    return w_integer
+AAddExpression.eval = eval_AAddExpression
+
+def eval_AMinusOrSetSubtractExpression(self, env): 
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    if isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer):
+        w_integer = expr1.__sub__(expr2)
+        return w_integer
+    else:
+        return SymbolicDifferenceSet(expr1, expr2, env)
+AMinusOrSetSubtractExpression.eval = eval_AMinusOrSetSubtractExpression
+
+def eval_AMultOrCartExpression(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    w_integer = expr1.__mul__(expr2)
+    return w_integer
+AMultOrCartExpression.eval = eval_AMultOrCartExpression
+
+def eval_ADivExpression(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    w_integer = expr1.__floordiv__(expr2)
+    return w_integer
+ADivExpression.eval = eval_ADivExpression
+
+def eval_AModuloExpression(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    assert expr2.ivalue > 0
+    w_integer = expr1.__mod__(expr2)
+    return w_integer
+AModuloExpression.eval = eval_AModuloExpression
+
+def eval_APowerOfExpression(self, env):
+    basis = self.get(0).eval(env)
+    exp = self.get(1).eval(env)
+    # not RPython: result = basis ** exp
+    assert exp.ivalue >=0
+    result = 1
+    for i in range(exp.ivalue):
+        result = result * basis.ivalue
+    return W_Integer(result) 
+APowerOfExpression.eval = eval_APowerOfExpression
+    
+def eval_AIntervalExpression(self, env):
+    left = self.get(0).eval(env)
+    right = self.get(1).eval(env)
+    assert isinstance(left, W_Integer)
+    assert isinstance(right, W_Integer)
+    #L = []
+    #for i in range(left.ivalue, right.ivalue+1):
+    #    value = W_Integer(i)
+    #    L.append(value)
+    #return frozenset(L)
+    # RPYTHON: cause segfault. reason unknown
+    return SymbolicIntervalSet(left, right, env)
+AIntervalExpression.eval = eval_AIntervalExpression
+
+def eval_AGeneralSumExpression(self, env):
+    sum_ = 0
+    # new scope
+    #varList = self.children[:-2]
+    varList = []
+    for i in range(len(self.children)-2):
+        idNode = self.get(i)
+        varList.append(idNode)
+    assert env is not None
+    env.push_new_frame(varList)
+    pred = self.get(-2)
+    expr = self.get(-1)
+    domain_generator = compute_constrained_domains(pred, env, varList)
+    for w_entry in domain_generator:
+        for name in [x.idName for x in varList]:
+            value = w_entry[name]
+            env.set_value(name, value)
+        try:
+            w_bool = pred.eval(env)
+            if w_bool.bvalue:  # test 
+                w_int = expr.eval(env)         
+                sum_ += w_int.ivalue
+        except ValueNotInDomainException:
+            continue
+    env.pop_frame() # exit scope
+    return W_Integer(sum_)
+AGeneralSumExpression.eval = eval_AGeneralSumExpression
+
+def eval_AGeneralProductExpression(self, env):
+    prod_ = 1
+    # new scope
+    #varList = self.children[:-2]
+    varList = []
+    for i in range(len(self.children)-2):
+        idNode = self.get(i)
+        varList.append(idNode)
+    assert env is not None
+    env.push_new_frame(varList)
+    pred = self.get(-2)
+    expr = self.get(-1)
+    domain_generator = compute_constrained_domains(pred, env, varList)
+    for w_entry in domain_generator:
+        for name in [x.idName for x in varList]:
+            value = w_entry[name]
+            env.set_value(name, value)
+        try:
+            w_bool = pred.eval(env)
+            if w_bool.bvalue:  # test 
+                w_int = expr.eval(env)         
+                prod_ *= w_int.ivalue
+        except ValueNotInDomainException:
+            continue
+    env.pop_frame() # exit scope
+    return W_Integer(prod_)
+AGeneralProductExpression.eval = eval_AGeneralProductExpression
 
 # ***************************
 #
 #       3.1 Number predicates
 #
 # ***************************
-    elif isinstance(node, AGreaterPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return W_Boolean(expr1.__gt__(expr2))
-    elif isinstance(node, ALessPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return W_Boolean(expr1.__lt__(expr2))
-    elif isinstance(node, AGreaterEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return W_Boolean(expr1.__ge__(expr2))
-    elif isinstance(node, ALessEqualPredicate):
-        expr1 = interpret(node.get(0), env)
-        expr2 = interpret(node.get(1), env)
-        return W_Boolean(expr1.__le__(expr2))
+def eval_AGreaterPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    return W_Boolean(expr1.__gt__(expr2))
+AGreaterPredicate.eval = eval_AGreaterPredicate
+
+def eval_ALessPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    return W_Boolean(expr1.__lt__(expr2))
+ALessPredicate.eval = eval_ALessPredicate
+
+def eval_AGreaterEqualPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    return W_Boolean(expr1.__ge__(expr2))
+AGreaterEqualPredicate.eval = eval_AGreaterEqualPredicate
+
+def eval_ALessEqualPredicate(self, env):
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    return W_Boolean(expr1.__le__(expr2))
+ALessEqualPredicate.eval = eval_ALessEqualPredicate
     
 
 # ******************
@@ -1067,446 +1167,536 @@ def interpret(node, env):
 #
 # ******************
 
-    elif isinstance(node, ARelationsExpression):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        return SymbolicRelationSet(aSet1, aSet2, env, node)
-    elif isinstance(node, ADomainExpression):
-        # assumption: crashs if this is not a set of 2-tuple
-        aSet = interpret(node.get(0), env)
+def eval_ARelationsExpression(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    return SymbolicRelationSet(aSet1, aSet2, env, self)
+ARelationsExpression.eval = eval_ARelationsExpression
+
+def eval_ADomainExpression(self, env):
+    # assumption: crashs if this is not a set of 2-tuple
+    aSet = self.get(0).eval(env)
+    #if isinstance(aSet, SymbolicSet):
+    #    aSet = aSet.enumerate_all()
+    dom = [e.tvalue[0] for e in aSet]
+    return frozenset(dom)
+ADomainExpression.eval = eval_ADomainExpression
+
+def eval_ARangeExpression(self, env):
+    # assumption: crashs if this is not a set of 2-tuple
+    aSet = self.get(0).eval(env)
+    #if isinstance(aSet, SymbolicSet):
+    #    aSet = aSet.enumerate_all()       
+    ran = [e.tvalue[1] for e in aSet]
+    return frozenset(ran)
+ARangeExpression.eval = eval_ARangeExpression
+
+def eval_ACompositionExpression(self, env):
+    aSet1 = self.get(0).eval(env)
+    aSet2 = self.get(1).eval(env)
+    #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
+    #    return SymbolicCompositionSet(aSet1, aSet2, env, self)
+    # p and q: tuples representing domain and image
+    new_rel = [W_Tuple((p.tvalue[0], q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1].__eq__(q.tvalue[0])]
+    return frozenset(new_rel)
+ACompositionExpression.eval = eval_ACompositionExpression
+
+def eval_AIdentityExpression(self, env):
+    aSet = self.get(0).eval(env)
+    #id_rel = [W_Tuple((e,e)) for e in aSet]
+    #return frozenset(id_rel)
+    return SymbolicIdentitySet(aSet, aSet, env, self)
+AIdentityExpression.eval = eval_AIdentityExpression
+
+def eval_ADomainRestrictionExpression(self, env):
+    aSet = self.get(0).eval(env)
+    rel = self.get(1).eval(env)
+    assert isinstance(aSet, frozenset)
+    # TODO: handle symbolic case
+    new_rel = []
+    for x in rel:
+        for e in aSet:
+            if x.tvalue[0].__eq__(e):
+                new_rel.append(x)
+    # TODO: always try to enumerate the finite one.
+    """
+    if isinstance(rel, frozenset):
+        new_rel = [x for x in rel if x[0] in aSet]
+    else:
+        new_rel = []
+        for x in aSet:
+            try:
+                img = rel[x]
+                if isinstance(img, list):
+                    for i in img:
+                        new_rel.append((x,i))
+                else:
+                    e = (x,img)
+                    new_rel.append(e)
+            except ValueNotInDomainException:
+                continue    
+    """          
+    return frozenset(new_rel)
+ADomainRestrictionExpression.eval = eval_ADomainRestrictionExpression
+
+def eval_ADomainSubtractionExpression(self, env):
+    aSet = self.get(0).eval(env)
+    rel = self.get(1).eval(env)
+    assert isinstance(aSet, frozenset)
+    # TODO: handle symbolic case
+    new_rel = []
+    for x in rel:
+        for e in aSet:
+            if x.tvalue[0].__ne__(e):
+                new_rel.append(x)
+    #new_rel = [x for x in rel if not x.tvalue[0] in aSet]
+    return frozenset(new_rel)
+ADomainSubtractionExpression.eval = eval_ADomainSubtractionExpression
+
+def eval_ARangeRestrictionExpression(self, env):
+    aSet = self.get(1).eval(env)
+    rel = self.get(0).eval(env)
+    assert isinstance(aSet, frozenset)
+    # TODO: handle symbolic case
+    new_rel = []
+    for x in rel:
+        for e in aSet:
+            if x.tvalue[1].__eq__(e):
+                new_rel.append(x)
+    #new_rel = [x for x in rel if x[1] in aSet]
+    return frozenset(new_rel)
+ARangeRestrictionExpression.eval = eval_ARangeRestrictionExpression
+
+def eval_ARangeSubtractionExpression(self, env):
+    aSet = self.get(1).eval(env)
+    rel = self.get(0).eval(env)
+    assert isinstance(aSet, frozenset)
+    # TODO: handle symbolic case
+    new_rel = []
+    for x in rel:
+        for e in aSet:
+            if x.tvalue[1].__ne__(e):
+                new_rel.append(x)
+    #new_rel = [x for x in rel if not x[1] in aSet]
+    return frozenset(new_rel)
+ARangeSubtractionExpression.eval = eval_ARangeSubtractionExpression
+
+def eval_AReverseExpression(self, env):
+    rel = self.get(0).eval(env)
+    return SymbolicInverseRelation(rel, env, self)
+AReverseExpression.eval = eval_AReverseExpression
+
+def eval_AImageExpression(self, env):
+    rel = self.get(0).eval(env)
+    aSet = self.get(1).eval(env)
+    """
+    if isinstance(rel, SymbolicSet):
+        image = []
         #if isinstance(aSet, SymbolicSet):
         #    aSet = aSet.enumerate_all()
-        dom = [e.tvalue[0] for e in aSet]
-        return frozenset(dom)
-    elif isinstance(node, ARangeExpression):
-        # assumption: crashs if this is not a set of 2-tuple
-        aSet = interpret(node.get(0), env)
-        #if isinstance(aSet, SymbolicSet):
-        #    aSet = aSet.enumerate_all()       
-        ran = [e.tvalue[1] for e in aSet]
-        return frozenset(ran)
-    elif isinstance(node, ACompositionExpression):
-        aSet1 = interpret(node.get(0), env)
-        aSet2 = interpret(node.get(1), env)
-        #if isinstance(aSet1, SymbolicSet) or isinstance(aSet2, SymbolicSet):
-        #    return SymbolicCompositionSet(aSet1, aSet2, env, node)
-        # p and q: tuples representing domain and image
-        new_rel = [W_Tuple((p.tvalue[0], q.tvalue[1])) for p in aSet1 for q in aSet2 if p.tvalue[1].__eq__(q.tvalue[0])]
-        return frozenset(new_rel)
-    elif isinstance(node, AIdentityExpression):
-        aSet = interpret(node.get(0), env)
-        #id_rel = [W_Tuple((e,e)) for e in aSet]
-        #return frozenset(id_rel)
-        return SymbolicIdentitySet(aSet, aSet, env, node)
-    elif isinstance(node, ADomainRestrictionExpression):
-        aSet = interpret(node.get(0), env)
-        rel = interpret(node.get(1), env)
-        assert isinstance(aSet, frozenset)
-        # TODO: handle symbolic case
-        new_rel = []
-        for x in rel:
-            for e in aSet:
-                if x.tvalue[0].__eq__(e):
-                    new_rel.append(x)
-        # TODO: always try to enumerate the finite one.
-        """
-        if isinstance(rel, frozenset):
-            new_rel = [x for x in rel if x[0] in aSet]
-        else:
-            new_rel = []
-            for x in aSet:
-                try:
-                    img = rel[x]
-                    if isinstance(img, list):
-                        for i in img:
-                            new_rel.append((x,i))
-                    else:
-                        e = (x,img)
-                        new_rel.append(e)
-                except ValueNotInDomainException:
-                    continue    
-        """          
-        return frozenset(new_rel)
-    elif isinstance(node, ADomainSubtractionExpression):
-        aSet = interpret(node.get(0), env)
-        rel = interpret(node.get(1), env)
-        assert isinstance(aSet, frozenset)
-        # TODO: handle symbolic case
-        new_rel = []
-        for x in rel:
-            for e in aSet:
-                if x.tvalue[0].__ne__(e):
-                    new_rel.append(x)
-        #new_rel = [x for x in rel if not x.tvalue[0] in aSet]
-        return frozenset(new_rel)
-    elif isinstance(node, ARangeRestrictionExpression):
-        aSet = interpret(node.get(1), env)
-        rel = interpret(node.get(0), env)
-        assert isinstance(aSet, frozenset)
-        # TODO: handle symbolic case
-        new_rel = []
-        for x in rel:
-            for e in aSet:
-                if x.tvalue[1].__eq__(e):
-                    new_rel.append(x)
-        #new_rel = [x for x in rel if x[1] in aSet]
-        return frozenset(new_rel)
-    elif isinstance(node, ARangeSubtractionExpression):
-        aSet = interpret(node.get(1), env)
-        rel = interpret(node.get(0), env)
-        assert isinstance(aSet, frozenset)
-        # TODO: handle symbolic case
-        new_rel = []
-        for x in rel:
-            for e in aSet:
-                if x.tvalue[1].__ne__(e):
-                    new_rel.append(x)
-        #new_rel = [x for x in rel if not x[1] in aSet]
-        return frozenset(new_rel)
-    elif isinstance(node, AReverseExpression):
-        rel = interpret(node.get(0), env)
-        return SymbolicInverseRelation(rel, env, node)
-    elif isinstance(node, AImageExpression):
-        rel = interpret(node.get(0), env)
-        aSet = interpret(node.get(1), env)
-        """
-        if isinstance(rel, SymbolicSet):
-            image = []
-            #if isinstance(aSet, SymbolicSet):
-            #    aSet = aSet.enumerate_all()
-            for x in aSet:
-                try:
-                    img = rel[x]
-                    if isinstance(img, list):
-                        image = image + img
-                    else:
-                        image.append(img)
-                except ValueNotInDomainException:
-                    continue
-        else:
-        """
-        #image = [x[1] for x in rel if x[0] in aSet ]
-        image = []
-        for x in rel:
-            for e in aSet:
-                if x.tvalue[0].__eq__(e):
-                    image.append(x.tvalue[1])           
-        return frozenset(image)
-    elif isinstance(node, AOverwriteExpression):
-        # r1 <+ r2
-        r1 = interpret(node.get(0), env)
-        r2 = interpret(node.get(1), env)
-        """
-        if isinstance(r1, SymbolicSet):
-            r1 = r1.enumerate_all()
-        if isinstance(r2, SymbolicSet):
-            r2 = r2.enumerate_all()
-        """
-        #dom_r2 = [x[0] for x in r2]
-        #new_r  = [x for x in r1 if x[0] not in dom_r2]
-        #r2_list= [x for x in r2]
-        #return frozenset(r2_list + new_r)
-        dom_r2 = []
-        for x in r2:
-            dom_r2.append(x.tvalue[0])
-        new_r = []
-        for x in r1:
-            for e in dom_r2:
-                if not x.tvalue[0].__eq__(e):
-                    new_r.append(x)
-        assert isinstance(r2, frozenset)
-        return frozenset(r2.lst + new_r)
-    elif isinstance(node, ADirectProductExpression):
-        p = interpret(node.get(0), env)
-        q = interpret(node.get(1), env)
-        """
-        if isinstance(p, SymbolicSet):
-            p = p.enumerate_all()
-        if isinstance(q, SymbolicSet):
-            q = q.enumerate_all()  
-        """
-        d_prod = []
-        for x in p:
-            for y in q:
-                if x.tvalue[0].__eq__(y.tvalue[0]):
-                    e = W_Tuple((x.tvalue[0], W_Tuple((x.tvalue[1], y.tvalue[1]))))
-                    d_prod.append(e)         
-        #d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
-        return frozenset(d_prod)
-    elif isinstance(node, AParallelProductExpression):
-        p = interpret(node.get(0), env)
-        q = interpret(node.get(1), env)
-        #p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
-        p_prod = []
-        for x in p:
-            for y in q:
-                e = W_Tuple((W_Tuple((x.tvalue[0], y.tvalue[0])), W_Tuple((x.tvalue[1], y.tvalue[1]))))
-                p_prod.append(e)  
-        return frozenset(p_prod)
-    elif isinstance(node, AIterationExpression):
-        arel  = interpret(node.get(0), env)
-        w_int = interpret(node.get(1), env)
-        n = w_int.ivalue
-        assert n>=0
-        #rel = list(arel)
-        #rel = [(x[0],x[0]) for x in rel]
-        #for i in range(n):
-        #    rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
-        rel = [W_Tuple((x.tvalue[0], x.tvalue[0])) for x in arel]
-        for i in range(n):
-            rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
-        return frozenset(rel)
-    elif isinstance(node, AReflexiveClosureExpression):
-        arel = interpret(node.get(0), env)
-        rel  = arel.lst
-        temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in rel] # also image
-        rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in rel]
-        rel += temp
-        rel = frozenset(rel).lst # throw away doubles
-        while True: # fixpoint-search (do-while-loop)
-            new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
-            S = frozenset(new_rel).union(frozenset(rel))
-            T = frozenset(rel)
-            assert isinstance(S, frozenset)
-            assert isinstance(T, frozenset)
-            if S.__eq__(T):
-                return T
-            rel = S.lst
-    elif isinstance(node, AClosureExpression): #closure1
-        arel = interpret(node.get(0), env)
-        #if isinstance(arel, SymbolicSet):
-        #    arel = arel.enumerate_all()
-        rel = frozenset(arel.lst).lst
-        while True: # fixpoint-search (do-while-loop)
-            new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
-            S = frozenset(new_rel).union(frozenset(rel))
-            T = frozenset(rel)
-            assert isinstance(S, frozenset)
-            assert isinstance(T, frozenset)
-            if S.__eq__(T):
-                return T
-            rel = S.lst
-    elif isinstance(node, AFirstProjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-        #    return SymbolicFirstProj(S,T, env, node)
-        cart = []
-        for x in S:
-            for y in T:
-                cart.append(W_Tuple((x,y)))
-        proj = []
-        for t in cart:
-            e = (t, t.tvalue[0])
-            proj.append(W_Tuple(e))
-        return frozenset(proj)
-    elif isinstance(node, ASecondProjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
-        #    return SymbolicSecondProj(S,T, env, node)
-        cart = []
-        for x in S:
-            for y in T:
-                cart.append(W_Tuple((x,y)))
-        proj = []
-        for t in cart:
-            e = (t, t.tvalue[1])
-            proj.append(W_Tuple(e))
-        return frozenset(proj)
+        for x in aSet:
+            try:
+                img = rel[x]
+                if isinstance(img, list):
+                    image = image + img
+                else:
+                    image.append(img)
+            except ValueNotInDomainException:
+                continue
+    else:
+    """
+    #image = [x[1] for x in rel if x[0] in aSet ]
+    image = []
+    for x in rel:
+        for e in aSet:
+            if x.tvalue[0].__eq__(e):
+                image.append(x.tvalue[1])           
+    return frozenset(image)
+AImageExpression.eval = eval_AImageExpression
 
+def eval_AOverwriteExpression(self, env):
+    # r1 <+ r2
+    r1 = self.get(0).eval(env)
+    r2 = self.get(1).eval(env)
+    """
+    if isinstance(r1, SymbolicSet):
+        r1 = r1.enumerate_all()
+    if isinstance(r2, SymbolicSet):
+        r2 = r2.enumerate_all()
+    """
+    #dom_r2 = [x[0] for x in r2]
+    #new_r  = [x for x in r1 if x[0] not in dom_r2]
+    #r2_list= [x for x in r2]
+    #return frozenset(r2_list + new_r)
+    dom_r2 = []
+    for x in r2:
+        dom_r2.append(x.tvalue[0])
+    new_r = []
+    for x in r1:
+        for e in dom_r2:
+            if not x.tvalue[0].__eq__(e):
+                new_r.append(x)
+    assert isinstance(r2, frozenset)
+    return frozenset(r2.lst + new_r)
+AOverwriteExpression.eval = eval_AOverwriteExpression
+
+def eval_ADirectProductExpression(self, env):
+    p = self.get(0).eval(env)
+    q = self.get(1).eval(env)
+    """
+    if isinstance(p, SymbolicSet):
+        p = p.enumerate_all()
+    if isinstance(q, SymbolicSet):
+        q = q.enumerate_all()  
+    """
+    d_prod = []
+    for x in p:
+        for y in q:
+            if x.tvalue[0].__eq__(y.tvalue[0]):
+                e = W_Tuple((x.tvalue[0], W_Tuple((x.tvalue[1], y.tvalue[1]))))
+                d_prod.append(e)         
+    #d_prod = [(x[0],(x[1],y[1])) for x in p for y in q if x[0]==y[0]]
+    return frozenset(d_prod)
+ADirectProductExpression.eval = eval_ADirectProductExpression
+
+def eval_AParallelProductExpression(self, env):
+    p = self.get(0).eval(env)
+    q = self.get(1).eval(env)
+    #p_prod = [((x[0],y[0]),(x[1],y[1])) for x in p for y in q]
+    p_prod = []
+    for x in p:
+        for y in q:
+            e = W_Tuple((W_Tuple((x.tvalue[0], y.tvalue[0])), W_Tuple((x.tvalue[1], y.tvalue[1]))))
+            p_prod.append(e)  
+    return frozenset(p_prod)
+AParallelProductExpression.eval = eval_AParallelProductExpression
+
+def eval_AIterationExpression(self, env):
+    arel  = self.get(0).eval(env)
+    w_int = self.get(1).eval(env)
+    n = w_int.ivalue
+    assert n>=0
+    #rel = list(arel)
+    #rel = [(x[0],x[0]) for x in rel]
+    #for i in range(n):
+    #    rel = [(y[0],x[1]) for y in rel for x in arel if y[1]==x[0]]
+    rel = [W_Tuple((x.tvalue[0], x.tvalue[0])) for x in arel]
+    for i in range(n):
+        rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
+    return frozenset(rel)
+AIterationExpression.eval = eval_AIterationExpression
+
+def eval_AReflexiveClosureExpression(self, env):
+    arel = self.get(0).eval(env)
+    rel  = arel.lst
+    temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in rel] # also image
+    rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in rel]
+    rel += temp
+    rel = frozenset(rel).lst # throw away doubles
+    while True: # fixpoint-search (do-while-loop)
+        new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
+        S = frozenset(new_rel).union(frozenset(rel))
+        T = frozenset(rel)
+        assert isinstance(S, frozenset)
+        assert isinstance(T, frozenset)
+        if S.__eq__(T):
+            return T
+        rel = S.lst
+AReflexiveClosureExpression.eval = eval_AReflexiveClosureExpression
+
+def eval_AClosureExpression(self, env): #closure1
+    arel = self.get(0).eval(env)
+    #if isinstance(arel, SymbolicSet):
+    #    arel = arel.enumerate_all()
+    rel = frozenset(arel.lst).lst
+    while True: # fixpoint-search (do-while-loop)
+        new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
+        S = frozenset(new_rel).union(frozenset(rel))
+        T = frozenset(rel)
+        assert isinstance(S, frozenset)
+        assert isinstance(T, frozenset)
+        if S.__eq__(T):
+            return T
+        rel = S.lst
+AClosureExpression.eval = eval_AClosureExpression
+
+def eval_AFirstProjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+    #    return SymbolicFirstProj(S,T, env, self)
+    cart = []
+    for x in S:
+        for y in T:
+            cart.append(W_Tuple((x,y)))
+    proj = []
+    for t in cart:
+        e = (t, t.tvalue[0])
+        proj.append(W_Tuple(e))
+    return frozenset(proj)
+AFirstProjectionExpression.eval = eval_AFirstProjectionExpression
+
+def eval_ASecondProjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    #if isinstance(S, SymbolicSet) or isinstance(T, SymbolicSet):
+    #    return SymbolicSecondProj(S,T, env, self)
+    cart = []
+    for x in S:
+        for y in T:
+            cart.append(W_Tuple((x,y)))
+    proj = []
+    for t in cart:
+        e = (t, t.tvalue[1])
+        proj.append(W_Tuple(e))
+    return frozenset(proj)
+ASecondProjectionExpression.eval = eval_ASecondProjectionExpression
     
 # *******************
 #
 #       4.1 Functions
 #
 # *******************
-    elif isinstance(node, APartialFunctionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicPartialFunctionSet(S, T, env, node)
-    elif isinstance(node, ATotalFunctionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicTotalFunctionSet(S, T, env, node)
-    elif isinstance(node, APartialInjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicPartialInjectionSet(S, T, env, node)
-    elif isinstance(node, ATotalInjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicTotalInjectionSet(S, T, env, node)
-    elif isinstance(node, APartialSurjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicPartialSurjectionSet(S, T, env, node)
-    elif isinstance(node, ATotalSurjectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicTotalSurjectionSet(S, T, env, node)
-    elif isinstance(node, ATotalBijectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicTotalBijectionSet(S, T, env, node)
-    elif isinstance(node, APartialBijectionExpression):
-        S = interpret(node.get(0), env)
-        T = interpret(node.get(1), env)
-        return SymbolicPartialBijectionSet(S, T, env, node)        
-    elif isinstance(node, ALambdaExpression):
-        #varList = node.children[:-2]
-        varList = []
-        for i in range(len(node.children)-2):
-            idNode = node.children[i]
-            varList.append(idNode)
-        pred = node.children[-2]
-        expr = node.children[-1]
-        return SymbolicLambda(varList, pred, expr, node, env)       
-    elif isinstance(node, AFunctionExpression):
-        #print "interpret AFunctionExpression: ", pretty_print(node)
-        if isinstance(node.get(0), APredecessorExpression):
-            value = interpret(node.get(1), env)
-            return W_Integer(value.ivalue-1)
-        if isinstance(node.get(0), ASuccessorExpression):
-            value = interpret(node.get(1), env)
-            return W_Integer(value.ivalue+1)
-        function = interpret(node.get(0), env)
-        #print "FunctionName:", node.get(0).idName
-        args = None
-        i = 0 
-        for child in node.children[1:]:
-            arg = interpret(child, env)
-            if i==0:
-                args = arg
-            else:
-                args = W_Tuple((args, arg))
-            i = i+1
-        #if isinstance(function, SymbolicSet):
-        #    return function[args]
-        return get_image_RPython(function, args)
+def eval_APartialFunctionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicPartialFunctionSet(S, T, env, self)
+APartialFunctionExpression.eval = eval_APartialFunctionExpression
+
+def eval_ATotalFunctionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicTotalFunctionSet(S, T, env, self)
+ATotalFunctionExpression.eval = eval_ATotalFunctionExpression
+
+def eval_APartialInjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicPartialInjectionSet(S, T, env, self)
+APartialInjectionExpression.eval = eval_APartialInjectionExpression
+
+def eval_ATotalInjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicTotalInjectionSet(S, T, env, self)
+ATotalInjectionExpression.eval = eval_ATotalInjectionExpression
+
+def eval_APartialSurjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicPartialSurjectionSet(S, T, env, self)
+APartialSurjectionExpression.eval = eval_APartialSurjectionExpression
+
+def eval_ATotalSurjectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicTotalSurjectionSet(S, T, env, self)
+ATotalSurjectionExpression.eval = eval_ATotalSurjectionExpression
+
+def eval_ATotalBijectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicTotalBijectionSet(S, T, env, self)
+ATotalBijectionExpression.eval = eval_ATotalBijectionExpression
+
+def eval_APartialBijectionExpression(self, env):
+    S = self.get(0).eval(env)
+    T = self.get(1).eval(env)
+    return SymbolicPartialBijectionSet(S, T, env, self)  
+APartialBijectionExpression.eval = eval_APartialBijectionExpression 
+
+def eval_ALambdaExpression(self, env):
+    #varList = self.children[:-2]
+    varList = []
+    for i in range(len(self.children)-2):
+        idNode = self.get(i)
+        varList.append(idNode)
+    pred = self.get(-2)
+    expr = self.get(-1)
+    return SymbolicLambda(varList, pred, expr, self, env) 
+ALambdaExpression.eval = eval_ALambdaExpression  
+   
+def eval_AFunctionExpression(self, env):
+    #print "interpret AFunctionExpression: ", pretty_print(self)
+    if isinstance(self.get(0), APredecessorExpression):
+        value = self.get(1).eval(env)
+        return W_Integer(value.ivalue-1)
+    if isinstance(self.get(0), ASuccessorExpression):
+        value = self.get(1).eval(env)
+        return W_Integer(value.ivalue+1)
+    function = self.get(0).eval(env)
+    #print "FunctionName:", self.get(0).idName
+    args = None
+    i = 0 
+    for child in self.children[1:]:
+        arg = child.eval(env)
+        if i==0:
+            args = arg
+        else:
+            args = W_Tuple((args, arg))
+        i = i+1
+    #if isinstance(function, SymbolicSet):
+    #    return function[args]
+    return get_image_RPython(function, args)
+AFunctionExpression.eval = eval_AFunctionExpression
  
 # ********************
 #
 #       4.2 Sequences
 #
 # ********************       
-    elif isinstance(node,AEmptySequenceExpression):
-        return frozenset([])
-    elif isinstance(node,ASeqExpression):
-        S = interpret(node.get(0), env)
-        return SymbolicSequenceSet(S, env, node)
-    elif isinstance(node,ASeq1Expression):
-        S = interpret(node.get(0), env)
-        return SymbolicSequence1Set(S, env, node)
-    elif isinstance(node,AIseqExpression):
-        S = interpret(node.get(0), env)
-        return SymbolicISequenceSet(S, env, node)
-    elif isinstance(node, AIseq1Expression):
-        S = interpret(node.get(0), env)
-        return SymbolicISequence1Set(S, env, node)     
-    elif isinstance(node,APermExpression): 
-        S = interpret(node.get(0), env)
-        return SymbolicPermutationSet(S, env, node) 
-    elif isinstance(node, AConcatExpression):
-        # TODO: symbolic sets. e.g. union set
-        # u:= s^t
-        s = interpret(node.get(0), env)
-        t = interpret(node.get(1), env)
-        u = s.lst
-        offset = len(s.lst)
-        for tup in t.lst:
-            index = tup.tvalue[0].ivalue+offset
-            u.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
-        return frozenset(u)       
-    elif isinstance(node, AInsertFrontExpression):
-        E = interpret(node.get(0), env)
-        s = interpret(node.get(1), env)
-        new_s = [W_Tuple((W_Integer(1),E))]
-        for tup in s.lst:
-            index = tup.tvalue[0].ivalue+1
-            new_s.append(W_Tuple((W_Integer(index),tup.tvalue[1])))
-        return frozenset(new_s)
-    elif isinstance(node, AInsertTailExpression):
-        s = interpret(node.get(0), env)
-        E = interpret(node.get(1), env)
-        return frozenset(s.lst+[W_Tuple((W_Integer(len(s)+1),E))])
-    elif isinstance(node, ASequenceExtensionExpression):
-        sequence = []
-        i = 0
-        for child in node.children:
-            i = i+1
-            e = interpret(child, env)
-            sequence.append(W_Tuple((W_Integer(i),e)))
-        return frozenset(sequence)
-    elif isinstance(node, ASizeExpression):
-        sequence = interpret(node.get(0), env)
-        return W_Integer(sequence.__len__())
-    elif isinstance(node, ARevExpression):
-        sequence = interpret(node.get(0), env)
-        new_sequence = []
-        i = len(sequence)
-        for tup in sequence:
-            new_sequence.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
-            i = i-1
-        return frozenset(new_sequence)
-    elif isinstance(node, ARestrictFrontExpression):
-        sequence = interpret(node.get(0), env)
-        take = interpret(node.get(1), env)
-        assert take.ivalue>0
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        index = len(lst)-(take.ivalue-1)
-        assert index>0
-        return frozenset(lst[:index])       
-    elif isinstance(node, ARestrictTailExpression):
-        sequence = interpret(node.get(0), env)
-        drop = interpret(node.get(1), env)
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        assert drop.ivalue>0 and drop.ivalue<len(lst)
-        new_list = []
-        i = 0
-        x = drop.ivalue
-        while x!=len(lst):
-            tup = lst[x]
-            x = x+1
-            i = i+1
-            new_list.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
-        return frozenset(new_list)
-    elif isinstance(node, AFirstExpression):
-        sequence = interpret(node.get(0), env)
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        assert lst[0].tvalue[0].ivalue==1
-        return lst[0].tvalue[1]
-    elif isinstance(node, ALastExpression):
-        sequence = interpret(node.get(0), env)
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        assert lst[len(sequence)-1].tvalue[0].ivalue==len(lst)
-        return lst[len(sequence)-1].tvalue[1]
-    elif isinstance(node, ATailExpression):
-        sequence = interpret(node.get(0), env)
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        assert lst[0].tvalue[0].ivalue==1
-        result = []
-        i = 1
-        for e in lst[1:]:
-            result.append(W_Tuple((W_Integer(i), e.tvalue[1])))
-            i = i +1
-        return frozenset(result)
-    elif isinstance(node, AFrontExpression):
-        sequence = interpret(node.get(0), env)
-        lst = sequence.lst
-        lst = sort_sequence(lst)
-        lst.pop()
-        return frozenset(lst)
-        """
+def eval_AEmptySequenceExpression(self, env):
+    return frozenset([])
+AEmptySequenceExpression.eval = eval_AEmptySequenceExpression
+
+def eval_ASeqExpression(self, env):
+    S = self.get(0).eval(env)
+    return SymbolicSequenceSet(S, env, self)
+ASeqExpression.eval = eval_ASeqExpression
+
+def eval_ASeq1Expression(self, env):
+    S = self.get(0).eval(env)
+    return SymbolicSequence1Set(S, env, self)
+ASeq1Expression.eval = eval_ASeq1Expression
+
+def eval_AIseqExpression(self, env):
+    S = self.get(0).eval(env)
+    return SymbolicISequenceSet(S, env, self)
+AIseqExpression.eval = eval_AIseqExpression
+
+def eval_AIseq1Expression(self, env):
+    S = self.get(0).eval(env)
+    return SymbolicISequence1Set(S, env, self)  
+AIseq1Expression.eval =  eval_AIseq1Expression 
+ 
+def eval_APermExpression(self, env): 
+    S = self.get(0).eval(env)
+    return SymbolicPermutationSet(S, env, self) 
+APermExpression.eval = eval_APermExpression
+
+def eval_AConcatExpression(self, env):
+    # TODO: symbolic sets. e.g. union set
+    # u:= s^t
+    s = self.get(0).eval(env)
+    t = self.get(1).eval(env)
+    u = s.lst
+    offset = len(s.lst)
+    for tup in t.lst:
+        index = tup.tvalue[0].ivalue+offset
+        u.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
+    return frozenset(u) 
+AConcatExpression.eval = eval_AConcatExpression 
+   
+def eval_AInsertFrontExpression(self, env):
+    E = self.get(0).eval(env)
+    s = self.get(1).eval(env)
+    new_s = [W_Tuple((W_Integer(1),E))]
+    for tup in s.lst:
+        index = tup.tvalue[0].ivalue+1
+        new_s.append(W_Tuple((W_Integer(index),tup.tvalue[1])))
+    return frozenset(new_s)
+AInsertFrontExpression.eval = eval_AInsertFrontExpression
+
+def eval_AInsertTailExpression(self, env):
+    s = self.get(0).eval(env)
+    E = self.get(1).eval(env)
+    return frozenset(s.lst+[W_Tuple((W_Integer(len(s)+1),E))])
+AInsertTailExpression.eval = eval_AInsertTailExpression
+
+def eval_ASequenceExtensionExpression(self, env):
+    sequence = []
+    i = 0
+    for child in self.children:
+        i = i+1
+        e = child.eval(env)
+        sequence.append(W_Tuple((W_Integer(i),e)))
+    return frozenset(sequence)
+ASequenceExtensionExpression.eval = eval_ASequenceExtensionExpression
+
+def eval_ASizeExpression(self, env):
+    sequence = self.get(0).eval(env)
+    return W_Integer(sequence.__len__())
+ASizeExpression.eval = eval_ASizeExpression
+
+def eval_ARevExpression(self, env):
+    sequence = self.get(0).eval(env)
+    new_sequence = []
+    i = len(sequence)
+    for tup in sequence:
+        new_sequence.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
+        i = i-1
+    return frozenset(new_sequence)
+ARevExpression.eval = eval_ARevExpression
+
+def eval_ARestrictFrontExpression(self, env):
+    sequence = self.get(0).eval(env)
+    take = self.get(1).eval(env)
+    assert take.ivalue>0
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    index = len(lst)-(take.ivalue-1)
+    assert index>0
+    return frozenset(lst[:index])    
+ARestrictFrontExpression.eval = eval_ARestrictFrontExpression
+
+def eval_ARestrictTailExpression(self, env):
+    sequence = self.get(0).eval(env)
+    drop = self.get(1).eval(env)
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    assert drop.ivalue>0 and drop.ivalue<len(lst)
+    new_list = []
+    i = 0
+    x = drop.ivalue
+    while x!=len(lst):
+        tup = lst[x]
+        x = x+1
+        i = i+1
+        new_list.append(W_Tuple((W_Integer(i),tup.tvalue[1])))
+    return frozenset(new_list)
+ARestrictTailExpression.eval = eval_ARestrictTailExpression
+
+def eval_AFirstExpression(self, env):
+    sequence = self.get(0).eval(env)
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    assert lst[0].tvalue[0].ivalue==1
+    return lst[0].tvalue[1]
+AFirstExpression.eval = eval_AFirstExpression
+
+def eval_ALastExpression(self, env):
+    sequence = self.get(0).eval(env)
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    assert lst[len(sequence)-1].tvalue[0].ivalue==len(lst)
+    return lst[len(sequence)-1].tvalue[1]
+ALastExpression.eval = eval_ALastExpression
+
+def eval_ATailExpression(self, env):
+    sequence = self.get(0).eval(env)
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    assert lst[0].tvalue[0].ivalue==1
+    result = []
+    i = 1
+    for e in lst[1:]:
+        result.append(W_Tuple((W_Integer(i), e.tvalue[1])))
+        i = i +1
+    return frozenset(result)
+ATailExpression.eval = eval_ATailExpression
+
+def eval_AFrontExpression(self, env):
+    sequence = self.get(0).eval(env)
+    lst = sequence.lst
+    lst = sort_sequence(lst)
+    lst.pop()
+    return frozenset(lst)
+AFrontExpression.eval = eval_AFrontExpression
+"""
         # FIXME: segfault. reason unknown
-    elif isinstance(node, AGeneralConcatExpression):
+    elif isinstance(self, AGeneralConcatExpression):
         # AttributeError: 'FrozenDesc' object has no attribute 'pycall'
-        ss = interpret(node.get(0), env)
+        ss = self.get(0).eval(env)
         lst = sort_sequence(ss.lst)
         t = []
         index = 0
@@ -1516,36 +1706,49 @@ def interpret(node, env):
                 index = index +1
                 t.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
         return frozenset(t)
-        """
-    elif isinstance(node, AStringExpression):
-        return W_String(node.string)
+"""
+def eval_AStringExpression(self, env):
+    return W_String(self.string)
+AStringExpression.eval = eval_AStringExpression
 
 # ****************
 #
 # 6. Miscellaneous
 #
 # ****************
-    elif isinstance(node, AConvertBoolExpression): 
-        w_bool = interpret(node.get(0), env)
-        return w_bool
-    elif isinstance(node, AUnaryMinusExpression):
-        w_int = interpret(node.get(0), env)
-        return w_int.__neg__()
-    elif isinstance(node, AIntegerExpression):
-        # TODO: add flag in config.py to enable switch to long integer here
-        return W_Integer(node.intValue)
-    elif isinstance(node, AMinIntExpression):
-        assert env is not None
-        return W_Integer(env._min_int)
-    elif isinstance(node, AMaxIntExpression):
-        assert env is not None
-        return W_Integer(env._max_int)
-    elif isinstance(node, AIdentifierExpression):
-        assert env is not None
-        value = env.get_value(node.idName)
-        assert isinstance(value, W_Object)
-        return value
-        """
+def eval_AConvertBoolExpression(self, env): 
+    w_bool = self.get(0).eval(env)
+    return w_bool
+AConvertBoolExpression.eval = eval_AConvertBoolExpression
+
+def eval_AUnaryMinusExpression(self, env):
+    w_int = self.get(0).eval(env)
+    return w_int.__neg__()
+AUnaryMinusExpression.eval = eval_AUnaryMinusExpression
+
+def eval_AIntegerExpression(self, env):
+    # TODO: add flag in config.py to enable switch to long integer here
+    return W_Integer(self.intValue)
+AIntegerExpression.eval = eval_AIntegerExpression
+
+def eval_AMinIntExpression(self, env):
+    assert env is not None
+    return W_Integer(env._min_int)
+AMinIntExpression.eval = eval_AMinIntExpression
+
+def eval_AMaxIntExpression(self, env):
+    assert env is not None
+    return W_Integer(env._max_int)
+AMaxIntExpression.eval = eval_AMaxIntExpression
+
+def eval_AIdentifierExpression(self, env):
+    assert env is not None
+    value = env.get_value(self.idName)
+    assert isinstance(value, W_Object)
+    return value
+AIdentifierExpression.eval = eval_AIdentifierExpression
+
+"""
     elif isinstance(node, APrimedIdentifierExpression):
         assert len(node.children)==1 # TODO x.y.z
         assert node.grade==0 #TODO: fix for while loop
@@ -1568,73 +1771,88 @@ def interpret(node, env):
         #        continue
         #print "LookupErr:", id_Name
         #raise KeyError
-        """
-    elif isinstance(node, ABoolSetExpression):
-        return frozenset([W_Boolean(True),W_Boolean(False)])
-    elif isinstance(node, ABooleanTrueExpression):
-        return W_Boolean(True)
-    elif isinstance(node, ABooleanFalseExpression):
-        return W_Boolean(False)
-    elif isinstance(node, AStructExpression):        
-        dictionary = {}
-        for rec_entry in node.children:
-            assert isinstance(rec_entry, ARecEntry)
-            name = ""
-            if isinstance(rec_entry.children[0], AIdentifierExpression):
-                name = rec_entry.children[0].idName
-            assert isinstance(rec_entry.children[-1], Expression)
-            value = interpret(rec_entry.children[-1], env)
-            dictionary[name] = value
-        #res = all_records(dictionary)
-        #result = []
-        #for dic in res:
-        #    rec = []
-        #    for entry in dic:
-        #        rec.append(tuple([entry,dic[entry]]))
-        #    result.append(frozenset(rec))
-        #return frozenset(result)
-        return SymbolicStructSet(dictionary, env)
-    elif isinstance(node, ARecExpression):
-        result = []
-        for rec_w_entry in node.children:
-            assert isinstance(rec_w_entry, ARecEntry)
-            name = ""
-            if isinstance(rec_w_entry.children[0], AIdentifierExpression):
-                name = rec_w_entry.children[0].idName
-            assert isinstance(rec_w_entry.children[-1], Expression)
-            value = interpret(rec_w_entry.children[-1], env)
-            result.append(W_Tuple((W_String(name),value)))
-        return frozenset(result)
-    elif isinstance(node, ARecordFieldExpression):
-        record = interpret(node.get(0), env)
-        assert isinstance(node.get(1), AIdentifierExpression)
-        name = node.get(1).idName
-        for w_entry in record:
-            if w_entry.tvalue[0].__eq__(W_String(name)):
-                return w_entry.tvalue[1]
-        raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
-    elif isinstance(node, AStringSetExpression):
-        return StringSet(env)
+"""
+def eval_ABoolSetExpression(self, env):
+    return frozenset([W_Boolean(True),W_Boolean(False)])
+ABoolSetExpression.eval = eval_ABoolSetExpression
 
-    elif isinstance(node, ATransRelationExpression):
-        function = interpret(node.get(0), env)
-        return SymbolicTransRelation(function, env, node)
-    elif isinstance(node, ATransFunctionExpression):
-        relation = interpret(node.get(0), env)
-        return SymbolicTransFunction(relation, env, node)
-        """
-    elif isinstance(node, AExternalFunctionExpression):
+def eval_ABooleanTrueExpression(self, env):
+    return W_Boolean(True)
+ABooleanTrueExpression.eval = eval_ABooleanTrueExpression
+
+def eval_ABooleanFalseExpression(self, env):
+    return W_Boolean(False)
+ABooleanFalseExpression.eval = eval_ABooleanFalseExpression
+
+def eval_AStructExpression(self, env):        
+    dictionary = {}
+    for rec_entry in self.children:
+        assert isinstance(rec_entry, ARecEntry)
+        name = ""
+        if isinstance(rec_entry.children[0], AIdentifierExpression):
+            name = rec_entry.children[0].idName
+        assert isinstance(rec_entry.children[-1], Expression)
+        value = rec_entry.get(-1).eval(env)
+        dictionary[name] = value
+    #res = all_records(dictionary)
+    #result = []
+    #for dic in res:
+    #    rec = []
+    #    for entry in dic:
+    #        rec.append(tuple([entry,dic[entry]]))
+    #    result.append(frozenset(rec))
+    #return frozenset(result)
+    return SymbolicStructSet(dictionary, env)
+AStructExpression.eval = eval_AStructExpression
+
+def eval_ARecExpression(self, env):
+    result = []
+    for rec_w_entry in self.children:
+        assert isinstance(rec_w_entry, ARecEntry)
+        name = ""
+        if isinstance(rec_w_entry.children[0], AIdentifierExpression):
+            name = rec_w_entry.children[0].idName
+        assert isinstance(rec_w_entry.children[-1], Expression)
+        value = rec_w_entry.get(-1).eval(env)
+        result.append(W_Tuple((W_String(name),value)))
+    return frozenset(result)
+ARecExpression.eval = eval_ARecExpression
+
+def eval_ARecordFieldExpression(self, env):
+    record = self.get(0).eval(env)
+    assert isinstance(self.get(1), AIdentifierExpression)
+    name = self.get(1).idName
+    for w_entry in record:
+        if w_entry.tvalue[0].__eq__(W_String(name)):
+            return w_entry.tvalue[1]
+    raise Exception("\nError: Problem inside RecordExpression - wrong w_entry: %s" % name)
+ARecordFieldExpression.eval = eval_ARecordFieldExpression
+
+def eval_AStringSetExpression(self, env):
+    return StringSet(env)
+AStringSetExpression.eval = eval_AStringSetExpression
+
+def eval_ATransRelationExpression(self, env):
+    function = self.get(0).eval(env)
+    return SymbolicTransRelation(function, env, self)
+ATransRelationExpression.eval = eval_ATransRelationExpression
+
+def eval_ATransFunctionExpression(self, env):
+    relation = self.get(0).eval(env)
+    return SymbolicTransFunction(relation, env, self)
+ATransFunctionExpression.eval = eval_ATransFunctionExpression
+"""
+def eval_AExternalFunctionExpression(self, env):
         args = []
-        for child in node.children:
-            arg = interpret(child, env)
+        for child in self.children:
+            arg = child.eval(env)
             args.append(arg)
-        result = node.pyb_impl(args)
+        result = self.pyb_impl(args)
         return result
-        """
-    else:
-        print "\nError: unimplemented pyB feature: %s",node
-        raise Exception("\nError: Unknown/unimplemented node inside interpreter: %s",node)
-        return W_None() # RPython: Avoid return of python None
+AExternalFunctionExpression.eval = eval_AExternalFunctionExpression
+"""
+
+
 
 
 
@@ -1659,7 +1877,7 @@ def exec_substitution(sub, env):
         # get values of all expressions (rhs)
         for i in range(int(sub.rhs_size)):
             rhs = sub.children[i+int(sub.rhs_size)]
-            value = interpret(rhs, env)
+            value = rhs.eval(env)
             assert isinstance(value, W_Object)
             values.append(value)
         for i in range(int(sub.lhs_size)):
@@ -1705,7 +1923,7 @@ def exec_substitution(sub, env):
                 raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
         yield True # assign(s) was/were  successful 
     elif isinstance(sub, ABecomesElementOfSubstitution):
-        values = interpret(sub.children[-1], env)
+        values = sub.get(-1).eval(env)
         #print "DEBUG becomes:",values
         if values==frozenset([]): #empty set has no elements -> subst. imposible
             yield False
@@ -1737,7 +1955,7 @@ def exec_substitution(sub, env):
                     results.append(env.get_value(i))
                 
                 # write back if solution 
-                w_bool =interpret(sub.children[-1], env)
+                w_bool = sub.get(-1).eval(env)
                 if w_bool.bvalue:
                     env.pop_frame() # exit new frame
                     for i in range(len(nodes)):
@@ -1807,7 +2025,7 @@ def exec_substitution(sub, env):
         assert isinstance(doSubst, Substitution)
         assert isinstance(invariant, Predicate)  
         assert isinstance(variant, Expression) 
-        v_value = interpret(variant, env)
+        v_value = variant.eval(env)
         ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
         for possible in ex_while_generator:
             yield possible
@@ -1825,8 +2043,8 @@ def exec_substitution(sub, env):
     elif isinstance(sub, APreconditionSubstitution):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
-        condition = interpret(sub.children[0], env)
-        #print condition, node.get(0)
+        condition = sub.get(0).eval(env)
+        #print condition, self.get(0)
         if condition.bvalue:
             ex_generator = exec_substitution(sub.children[1], env)
             for possible in ex_generator:
@@ -1836,7 +2054,7 @@ def exec_substitution(sub, env):
     elif isinstance(sub, AAssertionSubstitution):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
-        w_bool = interpret(sub.children[0], env)
+        w_bool = sub.get(0).eval(env)
         if not w_bool.bvalue:
             print "ASSERT-Substitution violated:" + pretty_print(sub.children[0])
             yield False  #TODO: What is correct: False or crash\Exception?
@@ -1847,7 +2065,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
         all_cond_false = True
-        condition = interpret(sub.children[0], env)
+        condition = sub.get(0).eval(env)
         if condition.bvalue: # take "THEN" Branch
             all_cond_false = False
             ex_generator = exec_substitution(sub.children[1], env)
@@ -1857,7 +2075,7 @@ def exec_substitution(sub, env):
             if isinstance(child, AIfElsifSubstitution):
                 assert isinstance(child.children[0], Predicate)
                 assert isinstance(child.children[1], Substitution)
-                sub_condition = interpret(child.children[0], env)
+                sub_condition = child.get(0).eval(env)
                 if sub_condition.bvalue:
                     all_cond_false = False
                     ex_generator = exec_substitution(child.children[1], env)
@@ -1891,7 +2109,7 @@ def exec_substitution(sub, env):
         assert isinstance(sub.children[0], Predicate)
         assert isinstance(sub.children[1], Substitution)
         # (1) find enabled conditions and remember this branches 
-        w_bool = interpret(sub.children[0], env)
+        w_bool = sub.get(0).eval(env)
         if w_bool.bvalue:
             nodes.append(sub.children[1])
         for i in range(len(sub.children)-2):
@@ -1899,7 +2117,7 @@ def exec_substitution(sub, env):
             if isinstance(child, ASelectWhenSubstitution):
                 assert isinstance(child.children[0], Predicate)
                 assert isinstance(child.children[1], Substitution)
-                w_bool = interpret(child.children[0], env)
+                w_bool = child.get(0).eval(env)
                 if w_bool.bvalue:
                     nodes.append(child.children[1])
             else:
@@ -1921,13 +2139,13 @@ def exec_substitution(sub, env):
             yield False 
     elif isinstance(sub, ACaseSubstitution):
         assert isinstance(sub.children[0], Expression)
-        elem = interpret(sub.children[0], env)
+        elem = sub.get(0).eval(env)
         all_cond_false = True
         # sub.children[1:1+sub.expNum]
         for i in range((1+sub.expNum)-1):
             child = sub.children[i+1]
             assert isinstance(child, Expression)
-            value = interpret(child, env)
+            value = child.eval(env)
             if elem.__eq__(value):
                 all_cond_false = False
                 assert isinstance(sub.children[sub.expNum+1], Substitution)
@@ -1943,7 +2161,7 @@ def exec_substitution(sub, env):
                 for j in range(child.expNum):
                     expNode = child.children[j]
                     assert isinstance(expNode, Expression)
-                    value = interpret(expNode, env)
+                    value = expNode.eval(env)
                     if elem == value:
                         all_cond_false = False
                         assert isinstance(child.children[-1], Substitution)
@@ -2002,7 +2220,7 @@ def exec_substitution(sub, env):
         values = []
         # get parameter values for call
         for i in range(len(para_nodes)):
-            value = interpret(sub.children[i], env)
+            value = sub.get(i).eval(env)
             values.append(value)
         op_node = boperation.ast
         # switch machine and set up parameters
@@ -2014,7 +2232,7 @@ def exec_substitution(sub, env):
             name = para_nodes[i].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
-        ex_generator = exec_substitution(op_node.children[-1], env)
+        ex_generator = exec_substitution(op_node.get(-1), env)
         for possible in ex_generator:
             # switch back machine
             env.pop_frame()
@@ -2039,7 +2257,7 @@ def exec_substitution(sub, env):
         # get parameter values for call
         for i in range(len(para_nodes)):
             parameter_node = sub.children[i+sub.return_Num]
-            value = interpret(parameter_node, env)
+            value = parameter_node.eval(env)
             values.append(value)
         op_node = boperation.ast
         # switch machine and set up parameters
@@ -2051,7 +2269,7 @@ def exec_substitution(sub, env):
             name = para_nodes[i].idName
             env.set_value(name, values[i])
         assert isinstance(op_node, AOperation)
-        ex_generator = exec_substitution(op_node.children[-1], env)
+        ex_generator = exec_substitution(op_node.get(-1), env)
         for possible in ex_generator:
             results = []
             for r in ret_nodes:
@@ -2156,7 +2374,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
     bstate = env.state_space.get_state()  # avoid undesired side effects 
     clone = bstate.clone()
     states = [clone]
-    cond = interpret(condition, env)
+    cond = condition.eval(env)
     if not cond.bvalue:
         yield True # Not condition means skip whole loop 
     
@@ -2166,9 +2384,9 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
     while not states==[]:
         next_states = []      
         for state in states:
-            env.state_space.add_state(state)	# push this bstate
-            v_value = interpret(variant, env)
-            inv     = interpret(invariant, env)
+            env.state_space.add_state(state)    # push this bstate
+            v_value = variant.eval(env)
+            inv     = invariant.eval(env)
             if not inv.bvalue and PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
             assert inv
@@ -2178,17 +2396,17 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
             for do_possible in ex_generator:
                 if do_possible:
                     do_state = env.state_space.get_state()
-                    cond = interpret(condition, env)
+                    cond = condition.eval(env)
                     if not cond.bvalue:
                         yield True # Not condition means leave loop 
                     else:
                         # only consider states in the next loop which fullfil the condition 
                         next_states.append(do_state.clone())
-                        temp = interpret(variant, env)
+                        temp = variant.eval(env)
                         if not  temp.__lt__(v_value):
                             print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
                         assert temp.__lt__(v_value)
-            env.state_space.undo() 				# pop last bstate
+            env.state_space.undo()              # pop last bstate
         states = next_states
 
 """        

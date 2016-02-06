@@ -248,7 +248,7 @@ def _run_model_checking_mode(env, mch):
     s_space = env.state_space
     jitdriver.jit_merge_point(inv=inv, s_space=s_space)
     while not env.state_space.empty(): 
-        w_bool = interpret(inv, env)  # 7. model check  
+        w_bool = inv.eval(env)  # 7. model check  
         if not w_bool.bvalue:
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
             #print env.state_space.history
