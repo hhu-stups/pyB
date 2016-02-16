@@ -242,12 +242,12 @@ def run_model_checking_mode(argv):
 
 
 from rpython.rlib.jit import JitDriver
-jitdriver = JitDriver(greens=['inv'], reds=['s_space'])
+jitdriver = JitDriver(greens=['inv'], reds=['s_space', 'env', 'mch'])
 def _run_model_checking_mode(env, mch):
     inv = mch.aInvariantMachineClause
     s_space = env.state_space
-    jitdriver.jit_merge_point(inv=inv, s_space=s_space)
     while not env.state_space.empty(): 
+        jitdriver.jit_merge_point(inv=inv, s_space=s_space, env=env, mch=mch)
         w_bool = inv.eval(env)  # 7. model check  
         if not w_bool.bvalue:
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
@@ -263,13 +263,16 @@ def _run_model_checking_mode(env, mch):
                         return False 
         next_states = calc_next_states(env, mch)
         s_space.undo()
-        for tup in next_states:
-            bstate = tup.bstate
-            #bstate.print_bstate()
-            if not s_space.is_seen_state(bstate):
-                s_space.set_current_state(bstate)  
+        schedule_new_states(next_states, s_space)         
     print "checked",len(s_space.seen_states),"states.\033[1m\033[92m No invariant violation found.\033[00m"
     return 0
+
+def schedule_new_states(next_states, s_space):
+    for tup in next_states:
+        bstate = tup.bstate
+        #bstate.print_bstate()
+        if not s_space.is_seen_state(bstate):
+            s_space.set_current_state(bstate)
 
 
 # check of init without animation

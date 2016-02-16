@@ -10,8 +10,8 @@ class Node():
     
     # Rpython typing fails on direct access like node.children[i].
     # But it doesnt fails when a method does it
-    #from rpython.rlib.jit import JitDriver
-    #@jit.elidable_promote('all')
+    #from rpython.rlib import jit
+    #@jit.elidable
     def get(self, index):
         return self.children[index]
         
@@ -1679,6 +1679,7 @@ class ATransFunctionExpression(SetExpression):
         
         
 class AStringExpression(StringExpression):
+    _immutable_fields_ = ["string"]
     def __init__(self, string):
         self.string = string
         self.children =[]
@@ -1691,14 +1692,15 @@ class AStringExpression(StringExpression):
         
         
 class AIdentifierExpression(Expression):
+    #_immutable_fields_ = ["idName"]
     def __init__(self, idName):
         assert isinstance(idName, str)
         self.idName = idName
         self.children =[]
         
     def get_idName(self):
-     	assert isinstance(self.idName, str)
-     	return self.idName
+        assert isinstance(self.idName, str)
+        return self.idName
     
     def clone(self):
         assert isinstance(self.idName, str)
@@ -1709,6 +1711,7 @@ class AIdentifierExpression(Expression):
         
         
 class AIntegerExpression(IntegerExpression):
+    _immutable_fields_ = ["intValue"]
     def __init__(self, intValue):
         self.intValue = intValue
         self.children =[]

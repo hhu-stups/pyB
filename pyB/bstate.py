@@ -5,8 +5,11 @@ from bexceptions import ValueNotInBStateException
 from config import USE_RPYTHON_CODE
 from rpython_b_objmodel import W_None, W_Object
 
+
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import frozenset
+    from rpython.rlib import jit
+    
 
 # BState: Set of all values (constants and variabels) of all B-machines
 # Used by state_space.py. 
@@ -169,21 +172,23 @@ class BState():
             value_stack[name] = None  # default init
         self.bmch_dict[bmachine] = [value_stack]
     
-
+    #@jit.elidable
+    def get_bmachine_stack(self, bmachine):
+        return self.bmch_dict[bmachine]
+    
+    #@jit.unroll_safe
     def get_value(self, id_Name, bmachine):
         #print "lookup of %s in %s" % (id_Name, bmachine.mch_name)
         #if isinstance(id_Name, AIdentifierExpression): # debug
         #    print id_Name.idName
         assert isinstance(id_Name, str)
         assert isinstance(bmachine, BMachine) or bmachine is None #None if Predicate or Expression
-        value_stack = self.bmch_dict[bmachine]
-        value_map_copy =  [x for x in value_stack] # no ref. copy
-        value_map_copy.reverse()
-        stack_depth = len(value_map_copy)
+        value_stack = self.get_bmachine_stack(bmachine)
+        stack_depth = len(value_stack)
         # lookup own mch:
-        for i in range(stack_depth):
+        for i in range(len(value_stack)-1, -1, -1):
             try:
-                return value_map_copy[i][id_Name]
+                return value_stack[i][id_Name]
             except KeyError:
                 continue
         # No entry in the value_stack. The variable/constant with the name 'id_Name'
@@ -202,13 +207,14 @@ class BState():
 
     # TODO: (maybe) check if value has the correct type - but this can be better done static
     # used by tests and enumeration and substitution
+    #@jit.unroll_safe
     def set_value(self, id_Name, value, bmachine):
         #print
         #print value, id_Name
         assert isinstance(bmachine, BMachine) or bmachine is None
-        value_stack = self.bmch_dict[bmachine]
-        for i in range(len(value_stack)):
-            top_map = value_stack[-(i+1)]
+        value_stack = self.get_bmachine_stack(bmachine)
+        for i in range(len(value_stack)-1, -1, -1):
+            top_map = value_stack[i]
             if id_Name in top_map:
                 top_map[id_Name] = value
                 return

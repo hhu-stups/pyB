@@ -2,13 +2,20 @@ from bstate import BState
 from config import DEPTH_FIRST_SEARCH_MODEL_CHECKING, USE_ANIMATION_HISTORY, USE_RPYTHON_CODE
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import frozenset
+    from rpython.rlib.objectmodel import r_ordereddict
+
+def key_eq(s1, s2):
+    return s1.equal(s2)
+    
+def key_hash(s):
+    return s.__hash__()
      
 # TODO: Use a better datastruktur when you impl. modelchecking 
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]
-        self.seen_states = {}
+        self.seen_states = {} #r_ordereddict(key_eq, key_hash)
     
     # returntype: BState
     def get_state(self):
@@ -29,6 +36,7 @@ class StateSpace:
            
     def is_seen_state(self, bstate):
         assert isinstance(bstate, BState)
+        #return bstate in self.seen_states # TODO: use this!
         h = bstate.__hash__()
         if h in self.seen_states:
 
@@ -45,6 +53,7 @@ class StateSpace:
     def set_current_state(self, bstate):
         assert isinstance(bstate, BState)
         self.stack.append(bstate)
+        #self.seen_states[h] = None
         h = bstate.__hash__()
         self.seen_states[h] = bstate
           

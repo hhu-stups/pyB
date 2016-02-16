@@ -14,6 +14,8 @@ from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, Symbol
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
 from typing import type_check_predicate, type_check_expression
 
+from rpython.rlib import jit
+
 
 #def parallel_caller(q, n, env):
 #    q.put(interpret(n, env))
@@ -822,6 +824,7 @@ def eval_AIntersectionExpression(self, env):
     return SymbolicIntersectionSet(aSet1, aSet2, env)
 AIntersectionExpression.eval = eval_AIntersectionExpression
 
+@jit.unroll_safe
 def eval_ACoupleExpression(self, env):
     assert len(self.children)>1
     a = self.get(0).eval(env)
@@ -1852,10 +1855,501 @@ def eval_AExternalFunctionExpression(self, env):
 AExternalFunctionExpression.eval = eval_AExternalFunctionExpression
 """
 
+#XXX usage not possible
+# UnionError:
+# [translation:ERROR]
+# [translation:ERROR] RPython cannot unify instances with no common base class
+# [translation:ERROR]
+# [translation:ERROR] Offending annotations:
+# [translation:ERROR]   SomeInstance(can_be_None=False, classdef=rpython.flowspace.generator.GeneratorIterator)
+# [translation:ERROR]   SomeInstance(can_be_None=False, classdef=rpython.flowspace.generator.GeneratorIterator)
+"""
+# ****************
+#
+# 5. Substitutions
+#
+# ****************
+def exec_ASkipSubstitution(self, env):
+    yield True
+ASkipSubstitution.execute = exec_ASkipSubstitution
+
+def exec_AAssignSubstitution(self, env):
+    assert int(self.lhs_size) == int(self.rhs_size)     
+    used_ids = []
+    values = []
+    # get values of all expressions (rhs)
+    for i in range(int(self.rhs_size)):
+        rhs = self.children[i+int(self.rhs_size)]
+        value = rhs.eval(env)
+        assert isinstance(value, W_Object)
+        values.append(value)
+    for i in range(int(self.lhs_size)):
+        lhs_node = self.children[i]            
+        # BUG if the expression on the rhs has a side-effect
+        assert i>=0 and i<len(values)
+        value = values[i]
+        # case (1) lhs: no function
+        if isinstance(lhs_node, AIdentifierExpression):
+            used_ids.append(lhs_node.idName)
+            env.set_value(lhs_node.idName, value)
+        # TODO: implement call method on frozensets before adding this code
+        # case (2) lhs: is function 
+#         else:
+#             assert isinstance(lhs_node, AFunctionExpression)
+#             assert isinstance(lhs_node.get(0), AIdentifierExpression)
+#             func_name = lhs_node.get(0).idName
+#             # get args and convert to dict
+#             args = []
+#             for child in lhs_node.children[1:]:
+#                 arg = interpret(child, env)
+#                 args.append(arg)
+#             func = dict(env.get_value(func_name))
+#             used_ids.append(func_name)
+#             # mapping of func values
+#             if len(args)==1:
+#                 func[args[0]] = value
+#             else:
+#                 func[tuple(args)] = value
+#             # convert back
+#             lst = []
+#             for key in func:
+#                 lst.append(tuple([key,func[key]]))
+#             new_func = frozenset(lst)
+#             # write to env
+#             env.set_value(func_name, new_func)
+        # case (3) record: 3 # TODO
+
+    while not used_ids==[]:
+        name = used_ids.pop()
+        if name in used_ids:
+            raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
+    yield True # assign(s) was/were  successful 
+AAssignSubstitution.execute = exec_AAssignSubstitution
+
+def exec_ABecomesElementOfSubstitution(self, env):
+    values = self.get(-1).eval(env)
+    #print "DEBUG becomes:",values
+    if values==frozenset([]): #empty set has no elements -> subst. imposible
+        yield False
+    else:
+        for value in values: 
+            for child in self.children[:-1]:
+                assert isinstance(child, AIdentifierExpression)
+                env.set_value(child.idName, value)
+            yield True # assign was successful 
+ABecomesElementOfSubstitution.execute = exec_ABecomesElementOfSubstitution
+
+
+def exec_ABecomesSuchSubstitution(self, env):
+    # TODO: more than on ID on lhs
+    nodes = []
+    # self.children[:-1]
+    for i in range(len(self.children)-1):
+        child = self.children[i]
+        assert isinstance(child, AIdentifierExpression)
+        nodes.append(child)
+    # new frame to enable primed-ids
+    env.push_new_frame(nodes)
+    gen = try_all_values(self.children[-1], env, nodes) 
+    for possible in gen: # sideeffect: set values 
+        if not possible:
+            env.pop_frame() 
+            yield False
+        else:
+            results = []
+            for n in nodes:
+                i = n.idName
+                results.append(env.get_value(i))
+            
+            # write back if solution 
+            w_bool = self.get(-1).eval(env)
+            if w_bool.bvalue:
+                env.pop_frame() # exit new frame
+                for i in range(len(nodes)):
+                    env.set_value(nodes[i].idName, results[i])
+                yield True
+            else:
+                env.pop_frame() # exit new frame
+        env.push_new_frame(nodes) #enum next value in next-interation
+    env.pop_frame()
+ABecomesSuchSubstitution.execute = exec_ABecomesSuchSubstitution
+
+
+def exec_AParallelSubstitution(self, env):
+    # 0. setup: get all substitutions 
+    subst_list = []      
+    for child in self.children:
+        assert isinstance(child, Substitution)
+        subst_list.append(child)
+    if subst_list==[]:
+        yield False
+    else:
+        ref_state = env.get_state().clone()
+        #print "AParallelSubstitution:", ref_state
+        values = [] # values changed by this path
+        names  = []
+        # for explanation see function comments  
+        ex_pa_generator = exec_parallel_substitution(subst_list, env, ref_state, names, values)
+        for possible in ex_pa_generator:
+            # 1. possible combination found
+            if possible:
+                # 2. test: no variable can be modified twice (see page 108)
+                # check for double w_entrys -> Error
+                id_names = [x for x in names]
+                while not id_names==[]:
+                    name = id_names.pop()
+                    if name in id_names:
+                        msg = "\nError: modified twice in parallel substitution: " + name
+                        raise Exception(msg)
+                # 3. write changes to state
+                for i in range(len(names)):
+                    name = names[i]
+                    value = values[i]
+                    env.set_value(name, value)
+                yield True # False if no branch was executable
+                # 4. reset for next loop
+                ref_state = env.get_state().clone()  
+AParallelSubstitution.execute = exec_AParallelSubstitution
+
+
+def exec_ABlockSubstitution(self, env):
+    ex_generator = self.children[-1].execute(env)
+    for possible in ex_generator:
+        yield possible
+ABlockSubstitution.execute = exec_ABlockSubstitution
+
+
+def exec_ASequenceSubstitution(self, env):
+    subst_list = []
+    for child in self.children:
+        assert isinstance(child, Substitution)
+        subst_list.append(child)
+    # for explanation see function comments 
+    for possible in exec_sequence_substitution(subst_list, env):
+        yield possible
+ASequenceSubstitution.execute = exec_ASequenceSubstitution
+
+
+def exec_AWhileSubstitution(self, env):
+    if PRINT_WARNINGS:
+        print "\033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!" # TODO: replace/move warning
+    condition = self.children[0]
+    doSubst   = self.children[1]
+    invariant = self.children[2]
+    variant   = self.children[3]
+    if not isinstance(condition, Predicate) or not isinstance(doSubst, Substitution) or not isinstance(invariant, Predicate) or not isinstance(variant, Expression) :
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP AST PARSING ERROR"
+    assert isinstance(condition, Predicate) 
+    assert isinstance(doSubst, Substitution)
+    assert isinstance(invariant, Predicate)  
+    assert isinstance(variant, Expression) 
+    v_value = variant.eval(env)
+    ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+    for possible in ex_while_generator:
+        yield possible
+AWhileSubstitution.execute = exec_AWhileSubstitution
+
+
+# **********************
+#
+# 5.1. Alternative Syntax
+#
+# ***********************
+def exec_ABlockSubstitution(self, env):
+    ex_generator = self.children[-1].execute(env)
+    for possible in ex_generator:
+        yield possible   
+ABlockSubstitution.execute = exec_ABlockSubstitution  
+
+
+def exec_APreconditionSubstitution(self, env):
+    assert isinstance(self.children[0], Predicate)
+    assert isinstance(self.children[1], Substitution)
+    condition = self.get(0).eval(env)
+    #print condition, self.get(0)
+    if condition.bvalue:
+        ex_generator = self.children[1].execute(env)
+        for possible in ex_generator:
+            yield possible
+    else:
+        yield False
+APreconditionSubstitution.execute = exec_APreconditionSubstitution
+
+
+def exec_AAssertionSubstitution(self, env):
+    assert isinstance(self.children[0], Predicate)
+    assert isinstance(self.children[1], Substitution)
+    w_bool = self.get(0).eval(env)
+    if not w_bool.bvalue:
+        print "ASSERT-Substitution violated:" + pretty_print(self.children[0])
+        yield False  #TODO: What is correct: False or crash\Exception?
+    ex_generator = self.children[1].execute(env)
+    for possible in ex_generator:
+        yield possible
+AAssertionSubstitution.execute = exec_AAssertionSubstitution
+
+
+def exec_AIfSubstitution(self, env):
+    assert isinstance(self.children[0], Predicate)
+    assert isinstance(self.children[1], Substitution)
+    all_cond_false = True
+    condition = self.get(0).eval(env)
+    if condition.bvalue: # take "THEN" Branch
+        all_cond_false = False
+        ex_generator = self.children[1].execute(env)
+        for possible in ex_generator:
+            yield possible
+    for child in self.children[2:]:
+        if isinstance(child, AIfElsifSubstitution):
+            assert isinstance(child.children[0], Predicate)
+            assert isinstance(child.children[1], Substitution)
+            sub_condition = child.get(0).eval(env)
+            if sub_condition.bvalue:
+                all_cond_false = False
+                ex_generator = child.children[1].execute(env)
+                for possible in ex_generator:
+                    yield possible
+        elif not isinstance(child, AIfElsifSubstitution) and all_cond_false: 
+            # ELSE (B Level)
+            assert isinstance(child, Substitution)
+            assert child==self.children[-1] # last child
+            assert self.hasElse=="True"
+            ex_generator = child.execute(env)
+            for possible in ex_generator:
+                yield possible
+    if self.hasElse=="False" and all_cond_false:
+        yield True # no Else, default: IF P THEN S ELSE skip END  
+AIfSubstitution.execute = exec_AIfSubstitution
+
+
+def exec_AChoiceSubstitution(self, env):
+    assert isinstance(self.children[0], Substitution)
+    for i in range(len(self.children)-1):
+        child = self.children[i+1]
+        assert isinstance(child, AChoiceOrSubstitution)
+    ex_generator = self.children[0].execute(env)
+    for possible in ex_generator:
+        yield possible
+    for i in range(len(self.children)-1):
+        or_branch = self.children[i+1]
+        ex_generator = or_branch.children[0].execute(env)
+        for possible in ex_generator:
+            yield possible  
+AChoiceSubstitution.execute = exec_AChoiceSubstitution
+
+
+def exec_ASelectSubstitution(self, env):
+    nodes = []
+    assert isinstance(self.children[0], Predicate)
+    assert isinstance(self.children[1], Substitution)
+    # (1) find enabled conditions and remember this branches 
+    w_bool = self.get(0).eval(env)
+    if w_bool.bvalue:
+        nodes.append(self.children[1])
+    for i in range(len(self.children)-2):
+        child = self.children[i+2]
+        if isinstance(child, ASelectWhenSubstitution):
+            assert isinstance(child.children[0], Predicate)
+            assert isinstance(child.children[1], Substitution)
+            w_bool = child.get(0).eval(env)
+            if w_bool.bvalue:
+                nodes.append(child.children[1])
+        else:
+            # else-branch
+            assert isinstance(child, Substitution)
+            assert child==self.children[-1]
+    # (2) test if possible branches are enabled
+    some_branches_possible = not nodes == []
+    if some_branches_possible:
+        for i in range(len(nodes)):
+            ex_generator = nodes[i].execute(env)
+            for possible in ex_generator:
+                yield possible
+    elif self.hasElse=="True": 
+        ex_generator = self.children[-1].execute(env)
+        for possible in ex_generator:
+            yield possible
+    else: # no branch enabled and no else branch present 
+        yield False 
+ASelectSubstitution.execute = exec_ASelectSubstitution
+
+
+def exec_ACaseSubstitution(self, env):
+    assert isinstance(self.children[0], Expression)
+    elem = self.get(0).eval(env)
+    all_cond_false = True
+    # self.children[1:1+self.expNum]
+    for i in range((1+self.expNum)-1):
+        child = self.children[i+1]
+        assert isinstance(child, Expression)
+        value = child.eval(env)
+        if elem.__eq__(value):
+            all_cond_false = False
+            assert isinstance(self.children[self.expNum+1], Substitution)
+            ex_generator = self.children[self.expNum+1].execute(env)
+            for possible in ex_generator:
+                yield possible
+    # EITHER E THEN S failed, check for OR-branches
+    # self.children[2+self.expNum:]:
+    for i in range(len(self.children)-(2+self.expNum)):
+        child = self.children[i+2+self.expNum]
+        if isinstance(child, ACaseOrSubstitution):
+            # child.children[:child.expNum]
+            for j in range(child.expNum):
+                expNode = child.children[j]
+                assert isinstance(expNode, Expression)
+                value = expNode.eval(env)
+                if elem == value:
+                    all_cond_false = False
+                    assert isinstance(child.children[-1], Substitution)
+                    ex_generator = child.children[-1].execute(env)
+                    for possible in ex_generator:
+                        yield possible
+        elif all_cond_false:
+            assert isinstance(child, Substitution)
+            assert child==self.children[-1]
+            assert self.hasElse=="True"
+            ex_generator = child.execute(env)
+            for possible in ex_generator:
+                yield possible
+    if all_cond_false and self.hasElse=="False":
+        yield True #invisible Else (page 95 manrefb)
+ACaseSubstitution.execute = exec_ACaseSubstitution
+
+
+def exec_AVarSubstitution(self, env):
+    nodes = []
+    for i in range(len(self.children)-1):
+        idNode = self.children[i]
+        assert isinstance(idNode, AIdentifierExpression)
+        nodes.append(idNode)
+    env.push_new_frame(nodes)
+    ex_generator = self.children[-1].execute(env)
+    for possible in ex_generator: # TODO: read about python generators. It this push/pop necessary?
+        env.pop_frame()
+        yield possible
+        env.push_new_frame(nodes)
+    env.pop_frame()
+AVarSubstitution.execute = exec_AVarSubstitution
 
 
 
+def exec_AAnySubstitution_or_ALetSubstitution(self, env):
+    nodes = []
+    for i in range(len(self.children)-self.idNum):
+        idNode = self.children[i]
+        assert isinstance(idNode, AIdentifierExpression)
+        nodes.append(idNode)
+    pred = self.children[-2]
+    assert isinstance(pred, Predicate)
+    assert isinstance(self.children[-1], Substitution)
+    env.push_new_frame(nodes)
+    gen = try_all_values(pred, env, nodes)
+    for possible in gen:
+        if possible:
+            ex_generator = self.children[-1].execute(env)
+            for also_possible in ex_generator:
+                if also_possible:
+                    env.pop_frame()
+                    yield possible
+                    env.push_new_frame(nodes)
+    env.pop_frame()
+    yield False
+AAnySubstitution.execute = exec_AAnySubstitution_or_ALetSubstitution
+ALetSubstitution.execute = exec_AAnySubstitution_or_ALetSubstitution
 
+
+def exec_AOpSubstitution(self, env):
+    # TODO: parameters passed by copy (page 162), write test: side effect free?
+    # set up
+    boperation = env.lookup_operation(self.idName)
+    ret_nodes = boperation.return_nodes
+    para_nodes = boperation.parameter_nodes
+    values = []
+    # get parameter values for call
+    for i in range(len(para_nodes)):
+        value = self.get(i).eval(env)
+        values.append(value)
+    op_node = boperation.ast
+    # switch machine and set up parameters
+    temp = env.current_mch
+    env.current_mch = boperation.owner_machine
+    id_nodes = [x for x in para_nodes]       
+    env.push_new_frame(id_nodes)
+    for i in range(len(para_nodes)):
+        name = para_nodes[i].idName
+        env.set_value(name, values[i])
+    assert isinstance(op_node, AOperation)
+    ex_generator = op_node.get(-1).execute(env)
+    for possible in ex_generator:
+        # switch back machine
+        env.pop_frame()
+        env.current_mch = temp
+        yield possible
+        temp = env.current_mch
+        env.current_mch = boperation.owner_machine
+        env.push_new_frame(id_nodes)
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
+            env.set_value(name, values[i])
+    # switch back machine
+    env.pop_frame()
+    env.current_mch = temp
+AOpSubstitution.execute = exec_AOpSubstitution
+
+
+def exec_AOperationCallSubstitution(self, env):
+    # TODO: parameters passed by copy (page 162), write test: side effect free?
+    # set up
+    boperation = env.lookup_operation(self.idName)
+    ret_nodes = boperation.return_nodes
+    para_nodes = boperation.parameter_nodes
+    values = []
+    # get parameter values for call
+    for i in range(len(para_nodes)):
+        parameter_node = self.children[i+self.return_Num]
+        value = parameter_node.eval(env)
+        values.append(value)
+    op_node = boperation.ast
+    # switch machine and set up parameters
+    temp = env.current_mch
+    env.current_mch = boperation.owner_machine
+    id_nodes = [x for x in para_nodes + ret_nodes]
+    env.push_new_frame(id_nodes)
+    for i in range(len(para_nodes)):
+        name = para_nodes[i].idName
+        env.set_value(name, values[i])
+    assert isinstance(op_node, AOperation)
+    ex_generator = op_node.get(-1).execute(env)
+    for possible in ex_generator:
+        results = []
+        for r in ret_nodes:
+            name = r.idName
+            value = env.get_value(name)
+            results.append(value)
+        # restore old frame after remembering return values
+        # switch back machine
+        env.pop_frame()
+        env.current_mch = temp
+        # write results to vars
+        for i in range(self.return_Num):
+            ass_node = self.children[i]
+            value = results[i]
+            name = ass_node.idName
+            env.set_value(name, value)
+        yield possible
+        temp = env.current_mch
+        env.current_mch = boperation.owner_machine
+        env.push_new_frame(id_nodes)
+        for i in range(len(para_nodes)):
+            name = para_nodes[i].idName
+            env.set_value(name, values[i])
+    env.pop_frame()
+    env.current_mch = temp
+AOperationCallSubstitution.execute = exec_AOperationCallSubstitution
+"""
+            
 # side-effect: changes state while exec.
 # returns True if substitution was possible
 # Substituions return True/False if the substitution was possible
