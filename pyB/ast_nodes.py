@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 # This classes are used to map Java-AST Nodes to Python-AST Nodes (Objects)
+from config import USE_RPYTHON_CODE
 
 # TODO: AMachineMachineVariant
 # TODO: use metaprograming at import time to generates clone and _same_class methods
-
+if USE_RPYTHON_CODE:
+    from rpython.rlib import jit
+else:
+    import mockjit as jit
+    
 class Node():
     def __init__(self):
         self.children = []
     
     # Rpython typing fails on direct access like node.children[i].
     # But it doesnt fails when a method does it
-    #from rpython.rlib import jit
-    #@jit.elidable
+    @jit.elidable
     def get(self, index):
         return self.children[index]
         
@@ -118,7 +122,29 @@ class AOperation(Node):
         self.return_Num = int(return_Num)
         self.parameter_Num = int(parameter_Num)
         self.children = []
+        self.param_computed = False
+        self.return_computed = False
 
+    def get_return(self):
+        if not self.return_computed:
+            self.return_val_idNodes = []
+            for i in range(self.return_Num):
+                r_node = self.children[i]
+                assert isinstance(r_node, AIdentifierExpression)
+                self.return_val_idNodes.append(r_node)
+            self.return_computed = True
+        return self.return_val_idNodes
+    
+    def get_param(self):
+        if not self.param_computed:
+            self.parameter_idNodes = []
+            for i in range(self.parameter_Num):
+                p_node = self.children[self.return_Num+i]
+                assert isinstance(p_node, AIdentifierExpression)
+                self.parameter_idNodes.append(p_node) 
+            self.param_computed = True
+        return self.parameter_idNodes
+            
     def clone(self):
         return AOperation(str(self.childNum), self.opName, str(self.return_Num), str(self.parameter_Num))
 

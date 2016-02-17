@@ -9,6 +9,8 @@ from rpython_b_objmodel import W_None, W_Object
 if USE_RPYTHON_CODE:
     from rpython_b_objmodel import frozenset
     from rpython.rlib import jit
+else:
+    import mockjit as jit
     
 
 # BState: Set of all values (constants and variabels) of all B-machines
@@ -63,7 +65,7 @@ class BState():
             key_list.append(None)
         return key_list       
 
-            
+    # TODO: cache value, dont compute twice         
     def __repr__(self):
         string = ""
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
@@ -172,11 +174,11 @@ class BState():
             value_stack[name] = None  # default init
         self.bmch_dict[bmachine] = [value_stack]
     
-    #@jit.elidable
+    @jit.elidable
     def get_bmachine_stack(self, bmachine):
         return self.bmch_dict[bmachine]
     
-    #@jit.unroll_safe
+    @jit.unroll_safe
     def get_value(self, id_Name, bmachine):
         #print "lookup of %s in %s" % (id_Name, bmachine.mch_name)
         #if isinstance(id_Name, AIdentifierExpression): # debug
@@ -207,7 +209,7 @@ class BState():
 
     # TODO: (maybe) check if value has the correct type - but this can be better done static
     # used by tests and enumeration and substitution
-    #@jit.unroll_safe
+    @jit.unroll_safe
     def set_value(self, id_Name, value, bmachine):
         #print
         #print value, id_Name
@@ -272,7 +274,7 @@ class BState():
         for bmachine in self.bmch_dict:
             if bmachine.mch_name==name:
                 return bmachine
-        raise Exception("BUG! unknown B-machine: %s" % name) 
+        raise Exception("PyB BUG! unknown B-machine: %s" % name) 
     
     def get_valuestack_depth_of_all_bmachines(self):
         result = []

@@ -2,7 +2,11 @@
 # PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py
 # e.g. PYPY_DIR  = "/Users/johnwitulski/witulski/git/pyB/pypy/" 
 # PYTHONPATH=/Users/johnwitulski/witulski/git/pyB/pypy/:. python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py
+import config
+config.set_USE_RPYTHON_CODE(True)
+config.set_USE_RPYTHON_POPEN(True)
 
+from rpython.rlib import jit
 from animation_clui import show_ui, print_values_b_style, print_set_up_bstates ,print_init_bstates
 from animation import calc_next_states
 from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AOperationsMachineClause
@@ -241,8 +245,7 @@ def run_model_checking_mode(argv):
     return _run_model_checking_mode(env, mch)
 
 
-from rpython.rlib.jit import JitDriver
-jitdriver = JitDriver(greens=['inv'], reds=['s_space', 'env', 'mch'])
+jitdriver = jit.JitDriver(greens=['inv'], reds=['s_space', 'env', 'mch'])
 def _run_model_checking_mode(env, mch):
     inv = mch.aInvariantMachineClause
     s_space = env.state_space
@@ -334,6 +337,16 @@ def run_checking_mode():
   
 def main(argv): 
 ###### MAIN PROGRAM ######
+    # XXX crappy copy-pasted argument handling by cfbolz
+    for i in range(len(argv)):
+        if argv[i] == "--jit":
+            if len(argv) == i + 1:
+                print "missing argument after --jit"
+                return 2
+            jitarg = argv[i + 1]
+            del argv[i:i+2]
+            jit.set_user_param(jitdriver, jitarg)
+            break
     if len(argv)<2:
         print "Error"
         #print "Error in pyB:", type(e), e.args, e

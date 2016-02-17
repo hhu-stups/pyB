@@ -11,23 +11,23 @@ def translate():
     from subprocess import Popen, PIPE
     if os.name=='nt':
         # Add pypy to your path if this line crashs
-        Popen("python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py", shell=True, stdout=PIPE).stdout.read()
+        Popen("python ../pypy/rpython/translator/goal/translate.py --batch --output=pyb_testing-c pyB_RPython.py", shell=True, stdout=PIPE).stdout.read()
     else:
         pwd = Popen("pwd", shell=True, stdout=PIPE).stdout.read()
         assert pwd[-4:]=='pyB\n'
-        Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --batch pyB_RPython.py", shell=True, stdout=PIPE).stdout.read()
+        Popen("PYTHONPATH="+PYPY_DIR+":. python ../pypy/rpython/translator/goal/translate.py --output=pyb_testing-c --batch pyB_RPython.py", shell=True, stdout=PIPE).stdout.read()
 
 
 # Run main_code with CPython (except RPython Flags) and Translated C Version
 def execute_file(cl_argument=""):
     from subprocess import Popen, PIPE
-    c_result = Popen("./"+"pyB_RPython-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
+    c_result = Popen("./"+"pyb_testing-c "+cl_argument, shell=True, stdout=PIPE).stdout.read()
     return c_result
   
     
 def clean_up():
     import os
-    #os.remove("pyB_RPython-c")
+    os.remove("pyb_testing-c")
 
 import pytest, config
 @pytest.mark.skipif(config.USE_RPYTHON_CODE==False, reason="translation to c not possible using built-in frozenset type")     

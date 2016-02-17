@@ -11,10 +11,11 @@ from enumeration import try_all_values, gen_all_values
 if USE_RPYTHON_CODE:
     from rpython_interp import exec_substitution, interpret 
     from rpython_b_objmodel import frozenset
+    from rpython.rlib import jit
 else:
     from interp import exec_substitution, interpret
-
-    
+    import mockjit as jit 
+      
 
 
 # Wrapper object. Replaces list of dif. typed items.
@@ -30,15 +31,15 @@ class Executed_Operation():
 
 # RPython helper to avoid type error of different generator instances
 def _gen_parameter_solutions(substitution, env, parameter_idNodes):
-	if isinstance(substitution, APreconditionSubstitution):
-		predicate = substitution.children[0]
-		# TODO: RYPTHON AssertionError domain_generator_1
-		for dic in compute_constrained_domains(predicate, env, parameter_idNodes):
-		    yield dic
-	# TODO:(#ISSUE 13) maybe more guesses elif...
-	else: # no guess possible, try all values (third-arg None cause an enum of all values)
-		for dic in gen_all_values(env, parameter_idNodes):
-		    yield dic  
+    if isinstance(substitution, APreconditionSubstitution):
+        predicate = substitution.children[0]
+        # TODO: RYPTHON AssertionError domain_generator_1
+        for dic in compute_constrained_domains(predicate, env, parameter_idNodes):
+            yield dic
+    # TODO:(#ISSUE 13) maybe more guesses elif...
+    else: # no guess possible, try all values (third-arg None cause an enum of all values)
+        for dic in gen_all_values(env, parameter_idNodes):
+            yield dic  
     
 # returns list of (op_name, parameter_value_list, return_value_list, bstate) of all states
 # TODO:(#ISSUE 6) implement filter MAX_NEXT_EVENTS
@@ -54,6 +55,7 @@ def _gen_parameter_solutions(substitution, env, parameter_idNodes):
 # 3. and operations with different parameters and nondeterministic execution-paths (domain_generator and ex_sub_generator)
 # up to three pushs and their corresponding pops are necessary: 
 # in some cases only if there are "more solutions"
+@jit.unroll_safe
 def calc_next_states(env, bmachine):
     result = []
     if bmachine.has_operations_mc:
@@ -69,22 +71,10 @@ def calc_next_states(env, bmachine):
             ref_bstate = env.state_space.get_state().clone()
             env.state_space.add_state(ref_bstate)  
             
-            # (2) find parameter and return_val idNodes and add them to the frame of the helper state        
-            #parameter_idNodes  = op.children[op.return_Num : op.return_Num+op.parameter_Num]
-            #return_val_idNodes = op.children[0 : op.return_Num]
-            parameter_idNodes = []
-            for i in range(op.parameter_Num):
-                p_node = op.children[op.return_Num+i]
-                parameter_idNodes.append(p_node)
-            return_val_idNodes = []
-            for i in range(op.return_Num):
-                r_node = op.children[i]
-                return_val_idNodes.append(r_node)
+            # (2) get parameter and return_val idNodes and add them to the frame of the helper state        
+            parameter_idNodes  = op.get_param()
+            return_val_idNodes = op.get_return()
                 
-            # check node-lists
-            # TODO:(#ISSUE 14) move this check into the parsing-phase
-            for idNode in parameter_idNodes + return_val_idNodes:
-                assert isinstance(idNode, AIdentifierExpression) # AST corruption  
             env.add_ids_to_frame([n.idName for n in parameter_idNodes + return_val_idNodes])
             env.push_new_frame(parameter_idNodes + return_val_idNodes)          
             #print "opname: \t", op.opName # DEBUG
@@ -94,65 +84,12 @@ def calc_next_states(env, bmachine):
             op_has_no_parameters = parameter_idNodes==[]   
             # (3.1) case one: no parameters
             if op_has_no_parameters:
-                ex_sub_generator = exec_substitution(substitution, env)
-                bstate = ref_bstate.clone() # new state for first exec-path (nondeterminism)
-                env.state_space.add_state(bstate) 
-                for possible in ex_sub_generator:
-                    if possible:
-                        return_names, return_values        = _get_value_list(env, return_val_idNodes)
-                        env.pop_frame()
-                        bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?
-                        if USE_ANIMATION_HISTORY:
-                            bstate.add_prev_bstate(ref_bstate, op.opName, parameter_values=None)   
-                        exec_op = Executed_Operation(op.opName, [], [], return_names, return_values, bstate)
-                        result.append(exec_op)     
-                        #result.append([op.opName, [], return_value_list, bstate])
-                    env.state_space.undo() # pop last bstate
-                    bstate = ref_bstate.clone() # new state for next exec-path (nondeterminism)
-                    env.state_space.add_state(bstate)
-                env.state_space.undo()  # pop bstate (all paths found)
+                execute_operation_body_without_param(substitution, env, op, ref_bstate, result)
             # (3.2) case two: find parameter values
             else:
-                # This code uses the constraint solver and the top_level predicate of this op to guess 
-                # parameter values. Of course this guess can produce false values but it will 
-                # never drop possible values
-                # (3.2.1) find top_level predicate
-                domain_generator = _gen_parameter_solutions(substitution, env, parameter_idNodes)             
-                #import types
-                #assert isinstance(domain_generator, types.GeneratorType)
-                
-                # Try solutions
-                for solution in domain_generator:
-                    try:
-                        # use values of solution (iterations musst not affect each other):
-                        bstate = env.state_space.get_state().clone()
-                        env.state_space.add_state(bstate)  
-                        _set_parameter_values(env, parameter_idNodes, solution)
-                        # try to exec
-                        ex_sub_generator = exec_substitution(substitution, env)
-                        bstate2 = bstate.clone()
-                        env.state_space.add_state(bstate2) 
-                        for possible in ex_sub_generator:
-                            if possible:
-                                # Solution found!                          
-                                # (3.2.2) get parameter and return-value solutions
-                                parameter_names, parameter_values  = _get_value_list(env, parameter_idNodes)
-                                return_names, return_values        = _get_value_list(env, return_val_idNodes)
-                                #print parameter_value_list
-                                env.pop_frame() # pop on the cloned state
-                                bstate2 = env.state_space.get_state().clone() #TODO:(#ISSUE 15) remove?
-                                if USE_ANIMATION_HISTORY:
-                                    bstate2.add_prev_bstate(bstate, op.opName, parameter_values) 
-                                exec_op = Executed_Operation(op.opName, parameter_names, parameter_values, return_names, return_values, bstate2)
-                                result.append(exec_op)
-                                #result.append([op.opName, parameter_value_list, return_value_list, bstate2])
-                            env.state_space.undo() # pop last bstate2
-                            bstate2 = bstate.clone()
-                            env.state_space.add_state(bstate2)
-                        env.state_space.undo() #pop last bstate2
-                        env.state_space.undo() #pop bstate (all paths for this solution/parameters found)  
-                    except ValueNotInDomainException: #TODO: modify enumerator not to generate that "solutions" at all
-                        env.state_space.undo() #pop bstate (all paths for this solution/parameters found) 
+                # (3.2.1) find top_level predicate                
+                # Try parameter solutions
+                check_solutions(substitution, env, op, result)
             env.state_space.undo() # pop ref_bstate (all states for this operation found)
     if result==[] and PRINT_WARNINGS:
         print "\033[1m\033[91mWARNING\033[00m: Deadlock found!"
@@ -193,3 +130,68 @@ def _get_value_list(env, idNode_list):
         value_list.append(value)
     return name_list, value_list
 
+
+def execute_operation_body_without_param(substitution, env, op, ref_bstate, result):
+    return_val_idNodes = op.get_return()
+    ex_sub_generator = exec_substitution(substitution, env)
+    bstate = ref_bstate.clone() # new state for first exec-path (nondeterminism)
+    env.state_space.add_state(bstate) 
+    for possible in ex_sub_generator:
+        if possible:
+            return_names, return_values        = _get_value_list(env, return_val_idNodes)
+            env.pop_frame()
+            bstate = env.state_space.get_state()  # TODO:(#ISSUE 15)  remove?
+            if USE_ANIMATION_HISTORY:
+                bstate.add_prev_bstate(ref_bstate, op.opName, parameter_values=None)   
+            exec_op = Executed_Operation(op.opName, [], [], return_names, return_values, bstate)
+            result.append(exec_op)     
+            #result.append([op.opName, [], return_value_list, bstate])
+        env.state_space.undo() # pop last bstate
+        bstate = ref_bstate.clone() # new state for next exec-path (nondeterminism)
+        env.state_space.add_state(bstate)
+    env.state_space.undo()  # pop bstate (all paths found)
+
+
+def execute_operation_body_with_param(substitution, env, op, solution, result):
+    try:
+        # use values of solution (iterations musst not affect each other):
+        return_val_idNodes = op.get_return()
+        parameter_idNodes  = op.get_param()
+        bstate = env.state_space.get_state().clone()
+        env.state_space.add_state(bstate)  
+        _set_parameter_values(env, parameter_idNodes, solution)
+        # try to exec
+        ex_sub_generator = exec_substitution(substitution, env)
+        bstate2 = bstate.clone()
+        env.state_space.add_state(bstate2) 
+        for possible in ex_sub_generator:
+            if possible:
+                # Solution found!                          
+                # (3.2.2) get parameter and return-value solutions
+                parameter_names, parameter_values  = _get_value_list(env, parameter_idNodes)
+                return_names, return_values        = _get_value_list(env, return_val_idNodes)
+                #print parameter_value_list
+                env.pop_frame() # pop on the cloned state
+                bstate2 = env.state_space.get_state().clone() #TODO:(#ISSUE 15) remove?
+                if USE_ANIMATION_HISTORY:
+                    bstate2.add_prev_bstate(bstate, op.opName, parameter_values) 
+                exec_op = Executed_Operation(op.opName, parameter_names, parameter_values, return_names, return_values, bstate2)
+                result.append(exec_op)
+                #result.append([op.opName, parameter_value_list, return_value_list, bstate2])
+            env.state_space.undo() # pop last bstate2
+            bstate2 = bstate.clone()
+            env.state_space.add_state(bstate2)
+        env.state_space.undo() #pop last bstate2
+        env.state_space.undo() #pop bstate (all paths for this solution/parameters found)  
+    except ValueNotInDomainException: #TODO: modify enumerator not to generate that "solutions" at all
+        env.state_space.undo() #pop bstate (all paths for this solution/parameters found) 
+
+
+# This code uses the constraint solver and the top_level predicate of this op to guess 
+# parameter values. Of course this guess can produce false values but it will 
+# never drop possible values        
+def check_solutions(substitution, env, op, result):
+    parameter_idNodes  = op.get_param()
+    domain_generator = _gen_parameter_solutions(substitution, env, parameter_idNodes) 
+    for solution in domain_generator:
+        execute_operation_body_with_param(substitution, env, op, solution, result)
