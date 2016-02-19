@@ -585,3 +585,10 @@ def pretty_print(node):
         return node.fName
     else:
         raise Exception("PRETTYORINTBUG>>> Unknown Node: %s",node)
+        
+        
+def failsafe_pretty_print(node):
+    try:
+        return pretty_print(node)
+    except Exception:
+        return "UNKNOWN NODE in the pretty printer" + str(node.__class__)

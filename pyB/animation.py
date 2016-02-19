@@ -31,6 +31,8 @@ class Executed_Operation():
 
 # RPython helper to avoid type error of different generator instances
 def _gen_parameter_solutions(substitution, env, parameter_idNodes):
+    # TODO: don't copy. avoid rpython ListChangeUnallowed exception
+    parameter_idNodes = parameter_idNodes[:]
     if isinstance(substitution, APreconditionSubstitution):
         predicate = substitution.children[0]
         # TODO: RYPTHON AssertionError domain_generator_1
@@ -130,6 +132,16 @@ def _get_value_list(env, idNode_list):
         value_list.append(value)
     return name_list, value_list
 
+if USE_RPYTHON_CODE:
+    def should_unroll_one_iteration(substitution, op):
+        return True
+    def get_printable_location(substitution, op):
+        return op.opName
+        
+    driver = jit.JitDriver(greens=['substitution', 'op'], reds='auto',
+                           name="execute_operation_body_without_param",
+                           should_unroll_one_iteration=should_unroll_one_iteration,
+                           get_printable_location=get_printable_location)
 
 def execute_operation_body_without_param(substitution, env, op, ref_bstate, result):
     return_val_idNodes = op.get_return()
@@ -137,6 +149,8 @@ def execute_operation_body_without_param(substitution, env, op, ref_bstate, resu
     bstate = ref_bstate.clone() # new state for first exec-path (nondeterminism)
     env.state_space.add_state(bstate) 
     for possible in ex_sub_generator:
+        if USE_RPYTHON_CODE:
+            driver.jit_merge_point(substitution=substitution, op=op)
         if possible:
             return_names, return_values        = _get_value_list(env, return_val_idNodes)
             env.pop_frame()

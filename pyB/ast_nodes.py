@@ -116,6 +116,9 @@ class ADefinitionFileParseUnit(ParseUnit):
 
             
 class AOperation(Node):
+    _immutable_fields_ = ["return_val_idNodes?[*]", "parameter_idNodes?[*]",
+                          "param_computed?", "return_computed?"]
+    
     def __init__(self, childNum, opName, return_Num, parameter_Num):
         self.childNum = int(childNum)
         self.opName = opName
@@ -125,23 +128,25 @@ class AOperation(Node):
         self.param_computed = False
         self.return_computed = False
 
+    @jit.unroll_safe
     def get_return(self):
         if not self.return_computed:
-            self.return_val_idNodes = []
+            self.return_val_idNodes = [None] * self.return_Num
             for i in range(self.return_Num):
                 r_node = self.children[i]
                 assert isinstance(r_node, AIdentifierExpression)
-                self.return_val_idNodes.append(r_node)
+                self.return_val_idNodes[i] = r_node
             self.return_computed = True
         return self.return_val_idNodes
-    
+        
+    @jit.unroll_safe
     def get_param(self):
         if not self.param_computed:
-            self.parameter_idNodes = []
+            self.parameter_idNodes = [None] * self.parameter_Num
             for i in range(self.parameter_Num):
                 p_node = self.children[self.return_Num+i]
                 assert isinstance(p_node, AIdentifierExpression)
-                self.parameter_idNodes.append(p_node) 
+                self.parameter_idNodes[i] = p_node 
             self.param_computed = True
         return self.parameter_idNodes
             

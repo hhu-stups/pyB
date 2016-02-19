@@ -5,7 +5,7 @@ from constraintsolver import compute_constrained_domains
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython, all_records
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
-from pretty_printer import pretty_print
+from pretty_printer import pretty_print, failsafe_pretty_print
 from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet, SymbolicStructSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet, SymbolicTransRelation, SymbolicTransFunction
@@ -1078,6 +1078,12 @@ def eval_AIntervalExpression(self, env):
     return SymbolicIntervalSet(left, right, env)
 AIntervalExpression.eval = eval_AIntervalExpression
 
+def get_printable_location(pred, expr):
+    return failsafe_pretty_print(pred)[:60] + " " + failsafe_pretty_print(expr)[:60]
+sumdriver = jit.JitDriver(greens=['pred', 'expr'], reds='auto', 
+                          get_printable_location=get_printable_location, 
+                          name="eval_AGeneralSumExpression")
+
 def eval_AGeneralSumExpression(self, env):
     sum_ = 0
     # new scope
@@ -1092,7 +1098,9 @@ def eval_AGeneralSumExpression(self, env):
     expr = self.get(-1)
     domain_generator = compute_constrained_domains(pred, env, varList)
     for w_entry in domain_generator:
-        for name in [x.idName for x in varList]:
+        sumdriver.jit_merge_point(pred=pred, expr=expr)
+        for x in varList:
+            name = x.idName
             value = w_entry[name]
             env.set_value(name, value)
         try:
@@ -1938,6 +1946,7 @@ def exec_ABecomesElementOfSubstitution(self, env):
                 env.set_value(child.idName, value)
             yield True # assign was successful 
 ABecomesElementOfSubstitution.execute = exec_ABecomesElementOfSubstitution
+#ABecomesElementOfSubstitution.__iter__ = 
 
 
 def exec_ABecomesSuchSubstitution(self, env):

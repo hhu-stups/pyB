@@ -15,6 +15,7 @@ from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT
 from environment import Environment
 from helpers import file_to_AST_str, file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, parse_ast, remove_definitions, str_ast_to_python_ast, remove_defs_and_parse_ast
+from pretty_printer import pretty_print, failsafe_pretty_print
 from rpython_interp import interpret, exec_initialisation, set_up_constants, eval_Invariant
 from typing import type_check_bmch, type_check_root_bmch
 
@@ -244,8 +245,11 @@ def run_model_checking_mode(argv):
     
     return _run_model_checking_mode(env, mch)
 
-
-jitdriver = jit.JitDriver(greens=['inv'], reds=['s_space', 'env', 'mch'])
+def get_printable_location(inv):
+    return failsafe_pretty_print(inv)[:60]
+jitdriver = jit.JitDriver(greens=['inv'], reds=['s_space', 'env', 'mch'], 
+                          get_printable_location=get_printable_location, 
+                          name="_run_model_checking_mode")
 def _run_model_checking_mode(env, mch):
     inv = mch.aInvariantMachineClause
     s_space = env.state_space
