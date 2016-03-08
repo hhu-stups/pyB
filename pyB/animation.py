@@ -136,7 +136,7 @@ if USE_RPYTHON_CODE:
     def should_unroll_one_iteration(substitution, op):
         return True
     def get_printable_location(substitution, op):
-        return op.opName
+        return "Bmachine Operation:" + op.opName
         
     driver = jit.JitDriver(greens=['substitution', 'op'], reds='auto',
                            name="execute_operation_body_without_param",

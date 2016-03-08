@@ -1114,6 +1114,10 @@ def eval_AGeneralSumExpression(self, env):
     return W_Integer(sum_)
 AGeneralSumExpression.eval = eval_AGeneralSumExpression
 
+
+proddriver = jit.JitDriver(greens=['pred', 'expr'], reds='auto', 
+                          get_printable_location=get_printable_location, 
+                          name="eval_AGeneralProductExpression")
 def eval_AGeneralProductExpression(self, env):
     prod_ = 1
     # new scope
@@ -1128,6 +1132,7 @@ def eval_AGeneralProductExpression(self, env):
     expr = self.get(-1)
     domain_generator = compute_constrained_domains(pred, env, varList)
     for w_entry in domain_generator:
+        proddriver.jit_merge_point(pred=pred, expr=expr)
         for name in [x.idName for x in varList]:
             value = w_entry[name]
             env.set_value(name, value)

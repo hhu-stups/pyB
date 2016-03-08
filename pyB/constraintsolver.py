@@ -110,14 +110,15 @@ def _compute_using_pyB_solver(predicate, env, varList):
     if len(pred_map)==0:
         raise SpecialCaseEnumerationFailedException()
     
-    # 2. find possible variable enum order. 
-    # variable(-domains) not constraint by others will be enumerated first.
+    # 2. find possible variable and predicate enum order. 
+    # variable(-domains) not constraint by other variabels will be enumerated first.
     varList  = _compute_variable_enum_order(pred_map, varList)
-    predList  = _compute_predicate_enum_order(pred_map)
+    # first use predicates with less computation time. e.g. x=42 before x:S before x:NAT
+    predList = _compute_predicate_enum_order(pred_map)
     #[pred_map[x].time for x in predList]
     
     # 3. calc variable domains. Goal: mapping from vars to domain sets
-    test_dict = {}
+    test_dict = {} #restricted domain which must be tested against all constraints
     for var_node in varList:
         domain = None 
         for pred in predList:
@@ -125,7 +126,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
             constraint = pred_map[pred]
             time = constraint.time
             vars = constraint.constrained_vars
-            must_be_computed_first = constraint.vars_need_to_be_set_first
+            must_be_computed_first  = constraint.vars_need_to_be_set_first
             takes_too_much_time     = time>=TOO_MANY_ITEMS
             does_not_constrain_var  = var_node.idName not in vars
             domain_found            = not domain is None
@@ -245,7 +246,7 @@ def _analyze_predicates(predicate, env, varList):
             time = estimate_computation_time(pred, env)
         except InfiniteConstraintException:
             #print "DEBUG: skiping predicate", pretty_print(pred)
-            continue # e.g. x:INTEGER (throw constraint away)
+            continue # e.g. x:INTEGER (throw constraint away). Will be used to check a solution, but not to constrain a domain during solving.
         #print "DEBUG: analyzing constraint ",pred,  [x.idName for x in varList]
         constraint = _find_constrained_vars(pred, env, varList)
         constraint.set_time(time)
