@@ -118,7 +118,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
     #[pred_map[x].time for x in predList]
     
     # 3. calc variable domains. Goal: mapping from vars to domain sets
-    test_dict = {} #restricted domain which must be tested against all constraints
+    revised_domain_dict = {} #restricted domain which must be tested against all constraints
     for var_node in varList:
         domain = None 
         for pred in predList:
@@ -142,15 +142,15 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # This constraint can easiely be used to compute a constraint domain.
             # The exact solution musst contain all or less elements than "sub_domain"
             try:
-                print "DEBUG: using constraint",var_node.idName, must_be_computed_first
+                #print "DEBUG: using constraint",var_node.idName, must_be_computed_first
                 is_unary_constraint = must_be_computed_first==[]
                 if is_unary_constraint:
                     # no constrains by other vars. just use this sub-predicate to 
                     # compute the domain of the current variable
-                    sub_domain = _compute_test_set(pred, env, var_node)
+                    sub_domain = _revise(pred, env, var_node)
                 # This is a binary or n-ary constraint.
                 # This predicate needs the computation of an other variable
-                # in test_dict first. e.g x={(0,1),(2,3)}(y).
+                # in revised_domain_dict first. e.g x={(0,1),(2,3)}(y).
                 # If var order computation was successful, the values of the 
                 # needed bound vars are already computed for some pred in pred_map
                 # This may NOT be this pred (in this iteration)!
@@ -158,17 +158,17 @@ def _compute_using_pyB_solver(predicate, env, varList):
                     # all already computed variables have to be considered to
                     # find a domain for 'var_node'. must_be_computed_first contains
                     # only variables with direct constraints e.g 'var_node=f(x)' but not 'x=y+1'
-                    already_computed_var_List = [key for key in varList if key in test_dict]
+                    already_computed_var_List = [key for key in varList if key in revised_domain_dict]
                     # check if all informations are present to use 'pred' to compute domain of 'var_node'
                     names_string = []
                     names_string = [x.idName for x in already_computed_var_List]
                     for mbcf in must_be_computed_first:
                         if mbcf not in names_string:
                             raise PredicateDoesNotMatchException()
-                    assert not len(test_dict)==0
+                    assert not len(revised_domain_dict)==0
                     # generate partial solution: all domain combinations of a subset of bound vars
                     #print "xxx", [x.idName for x in already_computed_var_List], [x.idName for x in varList], pred
-                    a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, test_dict, {}) 
+                    a_cross_product_iterator = _cross_product_iterator(already_computed_var_List, revised_domain_dict, {}) 
                     # use partial solution to gen testset
                     sub_domain = frozenset([])
                     env.push_new_frame(varList)
@@ -182,7 +182,7 @@ def _compute_using_pyB_solver(predicate, env, varList):
                             value = part_sol[name] 
                             env.set_value(name, value)
                             try:
-                                part_testset = _compute_test_set(pred, env, var_node)
+                                part_testset = _revise(pred, env, var_node)
                             except ValueNotInDomainException:
                                 continue
                             sub_domain = sub_domain.union(part_testset)
@@ -204,7 +204,8 @@ def _compute_using_pyB_solver(predicate, env, varList):
             # Use all possible elements of the variable type
             if PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: Quick enumeration warning: Unable to constrain domain of %s" % var_node.idName
-            # Fixme: If the domain of 'var_node' is infinite, this is wrong
+            #raise SpecialCaseEnumerationFailedException()
+            # Wrong on infinite domains. E.g. x:NATURAL1 & x>0
             all_values = enum_all_values_by_type(env, var_node)
             domain = frozenset(all_values)
 
@@ -215,10 +216,10 @@ def _compute_using_pyB_solver(predicate, env, varList):
                 print "\033[1m\033[91mWARNING\033[00m: Empty solution. Unable to constrain bound variable: %s" % var_node.idName
             raise SpecialCaseEnumerationFailedException()
         # assigning constraint set or none
-        test_dict[var_node] = domain
+        revised_domain_dict[var_node] = domain
                            
     # use this solution and return a generator             
-    a_cross_product_iterator = _cross_product_iterator(varList, test_dict, {})
+    a_cross_product_iterator = _cross_product_iterator(varList, revised_domain_dict, {})
     iterator = _solution_generator(a_cross_product_iterator, predicate, env, varList)
     return iterator
 
@@ -392,7 +393,7 @@ def _compute_predicate_enum_order(pred_map):
 # vars_need_to_be_set_first = [idNode(a), idNode(b)]
 #
 #
-# WARNING: before modifying this part, be sure "_compute_test_set" can handle it!  
+# WARNING: before modifying this part, be sure "_revise" can handle it!  
 def _find_constrained_vars(predicate, env, varList):
     # (1) Base case. This case should only be matched by a recursive call of _find_constrained_vars.
     # otherwise it could produce wrong results!     
@@ -411,8 +412,8 @@ def _find_constrained_vars(predicate, env, varList):
         #lst  =  list(set(lst0 + lst1)) 
         return Constraint(lst, []) #predicate constrain idName and no computation constraint by other variables
         
-    # (2) implemented predicates (by _compute_test_set)
-    # WARNING: never add a case if the method "_compute_test_set" can not handle it.
+    # (2) implemented predicates (by _revise)
+    # WARNING: never add a case if the method "_revise" can not handle it.
     # This may introduce a Bug!
     if isinstance(predicate, AMemberPredicate):
         varTuple0 = _find_constrained_vars(predicate.children[0], env, varList)
@@ -456,13 +457,13 @@ def _find_constrained_vars(predicate, env, varList):
         #c_set_var =  list(set(cvarlst0 + cvarlst1)) # remove double entries 
         return Constraint(test_set_var, c_set_var)
     # No implemented case found. Maybe there are constraints, but pyB doesnt find them
-    # TODO: Implement more cases, but only that on handeld in _compute_test_set
+    # TODO: Implement more cases, but only that on handeld in _revise
     return Constraint([], [])
 
 
 # TODO: be sure this cases have no side effect
 # XXX: not all cases implemented (maybe not possible)
-def _compute_test_set(node, env, var_node):
+def _revise(node, env, var_node):
     if USE_RPYTHON_CODE:
         from rpython_interp import interpret
     else:
@@ -541,19 +542,19 @@ def _compute_test_set(node, env, var_node):
     # this is only called because both branches (node.childern[0] and node.childern[1])
     # of the disjunction are computable in finite time. (as analysed by _analyze_predicates)
     elif isinstance(node, ADisjunctPredicate):
-        set0 = _compute_test_set(node.children[0], env, var_node)
-        set1 = _compute_test_set(node.children[1], env, var_node)
+        set0 = _revise(node.children[0], env, var_node)
+        set1 = _revise(node.children[1], env, var_node)
         return set0.union(set1)
     elif isinstance(node, AConjunctPredicate):
         try:
-            set0 = _compute_test_set(node.children[0], env, var_node)
+            set0 = _revise(node.children[0], env, var_node)
             try:
-                set1 = _compute_test_set(node.children[1], env, var_node)
+                set1 = _revise(node.children[1], env, var_node)
                 return set0.intersection(set1)
             except PredicateDoesNotMatchException:
                 return set0
         except PredicateDoesNotMatchException:
-            set1 = _compute_test_set(node.children[1], env, var_node)
+            set1 = _revise(node.children[1], env, var_node)
             return set1   
     else:
         raise PredicateDoesNotMatchException()

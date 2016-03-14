@@ -3,7 +3,9 @@ from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
 from config import USE_RPYTHON_CODE
+from collections import OrderedDict
 from rpython_b_objmodel import W_None, W_Object
+
 
 
 if USE_RPYTHON_CODE:
@@ -22,7 +24,8 @@ class BState():
         # (3) NEW FRAME (dict) on this stack via append <=> New Var. Scope.
         # special case: Predicates and Expressions have no bmachine
         # in this case the mapping is: None -> list(dict1, dict2, ...)
-        self.bmch_dict = {None:[{}]} # empty entry for states without Bmachine (Predicated and Expressions)
+        #self.bmch_dict = OrderedDict({None:[{}]}) # empty entry for states without Bmachine (Predicated and Expressions)
+        self.bmch_dict = {None:[{}]}
         # used to print history 
         self.prev_bstate = None
         self.opName = ""

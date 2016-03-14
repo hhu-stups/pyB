@@ -344,6 +344,7 @@ class SymbolicComprehensionSet(SymbolicSet):
                 except ValueNotInDomainException:
                     continue
             env.pop_frame()
+            # will return empty set if predicate unfulfillable
             self.explicit_set_repr = frozenset(result) 
             self.explicit_set_computed = True
         return self.explicit_set_repr 
@@ -476,7 +477,7 @@ class SymbolicQuantifiedIntersection(SymbolicSet):
         return self.SymbolicQuantifiedIntersection_gen.next() 
 
     def __repr__(self):
-        return "@symbolic quantified intersection" + pretty_print(self.node)
+        return "@symbolic quantified intersection " + pretty_print(self.node)
 
 class SymbolicQuantifiedUnion(SymbolicSet):
     def __init__(self, varList, pred, expr, node, env):
@@ -537,7 +538,7 @@ class SymbolicQuantifiedUnion(SymbolicSet):
             yield e
 
     def __repr__(self):
-        return "@symbolic quantified uniton" + pretty_print(self.node)
+        return "@symbolic quantified union " + pretty_print(self.node)
 
     def __iter__(self):
         assert isinstance(self, W_Object)
