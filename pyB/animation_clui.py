@@ -114,7 +114,7 @@ def _show_env(env):
 # - private method -
 # helper function, prints B state (values of variables)
 def _print_state(bstate):
-    for bmachine in bstate.bmch_dict:
+    for bmachine in bstate.bmch_dict.keys():
         if not bmachine is None:
             print bmachine.mch_name
         value_stack = bstate.bmch_dict[bmachine]

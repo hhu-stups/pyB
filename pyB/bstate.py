@@ -166,7 +166,7 @@ class BState():
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
         #sorted_bmch_list = self.__get_sorted_machine_list(self.bmch_dict)
         #for bmch in sorted_bmch_list:
-        for bmch in self.bmch_dict:
+        for bmch in self.bmch_dict.keys():
             if bmch is None:
                 string += "Predicate or Expression:"
             else:
@@ -255,7 +255,7 @@ class BState():
     # without affecting the current one    
     def clone(self):
         c = BState()
-        for key in self.bmch_dict:
+        for key in self.bmch_dict.keys():
             value_stack = self.bmch_dict[key]
             vs = []
             for d in value_stack:
@@ -293,7 +293,8 @@ class BState():
         # lookup own mch:
         for i in range(len(value_stack)-1, -1, -1):
             try:
-                return value_stack[i][id_Name]
+                result = value_stack[i][id_Name]
+                return result
             except KeyError:
                 continue
         # No entry in the value_stack. The variable/constant with the name 'id_Name'
@@ -380,7 +381,7 @@ class BState():
     # used in use_constants_solutions and use_variables_solutions
     # to "manually" write to the correct entry 
     def get_bmachine_by_name(self, name):
-        for bmachine in self.bmch_dict:
+        for bmachine in self.bmch_dict.keys():
             if bmachine.mch_name==name:
                 return bmachine
         raise Exception("PyB BUG! unknown B-machine: %s" % name) 
@@ -388,7 +389,7 @@ class BState():
     def get_valuestack_depth_of_all_bmachines(self):
         result = []
         # XXX: nondeterminism
-        for bm in self.bmch_dict:
+        for bm in self.bmch_dict.keys():
             valuestack_length = len(self.bmch_dict[bm])
             result.append(tuple([bm,valuestack_length]))
         return result.copy()

@@ -29,7 +29,7 @@ class TestModelChecker():
     def test_simple_model_checking0(self):
         path = "examples/rpython_performance/Lift2.mch"
         if os.name=='nt':
-            bfile_name="examples/rpython_performance\Lift2"
+            bfile_name="examples\rpython_performance\Lift2"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -85,35 +85,35 @@ class TestModelChecker():
           
         
     """
-	MACHINE WhileLoop
-	VARIABLES sum, i, n
-	INVARIANT
-	  sum>=0 & sum<MAXINT & i>=0 & i<MAXINT & n>=0 & n<MAXINT
-	INITIALISATION 	
-	  BEGIN 
-		   BEGIN 
-			   n := 10 ;
-			   sum := 0 ; 
-			   i := 0
-		   END;
-		   WHILE i<n DO
-			   sum := sum + i;
-			   i := i+1 
-		   INVARIANT
-			   i>=0 & i<MAXINT & i<=n & sum>=0 & sum<MAXINT & sum = ((i-1) * (i))/2
-		   VARIANT 
-			   n - i
-		   END
-	   END
+    MACHINE WhileLoop
+    VARIABLES sum, i, n
+    INVARIANT
+      sum>=0 & sum<MAXINT & i>=0 & i<MAXINT & n>=0 & n<MAXINT
+    INITIALISATION  
+      BEGIN 
+           BEGIN 
+               n := 10 ;
+               sum := 0 ; 
+               i := 0
+           END;
+           WHILE i<n DO
+               sum := sum + i;
+               i := i+1 
+           INVARIANT
+               i>=0 & i<MAXINT & i<=n & sum>=0 & sum<MAXINT & sum = ((i-1) * (i))/2
+           VARIANT 
+               n - i
+           END
+       END
 
-	OPERATIONS    
-	   rr <-- op = rr:=sum /* avoid deadlock */
-	END
+    OPERATIONS    
+       rr <-- op = rr:=sum /* avoid deadlock */
+    END
     """
     def test_simple_model_checking1(self):
         path = "examples/rpython_performance/WhileLoop.mch"
         if os.name=='nt':
-            bfile_name="examples/rpython_performance\WhileLoop"
+            bfile_name="examples\rpython_performance\WhileLoop"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -145,17 +145,17 @@ class TestModelChecker():
 
         
     """
-	MACHINE SigmaLoop
-	VARIABLES sum,  n
-	INVARIANT
-	  sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
-	INITIALISATION 	n:=10 ; sum:=(SIGMA i. (i:0..n | i))
-	OPERATIONS 
+    MACHINE SigmaLoop
+    VARIABLES sum,  n
+    INVARIANT
+      sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
+    INITIALISATION  n:=10 ; sum:=(SIGMA i. (i:0..n | i))
+    OPERATIONS 
 
-	rr <-- op = rr:=sum /* avoid deadlock */
+    rr <-- op = rr:=sum /* avoid deadlock */
   
-	END 
-	"""     
+    END 
+    """     
     def test_simple_model_checking2(self):
         path = "examples/rpython_performance/SigmaLoop.mch"
         if os.name=='nt':
@@ -187,5 +187,48 @@ class TestModelChecker():
         assert len(env.state_space.stack)==2 # init and empty setup
         assert env.get_value('sum')==45
         env.state_space.set_current_state(next_states[0].bstate) 
-        assert env.get_value('sum')==45           
+        assert env.get_value('sum')==45  
+
+        
+    def test_bool_law(self):
+        path = "examples/BoolLaws.mch"
+        if os.name=='nt':
+            bfile_name="examples\BoolLaws.mch"
+        ast_string = file_to_AST_str(path)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = remove_defs_and_parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        env._max_int = 2**31
+        solution_file_read = False
+        bstates = set_up_constants(root, env, mch, solution_file_read)
+        assert len(bstates)==1 # only one possibility 
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])      
+        bstates = exec_initialisation(root, env, mch, solution_file_read)
+        assert len(bstates)==1 # only one possibility 
+        assert len(env.state_space.seen_states)==1        
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])
+        assert len(env.state_space.seen_states)==2               
+        invatiant = root.children[5]
+        assert isinstance(invatiant, AInvariantMachineClause)
+        assert interpret(invatiant, env)
+        assert len(env.state_space.stack)==3 # init and setup and ref state 
+        next_states = calc_next_states(env, mch)
+        assert len(next_states)==3   
+        
+        while not env.state_space.empty():
+            assert interpret(invatiant, env) 
+            next_states = calc_next_states(env, mch)
+            env.state_space.undo()
+            for n_state in next_states:
+                bstate = n_state.bstate
+                if not env.state_space.is_seen_state(bstate):
+                    env.state_space.set_current_state(bstate)  
+            if env.state_space.get_state().opName=="set up":
+                assert len(env.state_space.stack)==2 # setup and ref state NOT init
+                env.state_space.undo()
         

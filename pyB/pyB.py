@@ -73,7 +73,7 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
     if EVAL_CHILD_INVARIANT:
         bstate = env.state_space.get_state()
-        for bmachine in bstate.bmch_dict:
+        for bmachine in bstate.bmch_dict.keys():
             if not bmachine is None and not bmachine.mch_name==mch.mch_name :
                 print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
     bstate_lst = calc_next_states(env, mch)
@@ -251,13 +251,21 @@ def run_model_checking_mode(argv):
         return   
      
     #env.state_space.set_current_state(bstates[0])
-    while not env.state_space.empty():                          # 7. model check  
+    while not env.state_space.empty():                          # 7. model check      
+        # FIXME: dirty fix to avoid invariant checking of set up states 
+        if env.state_space.get_state().opName=="set up":
+            env.state_space.undo()
+            continue
+            
         if not interpret(mch.aInvariantMachineClause, env):
             print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
+            #violation = env.state_space.get_state()
+            #violation.print_bstate()
+            #print violation.opName
             return False
         if EVAL_CHILD_INVARIANT:
             bstate = env.state_space.get_state()
-            for bmachine in bstate.bmch_dict:
+            for bmachine in bstate.bmch_dict.keys():
                 if not bmachine is None and not bmachine.mch_name==mch.mch_name :
                     if not interpret(bmachine.aInvariantMachineClause, env):
                         print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
@@ -266,10 +274,11 @@ def run_model_checking_mode(argv):
         env.state_space.undo()
         for s in next_states:
             bstate = s.bstate
-            #opName = s.opName
+            #print s.opName
             #bstate.print_bstate() # TODO: check double values with Lift2.mch example
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate) 
+    
     print "checked",len(env.state_space.seen_states),"states.\033[1m\033[92mNo invariant violation found.\033[00m"
     return True
       
