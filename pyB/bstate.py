@@ -2,7 +2,7 @@ from ast_nodes import *
 from btypes import *
 from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
-from config import USE_RPYTHON_CODE
+from config import USE_RPYTHON_CODE, USE_RPYTHON_MAP
 from collections import OrderedDict
 from rpython_b_objmodel import W_None, W_Object
 
@@ -13,8 +13,97 @@ if USE_RPYTHON_CODE:
     from rpython.rlib import jit
 else:
     import mockjit as jit
-    
+    from mockjit import promote
 
+"""
+# from  META-TRACING JUST-IN-TIME COMPILATION FOR RPYTHON by c.f. bloz    
+class Map(object):
+    def __init__(self):
+        self.indexes = {}
+        self.other_maps = {}
+        
+    @jit.elidable
+    def getindex(self, name):
+        return self.indexes.get(name, -1)
+        
+    @jit.elidable
+    def add_attribute(self, name):
+        if name not in self.other_maps: 
+            newmap = Map()
+            newmap.indexes.update(self.indexes)
+            newmap.indexes[name] = len(self.indexes)
+            self.other_maps[name] = newmap
+        return self.other_maps[name] 
+
+#EMPTY_MAP = Map()
+
+class VariableMap(object):
+    def __init__(self, cls):
+        self.cls = cls
+        self.map = Map()
+        self.storage = []
+    
+    def getfield(self, name):
+        map = self.map
+        promote(map)
+        index = map.getindex(name) 
+        if index != -1:
+            return self.storage[index] 
+        return None
+        
+    def write_attribute(self, name, value): 
+        map = self.map
+        promote(map)
+        index = map.getindex(name) 
+        if index != -1:
+            self.storage[index] = value
+            return
+        self.map = map.add_attribute(name)
+        self.storage.append(value)
+
+"""         
+
+class RPythonMap:
+    def __init__(self):
+        self.storage = []
+        self.indexes = {}
+ 
+    @jit.elidable
+    def getindex(self, name):
+        return self.indexes.get(name, -1)
+    
+    @jit.elidable           
+    def __getitem__(self, name):
+        index = self.getindex(name)
+        if index != -1:
+            return self.storage[index]
+        raise KeyError()
+             
+    def __setitem__(self, name, value):
+        index = self.getindex(name)
+        if index != -1:
+            self.storage[index] = value
+            return
+        self.indexes[name] = len(self.storage)
+        self.storage.append(value)
+                    
+
+    def __contains__(self, name):
+        return name in self.indexes
+        
+    def copy(self):
+        clone = RPythonMap()
+        clone.indexes = self.indexes.copy()
+        clone.storage = list(self.storage)
+        return clone
+        
+    def __len__(self):
+        return len(self.storage)
+        
+    def keys(self):
+        return self.indexes.keys()
+        
+                
 # BState: Set of all values (constants and variabels) of all B-machines
 # Used by state_space.py. 
 class BState():
@@ -25,7 +114,10 @@ class BState():
         # special case: Predicates and Expressions have no bmachine
         # in this case the mapping is: None -> list(dict1, dict2, ...)
         #self.bmch_dict = OrderedDict({None:[{}]}) # empty entry for states without Bmachine (Predicated and Expressions)
-        self.bmch_dict = {None:[{}]}
+        if USE_RPYTHON_MAP:
+            self.bmch_dict = {None:[RPythonMap()]}
+        else:
+            self.bmch_dict = {None:[{}]}
         # used to print history 
         self.prev_bstate = None
         self.opName = ""
@@ -36,7 +128,7 @@ class BState():
     def print_bstate(self):
         string = self.__repr__()
         print string
-    
+        """    
     def __get_sorted_key_list(self, dic):
         key_list = []
         for key in dic:
@@ -67,7 +159,7 @@ class BState():
         if None in dic:
             key_list.append(None)
         return key_list       
-
+        """
     # TODO: cache value, dont compute twice         
     def __repr__(self):
         string = ""
@@ -84,8 +176,12 @@ class BState():
             for dic in self.bmch_dict[bmch]:
                 d = "{"
                 #sorted_key_list = self.__get_sorted_key_list(dic)
-                #for k in sorted_key_list:
-                for k in dic:
+                sorted_key_list = []
+                # This code does only work for B machines. 
+                if bmch is not None:
+                    sorted_key_list = bmch.get_variable_printing_order()
+                for k in sorted_key_list:
+                #for k in dic:
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
                         if isinstance(w_obj, W_Integer):
@@ -120,6 +216,7 @@ class BState():
             hash_str = compute_hash(self.__repr__())
         else:
             hash_str = hash(self.__repr__())
+        #print "XXX" + self.__repr__() + str(hash_str) + "XXX"
         return hash_str  
                 
     def equal(self, bstate):
@@ -172,10 +269,13 @@ class BState():
     
     # called only once (per b-machine) after successful parsing
     def register_new_bmachine(self, bmachine, all_names):
-        value_stack = {}
+        if USE_RPYTHON_MAP:
+            value_dict = RPythonMap()
+        else:
+            value_dict = {}
         for name in all_names:
-            value_stack[name] = None  # default init
-        self.bmch_dict[bmachine] = [value_stack]
+            value_dict[name] = None  # default init
+        self.bmch_dict[bmachine] = [value_dict]
     
     @jit.elidable
     def get_bmachine_stack(self, bmachine):
@@ -220,7 +320,7 @@ class BState():
         value_stack = self.get_bmachine_stack(bmachine)
         for i in range(len(value_stack)-1, -1, -1):
             top_map = value_stack[i]
-            if id_Name in top_map:
+            if id_Name in top_map.keys():
                 top_map[id_Name] = value
                 return
         # No entry in the value_stack. The variable/constant with the name 'id_Name'
@@ -250,7 +350,10 @@ class BState():
         # the same name like a global var. This is not a B error
         # but maybe not intended by the User. 
         # It should be found static and not at runtime
-        var_map = {}
+        if USE_RPYTHON_MAP:
+            var_map = RPythonMap()
+        else:
+            var_map = {}
         for node in nodes:
             assert isinstance(node, AIdentifierExpression)
             if USE_RPYTHON_CODE:
@@ -263,11 +366,14 @@ class BState():
 
     def add_ids_to_frame(self, ids, bmachine):
         #print "add_ids_to_frame", ids, bmachine
+        if bmachine is not None:
+            bmachine.add_to_variable_printing_order(ids)
+        
         value_stack =  self.bmch_dict[bmachine]
         top_map = value_stack[-1]
         for id in ids:
             assert isinstance(id,str)
-            if id not in top_map:
+            if id not in top_map.keys():
                 top_map[id] = None
     
     

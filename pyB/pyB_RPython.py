@@ -347,7 +347,7 @@ def main(argv):
             if len(argv) == i + 1:
                 print "missing argument after --jit"
                 return 2
-            jitarg = argv[i + 1]
+            jitarg = argv[i + 1] #e.g. --jit off 
             del argv[i:i+2]
             jit.set_user_param(jitdriver, jitarg)
             break

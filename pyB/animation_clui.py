@@ -120,7 +120,7 @@ def _print_state(bstate):
         value_stack = bstate.bmch_dict[bmachine]
         for value_map in value_stack:
             string = ""
-            for name in value_map:
+            for name in value_map.keys():
                 string += name + "=" + print_values_b_style(value_map[name]) + " "
             print string
             

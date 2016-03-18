@@ -48,6 +48,7 @@ class BMachine(ParseObject):
         self.has_uses_mc			 = False
         self.has_extends_mc			 = False
         
+        self._variable_printing_order = []
         # avoid cyclic import: the parser creates BMachine instances, while this class
         # needs to parse its seen machines
         self.remove_definitions = remove_definitions
@@ -322,4 +323,13 @@ class BMachine(ParseObject):
             for m in mch.extended_mch:
                 mch.operations = mch.operations.union(m.operations)
 
-
+    # used to for deterministic hash computation
+    def add_to_variable_printing_order(self, ids):
+        for idName in ids:
+            if idName not in self._variable_printing_order:
+                # TODO: implement a sorting algorithm
+                self._variable_printing_order.append(idName) 
+     
+    # used to for deterministic hash computation    
+    def get_variable_printing_order(self):
+        return self._variable_printing_order

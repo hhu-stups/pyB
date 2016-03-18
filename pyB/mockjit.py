@@ -11,4 +11,7 @@ def elidable(func):
 
 def dont_look_inside(func):
     return func
+    
+def promote(n):
+    pass
 

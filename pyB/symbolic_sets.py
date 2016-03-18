@@ -280,6 +280,11 @@ class SymbolicSet(W_Object):
         
     # FIXME: maybe a endless loop?    
     def __repr__(self):
+        # {a,b} and {a,b,c}-{c} must result in the same print.
+        # this is solved by enumeration. If enumeration is not possible,
+        # a repr method has to be overwritten by the class instance
+        # and this fallback should never be called.
+        # TODO: mak sure this is implemented
         aset = self.enumerate_all()
         from animation_clui import print_values_b_style
         return "@symbolic set" + print_values_b_style(aset)
