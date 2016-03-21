@@ -294,8 +294,10 @@ try:
         run_model_checking_mode(sys.argv)
     else:
         run_animation_mode(sys.argv)
-except Exception as e:
-    print "Error in pyB:", type(e), e.args, e
+except AssertionError as e0:
+    print "AssertionError in pyB:", type(e0), e0.args, e0
+except Exception as e1:
+    print "Error in pyB:", type(e1), e1.args, e1
     print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
     print "options:"
     print "-repl: read eval print loop"

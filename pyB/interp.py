@@ -955,7 +955,8 @@ def interpret(node, env):
         basis = interpret(node.children[0], env)
         exp = interpret(node.children[1], env)
         # not RPython: result = basis ** exp
-        assert exp >=0
+        if not exp >=0:
+            raise ArithmeticError("negative exponent")
         result = 1
         for i in range(exp):
             result *= basis

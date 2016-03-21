@@ -1057,7 +1057,8 @@ def eval_APowerOfExpression(self, env):
     basis = self.get(0).eval(env)
     exp = self.get(1).eval(env)
     # not RPython: result = basis ** exp
-    assert exp.ivalue >=0
+    if not exp.ivalue >=0:
+        raise ArithmeticError("negative exponent")
     result = 1
     for i in range(exp.ivalue):
         result = result * basis.ivalue

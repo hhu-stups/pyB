@@ -231,4 +231,42 @@ class TestModelChecker():
             if env.state_space.get_state().opName=="set up":
                 assert len(env.state_space.stack)==2 # setup and ref state NOT init
                 env.state_space.undo()
+         
+        #negative exponent bug: (x>0 => y**x=C) crashes  
+        # inconsistence between variables and constants        
+        """       
+        MACHINE Test
+        VARIABLES x
+        INVARIANT  x>0 => 10**x = 10 & -3>0 => 10**(-3) = 10 
+        INITIALISATION x:=-3
+        END
+    def test_arith_law(self):
+        path = "examples/ArithmeticLaws.mch"
+        if os.name=='nt':
+            bfile_name="examples\ArithmeticLaws.mch"
+        ast_string = file_to_AST_str(path)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Test
+        env = Environment()
+        mch = remove_defs_and_parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        env._max_int = 2**31
+        solution_file_read = False
+        bstates = set_up_constants(root, env, mch, solution_file_read)
+        
+        assert len(bstates)==0 # no setup possible
+        bstates = exec_initialisation(root, env, mch, solution_file_read)
+        assert len(bstates)==1 # only one possibility 
+        assert len(env.state_space.seen_states)==0        
+        assert isinstance(bstates[0], BState)
+        env.state_space.set_current_state(bstates[0])
+        assert len(env.state_space.seen_states)==1
+        invatiant = root.children[3]
+        assert isinstance(invatiant, AInvariantMachineClause)
+        
+        assert interpret(invatiant, env)
+        assert len(env.state_space.stack)==2 
+        next_states = calc_next_states(env, mch)
+        """
         
