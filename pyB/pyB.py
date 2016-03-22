@@ -73,7 +73,7 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
     if EVAL_CHILD_INVARIANT:
         bstate = env.state_space.get_state()
-        for bmachine in bstate.bmch_dict.keys():
+        for bmachine in bstate.bmch_list:
             if not bmachine is None and not bmachine.mch_name==mch.mch_name :
                 print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
     bstate_lst = calc_next_states(env, mch)
@@ -265,7 +265,7 @@ def run_model_checking_mode(argv):
             return False
         if EVAL_CHILD_INVARIANT:
             bstate = env.state_space.get_state()
-            for bmachine in bstate.bmch_dict.keys():
+            for bmachine in bstate.bmch_list:
                 if not bmachine is None and not bmachine.mch_name==mch.mch_name :
                     if not interpret(bmachine.aInvariantMachineClause, env):
                         print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"

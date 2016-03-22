@@ -10,6 +10,7 @@ else:
     import mockjit as jit
     
 class Node():
+    _immutable_fields_ = ['idName'] # FIXME: should be on Identifier
     def __init__(self):
         self.children = []
     

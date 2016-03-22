@@ -31,7 +31,7 @@ PROPERTIES_TIMEOUT    = 2.5 # Timeout (of conjunct) in seconds. Negative Value: 
 # *** Set to True if you want to translate to C. Otherwise loose of performance **
 USE_RPYTHON_CODE     = False # use code which can be translated
 USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
-USE_RPYTHON_MAP      = False
+USE_RPYTHON_MAP      = True
 
 # method should used by pypy translation test only    
 def set_USE_RPYTHON_POPEN(boolean):

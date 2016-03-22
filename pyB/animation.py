@@ -11,7 +11,9 @@ from enumeration import try_all_values, gen_all_values
 if USE_RPYTHON_CODE:
     from rpython_interp import exec_substitution, interpret 
     from rpython_b_objmodel import frozenset
-    from rpython.rlib import jit
+    from rpython.rlib import jit, listsort
+    Sorter = listsort.make_timsort_class(lt = lambda a, b: a.opName < b.opName)
+
 else:
     from interp import exec_substitution, interpret
     import mockjit as jit 
@@ -102,6 +104,12 @@ def calc_next_states(env, bmachine):
 
 # FIXME: runtime O(n**2) 
 def sort_ops(lst):
+    if USE_RPYTHON_CODE:
+        s = Sorter(lst[:])
+        s.sort()
+        return lst
+    # FIXME: Raceconditions!
+    # return sorted(lst[:], cmp=lambda a, b: a.opName < b.opName)
     result = []
     while(len(lst)>0):
         e = lst.pop()
@@ -112,7 +120,7 @@ def sort_ops(lst):
             index = index + 1
         result.insert(index, e)
     return result
-
+    
 # - private method -
 # changes state. Set parameter values of this operation to the solution   
 def _set_parameter_values(env, parameter_idNodes, solution):

@@ -114,10 +114,11 @@ def _show_env(env):
 # - private method -
 # helper function, prints B state (values of variables)
 def _print_state(bstate):
-    for bmachine in bstate.bmch_dict.keys():
+    for i in range(len(bstate.bmch_list)):
+        bmachine = bstate.bmch_list[i]
         if not bmachine is None:
             print bmachine.mch_name
-        value_stack = bstate.bmch_dict[bmachine]
+        value_stack = bstate.stack_list[i]
         for value_map in value_stack:
             string = ""
             for name in value_map.keys():

@@ -1870,6 +1870,7 @@ AExternalFunctionExpression.eval = eval_AExternalFunctionExpression
 """
 
 #XXX usage not possible
+# todo: add next and iter method which uses symbolic set "trick"
 # UnionError:
 # [translation:ERROR]
 # [translation:ERROR] RPython cannot unify instances with no common base class

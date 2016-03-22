@@ -15,12 +15,16 @@ else:
     import mockjit as jit
     from mockjit import promote
 
-"""
-# from  META-TRACING JUST-IN-TIME COMPILATION FOR RPYTHON by c.f. bloz    
-class Map(object):
+
+# from  META-TRACING JUST-IN-TIME COMPILATION FOR RPYTHON by c.f. bolz    
+class Structure(object):
     def __init__(self):
         self.indexes = {}
-        self.other_maps = {}
+        self.other_structures = {}
+
+    @jit.elidable
+    def length(self):
+        return len(self.indexes)
         
     @jit.elidable
     def getindex(self, name):
@@ -28,15 +32,18 @@ class Map(object):
         
     @jit.elidable
     def add_attribute(self, name):
-        if name not in self.other_maps: 
-            newmap = Map()
-            newmap.indexes.update(self.indexes)
-            newmap.indexes[name] = len(self.indexes)
-            self.other_maps[name] = newmap
-        return self.other_maps[name] 
+        if name not in self.other_structures: 
+            new = Structure()
+            new.indexes.update(self.indexes)
+            new.indexes[name] = len(self.indexes)
+            self.other_structures[name] = new
+            return new
+        return self.other_structures[name] 
 
-#EMPTY_MAP = Map()
 
+EMPTY_STRUCTURE = Structure()
+
+"""
 class VariableMap(object):
     def __init__(self, cls):
         self.cls = cls
@@ -66,42 +73,42 @@ class VariableMap(object):
 class RPythonMap:
     def __init__(self):
         self.storage = []
-        self.indexes = {}
- 
-    @jit.elidable
-    def getindex(self, name):
-        return self.indexes.get(name, -1)
-    
-    @jit.elidable           
+        self.structure = EMPTY_STRUCTURE
+         
     def __getitem__(self, name):
-        index = self.getindex(name)
+        structure = jit.promote(self.structure)
+        index = structure.getindex(name)
         if index != -1:
             return self.storage[index]
         raise KeyError()
              
     def __setitem__(self, name, value):
-        index = self.getindex(name)
+        structure = jit.promote(self.structure)
+        index = structure.getindex(name)
         if index != -1:
             self.storage[index] = value
             return
-        self.indexes[name] = len(self.storage)
-        self.storage.append(value)
-                    
+        self.structure = structure.add_attribute(name)
+        self.storage.append(value)  
 
     def __contains__(self, name):
-        return name in self.indexes
+        structure = jit.promote(self.structure)
+        index = structure.getindex(name)
+        return index != -1
+    has_key = __contains__
         
     def copy(self):
         clone = RPythonMap()
-        clone.indexes = self.indexes.copy()
+        clone.structure = self.structure
         clone.storage = list(self.storage)
         return clone
         
     def __len__(self):
-        return len(self.storage)
+        structure = jit.promote(self.structure)
+        return structure.length()
         
     def keys(self):
-        return self.indexes.keys()
+        return self.structure.indexes.keys()
         
                 
 # BState: Set of all values (constants and variabels) of all B-machines
@@ -115,9 +122,11 @@ class BState():
         # in this case the mapping is: None -> list(dict1, dict2, ...)
         #self.bmch_dict = OrderedDict({None:[{}]}) # empty entry for states without Bmachine (Predicated and Expressions)
         if USE_RPYTHON_MAP:
-            self.bmch_dict = {None:[RPythonMap()]}
+            self.bmch_list = [None]
+            self.stack_list = [[RPythonMap()]]
         else:
-            self.bmch_dict = {None:[{}]}
+            self.bmch_list = [None]
+            self.stack_list = [[{}]]
         # used to print history 
         self.prev_bstate = None
         self.opName = ""
@@ -166,14 +175,16 @@ class BState():
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
         #sorted_bmch_list = self.__get_sorted_machine_list(self.bmch_dict)
         #for bmch in sorted_bmch_list:
-        for bmch in self.bmch_dict.keys():
+        for i in range(len(self.stack_list)):
+            bmch  = self.bmch_list[i]
             if bmch is None:
                 string += "Predicate or Expression:"
             else:
                 string += bmch.mch_name + ":" 
-                           
+            
+            value_stack = self.get_bmachine_stack(bmch)               
             lst = "["
-            for dic in self.bmch_dict[bmch]:
+            for dic in value_stack:
                 d = "{"
                 #sorted_key_list = self.__get_sorted_key_list(dic)
                 sorted_key_list = []
@@ -220,12 +231,12 @@ class BState():
         return hash_str  
                 
     def equal(self, bstate):
-        if not len(self.bmch_dict)==len(bstate.bmch_dict):
+        if not len(self.bmch_list)==len(bstate.bmch_list):
             return False
         try:
-            for bmachine_key in self.bmch_dict.keys():
-                self_dictionary_list  = self.bmch_dict[bmachine_key]
-                other_dictionary_list = bstate.bmch_dict[bmachine_key]
+            for j in range(len(self.stack_list)):
+                self_dictionary_list  = self.stack_list[j]
+                other_dictionary_list = bstate.stack_list[j]
                 if not len(self_dictionary_list)==len(other_dictionary_list):
                     return False
                 for i in range(len(self_dictionary_list)):
@@ -255,12 +266,17 @@ class BState():
     # without affecting the current one    
     def clone(self):
         c = BState()
-        for key in self.bmch_dict.keys():
-            value_stack = self.bmch_dict[key]
+        for i in range(len(self.stack_list)):
+            value_stack = self.stack_list[i]
             vs = []
             for d in value_stack:
                 vs.append(d.copy())
-            c.bmch_dict[key] = vs
+            if i==0:
+                c.stack_list[0] = vs
+            else:
+                c.stack_list.append(vs)
+        assert len(c.stack_list)==len(self.stack_list)
+        c.bmch_list = self.bmch_list # this is only ok because it is not possible to add or remove machines during model checking
         c.prev_bstate = self.prev_bstate
         c.opName = self.opName
         c.parameter_values = self.parameter_values
@@ -269,17 +285,25 @@ class BState():
     
     # called only once (per b-machine) after successful parsing
     def register_new_bmachine(self, bmachine, all_names):
+        assert bmachine is not None
+        
         if USE_RPYTHON_MAP:
             value_dict = RPythonMap()
         else:
             value_dict = {}
         for name in all_names:
             value_dict[name] = None  # default init
-        self.bmch_dict[bmachine] = [value_dict]
+        
+        assert len(self.stack_list)==len(self.bmch_list)
+        
+        bmachine.index = len(self.bmch_list)  
+        self.bmch_list.append(bmachine)
+        self.stack_list.append([value_dict])
     
-    @jit.elidable
     def get_bmachine_stack(self, bmachine):
-        return self.bmch_dict[bmachine]
+        if bmachine is None:
+            return self.stack_list[0]
+        return self.stack_list[bmachine.index]
     
     @jit.unroll_safe
     def get_value(self, id_Name, bmachine):
@@ -289,7 +313,7 @@ class BState():
         assert isinstance(id_Name, str)
         assert isinstance(bmachine, BMachine) or bmachine is None #None if Predicate or Expression
         value_stack = self.get_bmachine_stack(bmachine)
-        stack_depth = len(value_stack)
+        #stack_depth = len(value_stack)
         # lookup own mch:
         for i in range(len(value_stack)-1, -1, -1):
             try:
@@ -321,6 +345,7 @@ class BState():
         value_stack = self.get_bmachine_stack(bmachine)
         for i in range(len(value_stack)-1, -1, -1):
             top_map = value_stack[i]
+            #print "fooooo", top_map.storage, top_map.keys(), value 
             if id_Name in top_map.keys():
                 top_map[id_Name] = value
                 return
@@ -339,7 +364,7 @@ class BState():
 
     # leave scope: throw all values of local vars away
     def pop_frame(self, bmachine):
-        value_stack =  self.bmch_dict[bmachine]
+        value_stack = self.get_bmachine_stack(bmachine)
         value_stack.pop() # ref
 
 
@@ -361,38 +386,41 @@ class BState():
                 var_map[node.idName] = W_None()
             else:
                 var_map[node.idName] = node.idName + "_NO_VALUE"
-        value_stack = self.bmch_dict[bmachine]
+        value_stack = self.get_bmachine_stack(bmachine)
         value_stack.append(var_map) # ref
 
-
+    @jit.unroll_safe
     def add_ids_to_frame(self, ids, bmachine):
         #print "add_ids_to_frame", ids, bmachine
         if bmachine is not None:
             bmachine.add_to_variable_printing_order(ids)
         
-        value_stack =  self.bmch_dict[bmachine]
+        value_stack = self.get_bmachine_stack(bmachine)
+            
         top_map = value_stack[-1]
         for id in ids:
             assert isinstance(id,str)
-            if id not in top_map.keys():
+            if not top_map.has_key(id):
                 top_map[id] = None
     
     
     # used in use_constants_solutions and use_variables_solutions
     # to "manually" write to the correct entry 
     def get_bmachine_by_name(self, name):
-        for bmachine in self.bmch_dict.keys():
-            if bmachine.mch_name==name:
+        for bmachine in self.bmch_list:
+            if bmachine is not None and bmachine.mch_name==name:
                 return bmachine
         raise Exception("PyB BUG! unknown B-machine: %s" % name) 
-    
+   
+    """ 
     def get_valuestack_depth_of_all_bmachines(self):
         result = []
         # XXX: nondeterminism
-        for bm in self.bmch_dict.keys():
-            valuestack_length = len(self.bmch_dict[bm])
+        for value_stack in self.stack_list:
+            valuestack_length = len(value_stack)
             result.append(tuple([bm,valuestack_length]))
         return result.copy()
+    """
         
     def add_prev_bstate(self, prev, opName, parameter_values):
         self.prev_bstate = prev
