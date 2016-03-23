@@ -11,6 +11,7 @@ else:
     
 class Node():
     _immutable_fields_ = ['idName'] # FIXME: should be on Identifier
+    _attrs_ = ['children']
     def __init__(self):
         self.children = []
     

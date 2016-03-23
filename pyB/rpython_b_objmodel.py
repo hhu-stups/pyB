@@ -3,8 +3,8 @@
 # except boolean methods!
 
 class W_Object:
-    _settled_ = True
-    _attrs_ = []
+    #_settled_ = True
+    #_attrs_ = []
     
     def __init__(self):
         pass
