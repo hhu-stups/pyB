@@ -1878,12 +1878,13 @@ AExternalFunctionExpression.eval = eval_AExternalFunctionExpression
 # [translation:ERROR] Offending annotations:
 # [translation:ERROR]   SomeInstance(can_be_None=False, classdef=rpython.flowspace.generator.GeneratorIterator)
 # [translation:ERROR]   SomeInstance(can_be_None=False, classdef=rpython.flowspace.generator.GeneratorIterator)
-"""
+
 # ****************
 #
 # 5. Substitutions
 #
 # ****************
+"""
 def exec_ASkipSubstitution(self, env):
     yield True
 ASkipSubstitution.execute = exec_ASkipSubstitution
@@ -2364,6 +2365,12 @@ def exec_AOperationCallSubstitution(self, env):
     env.pop_frame()
     env.current_mch = temp
 AOperationCallSubstitution.execute = exec_AOperationCallSubstitution
+
+def exec_substitution(sub, env):
+    assert isinstance(sub, Substitution)
+    for solution in sub.execute(env):
+        yield solution
+
 """
             
 # side-effect: changes state while exec.
@@ -2400,33 +2407,31 @@ def exec_substitution(sub, env):
                 used_ids.append(lhs_node.idName)
                 env.set_value(lhs_node.idName, value)
             # TODO: implement call method on frozensets before adding this code
-            """
             # case (2) lhs: is function 
-            else:
-                assert isinstance(lhs_node, AFunctionExpression)
-                assert isinstance(lhs_node.get(0), AIdentifierExpression)
-                func_name = lhs_node.get(0).idName
-                # get args and convert to dict
-                args = []
-                for child in lhs_node.children[1:]:
-                    arg = interpret(child, env)
-                    args.append(arg)
-                func = dict(env.get_value(func_name))
-                used_ids.append(func_name)
-                # mapping of func values
-                if len(args)==1:
-                    func[args[0]] = value
-                else:
-                    func[tuple(args)] = value
-                # convert back
-                lst = []
-                for key in func:
-                    lst.append(tuple([key,func[key]]))
-                new_func = frozenset(lst)
-                # write to env
-                env.set_value(func_name, new_func)
-            # case (3) record: 3 # TODO
-            """
+            #             else:
+            #                 assert isinstance(lhs_node, AFunctionExpression)
+            #                 assert isinstance(lhs_node.get(0), AIdentifierExpression)
+            #                 func_name = lhs_node.get(0).idName
+            #                 # get args and convert to dict
+            #                 args = []
+            #                 for child in lhs_node.children[1:]:
+            #                     arg = interpret(child, env)
+            #                     args.append(arg)
+            #                 func = dict(env.get_value(func_name))
+            #                 used_ids.append(func_name)
+            #                 # mapping of func values
+            #                 if len(args)==1:
+            #                     func[args[0]] = value
+            #                 else:
+            #                     func[tuple(args)] = value
+            #                 # convert back
+            #                 lst = []
+            #                 for key in func:
+            #                     lst.append(tuple([key,func[key]]))
+            #                 new_func = frozenset(lst)
+            #                 # write to env
+            #                 env.set_value(func_name, new_func)
+            #             # case (3) record: 3 # TODO
         while not used_ids==[]:
             name = used_ids.pop()
             if name in used_ids:
@@ -2917,7 +2922,6 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
                             print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
                         assert temp.__lt__(v_value)
             env.state_space.undo()              # pop last bstate
-        states = next_states
 
 """        
 # TODO: maximum recursion depth exceeded
