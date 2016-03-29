@@ -1884,10 +1884,10 @@ AExternalFunctionExpression.eval = eval_AExternalFunctionExpression
 # 5. Substitutions
 #
 # ****************
-"""
+
 def exec_ASkipSubstitution(self, env):
     yield True
-ASkipSubstitution.execute = exec_ASkipSubstitution
+ASkipSubstitution.generator_ASkipSubstitution = exec_ASkipSubstitution
 
 def exec_AAssignSubstitution(self, env):
     assert int(self.lhs_size) == int(self.rhs_size)     
@@ -1940,7 +1940,7 @@ def exec_AAssignSubstitution(self, env):
         if name in used_ids:
             raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
     yield True # assign(s) was/were  successful 
-AAssignSubstitution.execute = exec_AAssignSubstitution
+AAssignSubstitution.generator_AAssignSubstitution = exec_AAssignSubstitution
 
 def exec_ABecomesElementOfSubstitution(self, env):
     values = self.get(-1).eval(env)
@@ -1953,8 +1953,7 @@ def exec_ABecomesElementOfSubstitution(self, env):
                 assert isinstance(child, AIdentifierExpression)
                 env.set_value(child.idName, value)
             yield True # assign was successful 
-ABecomesElementOfSubstitution.execute = exec_ABecomesElementOfSubstitution
-#ABecomesElementOfSubstitution.__iter__ = 
+ABecomesElementOfSubstitution.generator_ABecomesElementOfSubstitution = exec_ABecomesElementOfSubstitution
 
 
 def exec_ABecomesSuchSubstitution(self, env):
@@ -1989,7 +1988,7 @@ def exec_ABecomesSuchSubstitution(self, env):
                 env.pop_frame() # exit new frame
         env.push_new_frame(nodes) #enum next value in next-interation
     env.pop_frame()
-ABecomesSuchSubstitution.execute = exec_ABecomesSuchSubstitution
+ABecomesSuchSubstitution.generator_ABecomesSuchSubstitution = exec_ABecomesSuchSubstitution
 
 
 def exec_AParallelSubstitution(self, env):
@@ -2026,14 +2025,14 @@ def exec_AParallelSubstitution(self, env):
                 yield True # False if no branch was executable
                 # 4. reset for next loop
                 ref_state = env.get_state().clone()  
-AParallelSubstitution.execute = exec_AParallelSubstitution
+AParallelSubstitution.generator_AParallelSubstitution = exec_AParallelSubstitution
 
 
 def exec_ABlockSubstitution(self, env):
     ex_generator = self.children[-1].execute(env)
     for possible in ex_generator:
         yield possible
-ABlockSubstitution.execute = exec_ABlockSubstitution
+ABlockSubstitution.generator_ABlockSubstitution = exec_ABlockSubstitution
 
 
 def exec_ASequenceSubstitution(self, env):
@@ -2044,7 +2043,7 @@ def exec_ASequenceSubstitution(self, env):
     # for explanation see function comments 
     for possible in exec_sequence_substitution(subst_list, env):
         yield possible
-ASequenceSubstitution.execute = exec_ASequenceSubstitution
+ASequenceSubstitution.generator_ASequenceSubstitution = exec_ASequenceSubstitution
 
 
 def exec_AWhileSubstitution(self, env):
@@ -2065,7 +2064,7 @@ def exec_AWhileSubstitution(self, env):
     ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
     for possible in ex_while_generator:
         yield possible
-AWhileSubstitution.execute = exec_AWhileSubstitution
+AWhileSubstitution.generator_AWhileSubstitution = exec_AWhileSubstitution
 
 
 # **********************
@@ -2077,7 +2076,7 @@ def exec_ABlockSubstitution(self, env):
     ex_generator = self.children[-1].execute(env)
     for possible in ex_generator:
         yield possible   
-ABlockSubstitution.execute = exec_ABlockSubstitution  
+ABlockSubstitution.generator_ABlockSubstitution = exec_ABlockSubstitution  
 
 
 def exec_APreconditionSubstitution(self, env):
@@ -2091,7 +2090,7 @@ def exec_APreconditionSubstitution(self, env):
             yield possible
     else:
         yield False
-APreconditionSubstitution.execute = exec_APreconditionSubstitution
+APreconditionSubstitution.generator_APreconditionSubstitution = exec_APreconditionSubstitution
 
 
 def exec_AAssertionSubstitution(self, env):
@@ -2104,7 +2103,7 @@ def exec_AAssertionSubstitution(self, env):
     ex_generator = self.children[1].execute(env)
     for possible in ex_generator:
         yield possible
-AAssertionSubstitution.execute = exec_AAssertionSubstitution
+AAssertionSubstitution.generator_AAssertionSubstitution = exec_AAssertionSubstitution
 
 
 def exec_AIfSubstitution(self, env):
@@ -2137,7 +2136,7 @@ def exec_AIfSubstitution(self, env):
                 yield possible
     if self.hasElse=="False" and all_cond_false:
         yield True # no Else, default: IF P THEN S ELSE skip END  
-AIfSubstitution.execute = exec_AIfSubstitution
+AIfSubstitution.generator_AIfSubstitution = exec_AIfSubstitution
 
 
 def exec_AChoiceSubstitution(self, env):
@@ -2153,7 +2152,7 @@ def exec_AChoiceSubstitution(self, env):
         ex_generator = or_branch.children[0].execute(env)
         for possible in ex_generator:
             yield possible  
-AChoiceSubstitution.execute = exec_AChoiceSubstitution
+AChoiceSubstitution.generator_AChoiceSubstitution = exec_AChoiceSubstitution
 
 
 def exec_ASelectSubstitution(self, env):
@@ -2189,7 +2188,7 @@ def exec_ASelectSubstitution(self, env):
             yield possible
     else: # no branch enabled and no else branch present 
         yield False 
-ASelectSubstitution.execute = exec_ASelectSubstitution
+ASelectSubstitution.generator_ASelectSubstitution = exec_ASelectSubstitution
 
 
 def exec_ACaseSubstitution(self, env):
@@ -2232,7 +2231,7 @@ def exec_ACaseSubstitution(self, env):
                 yield possible
     if all_cond_false and self.hasElse=="False":
         yield True #invisible Else (page 95 manrefb)
-ACaseSubstitution.execute = exec_ACaseSubstitution
+ACaseSubstitution.generator_ACaseSubstitution = exec_ACaseSubstitution
 
 
 def exec_AVarSubstitution(self, env):
@@ -2248,8 +2247,7 @@ def exec_AVarSubstitution(self, env):
         yield possible
         env.push_new_frame(nodes)
     env.pop_frame()
-AVarSubstitution.execute = exec_AVarSubstitution
-
+AVarSubstitution.generator_AVarSubstitution = exec_AVarSubstitution
 
 
 def exec_AAnySubstitution_or_ALetSubstitution(self, env):
@@ -2273,8 +2271,8 @@ def exec_AAnySubstitution_or_ALetSubstitution(self, env):
                     env.push_new_frame(nodes)
     env.pop_frame()
     yield False
-AAnySubstitution.execute = exec_AAnySubstitution_or_ALetSubstitution
-ALetSubstitution.execute = exec_AAnySubstitution_or_ALetSubstitution
+AAnySubstitution.generator_AAnySubstitution = exec_AAnySubstitution_or_ALetSubstitution
+ALetSubstitution.generator_ALetSubstitution = exec_AAnySubstitution_or_ALetSubstitution
 
 
 def exec_AOpSubstitution(self, env):
@@ -2313,7 +2311,7 @@ def exec_AOpSubstitution(self, env):
     # switch back machine
     env.pop_frame()
     env.current_mch = temp
-AOpSubstitution.execute = exec_AOpSubstitution
+AOpSubstitution.generator_AOpSubstitution = exec_AOpSubstitution
 
 
 def exec_AOperationCallSubstitution(self, env):
@@ -2364,13 +2362,113 @@ def exec_AOperationCallSubstitution(self, env):
             env.set_value(name, values[i])
     env.pop_frame()
     env.current_mch = temp
-AOperationCallSubstitution.execute = exec_AOperationCallSubstitution
+AOperationCallSubstitution.generator_AOperationCallSubstitution = exec_AOperationCallSubstitution
+
+
+def execute_Substitution(self, env):
+    if isinstance(self, ASkipSubstitution):
+        assert isinstance(self, ASkipSubstitution)
+        g = self.generator_ASkipSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AAssignSubstitution):        
+        assert isinstance(self, AAssignSubstitution)
+        g = self.generator_AAssignSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ASequenceSubstitution):
+        assert isinstance(self,ASequenceSubstitution )
+        g = self.generator_ASequenceSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ABlockSubstitution):
+        assert isinstance(self, ABlockSubstitution)
+        g = self.generator_ABlockSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AParallelSubstitution):
+        assert isinstance(self,AParallelSubstitution )
+        g = self.generator_AParallelSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ABecomesSuchSubstitution):
+        assert isinstance(self, ABecomesSuchSubstitution)
+        g = self.generator_ABecomesSuchSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ABecomesElementOfSubstitution):
+        assert isinstance(self, ABecomesElementOfSubstitution)
+        g = self.generator_ABecomesElementOfSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AIfSubstitution):
+        assert isinstance(self,AIfSubstitution )
+        g = self.generator_AIfSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, APreconditionSubstitution):
+        assert isinstance(self, APreconditionSubstitution)
+        g = self.generator_APreconditionSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AAssertionSubstitution):
+        assert isinstance(self, AAssertionSubstitution)
+        g = self.generator_AAssertionSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AChoiceSubstitution):
+        assert isinstance(self, AChoiceSubstitution)
+        g = self.generator_AChoiceSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ASelectSubstitution):
+        assert isinstance(self,ASelectSubstitution )
+        g = self.generator_ASelectSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ACaseSubstitution):
+        assert isinstance(self, ACaseSubstitution)
+        g = self.generator_ACaseSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AVarSubstitution):
+        assert isinstance(self,AVarSubstitution )
+        g = self.generator_AVarSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AAnySubstitution):
+        assert isinstance(self,AAnySubstitution )
+        g = self.generator_AAnySubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, ALetSubstitution):
+        assert isinstance(self,ALetSubstitution )
+        g = self.generator_ALetSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AOpSubstitution):
+        assert isinstance(self,AOpSubstitution )
+        g = self.generator_AOpSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AOperationCallSubstitution):
+        assert isinstance(self, AOperationCallSubstitution)
+        g = self.generator_AOperationCallSubstitution(env)
+        for solution in g:
+            yield solution
+    elif isinstance(self, AWhileSubstitution):
+        assert isinstance(self,AWhileSubstitution )
+        g = self.generator_AWhileSubstitution(env)
+        for solution in g:
+            yield solution
+    else:
+        raise Exception("INTERNAL ERROR: unknown substitution ast node")
+Substitution.execute = execute_Substitution
 
 def exec_substitution(sub, env):
     assert isinstance(sub, Substitution)
     for solution in sub.execute(env):
         yield solution
-
 """
             
 # side-effect: changes state while exec.
@@ -2810,7 +2908,7 @@ def exec_substitution(sub, env):
                 env.set_value(name, values[i])
         env.pop_frame()
         env.current_mch = temp
-
+"""
 
 # a sequence substitution is only executable if every substitution it consist of is
 # executable. If these substitutions are nondeterministic there maybe different "paths"

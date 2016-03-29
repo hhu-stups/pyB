@@ -39,7 +39,6 @@ class StateSpace:
         #return bstate in self.seen_states # TODO: use this!
         h = bstate.__hash__()
         if h in self.seen_states:
-
              # check hash collision. Be sure this state is new!
              s = self.seen_states[h]
              return s.equal(bstate)
