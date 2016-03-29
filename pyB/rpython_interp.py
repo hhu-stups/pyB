@@ -227,12 +227,10 @@ def init_sets(node, env, mch):
                     assert isinstance(elm, AIdentifierExpression)
                     e_name = elm.idName
                     w_element = W_Set_Element(e_name)
-                    #elm_lst.append(elm.idName)
                     elm_lst.append(w_element)
-                    env.add_ids_to_frame([elm.idName])
-                    # values of elements of enumerated sets are their names
-                    env.set_value(elm.idName, W_None())
-                    #env.set_value(elm.idName, elm.idName)
+                    env.add_ids_to_frame([e_name])
+                    # values of elements of enumerated sets are the w_element
+                    env.set_value(e_name, w_element)
                 env.add_ids_to_frame([child.idName])
                 env.set_value(child.idName, frozenset(elm_lst))
             else:
@@ -1966,6 +1964,7 @@ def exec_ABecomesSuchSubstitution(self, env):
         nodes.append(child)
     # new frame to enable primed-ids
     env.push_new_frame(nodes)
+    # TODO: replace try_all_values with constraint solver call
     gen = try_all_values(self.children[-1], env, nodes) 
     for possible in gen: # sideeffect: set values 
         if not possible:
@@ -2260,6 +2259,7 @@ def exec_AAnySubstitution_or_ALetSubstitution(self, env):
     assert isinstance(pred, Predicate)
     assert isinstance(self.children[-1], Substitution)
     env.push_new_frame(nodes)
+    # TODO: replace try_all_values with constraint solver call
     gen = try_all_values(pred, env, nodes)
     for possible in gen:
         if possible:

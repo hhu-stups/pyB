@@ -50,8 +50,73 @@ def read_solution_file(env, solution_file_name_str):
     env.write_solution_nodes_to_env(root)
     if env.solutions and VERBOSE:
         print "learned from solution-file (constants and variables): ", [x for x in env.solutions] 
-    
 
+# skips set_up or init if there is nothing to setup/init
+def __calc_states_and_print_ui(root, env, mch, solution_file_read):
+    # Schneider Book page 62-64:
+    # The parameters p make the constraints C True
+    # #p.C    
+    # Sets St and constants k which meet the constraints c make the properties B True
+    # C => #St,k.B
+    if not env.set_up_done:
+        next_states = set_up_constants(root, env, mch, solution_file_read)
+        if len(next_states)>0:
+            print_set_up_bstates(next_states, mch)
+            return next_states
+        else:
+            # no bstates and no exception: set up to do (e.g no constants)
+            env.set_up_done = True 
+        
+        
+    # If C and B is True there should be Variables v which make the Invaraiant I True
+    # B & C => #v.I
+    if not env.init_done:
+        next_states = exec_initialisation(root, env, mch, solution_file_read)
+        if len(next_states)>0:
+            undo_possible = not env.state_space.empty()
+            print_init_bstates(next_states, mch, undo_possible)
+            return next_states
+        else:
+            # no bstates and no exception: no init to do (e.g no variables)
+            env.init_done = True
+
+    print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
+    if EVAL_CHILD_INVARIANT:
+        bstate = env.state_space.get_state()
+        for bmachine in bstate.bmch_list:
+            if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
+    bstate_lst = calc_next_states(env, mch)
+    show_ui(env, mch, bstate_lst)
+    next_states = []
+    for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
+        next_states.append(n.bstate)
+    return next_states    
+
+
+# returns "root, env, parse_object, solution_file_present" if no error occurred 
+def startup(argv, offset):
+    env = Environment()                                               # 1. create env.
+    file_name_str, solution_file_name_str = read_input_string(argv, offset) # 2. read filenames
+    ast_string, error = file_to_AST_str_no_print(file_name_str)       # 3. parse input-file to string
+    if error:
+        print error
+    #env.set_search_dir(file_name_str)
+    #env.parse_config_parameter(argv)
+    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast 
+    # uncomment for profiling (e.g. performance tests)
+    #import cProfile
+    #cProfile.run('mch = interpret(root, env)','pyB_profile_out.txt')
+    solution_file_present = not solution_file_name_str==""
+    if solution_file_present:                                   # 5. parse solution-file and write to env.
+        read_solution_file(env, solution_file_name_str)         # The concreate solution values are added at 
+                                                                # the bmachine object-init time to the respective mch
+
+                                                                # 6. replace defs and extern-functions inside mch and solution-file (if present)      
+    parse_object = remove_defs_and_parse_ast(root, env)         # 7. which kind of ast?
+    return root, env, parse_object, solution_file_present
+    
+    
 # can use a solution file to speed up the init (or make it possible).
 # will go into animation mode if possible
 def run_animation_mode(argv):
@@ -142,63 +207,10 @@ def run_animation_mode(argv):
             print "Error! Wrong input:", number
 
     return 0
-
-# skips set_up or init if there is nothing to setup/init
-def __calc_states_and_print_ui(root, env, mch, solution_file_read):
-    # Schneider Book page 62-64:
-    # The parameters p make the constraints C True
-    # #p.C    
-    # Sets St and constants k which meet the constraints c make the properties B True
-    # C => #St,k.B
-    if not env.set_up_done:
-        next_states = set_up_constants(root, env, mch, solution_file_read)
-        if len(next_states)>0:
-            print_set_up_bstates(next_states, mch)
-            return next_states
-        else:
-            # no bstates and no exception: set up to do (e.g no constants)
-            env.set_up_done = True 
-        
-        
-    # If C and B is True there should be Variables v which make the Invaraiant I True
-    # B & C => #v.I
-    if not env.init_done:
-        next_states = exec_initialisation(root, env, mch, solution_file_read)
-        if len(next_states)>0:
-            undo_possible = not env.state_space.empty()
-            print_init_bstates(next_states, mch, undo_possible)
-            return next_states
-        else:
-            # no bstates and no exception: no init to do (e.g no variables)
-            env.init_done = True
-
-    print mch.mch_name," - Invariant:", eval_Invariant(root, env, mch)  # TODO: move print to animation_clui
-    if EVAL_CHILD_INVARIANT:
-        bstate = env.state_space.get_state()
-        for bmachine in bstate.bmch_list:
-            if not bmachine is None and not bmachine.mch_name==mch.mch_name :
-                print bmachine.mch_name, " - Invariant:", interpret(bmachine.aInvariantMachineClause, env)
-    bstate_lst = calc_next_states(env, mch)
-    show_ui(env, mch, bstate_lst)
-    next_states = []
-    for n in bstate_lst: # all other data inside bstate_lst has already been processed by show_ui
-        next_states.append(n.bstate)
-    return next_states
-
                                                               
 def run_model_checking_mode(argv):
     print "\033[1m\033[91mWARNING\033[00m: model checking still experimental"
-    env = Environment()                                                # 1. create env.
-    # TODO: remove this hack when MIN MAX INT switch is implemented
-    env._max_int = 2**31
-    env._min_int = -2**31
-    file_name_str, solution_file_name_str = read_input_string(argv, 1) # 2. read filenames
-    ast_string, error = file_to_AST_str_no_print(file_name_str)        # 3. parse input-file to string
-    if error:
-        print error
-    #env.set_search_dir(file_name_str)
-    root = str_ast_to_python_ast(ast_string)                    # 4. parse string to python ast                                                                
-    parse_object = remove_defs_and_parse_ast(root, env)         # 5. replace defs and extern-functions inside mch and solution-file (if present) 
+    root, env, parse_object, solution_file_present = startup(argv, offset=1)    
     if not isinstance(parse_object, BMachine):                                  
         print "Error: only model checking of b machines" 
         return -1
@@ -216,6 +228,7 @@ def run_model_checking_mode(argv):
         return -1
         
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
+    # TODO: volvo example 0 instead of 2 states
     for bstate in bstates:
         if not env.state_space.is_seen_state(bstate):
             env.state_space.set_current_state(bstate) 
@@ -254,6 +267,11 @@ def _run_model_checking_mode(env, mch):
     inv = mch.aInvariantMachineClause
     s_space = env.state_space
     while not env.state_space.empty(): 
+        # FIXME: dirty fix to avoid invariant checking of set up states 
+        if env.state_space.get_state().opName=="set up":
+            env.state_space.undo()
+            continue
+            
         jitdriver.jit_merge_point(inv=inv, s_space=s_space, env=env, mch=mch)
         w_bool = inv.eval(env)  # 7. model check  
         if not w_bool.bvalue:
@@ -285,7 +303,7 @@ def schedule_new_states(next_states, s_space):
 # check of init without animation
 def run_checking_mode():
     env = Environment()                                          # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string(1) # 2. read filenames
+    file_name_str, solution_file_name_str = read_input_string(argv, 1) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)  # 3. parse input-file to string
     if error:
         print error
@@ -342,6 +360,7 @@ def run_checking_mode():
 def main(argv): 
 ###### MAIN PROGRAM ######
     # XXX crappy copy-pasted argument handling by cfbolz
+    # https://bitbucket.org/cfbolz/pyrolog
     for i in range(len(argv)):
         if argv[i] == "--jit":
             if len(argv) == i + 1:
@@ -352,7 +371,7 @@ def main(argv):
             jit.set_user_param(jitdriver, jitarg)
             break
     if len(argv)<2:
-        print "Error"
+        print "Error: Arglen <2 "
         #print "Error in pyB:", type(e), e.args, e
         print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
         print "options:"

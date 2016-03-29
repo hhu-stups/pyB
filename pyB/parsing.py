@@ -224,6 +224,9 @@ def remove_definitions(root, env):
 
         
 # remove definitions from AST and generate python wrappers.
+# TODO: write better parse error messages
+# TODO: de.be4.classicalb.core.parser.exceptions.BException
+# TODO: java.io.FileNotFoundException
 def parse_ast(root, env):
     if isinstance(root, APredicateParseUnit):
         return PredicateParseUnit(root)

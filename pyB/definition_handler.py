@@ -91,7 +91,7 @@ class DefinitionHandler():
     # solution files dont know they use extern functions.
     # comments like /*EXT:*/ are removed by the parser. 
     def _replace_ext_funcs_in_solution_file(self, root):
-        if root==None: # e.g. no solution file present
+        if root is None: # e.g. no solution file present
             return
         try:
             for i in range(len(root.children)):
