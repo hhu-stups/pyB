@@ -16,6 +16,20 @@ if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
      
 class TestModelChecker():
+    # TODO: Fix strange warning "Warning: No input file! default: input.txt" after import
+    # main code is executed and input.txt as standard behavior. 
+    # TODO: Enable set of constant in seen machine
+    import pytest
+    @pytest.mark.xfail 
+    def test_simple_model_checking_thales(self):
+        from pyB import run_model_checking_mode
+        path = "examples/Thales/STR_FRUTIGEN_03_01.mch"
+        if os.name=='nt':
+            path="examples\Thales\STR_FRUTIGEN_03_01.mch"
+        arguments = ["pyB.py", "-mc", path]
+        res = run_model_checking_mode(arguments)
+        assert res
+        
     """
     MACHINE Lift2
     CONCRETE_VARIABLES  floor
@@ -29,7 +43,7 @@ class TestModelChecker():
     def test_simple_model_checking0(self):
         path = "examples/rpython_performance/Lift2.mch"
         if os.name=='nt':
-            bfile_name="examples\rpython_performance\Lift2"
+            path="examples\rpython_performance\Lift2"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -113,7 +127,7 @@ class TestModelChecker():
     def test_simple_model_checking1(self):
         path = "examples/rpython_performance/WhileLoop.mch"
         if os.name=='nt':
-            bfile_name="examples\rpython_performance\WhileLoop"
+            path="examples\rpython_performance\WhileLoop"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -159,7 +173,7 @@ class TestModelChecker():
     def test_simple_model_checking2(self):
         path = "examples/rpython_performance/SigmaLoop.mch"
         if os.name=='nt':
-            bfile_name="examples/rpython_performance\SigmaLoop"
+            path="examples/rpython_performance\SigmaLoop"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -193,7 +207,7 @@ class TestModelChecker():
     def test_bool_law(self):
         path = "examples/BoolLaws.mch"
         if os.name=='nt':
-            bfile_name="examples\BoolLaws.mch"
+            path="examples\BoolLaws.mch"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 
@@ -243,7 +257,7 @@ class TestModelChecker():
     def test_arith_law(self):
         path = "examples/ArithmeticLaws.mch"
         if os.name=='nt':
-            bfile_name="examples\ArithmeticLaws.mch"
+            path="examples\ArithmeticLaws.mch"
         ast_string = file_to_AST_str(path)
         root = str_ast_to_python_ast(ast_string)
 

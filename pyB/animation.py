@@ -69,6 +69,7 @@ def calc_next_states(env, bmachine):
         operations = env.get_all_visible_op_asts()
         #print "empty?:", operations
         for op in operations:
+            jit.promote(op)
             assert isinstance(op, AOperation)         
             # (1) add helper state to avoid bstate-side-effects i.e. operations-state calculations
             #     that effect each other (dropped at the end of each iteration) 
@@ -130,11 +131,13 @@ def _set_parameter_values(env, parameter_idNodes, solution):
 
 # TODO: rpython Union error in append
 # - private method -
-# helper method, returns list of (name, value) pairs
+# helper method, returns one pairs of list of (name, value) 
+@jit.unroll_safe
 def _get_value_list(env, idNode_list):
     value_list = []
     name_list  = []
-    for name in [x.idName for x in idNode_list]:
+    for node in idNode_list:
+        name = node.idName
         value = env.get_value(name)
         name_list.append(name)
         value_list.append(value)

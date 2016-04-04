@@ -235,27 +235,6 @@ def run_model_checking_mode(argv):
     if not mch.has_invariant_mc:
         print "WARNING: no invariant present" 
         return -1   
-    
-    """
-    bstates = set_up_constants(root, env, mch, solution_file_read=False)  # also evals properties
-    # TODO: implement setup and init non determinism 
-    if len(bstates)>0:
-       print "WARNING: set up constants not supported yet" 
-       return -1
-    bstates = exec_initialisation(root, env, mch, solution_file_read=False)
-    if not len(bstates)==1:
-       print "WARNING: only one init. expected" 
-       print "real init number:", len(bstates)
-       for bs in bstates:
-           bs.print_bstate()
-       return -1
-    if not mch.has_invariant_mc:
-       print "WARNING: no invariant present" 
-       return -1  
-    env.state_space.set_current_state(bstates[0])
-    """
-    
-    
     return _run_model_checking_mode(env, mch)
 
 def get_printable_location(inv):

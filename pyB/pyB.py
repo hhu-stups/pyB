@@ -16,14 +16,14 @@ from typing import type_check_root_bmch, type_check_predicate
 
 
 # console input like python 'pyB.py somefile.mch some_solutionfile.txt'
-def read_input_string(offset=0):
+def read_input_string(arguments, offset=0):
     file_name_str = DEFAULT_INPUT_FILENAME
     solution_file_name_str = ""
-    if len(sys.argv)==2+offset:
-        file_name_str = sys.argv[1+offset]
-    elif len(sys.argv)==3+offset:
-        file_name_str = sys.argv[1+offset]
-        solution_file_name_str = sys.argv[2+offset]
+    if len(arguments)==2+offset:
+        file_name_str = arguments[1+offset]
+    elif len(arguments)==3+offset:
+        file_name_str = arguments[1+offset]
+        solution_file_name_str = arguments[2+offset]
     else:
         print "Warning: No input file! default:",file_name_str
     return file_name_str, solution_file_name_str
@@ -85,9 +85,9 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     
 
 # returns "root, env, parse_object, solution_file_present" if no error occurred 
-def startup(argv, offset):
+def startup(arguments, offset):
     env = Environment()                                               # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string(offset) # 2. read filenames
+    file_name_str, solution_file_name_str = read_input_string(arguments, offset) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)       # 3. parse input-file to string
     if error:
         print error
@@ -109,8 +109,8 @@ def startup(argv, offset):
 
 # can use a solution file to speed up the init (or make it possible).
 # will go into animation mode if possible
-def run_animation_mode(argv):
-    root, env, parse_object, solution_file_present = startup(argv, offset=0)
+def run_animation_mode(arguments):
+    root, env, parse_object, solution_file_present = startup(arguments, offset=0)
     
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
@@ -176,8 +176,8 @@ def run_animation_mode(argv):
 
 
 # check of init without animation
-def run_checking_mode(argv):
-    root, env, parse_object, solution_file_present = startup(argv, offset=1)
+def run_checking_mode(arguments):
+    root, env, parse_object, solution_file_present = startup(arguments, offset=1)
     
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         result = interpret(parse_object.root, env)              # eval predicate or expression
@@ -219,9 +219,9 @@ def run_checking_mode(argv):
         return eval_Invariant(root, env, mch)   
 
 
-def run_model_checking_mode(argv):
+def run_model_checking_mode(arguments):
     print "WARNING: model checking still experimental"
-    root, env, parse_object, solution_file_present = startup(argv, offset=1)
+    root, env, parse_object, solution_file_present = startup(arguments, offset=1)
     if not isinstance(parse_object, BMachine):                                  
         print "Error: only model checking of b machines" 
         return

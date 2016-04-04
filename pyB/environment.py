@@ -199,11 +199,25 @@ class Environment():
     
     def set_search_dir(self, file_name_str):
         import os
-        if os.name=='posix' and '/' in file_name_str:
-            # TODO: rpartition is not Rpython
-            self._bmachine_search_dir = file_name_str.rpartition("/")[0] + '/'
+        if os.name=='posix':
+            sep = '/'
+        elif os.name=='nt':
+            sep = '\\'
         else:
             print "WARNING: OS Type not testet. Search dir unknown"
+            return             
+        if not sep in file_name_str:
+            return     
+        # rpartition is not RPython
+        if USE_RPYTHON_CODE:
+            for i in range(len(file_name_str)):
+                c = file_name_str[-i]
+                if c ==sep:
+                    self._bmachine_search_dir = file_name_str[:-i+1]
+                    return
+        else:
+            self._bmachine_search_dir = file_name_str.rpartition("/")[0] + '/'
+
 
     
     # assumes that every Variable/Constant/Set appears once 
@@ -226,7 +240,7 @@ class Environment():
                         print "WARNING: PyB failed to use solution: " + pretty_print(node)
                     continue 
     
-    
+    @jit.unroll_safe
     def get_all_visible_op_asts(self):
         # caching to avoid this calculation
         if self._all_operation_asts == []:

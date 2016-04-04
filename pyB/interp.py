@@ -913,10 +913,18 @@ def interpret(node, env):
         return IntegerSet(env)
     elif isinstance(node, AMinExpression):
         aSet = interpret(node.children[0], env)
-        return min(list(aSet))
+        if isinstance(aSet, frozenset):
+            lst = list(aSet)
+        else:
+            lst = aSet.enumerate_all()
+        return min(lst)
     elif isinstance(node, AMaxExpression):
         aSet = interpret(node.children[0], env)
-        return max(list(aSet))
+        if isinstance(aSet, frozenset):
+            lst = list(aSet)
+        else:
+            lst = aSet.enumerate_all()
+        return max(lst)
     elif isinstance(node, AAddExpression):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)

@@ -1438,6 +1438,7 @@ class SymbolicStructSet(SymbolicSet):
 
     # e:S (element:self.aDict)
     def __contains__(self, element):
+        # FIXME: Bug element = None
         if not isinstance(element, frozenset):
             raise NotImplementedError("Symbolic membership of structs")
         for tup in element:    

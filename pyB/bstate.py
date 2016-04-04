@@ -21,6 +21,7 @@ class Structure(object):
     def __init__(self):
         self.indexes = {}
         self.other_structures = {}
+        self._keys = None
 
     @jit.elidable
     def length(self):
@@ -40,6 +41,11 @@ class Structure(object):
             return new
         return self.other_structures[name] 
 
+    @jit.elidable
+    def keys(self):
+        if self._keys is None:
+            self._keys = self.indexes.keys()
+        return self._keys
 
 EMPTY_STRUCTURE = Structure()
 
@@ -89,7 +95,8 @@ class RPythonMap:
             self.storage[index] = value
             return
         self.structure = structure.add_attribute(name)
-        self.storage.append(value)  
+        # to make RPython use a non-resizable list
+        self.storage =  self.storage + [value]  
 
     def __contains__(self, name):
         structure = jit.promote(self.structure)
@@ -108,7 +115,7 @@ class RPythonMap:
         return structure.length()
         
     def keys(self):
-        return self.structure.indexes.keys()
+        return self.structure.keys()
         
                 
 # BState: Set of all values (constants and variabels) of all B-machines
@@ -346,7 +353,7 @@ class BState():
         for i in range(len(value_stack)-1, -1, -1):
             top_map = value_stack[i]
             #print "fooooo", top_map.storage, top_map.keys(), value 
-            if id_Name in top_map.keys():
+            if top_map.has_key(id_Name):
                 top_map[id_Name] = value
                 return
         # No entry in the value_stack. The variable/constant with the name 'id_Name'
@@ -370,6 +377,7 @@ class BState():
 
     # new scope:
     # push a new frame with new local vars
+    @jit.unroll_safe
     def push_new_frame(self, nodes, bmachine):
         #print "push_new_frame", [x.idName for x in nodes], bmachine
         # TODO: throw warning if local var with 

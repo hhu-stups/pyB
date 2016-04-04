@@ -324,6 +324,7 @@ class BMachine(ParseObject):
                 mch.operations = mch.operations.union(m.operations)
 
     # used to for deterministic hash computation
+    @jit.unroll_safe
     def add_to_variable_printing_order(self, ids):
         for idName in ids:
             if idName not in self._variable_printing_order:

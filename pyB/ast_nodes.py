@@ -10,17 +10,22 @@ else:
     import mockjit as jit
     
 class Node():
-    #_immutable_fields_ = ['idName'] # FIXME: should be on Identifier
+    _immutable_fields_ = ['idName'] # FIXME: should be on Identifier
     #_attrs_ = ['children']
     def __init__(self):
         self.children = []
     
     # Rpython typing fails on direct access like node.children[i].
     # But it doesnt fails when a method does it
-    @jit.elidable
     def get(self, index):
+        jit.promote(self) # index and node are constant in a concrete trace position
+        jit.promote(index)
+        return self._get(index)
+    
+    @jit.elidable
+    def _get(self, index):
         return self.children[index]
-        
+           
     def deepcopy(self):
         clone = self.clone()
         assert clone.children == []
@@ -1358,6 +1363,7 @@ class AOperationCallSubstitution(Substitution):
  
         
 class AAssignSubstitution(Substitution):
+    _immutable_fields_ = ['lhs_size', 'rhs_size']
     def __init__(self, childNum, lhs_size, rhs_size):
         self.childNum = int(childNum)
         self.lhs_size = int(lhs_size)

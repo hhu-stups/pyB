@@ -88,7 +88,7 @@ def set_up_constants(root, env, mch, solution_file_read=False):
 
 
 
-"""
+
 # yields False if the state was not changed
 # yields True  if only one machine set up was performed successfully
 # Assumption: The 'set up' of one B-machine doesn't affect the 'set up' of another
@@ -202,7 +202,7 @@ def __init_set_mch_parameter(root, env, mch):
             w_element = W_Set_Element(e_name)
             elem_lst.append(w_element)      
         env.set_value(name, frozenset(elem_lst))
-"""
+
                 
 # only(!) inits sets of all machines
 # TODO: When the ProB-Solution-file also contains set-solutions, this
@@ -994,8 +994,11 @@ def eval_AMinExpression(self, env):
     aSet = self.get(0).eval(env)
     assert isinstance(aSet, frozenset)
     lst = aSet.lst
-    min = lst[0].ivalue
+    w_int = lst[0]
+    assert isinstance(w_int, W_Integer)
+    min = w_int.ivalue
     for w_int in lst:
+        assert isinstance(w_int, W_Integer)
         if w_int.ivalue< min:
             min = w_int.ivalue
     return W_Integer(min)
@@ -1005,7 +1008,9 @@ def eval_AMaxExpression(self, env):
     aSet = self.get(0).eval(env)
     assert isinstance(aSet, frozenset)
     lst = aSet.lst
-    max = lst[0].ivalue
+    w_int = lst[0]
+    assert isinstance(w_int, W_Integer)
+    max = w_int.ivalue
     for w_int in lst:
         if w_int.ivalue> max:
             max = w_int.ivalue
@@ -1019,15 +1024,19 @@ def eval_AAddExpression(self, env):
     return w_integer
 AAddExpression.eval = eval_AAddExpression
 
-def eval_AMinusOrSetSubtractExpression(self, env): 
+def eval_AMinusExpression(self, env): 
     expr1 = self.get(0).eval(env)
     expr2 = self.get(1).eval(env)
-    if isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer):
-        w_integer = expr1.__sub__(expr2)
-        return w_integer
-    else:
-        return SymbolicDifferenceSet(expr1, expr2, env)
-AMinusOrSetSubtractExpression.eval = eval_AMinusOrSetSubtractExpression
+    assert isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer)
+    w_integer = expr1.__sub__(expr2)
+    return w_integer
+AMinusOrSetSubtractExpression.eval = eval_AMinusExpression
+
+def eval_ASetSubtractExpression(self, env): 
+    expr1 = self.get(0).eval(env)
+    expr2 = self.get(1).eval(env)
+    return SymbolicDifferenceSet(expr1, expr2, env)
+ASetSubtractionExpression.eval = eval_ASetSubtractExpression
 
 def eval_AMultOrCartExpression(self, env):
     expr1 = self.get(0).eval(env)
@@ -1888,6 +1897,13 @@ def exec_ASkipSubstitution(self, env):
 ASkipSubstitution.generator_ASkipSubstitution = exec_ASkipSubstitution
 
 def exec_AAssignSubstitution(self, env):
+    self.AAssignSubstitution_helper(env)
+    yield True # assign(s) was/were  successful 
+AAssignSubstitution.generator_AAssignSubstitution = exec_AAssignSubstitution
+
+@jit.unroll_safe
+def AAssignSubstitution_helper(self, env):
+    jit.promote(self)
     assert int(self.lhs_size) == int(self.rhs_size)     
     used_ids = []
     values = []
@@ -1937,8 +1953,8 @@ def exec_AAssignSubstitution(self, env):
         name = used_ids.pop()
         if name in used_ids:
             raise Exception("\nError: %s modified twice in multiple assign-substitution!" % name)
-    yield True # assign(s) was/were  successful 
-AAssignSubstitution.generator_AAssignSubstitution = exec_AAssignSubstitution
+AAssignSubstitution.AAssignSubstitution_helper = AAssignSubstitution_helper
+
 
 def exec_ABecomesElementOfSubstitution(self, env):
     values = self.get(-1).eval(env)
