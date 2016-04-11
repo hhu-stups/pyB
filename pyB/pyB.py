@@ -293,32 +293,33 @@ def print_usage():
               
             
 ###### MAIN PROGRAM ######
-try:
-    if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
-        run_repl(sys.argv)
-    elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
-        result = run_checking_mode(sys.argv)
-        print "Invariant:", result
-    elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
-        run_model_checking_mode(sys.argv)
-    elif sys.argv[1]=="-animate" or sys.argv[1]=="-a":
-        run_animation_mode(sys.argv)
-    else:
-        print_usage()
-except AssertionError as e0:
-    print "AssertionError in pyB:", type(e0), e0.args, e0
-    import traceback
-    print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
-    print "\033[1m\033[91mError message\033[00m:"
-    print(traceback.format_exc())
-    print "\033[1m\033[91m End of error message\033[00m"
-except Exception as e1:
-    print "\033[1m\033[91mError in PyB\033[00m:", type(e1), e1.args, e1
-    import traceback
-    print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
-    print "\033[1m\033[91mError message\033[00m:"
-    print(traceback.format_exc())
-    print "\033[1m\033[91m End of error message\033[00m"
+if __name__ == "__main__":
+    try:
+        if sys.argv[1]=="-repl" or sys.argv[1]=="-r":
+            run_repl(sys.argv)
+        elif sys.argv[1]=="-check_solution" or sys.argv[1]=="-c":
+            result = run_checking_mode(sys.argv)
+            print "Invariant:", result
+        elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
+            run_model_checking_mode(sys.argv)
+        elif sys.argv[1]=="-animate" or sys.argv[1]=="-a":
+            run_animation_mode(sys.argv)
+        else:
+            print_usage()
+    except AssertionError as e0:
+        print "AssertionError in pyB:", type(e0), e0.args, e0
+        import traceback
+        print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+        print "\033[1m\033[91mError message\033[00m:"
+        print(traceback.format_exc())
+        print "\033[1m\033[91m End of error message\033[00m"
+    except Exception as e1:
+        print "\033[1m\033[91mError in PyB\033[00m:", type(e1), e1.args, e1
+        import traceback
+        print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+        print "\033[1m\033[91mError message\033[00m:"
+        print(traceback.format_exc())
+        print "\033[1m\033[91m End of error message\033[00m"
     
     
 

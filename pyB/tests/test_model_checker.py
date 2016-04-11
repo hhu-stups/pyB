@@ -33,7 +33,7 @@ class TestModelChecker():
     
     #def test_simple_model_checking_other(self):
     #    from pyB import run_model_checking_mode
-    #    path = "examples/Laundry_Controlsystem_n_machines.mch"
+    #    path = "examples/Doors.mch"
     #    arguments = ["pyB.py", "-mc", path]
     #    res = run_model_checking_mode(arguments)
     #    assert res   
