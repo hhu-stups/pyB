@@ -16,14 +16,14 @@ from typing import type_check_root_bmch, type_check_predicate
 
 
 # console input like python 'pyB.py somefile.mch some_solutionfile.txt'
-def read_input_string(arguments, offset=0):
+def read_input_string(arguments):
     file_name_str = DEFAULT_INPUT_FILENAME
     solution_file_name_str = ""
-    if len(arguments)==2+offset:
-        file_name_str = arguments[1+offset]
-    elif len(arguments)==3+offset:
-        file_name_str = arguments[1+offset]
-        solution_file_name_str = arguments[2+offset]
+    if len(arguments)==3:
+        file_name_str = arguments[2]
+    elif len(arguments)==4:
+        file_name_str = arguments[2]
+        solution_file_name_str = arguments[3]
     else:
         print "Warning: No input file! default:",file_name_str
     return file_name_str, solution_file_name_str
@@ -85,9 +85,9 @@ def __calc_states_and_print_ui(root, env, mch, solution_file_read):
     
 
 # returns "root, env, parse_object, solution_file_present" if no error occurred 
-def startup(arguments, offset):
+def startup(arguments):
     env = Environment()                                               # 1. create env.
-    file_name_str, solution_file_name_str = read_input_string(arguments, offset) # 2. read filenames
+    file_name_str, solution_file_name_str = read_input_string(arguments) # 2. read filenames
     ast_string, error = file_to_AST_str_no_print(file_name_str)       # 3. parse input-file to string
     if error:
         print error
@@ -110,7 +110,7 @@ def startup(arguments, offset):
 # can use a solution file to speed up the init (or make it possible).
 # will go into animation mode if possible
 def run_animation_mode(arguments):
-    root, env, parse_object, solution_file_present = startup(arguments, offset=0)
+    root, env, parse_object, solution_file_present = startup(arguments)
     
     if not isinstance(parse_object, BMachine):                 
         is_ppu = isinstance(parse_object, PredicateParseUnit) 
@@ -177,7 +177,7 @@ def run_animation_mode(arguments):
 
 # check of init without animation
 def run_checking_mode(arguments):
-    root, env, parse_object, solution_file_present = startup(arguments, offset=1)
+    root, env, parse_object, solution_file_present = startup(arguments)
     
     if not isinstance(parse_object, BMachine):                  # #PREDICATE or #EXPRESSION                   
         result = interpret(parse_object.root, env)              # eval predicate or expression
@@ -221,7 +221,7 @@ def run_checking_mode(arguments):
 
 def run_model_checking_mode(arguments):
     print "WARNING: model checking still experimental"
-    root, env, parse_object, solution_file_present = startup(arguments, offset=1)
+    root, env, parse_object, solution_file_present = startup(arguments)
     if not isinstance(parse_object, BMachine):                                  
         print "Error: only model checking of b machines" 
         return
@@ -281,7 +281,16 @@ def run_model_checking_mode(arguments):
     
     print "checked",len(env.state_space.seen_states),"states.\033[1m\033[92mNo invariant violation found.\033[00m"
     return True
-      
+
+
+def print_usage():
+    print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
+    print "options:"
+    print "-repl: read eval print loop"
+    print "-c:    checking one state using a solution file"
+    print "-mc:   model checking"
+    print "-a:    animate model"
+              
             
 ###### MAIN PROGRAM ######
 try:
@@ -292,15 +301,24 @@ try:
         print "Invariant:", result
     elif sys.argv[1]=="-model_checking" or sys.argv[1]=="-mc":
         run_model_checking_mode(sys.argv)
-    else:
+    elif sys.argv[1]=="-animate" or sys.argv[1]=="-a":
         run_animation_mode(sys.argv)
+    else:
+        print_usage()
 except AssertionError as e0:
     print "AssertionError in pyB:", type(e0), e0.args, e0
+    import traceback
+    print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+    print "\033[1m\033[91mError message\033[00m:"
+    print(traceback.format_exc())
+    print "\033[1m\033[91m End of error message\033[00m"
 except Exception as e1:
-    print "Error in pyB:", type(e1), e1.args, e1
-    print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
-    print "options:"
-    print "-repl: read eval print loop"
-    print "-c:    checking one state using a solution file"
-    print "-mc:   model checking"
+    print "\033[1m\033[91mError in PyB\033[00m:", type(e1), e1.args, e1
+    import traceback
+    print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+    print "\033[1m\033[91mError message\033[00m:"
+    print(traceback.format_exc())
+    print "\033[1m\033[91m End of error message\033[00m"
+    
+    
 

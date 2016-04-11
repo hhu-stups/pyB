@@ -1377,7 +1377,7 @@ class SymbolicIntervalSet(LargeSet):
             self.r = right
         
     # e:S (element:l..r)
-    def __contains__(self, element): 
+    def __contains__(self, element):
         if USE_RPYTHON_CODE: 
              value = element.ivalue
         else:

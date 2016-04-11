@@ -30,9 +30,22 @@ class SymbolicRelationSet(SymbolicSet):
     def __contains__(self, element):
         if isinstance(element, SymbolicCartSet):    # check with symb info
             if USE_RPYTHON_CODE:
-                return x_in_S(element.left_set, self.left_set) and x_in_S(element.right_set, self.right_set)  
-            else:      
-                return element.left_set in self.left_set and element.right_set in self.right_set
+                for e in element.left_set:
+                    if not x_in_S(e, self.left_set):
+                        return False
+                for e in element.right_set:
+                    if not x_in_S(e, self.right_set):
+                        return False
+                return True
+            else: 
+                # symbolic cart sets contain sets of all elements and not one element
+                for e in element.left_set:
+                    if e not in self.left_set:
+                        return False
+                for e in element.right_set:
+                    if e not in self.right_set:
+                        return False
+                return True
         elif isinstance(element, SymbolicSet):
             if USE_RPYTHON_CODE:
                 for t in element:

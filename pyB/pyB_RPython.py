@@ -335,6 +335,14 @@ def run_checking_mode():
                 env.state_space.add_state(init_bstates[0]) 
         return eval_Invariant(root, env, mch)   
 
+def print_usage():
+    print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
+    print "options:"
+    print "-repl: read eval print loop"
+    print "-c:    checking one state using a solution file"
+    print "-mc:   model checking"
+    print "-a:    animate model"
+    return 0
   
 def main(argv): 
 ###### MAIN PROGRAM ######
@@ -351,12 +359,7 @@ def main(argv):
             break
     if len(argv)<2:
         print "Error: Arglen <2 "
-        #print "Error in pyB:", type(e), e.args, e
-        print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
-        print "options:"
-        print "-repl: read eval print loop"
-        print "-c:    checking one state using a solution file"
-        print "-mc:   model checking"
+        print_usage()
         return 0
     try:
         #if argv[1]=="-repl" or argv[1]=="-r":
@@ -371,17 +374,20 @@ def main(argv):
         #    res = run_checking_mode()
         #    print "Invariant:", res
         #    return res
+        #elif sys.argv[1]=="-animate" or sys.argv[1]=="-a":
+        #   res = run_animation_mode(sys.argv)
+        #   return res
         else:
-            res = run_animation_mode(argv)
-            return res
-    except Exception as e:
-        print "Error"
-        #print "Error in pyB:", type(e), e.args, e
-        print "Usage: python pyB.py <options> MachineFile <SolutionFile>"
-        print "options:"
-        print "-repl: read eval print loop"
-        print "-c:    checking one state using a solution file"
-        print "-mc:   model checking"
+            print_usage()
+            return 0
+    except Exception as e1:
+        print "\033[1m\033[91mError in PyB\033[00m:" #, type(e1), e1.args, e1
+        #import traceback
+        print "Use PyB-Python version to get a detailed error message"
+        #print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+        #print "\033[1m\033[91mError message\033[00m:"
+        #print traceback.format_exc()
+        #print "\033[1m\033[91m End of error message\033[00m"
         return -1
          
   
