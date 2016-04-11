@@ -200,6 +200,10 @@ class BState():
                     sorted_key_list = bmch.get_variable_printing_order()
                 for k in sorted_key_list:
                 #for k in dic:
+                    # TODO: Bug. lookup of op parameter values fail e.g. in examples/Marriage.mch
+                    if not dic.has_key(k):
+                        continue
+                    
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
                         if isinstance(w_obj, W_Integer):

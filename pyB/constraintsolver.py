@@ -535,6 +535,8 @@ def _revise(node, env, var_node):
             if match:
                 aset = interpret(node.children[1], env)
                 # FIXME: C578.EML.014/R_PLACE_MAINTENANCE_2 returns SymbolicUnionSet
+                if isinstance(aset, SymbolicSet):
+                    return frozenset([remove_tuples(t)[index] for t in aset.enumerate_all()])
                 assert isinstance(aset, frozenset)
                 # 2.3. return correct part of the set corresponding to position of
                 # searched variable inside the tuple on the left side

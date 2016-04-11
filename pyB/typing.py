@@ -1324,9 +1324,12 @@ def typeit(node, env, type_env):
         atype =  typeit(node.type_node, env, type_env)
         functype = atype.data
         return functype.data.right.data #image
+    elif isinstance(node, APredecessorExpression) or isinstance(node, ASuccessorExpression):
+        return PowerSetType(CartType(PowerSetType(IntegerType()),PowerSetType(IntegerType())))
     else:
         # Substitutions and clauses return no type informations.
         # It is sufficient to visit all children (AST-sub-trees).
+        # TODO: ASuccessorExpression
         assert isinstance(node, Substitution) or isinstance(node, Clause) or isinstance(node, AMachineReference)
         for child in node.children:
             typeit(child, env, type_env)
