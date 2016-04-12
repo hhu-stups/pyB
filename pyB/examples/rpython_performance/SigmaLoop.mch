@@ -3,11 +3,7 @@
 
 MACHINE SigmaLoop
 VARIABLES n, sum
-INVARIANT
-  n:NAT & sum=45
-  /* (10,55),  (100,5050), (1000, 500500), (10000, 50005000) */
-INITIALISATION 	n:=9 ; sum:=(SIGMA i. (i:0..n | i)) 
-
-OPERATIONS op = skip /* avoid deadlock */
-  
+INVARIANT n:NAT & sum=((n+1) * (n))/2
+INITIALISATION 	n:=10000 ; sum:=(SIGMA i. (i:0..n | i)) 
+OPERATIONS op = skip /* avoid deadlock */  
 END

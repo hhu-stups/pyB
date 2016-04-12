@@ -1027,9 +1027,11 @@ AAddExpression.eval = eval_AAddExpression
 def eval_AMinusExpression(self, env): 
     expr1 = self.get(0).eval(env)
     expr2 = self.get(1).eval(env)
-    assert isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer)
-    w_integer = expr1.__sub__(expr2)
-    return w_integer
+    if isinstance(expr1, W_Integer) and isinstance(expr2, W_Integer):
+        w_integer = expr1.__sub__(expr2)
+        return w_integer
+    else:
+        return SymbolicDifferenceSet(expr1, expr2, env)
 AMinusOrSetSubtractExpression.eval = eval_AMinusExpression
 
 def eval_ASetSubtractExpression(self, env): 
@@ -3008,7 +3010,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
         yield True # Not condition means skip whole loop 
     
     # repeat until no valid (cond True) state can be explored. (breadth first search)
-    # Nut supported inside generators!
+    # Not supported inside generators!
     #jitdriver.jit_merge_point(states=states, cond=cond, condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, v_value=v_value)
     while not states==[]:
         next_states = []      
