@@ -1,6 +1,18 @@
 # Wrapped basic types to allow RPYTHOn Typing (everthing is a W_Object)
 # Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
 # except boolean methods!
+import sys
+sys.path.append("/Users/johnwitulski/witulski/git/pyB/pypy/")
+from rpython.rlib.objectmodel import r_dict
+from rpython.rlib.objectmodel import compute_hash
+
+
+def my_eq(obj0, obj1):
+    return obj0.__eq__(obj1)
+
+def my_hash(obj0):
+    hash_str = compute_hash(obj0.__repr__())
+    return hash_str
 
 class W_Object:
     #_settled_ = True
@@ -168,6 +180,7 @@ class W_Boolean(W_Object):
 
     def clone(self):
         return W_Boolean(self.bvalue)
+ 
         
 class W_None(W_Object):
     #_settled_ = True
@@ -180,6 +193,7 @@ class W_None(W_Object):
 
     def clone(self):
         return W_None()
+
 
 # elements of enumerated sets or machine parameter sets     
 class W_Set_Element(W_Object):
@@ -202,6 +216,7 @@ class W_Set_Element(W_Object):
 
     def clone(self):
         return W_Set_Element(self.string)
+ 
         
 class W_String(W_Object):
     #_settled_ = True
@@ -223,6 +238,7 @@ class W_String(W_Object):
 
     def clone(self):
         return W_String(self.string)
+ 
         
 # an import of this module will overwrite the frozenset build-in type
 # TODO: replace with more efficient implementation.
@@ -234,87 +250,77 @@ class frozenset(W_Object):
         W_Object.__init__(self)
         if L is None:
             L = []
-        self.lst = []
+        self.hashmap = r_dict(my_eq, my_hash)
         # frozenset([1,1,2])==frozenset([1,2])
         # TODO: maybe the performance improves if cases like frozenset([1,1,2])
-        # are not used by any pyB code. (only enumerated sets and the repl. needs this check than) 
+        # are not used by any pyB code. (only enumerated sets and the repl. needs this check then) 
         assert isinstance(L, list)
         for e in L:
-            skip = False
-            for e2 in self.lst:
-                if e.__eq__(e2):
-                    skip = True
-            if not skip:
-                assert isinstance(e, W_Object)
-                self.lst.append(e)
+            self.hashmap[e] = True
     
-    
+    # TODO: more efficient impl
     def __repr__(self):
-        return str(self.lst)
+        string = "{"
+        for e in self.hashmap:
+            string += str(e) +","
+        string += "}"
+        return string
         
     def __len__(self):
-        return len(self.lst)
+        return len(self.hashmap)
         
     def __contains__(self, element):
         # Todo: avoid reference compare in list of lists (set of sets)
-        for e in self.lst:
-            if element.__eq__(e):
-                return True
-        return False
+        return element in self.hashmap
 
 
     def issubset(self, other):
-        for e in self.lst:
-            found = False
-            for e2 in other.lst:
-                if e.__eq__(e2):
-                    found = True
-            if not found:
+        for e in self.hashmap:
+            if e not in other.hashmap:
                 return False
         return True
         
     def issuperset(self, other):
-        for e in other.lst:
-            found = False
-            for e2 in self.lst:
-                if e.__eq__(e2):
-                    found = True
-            if not found:
+        for e in other.hashmap:
+            if e not in self.hashmap:
                 return False
         return True
  
     def union(self, other):
-        result = list(other.lst)
-        for e in self.lst:
-            skip = False
-            for e2 in result:
-                if e.__eq__(e2):
-                    skip = True
-            if not skip:
-                result.append(e)
-        return frozenset(result)
+        new_map = r_dict(my_eq, my_hash)
+        for e in self.hashmap:
+            new_map[e] = True
+        for e in other.hashmap:
+            new_map[e] = True
+        result = frozenset()
+        result.hashmap =  new_map 
+        return result
     
     def intersection(self, other):
-        result = []
-        for e in self.lst:
-            for e2 in other.lst:
-                if e.__eq__(e2):
-                    result.append(e)  
-        return frozenset(result)
+        new_map = r_dict(my_eq, my_hash)
+        for e in other.hashmap:
+            if e in self.hashmap:
+                new_map[e] = True
+        result = frozenset()
+        result.hashmap =  new_map 
+        return result
         
     def __sub__(self, other):
         return self.difference(other)
         
     def difference(self, other):
-        result = list(self.lst)
-        for e in other.lst:
-            for e2 in result:
-                if e2.__eq__(e):
-                    result.remove(e)                    
-        return frozenset(result)
+        new_map = self.hashmap.copy()
+        for e in other.hashmap:
+            if e in new_map:
+                new_map.pop(e)
+        result = frozenset()
+        result.hashmap =  new_map 
+        return result
         
     def copy(self):
-        return frozenset(self.lst)
+        result = frozenset()
+        result.hashmap = self.hashmap.copy()
+        return result
     
     # WARNING: set([1,2,3])!=frozenset([1,2,3]) 
     def __eq__(self, other):
@@ -325,26 +331,22 @@ class frozenset(W_Object):
         assert isinstance(other, frozenset) or isinstance(other, SymbolicSet)
         if not self.__len__()==other.__len__():
             return False
-        if isinstance(other, frozenset):
-            for e in self.lst:
-                found = False     
-                for e2 in other.lst:
-                    if e2.__eq__(e):
-                        found = True
-                        break
-                if not found:   
+        if isinstance(other, frozenset):    
+            for e in self.hashmap:
+                if not e in other.hashmap:
+                    return False
+            for e in other.hashmap:
+                if not e in self.hashmap:
                     return False
             return True
         else:
-            for e in self.lst:
-                found = False     
-                for e2 in other:
-                    if e2.__eq__(e):
-                        found = True
-                        break
-                if not found:   
+            for e in self.hashmap:
+                if not other.__contains__(e):
                     return False
-            return True     
+            for e in other:
+                if not e in self.hashmap:
+                    return False
+            return True   
         
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -356,7 +358,8 @@ class frozenset(W_Object):
     #    for y in S: ...
     # (used by recursive generators) 
     def __iter__(self):
-        copy = frozenset(self.lst)
+        copy = frozenset()
+        copy.hashmap = self.hashmap.copy()
         copy.generator = self.w_frozenset_generator()
         return copy
     
@@ -365,11 +368,18 @@ class frozenset(W_Object):
         return self.generator.next()
     
     def w_frozenset_generator(self):
-        for e in self.lst:
+        for e in self.hashmap:
             yield e 
     
     def clone(self):
+        new_map = self.hashmap.copy()
+        clone = frozenset()
+        for e in self.hashmap:
+            clone.hashmap[e.clone()] = True
+        return clone
+        
+    def to_list(self):
         lst = []
-        for e in self.lst:
-            lst.append(e.clone())
-        return frozenset(lst)
+        for e in self.hashmap:
+            lst.append(e)
+        return lst

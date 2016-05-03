@@ -1765,12 +1765,16 @@ def exec_substitution(sub, env):
         assert isinstance(condition, Predicate) 
         assert isinstance(doSubst, Substitution)
         assert isinstance(invariant, Predicate)  
-        assert isinstance(variant, Expression) 
-        v_value = interpret(variant, env)
-        ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
-        #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
-        for possible in ex_while_generator:
-            yield possible
+        assert isinstance(variant, Expression)
+        cond = interpret(condition, env)
+        if not cond:
+            yield False
+        else: 
+            v_value = interpret(variant, env)
+            ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+            #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+            for possible in ex_while_generator:
+                yield possible
 
 
 # **********************
@@ -2109,6 +2113,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
             inv     = interpret(invariant, env)
             if not inv and PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
+                #yield False
             assert inv
             ex_generator = exec_substitution(doSubst, env)
             

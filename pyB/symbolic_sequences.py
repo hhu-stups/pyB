@@ -67,7 +67,7 @@ class SymbolicSequenceSet(AbstractSymbolicSequence):
         S = self.aset
         for i in range(1, self.env._max_int+1):
             if USE_RPYTHON_CODE:
-                images = S.lst
+                images = S.to_list()
             else:
                 images = list(S)
             sequences = create_all_seq_w_fixlen(images, i)
@@ -102,7 +102,7 @@ class SymbolicSequence1Set(AbstractSymbolicSequence):
         S = self.aset
         for i in range(1, self.env._max_int+1):
             if USE_RPYTHON_CODE:
-                images = S.lst
+                images = S.to_list()
             else:
                 images = list(S)
             sequences = create_all_seq_w_fixlen(images, i)
@@ -141,7 +141,7 @@ class SymbolicISequenceSet(AbstractSymbolicSequence):
         S = self.aset
         for i in range(1, self.env._max_int+1):
             if USE_RPYTHON_CODE:
-                images = S.lst
+                images = S.to_list()
             else:
                 images = list(S)
             sequences = create_all_seq_w_fixlen(images, i)
@@ -180,7 +180,7 @@ class SymbolicISequence1Set(AbstractSymbolicSequence):
         S = self.aset
         for i in range(1, self.env._max_int+1):
             if USE_RPYTHON_CODE:
-                images = S.lst
+                images = S.to_list()
             else:
                 images = list(S)
             sequences = create_all_seq_w_fixlen(images, i)
@@ -220,7 +220,7 @@ class SymbolicPermutationSet(AbstractSymbolicSequence):
         S = self.aset
         for i in range(1, self.env._max_int+1):
             if USE_RPYTHON_CODE:
-                images = S.lst
+                images = S.to_list()
             else:
                 images = list(S)
             sequences = create_all_seq_w_fixlen(images, i)

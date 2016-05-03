@@ -98,7 +98,7 @@ def all_values_by_type_RPYTHON(atype, env, node):
         #env.state_space.get_state().print_bstate()
         value = env.get_value(type_name)
         assert isinstance(value, frozenset)
-        return value.lst
+        return value.to_list()
     # TODO: check with RPython translation before uncommenting
     """
     elif isinstance(atype, PowerSetType):

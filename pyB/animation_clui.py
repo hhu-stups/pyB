@@ -88,7 +88,7 @@ def print_values_b_style(value):
     if isinstance(value, frozenset):
         string = "{"
         if USE_RPYTHON_CODE:
-            value_list = value.lst
+            value_list = value.to_list()
         else:
             value_list = list(value)
         for i in range(len(value_list)):

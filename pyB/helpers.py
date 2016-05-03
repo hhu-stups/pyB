@@ -62,7 +62,7 @@ def my_get_item(finite_set, arg):
 # TODO: list of lists    
 def set_to_list(aSet):
     if USE_RPYTHON_CODE:
-        return aSet.lst
+        return aSet.to_list()
     return list(aSet) 
 
 def solution_file_to_AST_str(file_name_str):

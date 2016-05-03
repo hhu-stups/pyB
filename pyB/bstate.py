@@ -216,7 +216,7 @@ class BState():
                             value = w_obj.string
                         elif isinstance(w_obj, frozenset):
                             value = ""
-                            for le in w_obj.lst:
+                            for le in w_obj.to_list():
                                 value = value + str(le) # TODO: performance
                         elif isinstance(w_obj, W_Tuple):
                             value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])

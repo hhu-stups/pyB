@@ -856,7 +856,7 @@ ACardExpression.eval = eval_ACardExpression
 
 def eval_AGeneralUnionExpression(self, env):
     set_of_sets = self.get(0).eval(env)
-    elem_lst = set_of_sets.lst
+    elem_lst = set_of_sets.to_list()
     acc = elem_lst[0]
     for aset in elem_lst[1:]:
         acc = acc.union(aset)
@@ -865,7 +865,7 @@ AGeneralUnionExpression.eval = eval_AGeneralUnionExpression
 
 def eval_AGeneralIntersectionExpression(self, env):
     set_of_sets = self.get(0).eval(env)
-    elem_lst = set_of_sets.lst
+    elem_lst = set_of_sets.to_list()
     acc = elem_lst[0]
     for aset in elem_lst[1:]:
         acc = acc.intersection(aset)
@@ -993,7 +993,7 @@ AIntegerSetExpression.eval = eval_AIntegerSetExpression
 def eval_AMinExpression(self, env):
     aSet = self.get(0).eval(env)
     assert isinstance(aSet, frozenset)
-    lst = aSet.lst
+    lst = aSet.to_list()
     w_int = lst[0]
     assert isinstance(w_int, W_Integer)
     min = w_int.ivalue
@@ -1007,7 +1007,7 @@ AMinExpression.eval = eval_AMinExpression
 def eval_AMaxExpression(self, env):
     aSet = self.get(0).eval(env)
     assert isinstance(aSet, frozenset)
-    lst = aSet.lst
+    lst = aSet.to_list()
     w_int = lst[0]
     assert isinstance(w_int, W_Integer)
     max = w_int.ivalue
@@ -1363,7 +1363,7 @@ def eval_AOverwriteExpression(self, env):
             if not x.tvalue[0].__eq__(e):
                 new_r.append(x)
     assert isinstance(r2, frozenset)
-    return frozenset(r2.lst + new_r)
+    return frozenset(r2.to_list() + new_r)
 AOverwriteExpression.eval = eval_AOverwriteExpression
 
 def eval_ADirectProductExpression(self, env):
@@ -1414,11 +1414,11 @@ AIterationExpression.eval = eval_AIterationExpression
 
 def eval_AReflexiveClosureExpression(self, env):
     arel = self.get(0).eval(env)
-    rel  = arel.lst
+    rel  = arel.to_list()
     temp = [W_Tuple((x.tvalue[1],x.tvalue[1])) for x in rel] # also image
     rel = [W_Tuple((x.tvalue[0],x.tvalue[0])) for x in rel]
     rel += temp
-    rel = frozenset(rel).lst # throw away doubles
+    rel = frozenset(rel).to_list() # throw away doubles
     while True: # fixpoint-search (do-while-loop)
         new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
         S = frozenset(new_rel).union(frozenset(rel))
@@ -1427,14 +1427,14 @@ def eval_AReflexiveClosureExpression(self, env):
         assert isinstance(T, frozenset)
         if S.__eq__(T):
             return T
-        rel = S.lst
+        rel = S.to_list()
 AReflexiveClosureExpression.eval = eval_AReflexiveClosureExpression
 
 def eval_AClosureExpression(self, env): #closure1
     arel = self.get(0).eval(env)
     #if isinstance(arel, SymbolicSet):
     #    arel = arel.enumerate_all()
-    rel = frozenset(arel.lst).lst
+    rel = frozenset(arel.to_list()).to_list()
     while True: # fixpoint-search (do-while-loop)
         new_rel = [W_Tuple((y.tvalue[0],x.tvalue[1])) for y in rel for x in arel if y.tvalue[1].__eq__(x.tvalue[0])]
         S = frozenset(new_rel).union(frozenset(rel))
@@ -1443,7 +1443,7 @@ def eval_AClosureExpression(self, env): #closure1
         assert isinstance(T, frozenset)
         if S.__eq__(T):
             return T
-        rel = S.lst
+        rel = S.to_list()
 AClosureExpression.eval = eval_AClosureExpression
 
 def eval_AFirstProjectionExpression(self, env):
@@ -1605,9 +1605,9 @@ def eval_AConcatExpression(self, env):
     # u:= s^t
     s = self.get(0).eval(env)
     t = self.get(1).eval(env)
-    u = s.lst
-    offset = len(s.lst)
-    for tup in t.lst:
+    u = s.to_list()
+    offset = len(s.to_list())
+    for tup in t.to_list():
         index = tup.tvalue[0].ivalue+offset
         u.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
     return frozenset(u) 
@@ -1617,7 +1617,7 @@ def eval_AInsertFrontExpression(self, env):
     E = self.get(0).eval(env)
     s = self.get(1).eval(env)
     new_s = [W_Tuple((W_Integer(1),E))]
-    for tup in s.lst:
+    for tup in s.to_list():
         index = tup.tvalue[0].ivalue+1
         new_s.append(W_Tuple((W_Integer(index),tup.tvalue[1])))
     return frozenset(new_s)
@@ -1626,7 +1626,7 @@ AInsertFrontExpression.eval = eval_AInsertFrontExpression
 def eval_AInsertTailExpression(self, env):
     s = self.get(0).eval(env)
     E = self.get(1).eval(env)
-    return frozenset(s.lst+[W_Tuple((W_Integer(len(s)+1),E))])
+    return frozenset(s.to_list()+[W_Tuple((W_Integer(len(s)+1),E))])
 AInsertTailExpression.eval = eval_AInsertTailExpression
 
 def eval_ASequenceExtensionExpression(self, env):
@@ -1658,7 +1658,7 @@ def eval_ARestrictFrontExpression(self, env):
     sequence = self.get(0).eval(env)
     take = self.get(1).eval(env)
     assert take.ivalue>0
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     index = len(lst)-(take.ivalue-1)
     assert index>0
@@ -1668,7 +1668,7 @@ ARestrictFrontExpression.eval = eval_ARestrictFrontExpression
 def eval_ARestrictTailExpression(self, env):
     sequence = self.get(0).eval(env)
     drop = self.get(1).eval(env)
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     assert drop.ivalue>0 and drop.ivalue<len(lst)
     new_list = []
@@ -1684,7 +1684,7 @@ ARestrictTailExpression.eval = eval_ARestrictTailExpression
 
 def eval_AFirstExpression(self, env):
     sequence = self.get(0).eval(env)
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     assert lst[0].tvalue[0].ivalue==1
     return lst[0].tvalue[1]
@@ -1692,7 +1692,7 @@ AFirstExpression.eval = eval_AFirstExpression
 
 def eval_ALastExpression(self, env):
     sequence = self.get(0).eval(env)
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     assert lst[len(sequence)-1].tvalue[0].ivalue==len(lst)
     return lst[len(sequence)-1].tvalue[1]
@@ -1700,7 +1700,7 @@ ALastExpression.eval = eval_ALastExpression
 
 def eval_ATailExpression(self, env):
     sequence = self.get(0).eval(env)
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     assert lst[0].tvalue[0].ivalue==1
     result = []
@@ -1713,7 +1713,7 @@ ATailExpression.eval = eval_ATailExpression
 
 def eval_AFrontExpression(self, env):
     sequence = self.get(0).eval(env)
-    lst = sequence.lst
+    lst = sequence.to_list()
     lst = sort_sequence(lst)
     lst.pop()
     return frozenset(lst)
@@ -1723,11 +1723,11 @@ AFrontExpression.eval = eval_AFrontExpression
     elif isinstance(self, AGeneralConcatExpression):
         # AttributeError: 'FrozenDesc' object has no attribute 'pycall'
         ss = self.get(0).eval(env)
-        lst = sort_sequence(ss.lst)
+        lst = sort_sequence(ss.to_list())
         t = []
         index = 0
         for s in lst:
-            seq_lst = sort_sequence(s.lst)
+            seq_lst = sort_sequence(s.to_list())
             for tup in seq_lst:
                 index = index +1
                 t.append(W_Tuple((W_Integer(index), tup.tvalue[1])))
@@ -2077,10 +2077,14 @@ def exec_AWhileSubstitution(self, env):
     assert isinstance(doSubst, Substitution)
     assert isinstance(invariant, Predicate)  
     assert isinstance(variant, Expression) 
-    v_value = variant.eval(env)
-    ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
-    for possible in ex_while_generator:
-        yield possible
+    cond = condition.eval(env)
+    if not cond.bvalue:
+        yield False
+    else:
+        v_value = variant.eval(env)
+        ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+        for possible in ex_while_generator:
+            yield possible
 AWhileSubstitution.generator_AWhileSubstitution = exec_AWhileSubstitution
 
 
@@ -3020,7 +3024,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
             inv     = invariant.eval(env)
             if not inv.bvalue and PRINT_WARNINGS:
                 print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
-            assert inv
+            assert inv.bvalue
             ex_generator = exec_substitution(doSubst, env)
             
             # compute all successor states 
@@ -3038,6 +3042,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
                             print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
                         assert temp.__lt__(v_value)
             env.state_space.undo()              # pop last bstate
+        states = next_states
 
 """        
 # TODO: maximum recursion depth exceeded

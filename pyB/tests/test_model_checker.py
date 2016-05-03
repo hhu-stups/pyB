@@ -168,15 +168,11 @@ class TestModelChecker():
         
     """
     MACHINE SigmaLoop
-    VARIABLES sum,  n
-    INVARIANT
-      sum>=0 & sum<MAXINT & n>=0 & n<MAXINT
-    INITIALISATION  n:=10 ; sum:=(SIGMA i. (i:0..n | i))
-    OPERATIONS 
-
-    rr <-- op = rr:=sum /* avoid deadlock */
-  
-    END 
+    VARIABLES n, sum
+    INVARIANT n:NAT & sum=((n+1) * (n))/2
+    INITIALISATION 	n:=10 ; sum:=(SIGMA i. (i:0..n | i)) 
+    OPERATIONS op = skip /* avoid deadlock */  
+    END
     """     
     def test_simple_model_checking2(self):
         path = "examples/rpython_performance/SigmaLoop.mch"
@@ -207,9 +203,9 @@ class TestModelChecker():
         next_states = calc_next_states(env, mch)
         assert len(next_states)==1
         assert len(env.state_space.stack)==2 # init and empty setup
-        assert env.get_value('sum')==45
+        assert env.get_value('sum')==55
         env.state_space.set_current_state(next_states[0].bstate) 
-        assert env.get_value('sum')==45  
+        assert env.get_value('sum')==55  
 
         
     def test_bool_law(self):

@@ -1,7 +1,7 @@
 MACHINE WhileLoop
 VARIABLES sum, i, n
 INVARIANT
-  sum>=0 & sum<MAXINT & i>=0 & i<MAXINT & n>=0 & n<MAXINT
+  sum:NATURAL & i:NATURAL & n:NATURAL
 INITIALISATION 	
   BEGIN 
        BEGIN 
@@ -13,10 +13,10 @@ INITIALISATION
            sum := sum + i;
 	       i := i+1 
        INVARIANT
-           i>=0 & i<MAXINT & i<=n & sum>=0 & sum<MAXINT & sum = ((i-1) * (i))/2
+           i:NATURAL & sum:NATURAL & sum = ((i-1) * (i))/2
        VARIANT 
            n - i
-       END
+       END /* ;i:=-1 */
    END
 
 OPERATIONS    
