@@ -318,7 +318,6 @@ class BState():
     
     @jit.unroll_safe
     def get_value(self, id_Name, bmachine):
-        #print "lookup of %s in %s" % (id_Name, bmachine.mch_name)
         #if isinstance(id_Name, AIdentifierExpression): # debug
         #    print id_Name.idName
         assert isinstance(id_Name, str)

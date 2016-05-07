@@ -60,6 +60,7 @@ class TestMCHAnimation():
         assert not interpret(invatiant, env) # floor=-1
 
 
+
     def test_ani_toplevel_skip_op(self):
         string ='''
         MACHINE Test
@@ -211,7 +212,38 @@ class TestMCHAnimation():
         env.state_space.add_state(bstate)
         assert 1 == env.get_value("xx")
   
+    def test_ani_examples_nondeterministic_sequence(self):
+        string = '''
+        MACHINE Sequ
+        VARIABLES x, i, sum
+        INVARIANT x:NATURAL & i:NATURAL & sum:NATURAL & i:{0,1,7} & sum:{0,1,7}
+        INITIALISATION x:=1; i:=0; sum:=0
+        OPERATIONS
+        op = 
+         IF i=0 THEN x::{1,7}; i := i+x; sum:= sum+i END
+        END
+        '''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
 
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        invatiant = root.children[2]
+        assert interpret(invatiant , env)
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==2
+        assert next_states[0].opName=="op"
+        for s in next_states:
+            env.state_space.add_state(s.bstate)
+            assert interpret(invatiant , env)
+            assert env.get_value("i") in [1,7]
+            assert env.get_value("sum") in [1,7]
+        
     def test_ani_toplevel_select_op(self):
         string ='''
         MACHINE Test
@@ -872,10 +904,69 @@ class TestMCHAnimation():
         assert next_states[1].opName=="op"
         bstate = next_states[1].bstate
         env.state_space.add_state(bstate)
+        bstate.print_bstate()
         assert env.get_value("xx")==1
         assert env.get_value("yy") in [2,3,4]
         assert env.get_value("zz")==1 
+
+
+    def test_ani_sequence_nondeterminism4(self):
+        string ='''
+        MACHINE WhileLoop3
+        VARIABLES sum, i, n, x
+        INVARIANT sum:NATURAL & i:NATURAL & n:NATURAL & x:NATURAL & sum:{0,55}
+        INITIALISATION n := 10; sum := 0; i := 0; x :=1
+
+        OPERATIONS    
+           op = 
+               WHILE i<n DO
+                    IF i+1<n THEN
+                        x ::{1,2}
+                    ELSE
+                        x := 1
+                    END;
+            
+                    i := i+x;
+            
+                    IF x=1 THEN
+                        sum := sum + i
+                    ELSE
+                        sum := sum + i + (i-1)
+                    END
+            
+               INVARIANT
+                   i:NATURAL & sum:NATURAL & sum = ((i+1) * i)/2
+               VARIANT 
+                   n - i
+               END; /* ;i:=-1 */
+       
+            no_deadlock = skip 
+        END    '''
+        # Build AST
+        string_to_file(string, file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string) 
         
+        # Test
+        env = Environment()
+        mch = parse_ast(root, env)
+        type_check_bmch(root, env, mch) # also checks all included, seen, used and extend
+        arbitrary_init_machine(root, env,mch) # init VARIABLES and eval INVARIANT
+        assert isinstance(root.children[2], AInvariantMachineClause)
+        assert interpret(root.children[2], env)
+        assert 0 == env.get_value("sum")
+        assert 0 == env.get_value("i")
+        assert 1 == env.get_value("x")
+        next_states = calc_next_states(env,mch)
+        assert len(next_states)==2
+        assert next_states[1].opName=="op"
+        bstate = next_states[1].bstate
+        env.state_space.add_state(bstate)
+        bstate.print_bstate()
+        assert env.get_value("sum") in [0,55]
+        assert env.get_value("i")==10
+        assert env.get_value("x") in [1,2] 
+   
                 
     def test_ani_select_nondeterminism(self):
         string ='''

@@ -1,7 +1,7 @@
 MACHINE WhileLoop
 VARIABLES sum, i, n
 INVARIANT
-  sum:NATURAL & i:NATURAL & n:NATURAL
+  sum:NATURAL & i:NATURAL & n:NATURAL & i:{0,n}
 INITIALISATION 	
   BEGIN 
        BEGIN 
@@ -11,7 +11,7 @@ INITIALISATION
        END;
        WHILE i<n DO
            sum := sum + i;
-	       i := i+1 
+           i := i+1 
        INVARIANT
            i:NATURAL & sum:NATURAL & sum = ((i-1) * (i))/2
        VARIANT 

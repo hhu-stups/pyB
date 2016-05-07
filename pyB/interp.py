@@ -1753,8 +1753,13 @@ def exec_substitution(sub, env):
             assert isinstance(child, Substitution)
             subst_list.append(child)
         # for explanation see function comments 
+        bstate = env.state_space.get_state()
+        env.state_space.undo()
+        env.state_space.add_state(bstate.clone()) 
         for possible in exec_sequence_substitution(subst_list, env):
             yield possible
+            env.state_space.undo() #revert
+            env.state_space.add_state(bstate.clone()) 
     elif isinstance(sub, AWhileSubstitution):
         if PRINT_WARNINGS:
             print "\033[1m\033[91mWARNING\033[00m: WHILE inside abstract MACHINE!" # TODO: replace/move warning
@@ -1766,15 +1771,16 @@ def exec_substitution(sub, env):
         assert isinstance(doSubst, Substitution)
         assert isinstance(invariant, Predicate)  
         assert isinstance(variant, Expression)
-        cond = interpret(condition, env)
-        if not cond:
+        bstates = compute_while_loop(condition, doSubst, invariant, variant, env)
+        if bstates==[]:
             yield False
-        else: 
-            v_value = interpret(variant, env)
-            ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
-            #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
-            for possible in ex_while_generator:
-                yield possible
+        else:
+            while bstates!=[]:
+                state = bstates.pop()
+                env.state_space.undo()
+                env.state_space.add_state(state)
+                yield True
+        yield False
 
 
 # **********************
@@ -2032,21 +2038,28 @@ def exec_substitution(sub, env):
 # a sequence substitution is only executable if every substitution it consist of is
 # executable. If these substitutions are nondeterministic there maybe different "paths"
 # of execution. Substituions may effect each other, so the order of execution musst be preserved
-def exec_sequence_substitution(subst_list, env):
+def exec_sequence_substitution(subst_list, env):    
+    bstate = env.state_space.get_state() # save changes of recursion-levels above
+    env.state_space.undo() #revert
+    env.state_space.add_state(bstate.clone())
     ex_generator = exec_substitution(subst_list[0], env)
     if len(subst_list)==1:
         for possible in ex_generator:
             yield possible
+            env.state_space.undo() #revert
+            env.state_space.add_state(bstate.clone())
     else:
         assert len(subst_list)>1
         for possible in ex_generator:
             if possible:
-                bstate = env.state_space.get_state().clone() # save changes of recursion-levels above
+                bstate2 = env.state_space.get_state()
                 ex_seq_generator = exec_sequence_substitution(subst_list[1:], env)
                 for others_possible in ex_seq_generator:
                     yield others_possible
                     env.state_space.undo() #revert
-                    env.state_space.add_state(bstate) 
+                    env.state_space.add_state(bstate2.clone())
+                env.state_space.undo() #revert
+                env.state_space.add_state(bstate.clone())
                     
                     
     
@@ -2091,8 +2104,53 @@ def exec_parallel_substitution(subst_list, env, ref_state, new_values):
                 for i in range(pop_num):
                     new_values.pop()
         env.state_space.undo()
-                                         
+             
 
+# example(pseudo-code):
+# i =: 0
+# while i<10 
+#    i++   // This line may be non deterministic 
+#
+# endstate: i=10
+# partial computations: {i=0,i=1...i=10}  
+#                                  
+def compute_while_loop(condition, doSubst, invariant, variant, env):
+    result = []
+    partial_computations = []
+    cond = interpret(condition, env)
+    if not cond:
+        return result # not possible
+    bstate = env.state_space.get_state().clone()  
+    partial_computations.append(bstate)
+    while partial_computations!=[]:
+        state = partial_computations.pop()
+        env.state_space.undo()
+        env.state_space.add_state(state.clone())
+        v_value = interpret(variant, env)
+        inv     = interpret(invariant, env)
+        if not inv and PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
+        assert inv
+        ex_generator = exec_substitution(doSubst, env)
+        for do_possible in ex_generator:
+            if do_possible:
+                temp = interpret(variant, env)
+                assert temp < v_value
+                do_state = env.state_space.get_state()
+                partial_computations.append(do_state)
+                cond = interpret(condition, env)
+                if not cond:
+                    # The condition was true once and is now false
+                    # the while loop has terminated and the last state 
+                    # must be one end state produced by the prev. iteration
+                    end_state = partial_computations.pop()        
+                    result.append(end_state)
+            env.state_space.undo()
+            env.state_space.add_state(state.clone())
+        #print partial_computations
+    return result
+    
+"""    
 # Uses a state stack instead of recursion. 
 # Avoids max recursion level on "long" loops (up to 5000 iterations)
 def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
@@ -2108,7 +2166,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
     while not states==[]:
         next_states = []      
         for state in states:
-            env.state_space.add_state(state)	# push this bstate
+            env.state_space.add_state(state)    # push this bstate
             v_value = interpret(variant, env)
             inv     = interpret(invariant, env)
             if not inv and PRINT_WARNINGS:
@@ -2131,9 +2189,9 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
                         if not temp < v_value:
                             print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
                         assert temp < v_value
-            env.state_space.undo() 				# pop last bstate
+            env.state_space.undo() # pop last bstate
         states = next_states
-"""                                            
+                                          
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
     # Always use the bstate of the last iteration.

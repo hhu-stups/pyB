@@ -307,7 +307,6 @@ class TestInterpSubstitutions():
         assert env.get_value("xx")>=3
         assert isinstance(get_type_by_name(env, "xx"), IntegerType)
 
-
     def test_genAST_sub_choice_by_primed(self):
         # Build AST
         string = '''
