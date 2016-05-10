@@ -141,6 +141,8 @@ class SymbolicRelationSet(SymbolicSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation")
 
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+"<->"+str(self.right_set)
 
  
 class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
@@ -168,6 +170,8 @@ class SymbolicPartialFunctionSet(SymbolicRelationSet): # S+->T
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPartialFunctionSet_gen.next()    
 
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+"+->"+str(self.right_set)
     
 class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
     def SymbolicTotalFunctionSet_generator(self):
@@ -192,7 +196,10 @@ class SymbolicTotalFunctionSet(SymbolicRelationSet): # S-->T
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTotalFunctionSet_gen.next()                        
-    
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+"-->"+str(self.right_set)
+            
 class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T 
     def SymbolicPartialInjectionSet_generator(self):
         for relation in SymbolicRelationSet.SymbolicRelationSet_generator(self):
@@ -216,7 +223,9 @@ class SymbolicPartialInjectionSet(SymbolicRelationSet): # S>+>T
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPartialInjectionSet_gen.next()   
-        
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+">+>"+str(self.right_set)        
 
 class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
     def SymbolicTotalInjectionSet_generator(self):
@@ -252,7 +261,9 @@ class SymbolicTotalInjectionSet(SymbolicRelationSet): # S>->T
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTotalInjectionSet_gen.next()    
-        
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+">->"+str(self.right_set)        
       
 class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
     def SymbolicPartialSurjectionSet_generator(self):
@@ -277,7 +288,9 @@ class SymbolicPartialSurjectionSet(SymbolicRelationSet): #S+->>T
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPartialSurjectionSet_gen.next() 
-            
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+"+->>"+str(self.right_set)            
     
 class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
     def SymbolicTotalSurjectionSet_generator(self):
@@ -302,7 +315,9 @@ class SymbolicTotalSurjectionSet(SymbolicRelationSet): # S-->>T
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTotalSurjectionSet_gen.next() 
-        
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+"-->>"+str(self.right_set)            
 
 class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
     def SymbolicTotalBijectionSet_generator(self):
@@ -328,6 +343,8 @@ class SymbolicTotalBijectionSet(SymbolicRelationSet): # S>->>T
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTotalBijectionSet_gen.next() 
 
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+">->>"+str(self.right_set)    
                       
 class SymbolicPartialBijectionSet(SymbolicRelationSet):
     def SymbolicPartialBijectionSet_generator(self):
@@ -352,7 +369,9 @@ class SymbolicPartialBijectionSet(SymbolicRelationSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicPartialBijectionSet_gen.next()   
-              
+
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+">>>"+str(self.right_set)                  
 
 class SymbolicFirstProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, node):
@@ -437,6 +456,8 @@ class SymbolicFirstProj(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicFirstProj_gen.next() 
 
+    def __repr__(self):
+        return "@symbolic set: proj1("+str(self.left_set)+","+str(self.right_set)+")"    
 
 class SymbolicSecondProj(SymbolicSet):
     def __init__(self, aset0, aset1, env, node):
@@ -522,6 +543,9 @@ class SymbolicSecondProj(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicSecondProj_gen.next()                         
 
+    def __repr__(self):
+        return "@symbolic set: proj2("+str(self.left_set)+","+str(self.right_set)+")"
+        
 # self.left_set==self.right_set    
 class SymbolicIdentitySet(SymbolicRelationSet):
     def enumerate_all(self):
@@ -575,7 +599,10 @@ class SymbolicIdentitySet(SymbolicRelationSet):
         if self.left_set.__contains__(arg):
             return arg 
         raise IndexError()
-                     
+
+    def __repr__(self):
+        return "@symbolic set: id("+str(self.left_set)+")"
+                             
 class SymbolicCompositionSet(SymbolicRelationSet):
     def __init__(self, arelation0, arelation1, env, node):
         SymbolicSet.__init__(self, env)
@@ -676,6 +703,8 @@ class SymbolicCompositionSet(SymbolicRelationSet):
             image = self.right_relation[z]
         return image
 
+    def __repr__(self):
+        return "@symbolic set: "+str(self.left_set)+";"+str(self.right_set)
 
 # The SymbolicRelationSet methods asume a domain- and imageset present.
 # This type of relation has none(directly).
@@ -723,6 +752,8 @@ class SymbolicTransRelation(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTransRelation_gen.next()
 
+    def __repr__(self):
+        return "@symbolic set: rel"
 
 # The SymbolicRelationSet methods asume a domain- and imageset present.
 # This type of relation has none.
@@ -780,7 +811,9 @@ class SymbolicTransFunction(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicTransFunction_gen.next()
         
-                                      
+
+    def __repr__(self):
+        return "@symbolic set: trans"                                      
 
 class SymbolicInverseRelation(SymbolicRelationSet):
     def __init__(self, relation, env, node):
@@ -849,4 +882,6 @@ class SymbolicInverseRelation(SymbolicRelationSet):
         else:
             return result
         raise IndexError()
-  
+
+    def __repr__(self):
+        return "@symbolic set: inverse("+str(self.relation)+")"

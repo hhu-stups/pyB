@@ -59,7 +59,8 @@ def quick_member_eval(ast, env, element):
         aSet = interpret(ast, env)
         if (not isinstance(aSet, SymbolicRelationSet)) or isinstance(aSet, SymbolicPartialInjectionSet) or isinstance(aSet, SymbolicTotalInjectionSet) or isinstance(aSet, SymbolicPartialSurjectionSet) or isinstance(aSet, SymbolicTotalSurjectionSet) or isinstance(aSet, SymbolicTotalBijectionSet) or isinstance(aSet, SymbolicPartialBijectionSet):
             # XXX: Dont know how to check this for every lambda 
-            print "Error: Unhandeled case: lambda eval - brute force lambda set enum"
+            print "WARNING: Brute force lambda membership test lambda:S"
+            print "S=", aSet
             element = element.enumerate_all()
             result = element in aSet  
             return result

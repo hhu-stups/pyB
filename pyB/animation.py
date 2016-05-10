@@ -67,7 +67,7 @@ def calc_next_states(env, bmachine):
         # TODO:(#ISSUE 9) write a method to check this assumption 
         #operations = env.all_operation_asts 
         operations = env.get_all_visible_op_asts()
-        #print "empty?:", operations
+        #print "operations:", operations
         for op in operations:
             jit.promote(op)
             assert isinstance(op, AOperation)         

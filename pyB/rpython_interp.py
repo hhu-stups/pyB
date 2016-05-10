@@ -2057,9 +2057,15 @@ def exec_ASequenceSubstitution(self, env):
     for child in self.children:
         assert isinstance(child, Substitution)
         subst_list.append(child)
+        
+    bstate = env.state_space.get_state()
+    env.state_space.undo()
+    env.state_space.add_state(bstate.clone()) 
     # for explanation see function comments 
     for possible in exec_sequence_substitution(subst_list, env):
         yield possible
+        env.state_space.undo() #revert
+        env.state_space.add_state(bstate.clone()) 
 ASequenceSubstitution.generator_ASequenceSubstitution = exec_ASequenceSubstitution
 
 
@@ -2077,14 +2083,26 @@ def exec_AWhileSubstitution(self, env):
     assert isinstance(doSubst, Substitution)
     assert isinstance(invariant, Predicate)  
     assert isinstance(variant, Expression) 
+    bstates = compute_while_loop(condition, doSubst, invariant, variant, env)
+    if bstates==[]:
+        yield False
+    else:
+        while bstates!=[]:
+            state = bstates.pop()
+            env.state_space.undo()
+            env.state_space.add_state(state)
+            yield True
+    """
     cond = condition.eval(env)
     if not cond.bvalue:
         yield False
     else:
         v_value = variant.eval(env)
         ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+        #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
         for possible in ex_while_generator:
             yield possible
+    """
 AWhileSubstitution.generator_AWhileSubstitution = exec_AWhileSubstitution
 
 
@@ -2999,8 +3017,63 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
                     values.pop()
         env.state_space.undo()
 
-#from rpython.rlib.jit import JitDriver
-#jitdriver = JitDriver(greens=['states', 'cond', 'condition', 'doSubst', 'invariant', 'variant'], reds=['env','v_value'])
+
+# example(pseudo-code):
+# i =: 0
+# while i<10 
+#    i++   // This line may be non deterministic 
+#
+# endstate: i=10
+# partial computations: {i=0,i=1...i=10}  
+#  
+from rpython.rlib.jit import JitDriver
+whiledriver = JitDriver(greens=['condition', 'doSubst', 'invariant', 'variant'], reds=['env', 'result', 'partial_computations', 'cond', 'state', 'v_value', 'inv', 'temp', 'do_state'])                                
+def compute_while_loop(condition, doSubst, invariant, variant, env):
+    #state = None
+    #do_state = None
+    #inv = False
+    #v_value = 0
+    #temp =0
+    
+    result = []
+    partial_computations = []
+    cond = condition.eval(env)
+    if not cond.bvalue:
+        return result # empty list = sub not possible
+    bstate = env.state_space.get_state().clone()  
+    partial_computations.append(bstate)
+    while not partial_computations==[]:
+        #whiledriver.jit_merge_point(condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, result=result, partial_computations=partial_computations, cond=cond, state=state, v_value=v_value, inv=inv, temp=temp, do_state=do_state)
+        state = partial_computations.pop()
+        env.state_space.undo()
+        env.state_space.add_state(state.clone())
+        v_value = variant.eval(env)
+        inv     = invariant.eval(env)
+        if not inv.bvalue and PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP INVARIANT VIOLATION"
+        assert inv.bvalue
+        ex_generator = exec_substitution(doSubst, env)
+        for do_possible in ex_generator:
+            if do_possible:
+                temp = variant.eval(env)
+                if not temp.__lt__(v_value):
+                    print "\033[1m\033[91mWARNING\033[00m: WHILE LOOP VARIANT VIOLATION"
+                assert temp.__lt__(v_value)
+                do_state = env.state_space.get_state()
+                partial_computations.append(do_state)
+                cond = condition.eval(env)
+                if not cond.bvalue:
+                    # The condition was true once and is now false
+                    # the while loop has terminated and the last state 
+                    # must be one end state produced by this iteration
+                    end_state = partial_computations.pop()        
+                    result.append(end_state)
+            env.state_space.undo()
+            env.state_space.add_state(state.clone())
+    return result
+    
+    
+
 # Uses a state stack instead of recursion. 
 # Avoids max recursion level on "long" loops (up to 5000 iterations)
 def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
@@ -3015,7 +3088,6 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
     
     # repeat until no valid (cond True) state can be explored. (breadth first search)
     # Not supported inside generators!
-    #jitdriver.jit_merge_point(states=states, cond=cond, condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, v_value=v_value)
     while not states==[]:
         next_states = []      
         for state in states:

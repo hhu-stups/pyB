@@ -284,7 +284,7 @@ class SymbolicSet(W_Object):
         # this is solved by enumeration. If enumeration is not possible,
         # a repr method has to be overwritten by the class instance
         # and this fallback should never be called.
-        # TODO: mak sure this is implemented
+        # TODO: make sure this is implemented
         aset = self.enumerate_all()
         from animation_clui import print_values_b_style
         return "@symbolic set" + print_values_b_style(aset)
@@ -655,7 +655,8 @@ class NatSet(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.NatSet_gen.next()
         
-
+    def __repr__(self):
+        return "@symbolic set NAT"
   
 # FIXME: set comprehension      
 class Nat1Set(LargeSet):
@@ -743,6 +744,8 @@ class Nat1Set(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.Nat1Set_gen.next()
 
+    def __repr__(self):
+        return "@symbolic set NAT1"
         
 
 # FIXME: set comprehension
@@ -834,7 +837,8 @@ class IntSet(LargeSet):
         assert isinstance(self, SymbolicSet)
         return self.IntSet_gen.next()
         
-
+    def __repr__(self):
+        return "@symbolic set INT"
  
 class StringSet(SymbolicSet):
     def __contains__(self, element):
@@ -895,6 +899,8 @@ class StringSet(SymbolicSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation(string)")
 
+    def __repr__(self):
+        return "@symbolic set STRING"
 
 ##############
 # Symbolic binary operations 
@@ -1001,7 +1007,9 @@ class SymbolicUnionSet(SymbolicSet):
         assert isinstance(self, W_Object)
         assert isinstance(self, SymbolicSet)
         return self.SymbolicUnionSet_gen.next()
- 
+
+    def __repr__(self):
+        return "@symbolic set union:"+str(self.left_set)+"\\/"+str(self.right_set)
          
 
 class SymbolicIntersectionSet(SymbolicSet):
@@ -1097,6 +1105,9 @@ class SymbolicIntersectionSet(SymbolicSet):
                 return resultL
         raise IndexError()
 
+    def __repr__(self):
+        return "@symbolic set inter:"+str(self.left_set)+"/\\"+str(self.right_set)
+        
 class SymbolicDifferenceSet(SymbolicSet):
     def __init__(self, aset0, aset1, env):
         SymbolicSet.__init__(self, env)
@@ -1171,7 +1182,10 @@ class SymbolicDifferenceSet(SymbolicSet):
             raise IndexError()
         except IndexError:
             return result
-        
+            
+    def __repr__(self):
+        return "@symbolic set diff:"+str(self.left_set)+"-"+str(self.right_set)
+                
 class SymbolicCartSet(SymbolicSet):
     def __init__(self, aset0, aset1, env):
         SymbolicSet.__init__(self, env)
@@ -1244,6 +1258,10 @@ class SymbolicCartSet(SymbolicSet):
         assert isinstance(self, SymbolicSet)
         return self.SymbolicCartSet_gen.next()  
 
+
+    def __repr__(self):
+        return "@symbolic set cart:"+str(self.left_set)+"*"+str(self.right_set)
+        
 #################
 # Unary Set operations
 #################
@@ -1305,6 +1323,9 @@ class SymbolicPowerSet(SymbolicSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (pow)")
 
+    def __repr__(self):
+        return "@symbolic set POW("+str(self.aSet)+")"
+
         
 class SymbolicPower1Set(SymbolicSet):
     def __init__(self, aset, env):
@@ -1361,6 +1382,9 @@ class SymbolicPower1Set(SymbolicSet):
 
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (pow1)")
+
+    def __repr__(self):
+        return "@symbolic set POW1("+str(self.aSet)+")"
 
 class SymbolicIntervalSet(LargeSet):
     def __init__(self, left, right, env):
@@ -1430,6 +1454,8 @@ class SymbolicIntervalSet(LargeSet):
     def __getitem__(self, args):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (interval)")
 
+    def __repr__(self):
+        return "@symbolic set interval"+str(self.l)+".."+str(self.r)
 
 class SymbolicStructSet(SymbolicSet):
     def __init__(self, aDict, env):
@@ -1491,5 +1517,6 @@ class SymbolicStructSet(SymbolicSet):
         raise Exception("INTERNAL ERROR: function application f(x) on none-relation (struct)")
 
     def __repr__(self):
-        return "@symbolic set STRUCT" 
+        # TODO: AttributeError: OrderedDictRepr instance has no attribute ll_str
+        return "@symbolic set STRUCT:" #+ str(self.aDict)
         

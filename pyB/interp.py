@@ -1771,6 +1771,7 @@ def exec_substitution(sub, env):
         assert isinstance(doSubst, Substitution)
         assert isinstance(invariant, Predicate)  
         assert isinstance(variant, Expression)
+        """
         bstates = compute_while_loop(condition, doSubst, invariant, variant, env)
         if bstates==[]:
             yield False
@@ -1780,6 +1781,16 @@ def exec_substitution(sub, env):
                 env.state_space.undo()
                 env.state_space.add_state(state)
                 yield True
+        """
+        cond = interpret(condition, env)
+        if not cond:
+            yield False
+        else: 
+             v_value = interpret(variant, env)
+             ex_while_generator = exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env)
+             #ex_while_generator = exec_while_substitution(condition, doSubst, invariant, variant, v_value, env)
+             for possible in ex_while_generator:
+                 yield possible
         yield False
 
 
@@ -2119,7 +2130,7 @@ def compute_while_loop(condition, doSubst, invariant, variant, env):
     partial_computations = []
     cond = interpret(condition, env)
     if not cond:
-        return result # not possible
+        return result # empty list = sub not possible
     bstate = env.state_space.get_state().clone()  
     partial_computations.append(bstate)
     while partial_computations!=[]:
@@ -2142,15 +2153,14 @@ def compute_while_loop(condition, doSubst, invariant, variant, env):
                 if not cond:
                     # The condition was true once and is now false
                     # the while loop has terminated and the last state 
-                    # must be one end state produced by the prev. iteration
+                    # must be one end state produced by this iteration
                     end_state = partial_computations.pop()        
                     result.append(end_state)
             env.state_space.undo()
             env.state_space.add_state(state.clone())
-        #print partial_computations
     return result
     
-"""    
+  
 # Uses a state stack instead of recursion. 
 # Avoids max recursion level on "long" loops (up to 5000 iterations)
 def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_value, env):
@@ -2160,7 +2170,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
     states = [clone]
     cond = interpret(condition, env)
     if not cond:
-        yield True # Not condition means skip whole loop 
+        yield True # loop not possible: skip whole loop
     
     # repeat until no valid (cond True) state can be explored. (breadth first search)
     while not states==[]:
@@ -2181,7 +2191,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
                     do_state = env.state_space.get_state()
                     cond = interpret(condition, env)
                     if not cond:
-                        yield True # Not condition means leave loop 
+                        yield True # condition BECOMES False after it WAS True:  skip whole loop 
                     else:
                         # only consider states in the next loop which fullfil the condition 
                         next_states.append(do_state.clone())
@@ -2191,7 +2201,7 @@ def exec_while_substitution_iterative(condition, doSubst, invariant, variant, v_
                         assert temp < v_value
             env.state_space.undo() # pop last bstate
         states = next_states
-                                          
+"""                                          
 # same es exec_sequence_substitution (see above)
 def exec_while_substitution(condition, doSubst, invariant, variant, v_value, env):
     # Always use the bstate of the last iteration.
