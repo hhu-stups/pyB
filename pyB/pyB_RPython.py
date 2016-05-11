@@ -388,12 +388,12 @@ def main(argv):
             return 0
     except Exception as e1:
         print "\033[1m\033[91mError in PyB\033[00m:" #, type(e1), e1.args, e1
-        import traceback
+        #import traceback
         print "Use PyB-Python version to get a detailed error message"
-        print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
-        print "\033[1m\033[91mError message\033[00m:"
-        print traceback.format_exc()
-        print "\033[1m\033[91m End of error message\033[00m"
+        #print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+        #print "\033[1m\033[91mError message\033[00m:"
+        #print traceback.format_exc()
+        #print "\033[1m\033[91m End of error message\033[00m"
         return -1
          
   

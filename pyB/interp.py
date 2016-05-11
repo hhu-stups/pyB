@@ -1158,8 +1158,6 @@ def interpret(node, env):
         if isinstance(r2, SymbolicSet):
             r2 = r2.enumerate_all()
             
-        print "r1", r1
-        print "r2", r2
         dom_r2 = [x[0] for x in r2]
         new_r  = [x for x in r1 if x[0] not in dom_r2]
         r2_list= [x for x in r2]
