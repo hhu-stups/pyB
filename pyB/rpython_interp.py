@@ -1367,11 +1367,15 @@ def eval_AOverwriteExpression(self, env):
         dom_r2.append(x.tvalue[0])
     new_r = []
     for x in r1:
+        skip = False
         for e in dom_r2:
-            if not x.tvalue[0].__eq__(e):
-                new_r.append(x)
+            if x.tvalue[0].__eq__(e):
+                skip = True
+        if not skip:
+            new_r.append(x)
     assert isinstance(r2, frozenset)
-    return frozenset(r2.to_list() + new_r)
+    res = frozenset(r2.to_list() + new_r)
+    return res
 AOverwriteExpression.eval = eval_AOverwriteExpression
 
 def eval_ADirectProductExpression(self, env):
