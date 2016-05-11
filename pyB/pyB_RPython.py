@@ -11,7 +11,7 @@ from animation_clui import show_ui, print_values_b_style, print_set_up_bstates ,
 from animation import calc_next_states
 from ast_nodes import AInvariantMachineClause, AAbstractMachineParseUnit, AOperationsMachineClause
 from bmachine import BMachine
-from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT
+from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT, DISABLE_INVARIANT_MC_CHECK
 from environment import Environment
 from helpers import file_to_AST_str, file_to_AST_str_no_print, solution_file_to_AST_str
 from parsing import PredicateParseUnit, ExpressionParseUnit, parse_ast, remove_definitions, str_ast_to_python_ast, remove_defs_and_parse_ast
@@ -252,23 +252,29 @@ def _run_model_checking_mode(env, mch):
             continue
             
         jitdriver.jit_merge_point(inv=inv, s_space=s_space, env=env, mch=mch)
-        w_bool = inv.eval(env)  # 7. model check  
-        if not w_bool.bvalue:
-            print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-            #print env.state_space.history
-            return -1
-        if EVAL_CHILD_INVARIANT:
-            bstate = env.state_space.get_state()
-            for bmachine in bstate.bmch_list:
-                if not bmachine is None and not bmachine.mch_name==mch.mch_name :
-                    w_bool = interpret(bmachine.aInvariantMachineClause, env)
-                    if not w_bool.bvalue:
-                        print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
-                        return False 
+        if not DISABLE_INVARIANT_MC_CHECK:
+            w_bool = inv.eval(env)  # 7. model check  
+            if not w_bool.bvalue:
+                print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
+                #bstate = env.state_space.get_state()
+                #print bstate.print_bstate()
+                #print env.state_space.history
+                return -1
+            if EVAL_CHILD_INVARIANT:
+                bstate = env.state_space.get_state()
+                for bmachine in bstate.bmch_list:
+                    if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                        w_bool = interpret(bmachine.aInvariantMachineClause, env)
+                        if not w_bool.bvalue:
+                            print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
+                            return False 
         next_states = calc_next_states(env, mch)
         s_space.undo()
         schedule_new_states(next_states, s_space)         
     print "checked",len(s_space.seen_states),"states.\033[1m\033[92m No invariant violation found.\033[00m"
+    if DISABLE_INVARIANT_MC_CHECK:
+        print "invariant check was disabled"
+    
     return 0
 
 def schedule_new_states(next_states, s_space):

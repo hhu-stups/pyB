@@ -6,7 +6,7 @@ from enumeration import init_deffered_set, try_all_values, powerset, make_set_of
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
 from pretty_printer import pretty_print, failsafe_pretty_print
-from symbolic_sets import NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet, SymbolicStructSet
+from symbolic_sets import SymbolicSet, NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet, SymbolicStructSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet, SymbolicTransRelation, SymbolicTransFunction
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet, SymbolicQuantifiedIntersection, SymbolicQuantifiedUnion 
@@ -679,6 +679,8 @@ AAssertionsMachineClause.eval = eval_AAssertionsMachineClause
 # *********************
 def eval_AConjunctPredicate(self, env):
     bexpr1 = self.get(0).eval(env)
+    if not bexpr1.bvalue:
+        return W_Boolean(False)
     bexpr2 = self.get(1).eval(env)
     assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
     w_bool = W_Boolean(bexpr1.__and__(bexpr2))
@@ -687,6 +689,8 @@ AConjunctPredicate.eval = eval_AConjunctPredicate
      
 def eval_ADisjunctPredicate(self, env):
     bexpr1 = self.get(0).eval(env)
+    if bexpr1.bvalue:
+        return W_Boolean(True)
     bexpr2 = self.get(1).eval(env)
     assert isinstance(bexpr1, W_Boolean) and isinstance(bexpr2, W_Boolean)
     w_bool = W_Boolean(bexpr1.__or__(bexpr2))
@@ -1342,14 +1346,18 @@ AImageExpression.eval = eval_AImageExpression
 
 def eval_AOverwriteExpression(self, env):
     # r1 <+ r2
-    r1 = self.get(0).eval(env)
-    r2 = self.get(1).eval(env)
-    """
-    if isinstance(r1, SymbolicSet):
-        r1 = r1.enumerate_all()
-    if isinstance(r2, SymbolicSet):
-        r2 = r2.enumerate_all()
-    """
+    relation1 = self.get(0).eval(env)
+    relation2 = self.get(1).eval(env)
+
+    if isinstance(relation1, SymbolicSet):
+        r1 = relation1.enumerate_all()
+    else:
+        r1 = relation1
+    if isinstance(relation2, SymbolicSet):
+        r2 = relation2.enumerate_all()
+    else:
+        r2 = relation2
+
     #dom_r2 = [x[0] for x in r2]
     #new_r  = [x for x in r1 if x[0] not in dom_r2]
     #r2_list= [x for x in r2]

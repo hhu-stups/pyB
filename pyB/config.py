@@ -27,6 +27,7 @@ PRINT_SUB_PROPERTIES  = True # P0 & P1 & ...PN
 USE_ANIMATION_HISTORY = True
 EVAL_CHILD_INVARIANT  = False
 PROPERTIES_TIMEOUT    = 2.5 # Timeout (of conjunct) in seconds. Negative Value: unlimited
+DISABLE_INVARIANT_MC_CHECK = False # No invariant check during model checking but at init
 
 # *** Set to True if you want to translate to C. Otherwise loose of performance **
 USE_RPYTHON_CODE     = False # use code which can be translated

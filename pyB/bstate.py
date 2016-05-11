@@ -5,6 +5,7 @@ from bexceptions import ValueNotInBStateException
 from config import USE_RPYTHON_CODE, USE_RPYTHON_MAP
 from collections import OrderedDict
 from rpython_b_objmodel import W_None, W_Object
+from symbolic_sets import SymbolicSet
 
 
 
@@ -220,6 +221,8 @@ class BState():
                                 value = value + str(le) # TODO: performance
                         elif isinstance(w_obj, W_Tuple):
                             value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
+                        elif isinstance(w_obj, SymbolicSet):
+                            value = str(w_obj)
                         else:
                             value = ""
                     else:

@@ -6,7 +6,7 @@ from animation import calc_next_states
 from ast_nodes import *
 from bmachine import BMachine
 from bexceptions import *
-from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT
+from config import DEFAULT_INPUT_FILENAME, VERBOSE, EVAL_CHILD_INVARIANT, DISABLE_INVARIANT_MC_CHECK
 from environment import Environment
 from helpers import file_to_AST_str_no_print, solution_file_to_AST_str
 from interp import interpret, set_up_constants, exec_initialisation, eval_Invariant
@@ -237,7 +237,7 @@ def run_model_checking_mode(arguments):
     elif len(bstates)>1:
         print "WARNING: non det. set up constants not supported yet" 
         return
-        
+       
     bstates = exec_initialisation(root, env, mch, solution_file_read=False)
     for bstate in bstates:
         if not env.state_space.is_seen_state(bstate):
@@ -256,20 +256,21 @@ def run_model_checking_mode(arguments):
         if env.state_space.get_state().opName=="set up":
             env.state_space.undo()
             continue
-            
-        if not interpret(mch.aInvariantMachineClause, env):
-            print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-            #violation = env.state_space.get_state()
-            #violation.print_bstate()
-            #print violation.opName
-            return False
-        if EVAL_CHILD_INVARIANT:
-            bstate = env.state_space.get_state()
-            for bmachine in bstate.bmch_list:
-                if not bmachine is None and not bmachine.mch_name==mch.mch_name :
-                    if not interpret(bmachine.aInvariantMachineClause, env):
-                        print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
-                        return False 
+        
+        if not DISABLE_INVARIANT_MC_CHECK:    
+            if not interpret(mch.aInvariantMachineClause, env):
+                print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
+                #violation = env.state_space.get_state()
+                #violation.print_bstate()
+                #print violation.opName
+                return False
+            if EVAL_CHILD_INVARIANT:
+                bstate = env.state_space.get_state()
+                for bmachine in bstate.bmch_list:
+                    if not bmachine is None and not bmachine.mch_name==mch.mch_name :
+                        if not interpret(bmachine.aInvariantMachineClause, env):
+                            print "WARNING: invariant violation in",bmachine.mch_name ," found after checking", len(env.state_space.seen_states),"states"
+                            return False 
         next_states = calc_next_states(env, mch)
         env.state_space.undo()
         for s in next_states:
@@ -279,6 +280,8 @@ def run_model_checking_mode(arguments):
             if not env.state_space.is_seen_state(bstate):
                 env.state_space.set_current_state(bstate)   
     print "checked",len(env.state_space.seen_states),"states.\033[1m\033[92mNo invariant violation found.\033[00m"
+    if DISABLE_INVARIANT_MC_CHECK:
+        print "invariant check was disabled"
     return True
 
 
@@ -312,13 +315,19 @@ if __name__ == "__main__":
         print "\033[1m\033[91mError message\033[00m:"
         print(traceback.format_exc())
         print "\033[1m\033[91m End of error message\033[00m"
-    except Exception as e1:
-        print "\033[1m\033[91mError in PyB\033[00m:", type(e1), e1.args, e1
+    except ValueNotInDomainException as e1:
+        print "\033[1m\033[91mValueNotInDomainException in pyB\033[00m:", e1.value
         import traceback
         print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
         print "\033[1m\033[91mError message\033[00m:"
         print(traceback.format_exc())
         print "\033[1m\033[91m End of error message\033[00m"
-    
+    except Exception as e:
+        print "\033[1m\033[91mError in PyB\033[00m:", type(e), e.args, e
+        import traceback
+        print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
+        print "\033[1m\033[91mError message\033[00m:"
+        print(traceback.format_exc())
+        print "\033[1m\033[91m End of error message\033[00m"
     
 

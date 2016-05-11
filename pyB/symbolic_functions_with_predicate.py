@@ -71,6 +71,7 @@ class SymbolicLambda(SymbolicSet):
         value = self.interpret(self.predicate, self.env)
         # FIXME: This is not the correct position for a catch. move to higher level  
         if not value:
+            #print value, args, pretty_print(self.node)
             raise ValueNotInDomainException(args)
         result = self.interpret(self.expression, self.env)  
         self.env.pop_frame() # exit scope

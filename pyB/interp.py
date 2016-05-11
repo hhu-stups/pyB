@@ -678,10 +678,14 @@ def interpret(node, env):
 # *********************
     elif isinstance(node, AConjunctPredicate):
         expr1 = interpret(node.children[0], env)
+        if not expr1:
+            return False
         expr2 = interpret(node.children[1], env)
         return expr1 and expr2
     elif isinstance(node, ADisjunctPredicate):
         expr1 = interpret(node.children[0], env)
+        if expr1:
+            return True
         expr2 = interpret(node.children[1], env)
         return expr1 or expr2
     elif isinstance(node, AImplicationPredicate):
