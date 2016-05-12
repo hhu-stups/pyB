@@ -788,10 +788,14 @@ def interpret(node, env):
     elif isinstance(node, AUnionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet1, frozenset) and isinstance(aSet2, frozenset):
+            return aSet1.union(aSet2)
         return SymbolicUnionSet(aSet1, aSet2, env)
     elif isinstance(node, AIntersectionExpression):
         aSet1 = interpret(node.children[0], env)
         aSet2 = interpret(node.children[1], env)
+        if isinstance(aSet1, frozenset) and isinstance(aSet2, frozenset):
+            return aSet1.intersection(aSet2)
         return SymbolicIntersectionSet(aSet1, aSet2, env)
     elif isinstance(node, ACoupleExpression):
         result = None
@@ -937,6 +941,8 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         if isinstance(expr1, (SymbolicSet, frozenset)) or isinstance(expr2, (SymbolicSet, frozenset)):
+            if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
+                return expr1.difference(expr2)
             return SymbolicDifferenceSet(expr1, expr2, env)
         #if isinstance(expr2, SymbolicSet):
         #    expr2 = expr2.enumerate_all()
@@ -945,7 +951,7 @@ def interpret(node, env):
         expr1 = interpret(node.children[0], env)
         expr2 = interpret(node.children[1], env)
         if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
-            # Not Rpython: frozenset(((x,y) for x in expr1 for y in expr2))
+            # frozenset(((x,y) for x in expr1 for y in expr2))
             result = []
             for x in expr1:
                 for y in expr2:

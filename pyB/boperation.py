@@ -3,6 +3,7 @@ from config import USE_RPYTHON_CODE
 
 class BOperation(W_Object):
     def __init__(self, name, operation_ast, bmachine):
+        W_Object.__init__(self)
         self.return_types = []
         self.parameter_types = []
         self.op_name = name

@@ -1,9 +1,15 @@
 # helper functions ONLY(!) used by tests. 
 from ast_nodes import AIdentifierExpression, ALambdaExpression
 from btypes import UnknownType
-from interp import set_up_constants, exec_initialisation
 from typing import typeit, resolve_type, TypeCheck_Environment
 
+
+from config import USE_RPYTHON_CODE
+if USE_RPYTHON_CODE:
+     from rpython_b_objmodel import frozenset
+     from rpython_interp import set_up_constants, exec_initialisation
+else:
+     from interp import set_up_constants, exec_initialisation
 
 # The data from the solution-files has already been read at the mch creation time.
 # side-effect of this method: may be a state change.

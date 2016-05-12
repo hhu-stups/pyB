@@ -5,6 +5,7 @@ from constraintsolver import compute_constrained_domains
 from enumeration import init_deffered_set, try_all_values, powerset, make_set_of_realtions, get_image_RPython, all_records
 from enumeration_lazy import make_explicit_set_of_realtion_lists
 from helpers import sort_sequence, flatten, double_element_check, find_assignd_vars, print_ast, all_ids_known, find_var_nodes, conj_tree_to_conj_list
+from quick_eval import quick_member_eval
 from pretty_printer import pretty_print, failsafe_pretty_print
 from symbolic_sets import SymbolicSet, NatSet, SymbolicIntervalSet, NaturalSet, Natural1Set,  Nat1Set, IntSet, IntegerSet, StringSet, SymbolicStructSet
 from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet, SymbolicIntersectionSet, SymbolicDifferenceSet
@@ -817,12 +818,16 @@ AComprehensionSetExpression.eval = eval_AComprehensionSetExpression
 def eval_AUnionExpression(self, env):
     aSet1 = self.get(0).eval(env)
     aSet2 = self.get(1).eval(env)
+    if isinstance(aSet1, frozenset) and isinstance(aSet2, frozenset):
+        return aSet1.union(aSet2)
     return SymbolicUnionSet(aSet1, aSet2, env)
 AUnionExpression.eval = eval_AUnionExpression
 
 def eval_AIntersectionExpression(self, env):
     aSet1 = self.get(0).eval(env)
     aSet2 = self.get(1).eval(env)
+    if isinstance(aSet1, frozenset) and isinstance(aSet2, frozenset):
+        return aSet1.intersection(aSet2)
     return SymbolicIntersectionSet(aSet1, aSet2, env)
 AIntersectionExpression.eval = eval_AIntersectionExpression
 
@@ -915,7 +920,7 @@ def eval_AMemberPredicate(self, env):
     #if all_ids_known(self, env): #TODO: check over-approximation. All ids need to be bound?
     #    elm = self.get(0).eval(env)
     #    result = quick_member_eval(self.get(1), env, elm)
-    #    return result
+    #    return W_Boolean(result)
     elm = self.get(0).eval(env)
     aSet = self.get(1).eval(env)
     w_bool = W_Boolean(aSet.__contains__(elm))
@@ -926,7 +931,7 @@ def eval_ANotMemberPredicate(self, env):
     #if all_ids_known(self, env): #TODO: check over-approximation. All ids need to be bound?
     #    elm = self.get(0).eval(env)
     #    result = quick_member_eval(self.get(1), env, elm)
-    #    return not result
+    #    return W_Boolean(not result)
     elm = self.get(0).eval(env)
     aSet = self.get(1).eval(env)
     boolean = W_Boolean(aSet.__contains__(elm)).__not__()
@@ -936,10 +941,8 @@ ANotMemberPredicate.eval = eval_ANotMemberPredicate
 def eval_ASubsetPredicate(self, env):
     aSet1 = self.get(0).eval(env)
     aSet2 = self.get(1).eval(env)
-    """
     if isinstance(aSet2, SymbolicSet):
-        return aSet2.issuperset(aSet1)
-    """
+        return W_Boolean(aSet2.issuperset(aSet1))
     boolean = aSet1.issubset(aSet2)
     return W_Boolean(boolean)
 ASubsetPredicate.eval = eval_ASubsetPredicate
@@ -1035,6 +1038,8 @@ def eval_AMinusExpression(self, env):
         w_integer = expr1.__sub__(expr2)
         return w_integer
     else:
+        if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
+            return expr1.difference(expr2)
         return SymbolicDifferenceSet(expr1, expr2, env)
 AMinusOrSetSubtractExpression.eval = eval_AMinusExpression
 
@@ -1367,11 +1372,7 @@ def eval_AOverwriteExpression(self, env):
         dom_r2.append(x.tvalue[0])
     new_r = []
     for x in r1:
-        skip = False
-        for e in dom_r2:
-            if x.tvalue[0].__eq__(e):
-                skip = True
-        if not skip:
+        if not dom_r2.__contains__(x.tvalue[0]):
             new_r.append(x)
     assert isinstance(r2, frozenset)
     res = frozenset(r2.to_list() + new_r)

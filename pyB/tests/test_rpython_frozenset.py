@@ -26,3 +26,7 @@ class TestRPythonFrozenset():
          assert frozenset([W_Integer(1),W_Integer(1),W_Integer(2)])==frozenset([W_Integer(1),W_Integer(2)])
          assert frozenset([W_Integer(1),W_Integer(2)])==frozenset([W_Integer(2),W_Integer(1)])
          assert frozenset([frozenset([W_Integer(1),W_Integer(2)]),frozenset([W_Integer(1),W_Integer(2),W_Integer(3)])])==frozenset([frozenset([W_Integer(1),W_Integer(2),W_Integer(3)]),frozenset([W_Integer(1),W_Integer(2)])])
+
+    def test_rpython_frozensets_member(self):
+         assert W_Integer(1) in frozenset([W_Integer(1),W_Integer(2),W_Integer(3)])
+         assert frozenset([W_Integer(2),W_Integer(1)]) in frozenset([frozenset([W_Integer(1),W_Integer(2)]),frozenset([W_Integer(1),W_Integer(2),W_Integer(3)])])

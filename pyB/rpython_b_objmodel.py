@@ -257,20 +257,24 @@ class frozenset(W_Object):
         assert isinstance(L, list)
         for e in L:
             self.hashmap[e] = True
+        self.repr_string = None
     
     # TODO: more efficient impl
     def __repr__(self):
-        string = "{"
-        for e in self.hashmap:
-            string += str(e) +","
-        string += "}"
-        return string
+        if self.repr_string is None:           
+            string = "{"
+            for e in self.hashmap:
+                string += str(e) +","
+            string += "}"
+            self.repr_string = string
+        return self.repr_string
         
     def __len__(self):
         return len(self.hashmap)
         
     def __contains__(self, element):
-        # Todo: avoid reference compare in list of lists (set of sets)
+        # This uses the my_eq method.
+        # In case of set of sets this will call the _eq_ method of this class
         return element in self.hashmap
 
 

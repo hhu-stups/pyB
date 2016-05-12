@@ -5,7 +5,6 @@ from bexceptions import *
 from btypes import *
 from environment import Environment
 from helpers import file_to_AST_str, string_to_file
-from interp import interpret
 from parsing import parse_ast, str_ast_to_python_ast
 from typing import type_check_bmch
 from util import arbitrary_init_machine, get_type_by_name
@@ -14,6 +13,9 @@ from util import arbitrary_init_machine, get_type_by_name
 from config import USE_RPYTHON_CODE
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
+     from rpython_interp import interpret
+else:
+     from interp import interpret
 
 file_name = "input.txt"
 

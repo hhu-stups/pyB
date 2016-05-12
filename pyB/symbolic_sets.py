@@ -320,18 +320,20 @@ class NaturalSet(InfiniteSet):
     def issuperset(self, aset): # NaturalSet >= aset
         if isinstance(aset, IntegerSet) or isinstance(aset, IntSet): # no neg nums
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
+                    if not isinstance(x, W_Integer):
+                        return False
                     cond = x.ivalue<0
                 else:
                     cond = x<0
                 if cond:
                     return False
             return True
-        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
-            return True 
-        raise NotImplementedError("inclusion with unknown set-type")
+        raise NotImplementedError("inclusion with unknown set-type %s" % aset)
        
     def __lt__(self, aset): # NaturalSet < aset
         if isinstance(aset,IntegerSet):
@@ -341,7 +343,9 @@ class NaturalSet(InfiniteSet):
     def __gt__(self, aset): # NaturalSet > aset
         if isinstance(aset, IntegerSet) or isinstance(aset, NaturalSet) or isinstance(aset, IntSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or  isinstance(aset, Natural1Set):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             # TODO: equal impl like >= something is wrong
             for x in aset:
                 if USE_RPYTHON_CODE:
@@ -351,8 +355,6 @@ class NaturalSet(InfiniteSet):
                 if cond:
                     return False
             return True
-        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or  isinstance(aset, Natural1Set):
-            return True 
         raise NotImplementedError("inclusion with unknown set-type")  
     
     def __eq__(self, aset):
@@ -403,7 +405,9 @@ class Natural1Set(InfiniteSet):
     def issuperset(self, aset): # Natural1Set >= aset
         if isinstance(aset, NaturalSet) or isinstance(aset, IntegerSet) or isinstance(aset, NatSet) or isinstance(aset, IntSet): # zero
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, Nat1Set) or isinstance(aset, Natural1Set):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<=0
@@ -412,8 +416,6 @@ class Natural1Set(InfiniteSet):
                 if cond:
                     return False
             return True
-        elif isinstance(aset, Nat1Set) or isinstance(aset, Natural1Set):
-            return True 
         raise NotImplementedError("inclusion with unknown set-type")
 
     def __lt__(self, aset): # Natural1Set < aset
@@ -424,7 +426,7 @@ class Natural1Set(InfiniteSet):
     def __gt__(self, aset): # Natura1lSet > aset
         if isinstance(aset, InfiniteSet) or isinstance(aset, LargeSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<0
@@ -482,9 +484,9 @@ class IntegerSet(InfiniteSet):
         return False
 
     def issuperset(self, aset): # IntegerSet >= aset
-        if isinstance(aset, SymbolicSet): 
+        if isinstance(aset, InfiniteSet):
             return True
-        elif isinstance(aset, frozenset):
+        if isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     value = x.ivalue
@@ -501,7 +503,9 @@ class IntegerSet(InfiniteSet):
     def __gt__(self, aset): # IntegerSet > aset
         if isinstance(aset,IntegerSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, IntSet) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<0
@@ -510,8 +514,6 @@ class IntegerSet(InfiniteSet):
                 if cond:
                     return False
                 return True
-        elif isinstance(aset, NatSet) or isinstance(aset, Nat1Set) or isinstance(aset, IntSet) or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
-            return True 
         raise NotImplementedError("inclusion with unknown set-type")  
    
     def __eq__(self, aset):
@@ -564,16 +566,16 @@ class NatSet(LargeSet):
     def __len__(self):
         return self.env._max_int+1
      
-    def issubset(self, aset): # NatSet <=
+    def issubset(self, aset): # NatSet <= aset
         if isinstance(aset, NatSet) or isinstance(aset, IntSet) or isinstance(aset, NaturalSet) or isinstance(aset, IntegerSet):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, Natural1Set) or isinstance(aset, Nat1Set):
+            return False
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if not self.__contains__(x):
                     return False
             return len(aset)>=self.__len__()
-        elif isinstance(aset, Natural1Set) or isinstance(aset, Nat1Set):
-            return False
         raise NotImplementedError("inclusion with unknown set-type")
     
     def issuperset(self, aset): # NatSet >= aset
@@ -581,7 +583,7 @@ class NatSet(LargeSet):
             return False
         elif isinstance(aset, NatSet) or isinstance(aset,  Nat1Set):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<=0
@@ -600,7 +602,9 @@ class NatSet(LargeSet):
     def __gt__(self, aset): # NatSet > aset
         if isinstance(aset,InfiniteSet) or isinstance(aset, IntSet) or isinstance(aset, NatSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, Nat1Set):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<0
@@ -609,8 +613,6 @@ class NatSet(LargeSet):
                 if cond:
                     return False
                 return True
-        elif isinstance(aset, Nat1Set):
-            return True 
         raise NotImplementedError("inclusion with unknown set-type")         
     
        
@@ -671,7 +673,7 @@ class Nat1Set(LargeSet):
     def issubset(self, aset): # Nat1Set <=
         if isinstance(aset, InfiniteSet) or isinstance(aset, LargeSet):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if not self.__contains__(x):
                     return False
@@ -683,7 +685,7 @@ class Nat1Set(LargeSet):
             return False
         elif isinstance(aset, Nat1Set):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<0
@@ -702,7 +704,7 @@ class Nat1Set(LargeSet):
     def __gt__(self, aset): # Nat1Set > aset
         if isinstance(aset, InfiniteSet) or isinstance(aset, LargeSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             #TODO: same imple like >= something is wrong
             for x in aset:
                 if USE_RPYTHON_CODE:
@@ -759,13 +761,13 @@ class IntSet(LargeSet):
     def issubset(self, aset): # IntSet <=
         if isinstance(aset, IntSet) or isinstance(aset,  IntegerSet):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance (aset, NatSet) or isinstance(aset, Nat1Set)  or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
+            return False
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if not self.__contains__(x):
                     return False
             return len(aset)>=self.__len__()
-        elif isinstance (aset, NatSet) or isinstance(aset, Nat1Set)  or isinstance(aset, NaturalSet) or isinstance(aset, Natural1Set):
-            return False
         raise NotImplementedError("inclusion with unknown set-type")
     
     def issuperset(self, aset): # IntSet >= aset
@@ -773,7 +775,7 @@ class IntSet(LargeSet):
             return False
         elif isinstance(aset, LargeSet):
             return True
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     value = x.ivalue
@@ -792,7 +794,9 @@ class IntSet(LargeSet):
     def __gt__(self, aset): # IntSet > aset
         if isinstance(aset, InfiniteSet) or isinstance(aset, IntSet):
             return False
-        elif isinstance(aset, frozenset):
+        elif isinstance(aset, Nat1Set) or isinstance(aset, NatSet):
+            return True 
+        elif isinstance(aset, frozenset) or isinstance(aset, SymbolicSet):
             for x in aset:
                 if USE_RPYTHON_CODE:
                     cond = x.ivalue<0
@@ -801,8 +805,6 @@ class IntSet(LargeSet):
                 if cond:
                     return False
                 return True
-        elif isinstance(aset, Nat1Set) or isinstance(aset, NatSet):
-            return True 
         raise NotImplementedError("inclusion with unknown set-type")  
 
     def __eq__(self, aset):

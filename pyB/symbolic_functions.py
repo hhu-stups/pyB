@@ -14,10 +14,11 @@ if USE_RPYTHON_CODE:
 # only used by W_Objects. 
 # Rpython does not support x in S
 def x_in_S(x, S):
-    for e in S:
-        if x.__eq__(e):
-            return True
-    return False
+    return S.__contains__(x)
+    #for e in S:
+    #    if x.__eq__(e):
+    #        return True
+    #return False
     
 class SymbolicRelationSet(SymbolicSet):
     def __init__(self, aset0, aset1, env, node):
