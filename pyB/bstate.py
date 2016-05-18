@@ -212,8 +212,11 @@ class BState():
                     
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
-                        if useHash:
-                            value = w_obj.__my_hash__()
+                        if useHash :
+                            if w_obj is None:
+                                value = 0
+                            else:
+                                value = w_obj.__my_hash__()
                         else:
                             if isinstance(w_obj, W_Integer):
                                 value = str(w_obj.ivalue)

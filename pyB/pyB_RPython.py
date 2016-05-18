@@ -342,7 +342,7 @@ def run_checking_mode():
         return eval_Invariant(root, env, mch)   
 
 def print_usage():
-    print "Usage: ./pyB <options> MachineFile <SolutionFile>"
+    print "Usage: pyB <options> MachineFile <SolutionFile>"
     print "options:"
     print "-repl: read eval print loop"
     print "-c:    checking one state using a solution file"

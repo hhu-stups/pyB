@@ -14,7 +14,6 @@ from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehens
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
 from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String , frozenset
 from typing import type_check_predicate, type_check_expression
-
 from rpython.rlib import jit
 
 
@@ -3040,14 +3039,13 @@ def exec_parallel_substitution(subst_list, env, ref_state, names, values):
 # endstate: i=10
 # partial computations: {i=0,i=1...i=10}  
 #  
-from rpython.rlib.jit import JitDriver
-whiledriver = JitDriver(greens=['condition', 'doSubst', 'invariant', 'variant'], reds=['env', 'result', 'partial_computations', 'cond', 'state', 'v_value', 'inv', 'temp', 'do_state'])                                
+whiledriver = jit.JitDriver(greens=['condition', 'doSubst', 'invariant', 'variant'], reds=['env', 'result', 'partial_computations', 'cond', 'state', 'v_value', 'inv', 'temp', 'do_state'])                                
 def compute_while_loop(condition, doSubst, invariant, variant, env):
-    #state = None
-    #do_state = None
-    #inv = False
-    #v_value = 0
-    #temp =0
+    state = None
+    do_state = None
+    inv     = W_Boolean(False)
+    v_value = W_Integer(0)
+    temp    = W_Integer(0)
     
     result = []
     partial_computations = []
@@ -3057,7 +3055,7 @@ def compute_while_loop(condition, doSubst, invariant, variant, env):
     bstate = env.state_space.get_state().clone()  
     partial_computations.append(bstate)
     while not partial_computations==[]:
-        #whiledriver.jit_merge_point(condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, result=result, partial_computations=partial_computations, cond=cond, state=state, v_value=v_value, inv=inv, temp=temp, do_state=do_state)
+        whiledriver.jit_merge_point(condition=condition, doSubst=doSubst, invariant=invariant, variant=variant, env=env, result=result, partial_computations=partial_computations, cond=cond, state=state, v_value=v_value, inv=inv, temp=temp, do_state=do_state)
         state = partial_computations.pop()
         env.state_space.undo()
         env.state_space.add_state(state.clone())
