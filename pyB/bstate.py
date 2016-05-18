@@ -177,23 +177,28 @@ class BState():
             key_list.append(None)
         return key_list       
         """
+    
     # TODO: cache value, dont compute twice         
     def __repr__(self):
-        string = ""
+        return self.__state_to_string()
+    
+    
+    def __state_to_string(self, useHash=False):
+        string = []
         from rpython_b_objmodel import W_Integer, W_Boolean, W_Set_Element, W_String, W_Tuple, frozenset
         #sorted_bmch_list = self.__get_sorted_machine_list(self.bmch_dict)
         #for bmch in sorted_bmch_list:
         for i in range(len(self.stack_list)):
             bmch  = self.bmch_list[i]
             if bmch is None:
-                string += "Predicate or Expression:"
+                string.append("Predicate or Expression:")
             else:
-                string += bmch.mch_name + ":" 
+                string.append(bmch.mch_name + ":") 
             
             value_stack = self.get_bmachine_stack(bmch)               
-            lst = "["
+            string.append("[")
             for dic in value_stack:
-                d = "{"
+                string.append("{")
                 #sorted_key_list = self.__get_sorted_key_list(dic)
                 sorted_key_list = []
                 # This code does only work for B machines. 
@@ -207,38 +212,38 @@ class BState():
                     
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
-                        if isinstance(w_obj, W_Integer):
-                            value = str(w_obj.ivalue)
-                        elif isinstance(w_obj, W_Boolean):
-                            value = str(w_obj.bvalue)
-                        elif isinstance(w_obj, W_Set_Element):
-                            value = w_obj.string
-                        elif isinstance(w_obj, W_String):
-                            value = w_obj.string
-                        elif isinstance(w_obj, frozenset):
-                            value = ""
-                            for le in w_obj.to_list():
-                                value = value + str(le) # TODO: performance
-                        elif isinstance(w_obj, W_Tuple):
-                            value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
-                        elif isinstance(w_obj, SymbolicSet):
-                            value = str(w_obj)
+                        if useHash:
+                            value = w_obj.__my_hash__()
                         else:
-                            value = ""
+                            if isinstance(w_obj, W_Integer):
+                                value = str(w_obj.ivalue)
+                            elif isinstance(w_obj, W_Boolean):
+                                value = str(w_obj.bvalue)
+                            elif isinstance(w_obj, W_Set_Element):
+                                value = w_obj.string
+                            elif isinstance(w_obj, W_String):
+                                value = w_obj.string
+                            elif isinstance(w_obj, frozenset):
+                                value = ""
+                                for le in w_obj.to_list():
+                                    value = value + str(le) # TODO: performance
+                            elif isinstance(w_obj, W_Tuple):
+                                value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
+                            elif isinstance(w_obj, SymbolicSet):
+                                value = str(w_obj)
+                            else:
+                                value = ""
                     else:
                         value = dic[k]
-                    d += k +":"+ str(value) + " "
-                d +="}"   
-                lst += d
-            lst += "]"
-            string = string + lst + '\n' 
-        return string    
-   
-   
+                    string.append(k +":"+ str(value) + " ")
+                string.append("}")   
+            string.append("]\n")
+        return "".join(string)
+    
     def __hash__(self):
         if USE_RPYTHON_CODE:
             from rpython.rlib.objectmodel import compute_hash
-            hash_str = compute_hash(self.__repr__())
+            hash_str = compute_hash(self.__state_to_string(useHash=True))
         else:
             hash_str = hash(self.__repr__())
         #print "XXX" + self.__repr__() + str(hash_str) + "XXX"

@@ -11,7 +11,7 @@ def key_eq(s1, s2):
 def key_hash(s):
     return s.__hash__()
      
-# TODO: Use a better datastruktur when you impl. modelchecking 
+# TODO: Use a better datastructure when you impl. model checking 
 class StateSpace:
     def __init__(self):
         self.stack = [BState()]

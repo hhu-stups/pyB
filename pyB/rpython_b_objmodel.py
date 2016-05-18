@@ -10,9 +10,8 @@ from rpython.rlib.objectmodel import compute_hash
 def my_eq(obj0, obj1):
     return obj0.__eq__(obj1)
 
-def my_hash(obj0):
-    hash_str = compute_hash(obj0.__repr__())
-    return hash_str
+def my_hash(obj):
+    return obj.__my_hash__()
 
 class W_Object:
     #_settled_ = True
@@ -26,6 +25,10 @@ class W_Object:
 
     def __repr__(self):
         return "w-obj"
+        
+    def __my_hash__(self):
+        hash = compute_hash(self.__repr__())
+        return hash
 
 class W_Tuple(W_Object):
     def __init__(self, tvalue):
@@ -60,6 +63,14 @@ class W_Tuple(W_Object):
         t0 = self.tvalue[0].clone()
         t1 = self.tvalue[1].clone()
         return W_Tuple((t0,t1))
+        
+    # Cantor pairing function
+    # https://en.wikipedia.org/wiki/Pairing_function
+    def __my_hash__(self):
+        x = self.tvalue[0].__my_hash__()
+        y = self.tvalue[1].__my_hash__()
+        return y+((x+y)*(x+y+1))/2
+
            
 # sadly only single inheritance allow in RPYTHON :(
 # reimplementation of all needed integer operations
@@ -138,6 +149,10 @@ class W_Integer(W_Object):
     def clone(self):
         return W_Integer(self.ivalue)
 
+
+    def __my_hash__(self):
+        return self.ivalue
+        
 class W_Boolean(W_Object):
     #_settled_ = True
     
@@ -180,7 +195,12 @@ class W_Boolean(W_Object):
 
     def clone(self):
         return W_Boolean(self.bvalue)
- 
+
+    def __my_hash__(self):
+        if self.bvalue:
+            return 1
+        else:
+            return 0 
         
 class W_None(W_Object):
     #_settled_ = True
@@ -258,15 +278,17 @@ class frozenset(W_Object):
         for e in L:
             self.hashmap[e] = True
         self.repr_string = None
+        self.hash_computed = False
+        self.my_hash = 0
     
     # TODO: more efficient impl
     def __repr__(self):
         if self.repr_string is None:           
-            string = "{"
+            string = ["{"]
             for e in self.hashmap:
-                string += str(e) +","
-            string += "}"
-            self.repr_string = string
+                string.append(str(e) +",")
+            string.append("}")   
+            self.repr_string = "".join(string)
         return self.repr_string
         
     def __len__(self):
@@ -291,12 +313,14 @@ class frozenset(W_Object):
         return True
  
     def union(self, other):
-        new_map = r_dict(my_eq, my_hash)
-        for e in self.hashmap:
-            new_map[e] = True
-        for e in other.hashmap:
-            new_map[e] = True
+        #new_map = r_dict(my_eq, my_hash)
+        #for e in self.hashmap:
+        #    new_map[e] = True
+        #for e in other.hashmap:
+        #    new_map[e] = True
         result = frozenset()
+        new_map = self.hashmap.copy()
+        new_map.update(other.hashmap)      
         result.hashmap =  new_map 
         return result
     
@@ -331,10 +355,12 @@ class frozenset(W_Object):
         from symbolic_sets import SymbolicSet
         if not isinstance(other, frozenset) and not isinstance(other, SymbolicSet):
             return False
-           
+         
         assert isinstance(other, frozenset) or isinstance(other, SymbolicSet)
         if not self.__len__()==other.__len__():
             return False
+        #if self.__len__()==0 and other.__len__()==0:
+        #    return True
         if isinstance(other, frozenset):    
             for e in self.hashmap:
                 if not e in other.hashmap:
@@ -343,6 +369,8 @@ class frozenset(W_Object):
                 if not e in self.hashmap:
                     return False
             return True
+            # Wrong: e.g. {1} : {{1},{1,2}}
+            #return self.hashmap == other.hashmap
         else:
             for e in self.hashmap:
                 if not other.__contains__(e):
@@ -383,7 +411,28 @@ class frozenset(W_Object):
         return clone
         
     def to_list(self):
-        lst = []
-        for e in self.hashmap:
-            lst.append(e)
-        return lst
+        #lst = []
+        #for e in self.hashmap:
+        #    lst.append(e)
+        #return lst
+        return self.hashmap.keys()
+     
+    
+        """
+    # Cantor k-tuple function
+    # https://en.wikipedia.org/wiki/Pairing_function        
+    def __my_hash__(self):
+        if not self.hash_computed:
+            hash = 0 # empty set hash is 0
+            lst = self.hashmap.keys()
+            if not len(lst)==0:
+                hash = lst.pop().__my_hash__()
+            
+            while not len(lst)==0:
+                x = hash
+                y = lst.pop().__my_hash__()
+                hash = y+((x+y)*(x+y+1))/2
+            self.my_hash = hash
+            self.hash_computed = True
+        return self.my_hash
+        """

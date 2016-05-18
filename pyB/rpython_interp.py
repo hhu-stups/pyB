@@ -12,7 +12,7 @@ from symbolic_sets import SymbolicPowerSet, SymbolicPower1Set, SymbolicUnionSet,
 from symbolic_functions import SymbolicRelationSet, SymbolicInverseRelation, SymbolicIdentitySet, SymbolicPartialFunctionSet, SymbolicTotalFunctionSet, SymbolicTotalSurjectionSet, SymbolicPartialInjectionSet, SymbolicTotalInjectionSet, SymbolicPartialSurjectionSet, SymbolicTotalBijectionSet, SymbolicPartialBijectionSet, SymbolicTransRelation, SymbolicTransFunction
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet, SymbolicQuantifiedIntersection, SymbolicQuantifiedUnion 
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
-from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String, frozenset
+from rpython_b_objmodel import W_Integer, W_Object, W_Boolean, W_None, W_Set_Element, W_Tuple, W_String , frozenset
 from typing import type_check_predicate, type_check_expression
 
 from rpython.rlib import jit
@@ -1370,9 +1370,10 @@ def eval_AOverwriteExpression(self, env):
     dom_r2 = []
     for x in r2:
         dom_r2.append(x.tvalue[0])
+    domain = frozenset(dom_r2)
     new_r = []
     for x in r1:
-        if not dom_r2.__contains__(x.tvalue[0]):
+        if not domain.__contains__(x.tvalue[0]):
             new_r.append(x)
     assert isinstance(r2, frozenset)
     res = frozenset(r2.to_list() + new_r)
