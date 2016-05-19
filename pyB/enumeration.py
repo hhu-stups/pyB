@@ -51,6 +51,7 @@ def all_values_by_type(atype, env, node):
         res = powerset(val_list, node.idName)
         powerlist = list(res)
         lst = [frozenset(e) for e in powerlist]
+        #print lst
         return lst
     elif isinstance(atype, CartType):
         val_pi = all_values_by_type(atype.left.data, env, node)
@@ -99,21 +100,30 @@ def all_values_by_type_RPYTHON(atype, env, node):
         value = env.get_value(type_name)
         assert isinstance(value, frozenset)
         return value.to_list()
-    # TODO: check with RPython translation before uncommenting
-    """
     elif isinstance(atype, PowerSetType):
+        from enumeration_lazy import generate_powerset
+        if PRINT_WARNINGS:
+            print "\033[1m\033[91mWARNING\033[00m: (bruteforce) computing powerset of %s %s" % (iterable,name)
+        
         val_list = all_values_by_type_RPYTHON(atype.data, env, node)
-        res = powerset(val_list)
-        powerlist = list(res)
-        lst = [frozenset(e) for e in powerlist]
-        return lst
+        card = len(val_list)
+        powerlist = [frozenset([])] 
+        i = 0     
+        while i!=card:
+            for lst in generate_powerset(val_list, card=i+1, skip=0):
+                assert len(lst)==i+1
+                powerlist.append(frozenset(lst))
+            i = i+1
+        #print powerlist
+        return powerlist
     elif isinstance(atype, CartType):
-        val_pi = all_values_by_type_RPYTHON(atype.left.data, env, node)
-        val_i = all_values_by_type_RPYTHON(atype.right.data, env, node)
-        # TODO: test for realtions, seams incomplete
-        lst = frozenset([(x,y) for x in val_pi for y in val_i])
+        val_domain = all_values_by_type_RPYTHON(atype.left.data, env, node)
+        val_image  = all_values_by_type_RPYTHON(atype.right.data, env, node)
+        lst = []
+        for x in val_domain:
+            for y in val_image:
+                lst.append(W_Tuple((x,y)))
         return lst
-    """
     string = "Unknown Type / Not Implemented: %s" % atype
     #print string
     raise Exception(string)
@@ -332,4 +342,3 @@ def _create_sequence(images, number, length):
 #        if  env._max_int>TOO_MANY_ITEMS:
 #            return True
 #    return False
-

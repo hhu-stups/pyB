@@ -212,7 +212,7 @@ class BState():
                     
                     if USE_RPYTHON_CODE:
                         w_obj = dic[k]
-                        if useHash :
+                        if useHash:
                             if w_obj is None:
                                 value = 0
                             else:
@@ -227,15 +227,22 @@ class BState():
                             elif isinstance(w_obj, W_String):
                                 value = w_obj.string
                             elif isinstance(w_obj, frozenset):
-                                value = ""
-                                for le in w_obj.to_list():
-                                    value = value + str(le) # TODO: performance
+                                elements = ["{"]
+                                w_obj_list = w_obj.to_list()
+                                for le in w_obj_list:
+                                    elements.append(str(le)) 
+                                    elements.append(",") 
+                                if len(w_obj_list)>0:
+                                    elements.pop()
+                                value = "".join(elements)+"}"
                             elif isinstance(w_obj, W_Tuple):
                                 value = str(w_obj.tvalue[0])+str(w_obj.tvalue[1])
                             elif isinstance(w_obj, SymbolicSet):
                                 value = str(w_obj)
+                            elif isinstance(w_obj, W_None):
+                                value = "W_None"
                             else:
-                                value = ""
+                                value = "None"
                     else:
                         value = dic[k]
                     string.append(k +":"+ str(value) + " ")

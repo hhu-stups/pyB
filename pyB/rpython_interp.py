@@ -1051,6 +1051,13 @@ ASetSubtractionExpression.eval = eval_ASetSubtractExpression
 def eval_AMultOrCartExpression(self, env):
     expr1 = self.get(0).eval(env)
     expr2 = self.get(1).eval(env)
+    if isinstance(expr1, frozenset) and isinstance(expr2, frozenset):
+        # frozenset(((x,y) for x in expr1 for y in expr2))
+        result = []
+        for x in expr1:
+            for y in expr2:
+                result.append(W_Tuple((x,y))) 
+        return frozenset(result)
     w_integer = expr1.__mul__(expr2)
     return w_integer
 AMultOrCartExpression.eval = eval_AMultOrCartExpression
