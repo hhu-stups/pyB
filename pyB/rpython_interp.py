@@ -2304,7 +2304,7 @@ AVarSubstitution.generator_AVarSubstitution = exec_AVarSubstitution
 
 def exec_AAnySubstitution_or_ALetSubstitution(self, env):
     nodes = []
-    for i in range(len(self.children)-self.idNum):
+    for i in range(self.idNum):
         idNode = self.children[i]
         assert isinstance(idNode, AIdentifierExpression)
         nodes.append(idNode)

@@ -340,7 +340,7 @@ class frozenset(W_Object):
         new_map = self.hashmap.copy()
         for e in other.hashmap:
             if e in new_map:
-                new_map.pop(e)
+                del new_map[e]
         result = frozenset()
         result.hashmap =  new_map 
         return result
