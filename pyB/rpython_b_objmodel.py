@@ -418,6 +418,15 @@ class frozenset(W_Object):
         return self.hashmap.keys()
      
     
+    def __setitem__(self, key, value):
+        remove_tuple = None
+        for t in self.hashmap:
+            if t.tvalue[0].__eq__(key):
+                remove_tuple = t
+        if not remove_tuple is None:
+            del self.hashmap[remove_tuple]
+        self.hashmap[W_Tuple((key, value))] = True
+        
         """
     # Cantor k-tuple function
     # https://en.wikipedia.org/wiki/Pairing_function        

@@ -256,8 +256,8 @@ def _run_model_checking_mode(env, mch):
             w_bool = inv.eval(env)  # 7. model check  
             if not w_bool.bvalue:
                 print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-                #bstate = env.state_space.get_state()
-                #print bstate.print_bstate()
+                violation = env.state_space.get_state()
+                violation.print_bstate()
                 #print env.state_space.history
                 return -1
             if EVAL_CHILD_INVARIANT:
@@ -387,9 +387,9 @@ def main(argv):
             print_usage()
             return 0
     except Exception as e1:
-        print "\033[1m\033[91mError in PyB\033[00m:" #, type(e1), e1.args, e1
-        #import traceback
-        print "Use PyB-Python version to get a detailed error message"
+        #print "\033[1m\033[91mError in PyB\033[00m:" #, type(e1), e1.args, e1
+        import traceback
+        #print "Use PyB-Python version to get a detailed error message"
         #print "\033[1m\033[91mBugreports to witulski@cs.uni-duesseldorf.de\033[00m:"
         #print "\033[1m\033[91mError message\033[00m:"
         #print traceback.format_exc()

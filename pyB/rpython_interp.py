@@ -1946,29 +1946,25 @@ def AAssignSubstitution_helper(self, env):
             env.set_value(lhs_node.idName, value)
         # TODO: implement call method on frozensets before adding this code
         # case (2) lhs: is function 
-#         else:
-#             assert isinstance(lhs_node, AFunctionExpression)
-#             assert isinstance(lhs_node.get(0), AIdentifierExpression)
-#             func_name = lhs_node.get(0).idName
-#             # get args and convert to dict
-#             args = []
-#             for child in lhs_node.children[1:]:
-#                 arg = interpret(child, env)
-#                 args.append(arg)
-#             func = dict(env.get_value(func_name))
-#             used_ids.append(func_name)
-#             # mapping of func values
-#             if len(args)==1:
-#                 func[args[0]] = value
-#             else:
-#                 func[tuple(args)] = value
-#             # convert back
-#             lst = []
-#             for key in func:
-#                 lst.append(tuple([key,func[key]]))
-#             new_func = frozenset(lst)
-#             # write to env
-#             env.set_value(func_name, new_func)
+        else:
+             assert isinstance(lhs_node, AFunctionExpression)
+             assert isinstance(lhs_node.get(0), AIdentifierExpression)
+             func_name = lhs_node.get(0).idName
+             # get args and convert to dict
+             args = []
+             for child in lhs_node.children[1:]:
+                 w_arg = interpret(child, env)
+                 args.append(w_arg)
+             function = env.get_value(func_name).clone()
+             used_ids.append(func_name)
+             # mapping of func values
+             if len(args)==1:
+                 function[args[0]]     = value
+             else:
+                 print "Not implemented: assign to function with many args"
+                 #function[W_Tuple(args)] = value
+             # write to env
+             env.set_value(func_name, function)
         # case (3) record: 3 # TODO
 
     while not used_ids==[]:

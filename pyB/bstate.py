@@ -214,9 +214,9 @@ class BState():
                         w_obj = dic[k]
                         if useHash:
                             if w_obj is None:
-                                value = 0
+                                value = "None"
                             else:
-                                value = w_obj.__my_hash__()
+                                value = str(w_obj.__my_hash__())
                         else:
                             if isinstance(w_obj, W_Integer):
                                 value = str(w_obj.ivalue)

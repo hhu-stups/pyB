@@ -260,8 +260,8 @@ def run_model_checking_mode(arguments):
         if not DISABLE_INVARIANT_MC_CHECK:    
             if not interpret(mch.aInvariantMachineClause, env):
                 print "WARNING: invariant violation found after checking", len(env.state_space.seen_states),"states"
-                #violation = env.state_space.get_state()
-                #violation.print_bstate()
+                violation = env.state_space.get_state()
+                violation.print_bstate()
                 #print violation.opName
                 return False
             if EVAL_CHILD_INVARIANT:

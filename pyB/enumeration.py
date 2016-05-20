@@ -110,7 +110,7 @@ def all_values_by_type_RPYTHON(atype, env, node):
         powerlist = [frozenset([])] 
         i = 0     
         while i!=card:
-            for lst in generate_powerset(val_list, card=i+1, skip=0):
+            for lst in generate_powerset(frozenset(val_list), card=i+1, skip=0):
                 assert len(lst)==i+1
                 powerlist.append(frozenset(lst))
             i = i+1
@@ -119,11 +119,11 @@ def all_values_by_type_RPYTHON(atype, env, node):
     elif isinstance(atype, CartType):
         val_domain = all_values_by_type_RPYTHON(atype.left.data, env, node)
         val_image  = all_values_by_type_RPYTHON(atype.right.data, env, node)
-        lst = []
+        L = []
         for x in val_domain:
             for y in val_image:
-                lst.append(W_Tuple((x,y)))
-        return lst
+                L.append(W_Tuple((x,y)))
+        return L
     string = "Unknown Type / Not Implemented: %s" % atype
     #print string
     raise Exception(string)
