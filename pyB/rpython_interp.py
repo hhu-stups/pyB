@@ -62,11 +62,10 @@ def set_up_constants(root, env, mch, solution_file_read=False):
     # 2. set up frame and B-state
     # The reference B-state: save the status before the solutions
     bstates = []
-    """
+
     ref_bstate = env.state_space.get_state().clone()
     bstate = ref_bstate.clone()
     env.state_space.add_state(bstate) 
-    
     # 3. search for (MAX_SET_UP-)solutions  
     generator = __set_up_constants_generator(root, env, mch)
     sol_num = 0
@@ -77,13 +76,12 @@ def set_up_constants(root, env, mch, solution_file_read=False):
                 solution_bstate.add_prev_bstate(ref_bstate, "set up", parameter_values=None) 
             bstates.append(solution_bstate)
             env.state_space.revert(ref_bstate)
+            # names of all bmachines with set-init done
             env.init_sets_bmachnes_names = []  
-            
             sol_num = sol_num + 1
             if sol_num==MAX_SET_UP: # change config.py
-                break
+                break          
     env.state_space.undo() # pop ref_bstate
-    """
     return bstates
 
 
@@ -142,6 +140,7 @@ def __set_up_constants_generator(root, env, mch):
                         yield para_solution
                     else:
                         yield para_solution and child_bstate_change
+
                 # case (3.2)
                 # There are constants, but there was no set up of mch-parameters 
                 # because there is nothing to set up (no state-change by param_generator)
@@ -150,6 +149,7 @@ def __set_up_constants_generator(root, env, mch):
                     # Some Constants/Sets are set via Prop. Preds
                     # TODO: give Blacklist of Variable Names
                     # find all constants (like x=42 or y={1,2,3}) and set them
+                    """
                     learnd_vars = learn_assigned_values(mch.aPropertiesMachineClause, env)
                     if learnd_vars and VERBOSE:
                         print "learnd constants (no enumeration): ", learnd_vars
@@ -160,12 +160,13 @@ def __set_up_constants_generator(root, env, mch):
                     for solution in prop_generator:
                         yield solution 
                         env.state_space.revert(ref_bstate2) # revert parameter set up
+                    """
                 env.state_space.revert(ref_bstate) # revert child set up
         if not mch.has_constants_mc and not mch.has_abstr_constants_mc and mch.scalar_params==[] and mch.set_params==[]:
             # 4. propagate set init or possible B-state-change of children
             # if mch_list is empty, child_bstate_change is False: 
             yield child_bstate_change 
-
+        
 
 # TODO: non-determinisim init of mch-set-parameters 
 # inconsistency between schneider-book page 61 and the table on manrefb page 110.
@@ -771,14 +772,12 @@ def eval_AEqualPredicate(self, env):
     expr1 = self.get(0).eval(env)
     expr2 = self.get(1).eval(env)
     # frozensets can only be compared to frozensets
-    """
     if isinstance(expr2, SymbolicSet) and isinstance(expr1, frozenset):
         expr2 = expr2.enumerate_all()
-        return expr1 == expr2
+        return W_Boolean(expr1.__eq__(expr2))
     else:
         # else normal check, also symbolic (implemented by symbol classes)
-        return expr1 == expr2
-    """
+        return W_Boolean(expr1.__eq__(expr2))
     w_bool = W_Boolean(expr1.__eq__(expr2))
     return w_bool
 AEqualPredicate.eval = eval_AEqualPredicate
@@ -1270,9 +1269,9 @@ def eval_ADomainRestrictionExpression(self, env):
                 img = rel[x]
                 if isinstance(img, list):
                     for i in img:
-                        new_rel.append((x,i))
+                        new_rel.append(W_Tuple((x,i)))
                 else:
-                    e = (x,img)
+                    e = W_Tuple((x,img))
                     new_rel.append(e)
             except ValueNotInDomainException:
                 continue    
@@ -1389,12 +1388,10 @@ AOverwriteExpression.eval = eval_AOverwriteExpression
 def eval_ADirectProductExpression(self, env):
     p = self.get(0).eval(env)
     q = self.get(1).eval(env)
-    """
     if isinstance(p, SymbolicSet):
         p = p.enumerate_all()
     if isinstance(q, SymbolicSet):
         q = q.enumerate_all()  
-    """
     d_prod = []
     for x in p:
         for y in q:
