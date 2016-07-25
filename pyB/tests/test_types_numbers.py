@@ -459,6 +459,18 @@ class TestTypesNumbers():
         assert isinstance(get_type_by_name(env, "z"), IntegerType)
         assert isinstance(get_type_by_name(env, "w"), IntegerType)
 
+    # no cycles produced by unification step
+    def test_types_expr_equ8(self):
+        # Build AST
+        string_to_file("#PREDICATE y=x & x=y & x=1", file_name)
+        ast_string = file_to_AST_str(file_name)
+        root = str_ast_to_python_ast(ast_string)
+
+        # Type
+        env = Environment()
+        type_with_known_types(root, env, [], ["x","y"])
+        assert isinstance(get_type_by_name(env, "x"), IntegerType)
+        assert isinstance(get_type_by_name(env, "y"), IntegerType)
 
     def test_types_expr_leq(self):
         # Build AST

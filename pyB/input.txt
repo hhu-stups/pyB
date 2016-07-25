@@ -1,1 +1,1 @@
-#PREDICATE A=bool(1<2)
+#PREDICATE y=x & x=y & x=1
