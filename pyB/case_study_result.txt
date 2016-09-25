@@ -12,7 +12,7 @@ Total Distinct States: 32
 Total Transitions: 31
 
 PyB:
-Re-Checking: 41 States
+Re-Checking: 41 States xxx falsche state Anzahl
 Time: 302.40 sec.
 
 -----------------------------
@@ -27,7 +27,7 @@ Total Distinct States: 32
 Total Transitions: 31
 
 PyB:
-Re-Checking: 41 States
+Re-Checking: 41 States xxx falsche state Anzahl
 Time: 312.58 sec.
 
 --------------------------------
@@ -39,7 +39,7 @@ Total Distinct States:
 Total Transitions:
 
 PyB:
-Re-Checking: 31 States
+Re-Checking: 31 States xxx falsche state Anzahl
 Time: 226.35 sec.
 
 --------------------------------
