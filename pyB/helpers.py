@@ -7,10 +7,10 @@ from bexceptions import ValueNotInDomainException
 from btypes import CartType
 from config import VERBOSE, EXAMPLE_DIR, JAR_DIR, USE_RPYTHON_CODE
 from subprocess import Popen, PIPE
-from rpython_b_objmodel import W_Tuple
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import W_Tuple
+    from rpython_b_objmodel import frozenset
      
 #from pretty_printer import pretty_print
 #from boperation import BOperation
@@ -300,7 +300,7 @@ def remove_tuples(tup):
         a = remove_tuples(tup[0])
         b = remove_tuples(tup[1])
         return a+b
-    elif isinstance(tup, W_Tuple):
+    elif USE_RPYTHON_CODE and isinstance(tup, W_Tuple):
         a = remove_tuples(tup.tvalue[0])
         b = remove_tuples(tup.tvalue[1])
         return a+b        

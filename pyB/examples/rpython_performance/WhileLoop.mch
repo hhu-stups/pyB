@@ -5,7 +5,7 @@ INVARIANT
 INITIALISATION 	
   BEGIN 
        BEGIN 
-           n := 1000 ;
+           n := 10 ;
            sum := 0 ; 
            i := 0
        END;

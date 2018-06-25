@@ -164,7 +164,7 @@ class TestModelChecker():
         assert env.get_value('sum')==45
         env.state_space.set_current_state(next_states[0].bstate) 
         assert env.get_value('sum')==45
-
+        # maybe the file was edited (e.g. varibale n), if you get an other result
         
     """
     MACHINE SigmaLoop
@@ -206,7 +206,7 @@ class TestModelChecker():
         assert env.get_value('sum')==55
         env.state_space.set_current_state(next_states[0].bstate) 
         assert env.get_value('sum')==55  
-
+        # maybe the file was edited (e.g. varibale n), if you get an other result
         
     def test_bool_law(self):
         path = "examples/BoolLaws.mch"

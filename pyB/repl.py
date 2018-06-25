@@ -14,6 +14,7 @@ def run_repl(argv):
     print "PyB repl. Version: 08.01.2013"
     print "Input: e.g. '1+1' or '1+1<42'"
     print "quit to exit."
+    env = Environment()
     env.parse_config_parameter(argv)
     string = None
     while True:
