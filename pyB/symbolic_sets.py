@@ -9,20 +9,18 @@ from config import PRINT_WARNINGS, USE_RPYTHON_CODE
 from enumeration_lazy import generate_powerset, enumerate_cross_product
 from helpers import double_element_check, remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
-from rpython_b_objmodel import W_Object, W_Integer, W_String, W_Tuple
 
-
-
-if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
-
-
-
+    
+if USE_RPYTHON_CODE: # overw. frozenset builtin type
+    from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import W_Object, W_Integer, W_String, W_Tuple
+else:
+    from fake import W_Object
+     
 # only used by W_Objects. 
 # Rpython does not support x in S
 def x_in_S(x, S):
     return S.__contains__(x)
-
     
     
 ##############
@@ -1199,7 +1197,7 @@ class SymbolicCartSet(SymbolicSet):
         if isinstance(element, tuple):
             l = element[0]
             r = element[1]
-        elif isinstance(element, W_Tuple):
+        elif USE_RPYTHON_CODE and isinstance(element, W_Tuple):
             l = element.tvalue[0]
             r = element.tvalue[1]
         else:

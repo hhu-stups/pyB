@@ -1,5 +1,8 @@
-from rpython_b_objmodel import W_Object
 from config import USE_RPYTHON_CODE
+from fake import W_Object
+    
+if USE_RPYTHON_CODE:
+    from rpython_b_objmodel import W_Object
 
 class BOperation(W_Object):
     def __init__(self, name, operation_ast, bmachine):

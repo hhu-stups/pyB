@@ -4,14 +4,14 @@ from bmachine import BMachine
 from bexceptions import ValueNotInBStateException
 from config import USE_RPYTHON_CODE, USE_RPYTHON_MAP
 from collections import OrderedDict
-from rpython_b_objmodel import W_None, W_Object
 from symbolic_sets import SymbolicSet
-
+from fake import W_Object
 
 
 if USE_RPYTHON_CODE:
     from rpython_b_objmodel import frozenset
     from rpython.rlib import jit
+    from rpython_b_objmodel import W_None, W_Object
 else:
     import mockjit as jit
     from mockjit import promote

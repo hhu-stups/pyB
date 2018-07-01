@@ -3,13 +3,15 @@ from bexceptions import ValueNotInDomainException
 from config import USE_RPYTHON_CODE
 from enumeration_lazy import make_explicit_set_of_realtion_lists, enumerate_cross_product
 from relation_helpers import *
-from rpython_b_objmodel import W_Object
 from symbolic_sets import SymbolicSet, PowerSetType, SymbolicCartSet
 from symbolic_functions_with_predicate import SymbolicLambda, SymbolicComprehensionSet 
 
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import W_Object, W_Tuple
+else:
+     from fake import W_Object
 
 # only used by W_Objects. 
 # Rpython does not support x in S
@@ -394,7 +396,7 @@ class SymbolicFirstProj(SymbolicSet):
     
     # proj1(S,T)(arg)
     def __getitem__(self, arg):
-        if not (isinstance(arg, tuple) or isinstance(arg, W_Tuple)):
+        if not (isinstance(arg, tuple) or (USE_RPYTHON_CODE and isinstance(arg, W_Tuple))):
             raise TypeError()
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
@@ -481,7 +483,7 @@ class SymbolicSecondProj(SymbolicSet):
     
     # proj2(S,T)(arg)
     def __getitem__(self, arg):
-        if not (isinstance(arg, tuple) or isinstance(arg, W_Tuple)):
+        if not (isinstance(arg, tuple) or (USE_RPYTHON_CODE and isinstance(arg, W_Tuple))):
             raise TypeError()
         if arg[0] not in self.left_set or arg[1] not in self.right_set:
             raise ValueNotInDomainException(arg) 
@@ -573,7 +575,7 @@ class SymbolicIdentitySet(SymbolicRelationSet):
                 yield tuple([e,e])
 
     def __contains__(self, element):
-        if isinstance(element, W_Tuple):
+        if USE_RPYTHON_CODE and isinstance(element, W_Tuple):
             if element.tvalue[0].__eq__(element.tvalue[1]) and self.left_set.__contains__(element.tvalue[0]):
                 return True
             else:

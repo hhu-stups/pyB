@@ -18,10 +18,6 @@ if USE_RPYTHON_CODE:
 # FIXME: automatic usage of 
 #'java -cp "..\jars\*" de.prob.cliparser.CliBParser %s %s'
 # on Windows 
-#command_str += "../jars/bparser-2.0.67.jar"
-#command_str += ":../jars/prologlib-2.0.67.jar"
-#command_str += ":../jars/parserbase-2.0.67.jar"
-#command_str += ":../jars/cliparser-2.0.67.jar"
 command_str = "java -Xms64m -Xmx1024m -cp "
 if os.name=='nt':
     command_str += ";"+JAR_DIR

@@ -3,11 +3,13 @@ from bexceptions import ValueNotInDomainException, DontKnowIfEqualException
 from config import USE_RPYTHON_CODE
 from helpers import remove_tuples, build_arg_by_type
 from pretty_printer import pretty_print
-from rpython_b_objmodel import W_Object, W_Tuple
 from symbolic_sets import SymbolicSet
 
 if USE_RPYTHON_CODE:
-     from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import frozenset
+    from rpython_b_objmodel import W_Object, W_Tuple
+else:
+    from fake import W_Object
 
 # True:  these predicates are syntacticly equal
 # True examples:

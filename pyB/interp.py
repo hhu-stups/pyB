@@ -10,15 +10,14 @@ from helpers import flatten, double_element_check, find_assignd_vars, print_ast,
 from pretty_printer import pretty_print
 from quick_eval import quick_member_eval #, infinity_belong_check
 from relation_helpers import *
-from rpython_b_objmodel import W_Integer, W_None
 from symbolic_sets import *
 from symbolic_sequences import SymbolicSequenceSet, SymbolicSequence1Set, SymbolicISequenceSet, SymbolicISequence1Set, SymbolicPermutationSet
-
 from typing import typeit, IntegerType, PowerSetType, SetType, BType, CartType, BoolType, Substitution, Predicate, type_check_bmch, type_check_predicate, type_check_expression
 
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import W_Integer, W_None
 
 # Wrapper used to avoid PicklingError on windows systems. ONLY(!) used in parallel calls
 # PicklingError: Can't pickle <function ,lambda> at 0x123456: it's not found as interp.<lambda>

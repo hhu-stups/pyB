@@ -2,12 +2,14 @@ from ast_nodes import *
 from config import USE_RPYTHON_CODE
 from enumeration import create_all_seq_w_fixlen
 from relation_helpers import *
-from rpython_b_objmodel import W_Object
 from symbolic_sets import SymbolicSet
 
 
 if USE_RPYTHON_CODE:
      from rpython_b_objmodel import frozenset
+     from rpython_b_objmodel import W_Object
+else:
+     from fake import W_Object
      
      
 def _check_element_in_sequence(element, sequence):

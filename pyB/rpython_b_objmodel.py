@@ -2,11 +2,10 @@
 # Immutable (always return W_XXX) to get better performance results with RPTYHON-tranlation
 # except boolean methods!
 import sys
-from config import PRINT_WARNINGS, USE_RPYTHON_CODE
-if USE_RPYTHON_CODE:
-    sys.path.append("/Users/johnwitulski/witulski/git/pyB/pypy/")
-    from rpython.rlib.objectmodel import r_dict
-    from rpython.rlib.objectmodel import compute_hash
+from config import PRINT_WARNINGS, USE_RPYTHON_CODE, RYPYTHON_PATH
+sys.path.append(RYPYTHON_PATH)
+from rpython.rlib.objectmodel import r_dict
+from rpython.rlib.objectmodel import compute_hash
 
 
 def my_eq(obj0, obj1):

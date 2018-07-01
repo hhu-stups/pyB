@@ -33,7 +33,7 @@ DISABLE_INVARIANT_MC_CHECK = False # No invariant check during model checking bu
 USE_RPYTHON_CODE     = False # use code which can be translated
 USE_RPYTHON_POPEN    = False # Enable java call from RPython if you want to translate to C
 USE_RPYTHON_MAP      = True
-
+RYPYTHON_PATH        = "/Users/johnwitulski/witulski/git/pyB/pypy/"
 # method should used by pypy translation test only    
 def set_USE_RPYTHON_POPEN(boolean):
      global USE_RPYTHON_POPEN
